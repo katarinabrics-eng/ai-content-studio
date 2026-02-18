@@ -1,29 +1,14 @@
 import { NextResponse } from "next/server";
 import { intakeSchema } from "@/lib/intake-schema";
-import path from "path";
-import fs from "fs";
+import { getSupabaseClient } from "@/lib/supabase-server";
+import { getIntakes, insertIntake } from "@/lib/supabase-intake";
 
 export const runtime = "nodejs";
 
-const DATA_FILE = path.join(process.cwd(), "data", "intake-submissions.json");
-const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads", "logos");
 const LOGO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 const LOGO_MIME = "image/png";
-
-function readSubmissions(): unknown[] {
-  try {
-    const raw = fs.readFileSync(DATA_FILE, "utf-8");
-    const data = JSON.parse(raw);
-    return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeSubmissions(submissions: unknown[]) {
-  fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(submissions, null, 2), "utf-8");
-}
+const BUCKET_BRAND_ASSETS = "brand-assets";
+const LOGO_PREFIX = "logos";
 
 async function parseRequest(request: Request): Promise<{
   payload: unknown;
@@ -63,10 +48,7 @@ export async function POST(request: Request) {
       logoFile = parsed.logoFile;
     } catch (e) {
       const message = e instanceof Error ? e.message : "Neplatný požadavek";
-      return NextResponse.json(
-        { ok: false, error: message },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, error: message }, { status: 400 });
     }
 
     const payloadObj = payload as Record<string, unknown>;
@@ -88,11 +70,8 @@ export async function POST(request: Request) {
       );
     }
 
-    let record = {
-      ...parsed.data,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
+    const payloadToInsert = { ...parsed.data };
+    const recordId = crypto.randomUUID();
 
     if (logoFile) {
       if (logoFile.type !== LOGO_MIME) {
@@ -108,31 +87,61 @@ export async function POST(request: Request) {
         );
       }
 
+      const supabase = getSupabaseClient();
       const buffer = Buffer.from(await logoFile.arrayBuffer());
-      fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-      const filename = `${record.id}.png`;
-      const filePath = path.join(UPLOADS_DIR, filename);
-      fs.writeFileSync(filePath, buffer);
+      const path = `${LOGO_PREFIX}/${recordId}.png`;
 
-      const logoUrl = `/uploads/logos/${filename}`;
-      record = {
-        ...record,
-        brandAssets: {
-          ...(record.brandAssets ?? {}),
-          logo: logoUrl,
-        },
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET_BRAND_ASSETS)
+        .upload(path, buffer, {
+          contentType: LOGO_MIME,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Storage upload error:", uploadError);
+        return NextResponse.json(
+          { ok: false, error: "INTAKE_SAVE_FAILED", detail: uploadError.message },
+          { status: 500 }
+        );
+      }
+
+      const { data: urlData } = supabase.storage.from(BUCKET_BRAND_ASSETS).getPublicUrl(path);
+      const logoUrl = urlData?.publicUrl ?? "";
+
+      payloadToInsert.brandAssets = {
+        ...(payloadToInsert.brandAssets ?? {}),
+        logo: logoUrl,
       };
     }
 
-    const submissions = readSubmissions();
-    submissions.push(record);
-    writeSubmissions(submissions);
-
-    return NextResponse.json({ ok: true, id: record.id });
+    try {
+      const { id } = await insertIntake(payloadToInsert as Record<string, unknown>);
+      return NextResponse.json({ ok: true, id });
+    } catch (e) {
+      const detail = e instanceof Error ? e.message : String(e);
+      console.error("POST /api/intake insertIntake:", e);
+      return NextResponse.json(
+        { ok: false, error: "INTAKE_SAVE_FAILED", detail },
+        { status: 500 }
+      );
+    }
   } catch (e) {
     console.error("POST /api/intake", e);
+    const message = e instanceof Error ? e.message : "Došlo k chybě serveru";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const intakes = await getIntakes(50);
+    return NextResponse.json({ ok: true, intakes });
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : String(e);
+    console.error("GET /api/intake", e);
     return NextResponse.json(
-      { ok: false, error: "Došlo k chybě serveru" },
+      { ok: false, error: "INTAKE_LOAD_FAILED", detail },
       { status: 500 }
     );
   }

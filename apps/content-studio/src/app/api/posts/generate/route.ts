@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { getIntakeByIdOrLast, readPostDrafts, writePostDrafts } from "@/lib/posts-data";
+import { getIntakeByIdOrLast } from "@/lib/supabase-intake";
+import { insertPostDrafts } from "@/lib/supabase-posts";
 import { generateRequestSchema, postDraftSchema, type PostDraft, type StoredPostDraft } from "@/lib/posts-schema";
 
 export const runtime = "nodejs";
@@ -49,6 +50,28 @@ function normalizeDraft(raw: Record<string, unknown>): PostDraft {
   };
 }
 
+function toStoredDraft(row: { id: string; intake_id: string; created_at: string; payload: Record<string, unknown> }): StoredPostDraft {
+  const p = row.payload;
+  return {
+    id: row.id,
+    intakeId: row.intake_id,
+    createdAt: row.created_at ?? new Date().toISOString(),
+    platform: (p.platform as StoredPostDraft["platform"]) ?? "instagram",
+    angle: String(p.angle ?? ""),
+    hook: String(p.hook ?? ""),
+    caption: String(p.caption ?? ""),
+    cta: String(p.cta ?? ""),
+    hashtags: Array.isArray(p.hashtags) ? p.hashtags.map(String) : [],
+    visualBrief: String(p.visualBrief ?? ""),
+    status: "draft",
+    visualImageUrl: typeof p.visualImageUrl === "string" ? p.visualImageUrl : undefined,
+    visualStatus: p.visualStatus as StoredPostDraft["visualStatus"] | undefined,
+    visualPrompt: typeof p.visualPrompt === "string" ? p.visualPrompt : undefined,
+    visualError: typeof p.visualError === "string" ? p.visualError : undefined,
+    visualUpdatedAt: typeof p.visualUpdatedAt === "string" ? p.visualUpdatedAt : undefined,
+  };
+}
+
 export async function POST(request: Request) {
   try {
     let body: unknown = {};
@@ -61,7 +84,7 @@ export async function POST(request: Request) {
     const intakeId = parsed.success ? parsed.data.intakeId : undefined;
     const count = parsed.success ? Math.min(3, Math.max(1, parsed.data.count)) : DRAFT_COUNT;
 
-    const intake = getIntakeByIdOrLast(intakeId);
+    const intake = await getIntakeByIdOrLast(intakeId);
     if (!intake) {
       return NextResponse.json(
         { ok: false, error: "Žádný intake k dispozici. Nejdřív odešlete intake formulář." },
@@ -109,9 +132,9 @@ Zakázaná slova: ${(intake as Record<string, unknown>).forbiddenWords ?? ""}
       );
     }
 
-    let raw: { drafts?: unknown[] };
+    let parsedContent: { drafts?: unknown[] };
     try {
-      raw = JSON.parse(content) as { drafts?: unknown[] };
+      parsedContent = JSON.parse(content) as { drafts?: unknown[] };
     } catch {
       return NextResponse.json(
         { ok: false, error: "Neplatná JSON odpověď od AI" },
@@ -119,38 +142,43 @@ Zakázaná slova: ${(intake as Record<string, unknown>).forbiddenWords ?? ""}
       );
     }
 
-    const draftsRaw = Array.isArray(raw.drafts) ? raw.drafts.slice(0, DRAFT_COUNT) : [];
-    const now = new Date().toISOString();
-    const stored: StoredPostDraft[] = draftsRaw.map((item) => {
+    const draftsRaw = Array.isArray(parsedContent.drafts) ? parsedContent.drafts.slice(0, DRAFT_COUNT) : [];
+    const payloads: { payload: Record<string, unknown> }[] = [];
+
+    for (const item of draftsRaw) {
       const obj = typeof item === "object" && item != null ? (item as Record<string, unknown>) : {};
       const normalized = normalizeDraft(obj);
-      return {
-        ...normalized,
-        id: crypto.randomUUID(),
-        intakeId: intake.id,
-        createdAt: now,
-      } as StoredPostDraft;
-    });
-
-    while (stored.length < DRAFT_COUNT) {
-      stored.push({
-        platform: "instagram",
-        angle: "",
-        hook: "",
-        caption: "",
-        cta: "",
-        hashtags: [],
-        visualBrief: "",
-        status: "draft",
-        id: crypto.randomUUID(),
-        intakeId: intake.id,
-        createdAt: now,
+      payloads.push({
+        payload: {
+          platform: normalized.platform,
+          angle: normalized.angle,
+          hook: normalized.hook,
+          caption: normalized.caption,
+          cta: normalized.cta,
+          hashtags: normalized.hashtags,
+          visualBrief: normalized.visualBrief,
+          status: "draft",
+        },
       });
     }
 
-    const allDrafts = readPostDrafts();
-    const toSave = [...allDrafts, ...stored];
-    writePostDrafts(toSave);
+    while (payloads.length < DRAFT_COUNT) {
+      payloads.push({
+        payload: {
+          platform: "instagram",
+          angle: "",
+          hook: "",
+          caption: "",
+          cta: "",
+          hashtags: [],
+          visualBrief: "",
+          status: "draft",
+        },
+      });
+    }
+
+    const rows = await insertPostDrafts(intake.id, payloads);
+    const stored = rows.map(toStoredDraft);
 
     return NextResponse.json({
       ok: true,
@@ -159,9 +187,7 @@ Zakázaná slova: ${(intake as Record<string, unknown>).forbiddenWords ?? ""}
     });
   } catch (e) {
     console.error("POST /api/posts/generate", e);
-    return NextResponse.json(
-      { ok: false, error: e instanceof Error ? e.message : "Došlo k chybě serveru" },
-      { status: 500 }
-    );
+    const message = e instanceof Error ? e.message : "Došlo k chybě serveru";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }

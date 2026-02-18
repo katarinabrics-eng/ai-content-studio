@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { StoredPostDraft } from "@/lib/posts-schema";
@@ -11,6 +12,7 @@ function DraftsContent() {
   const [drafts, setDrafts] = useState<StoredPostDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [generateLoading, setGenerateLoading] = useState(false);
+  const [generatingVisualId, setGeneratingVisualId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
@@ -62,6 +64,57 @@ function DraftsContent() {
       setGenerateError("Došlo k chybě při generování.");
     } finally {
       setGenerateLoading(false);
+    }
+  }
+
+  async function handleGenerateVisual(draftId: string) {
+    setGeneratingVisualId(draftId);
+    try {
+      const res = await fetch("/api/visuals/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ draftId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMsg = data.error ?? "Generování vizuálu selhalo.";
+        setDrafts((prev) => {
+          const idx = prev.findIndex((d) => d.id === draftId);
+          if (idx < 0) return prev;
+          const next = [...prev];
+          next[idx] = { ...next[idx], visualStatus: "error", visualError: errMsg };
+          return next;
+        });
+        return;
+      }
+      if (data.ok && data.visualImageUrl) {
+        setDrafts((prev) => {
+          const idx = prev.findIndex((d) => d.id === draftId);
+          if (idx < 0) return prev;
+          const next = [...prev];
+          next[idx] = {
+            ...next[idx],
+            visualImageUrl: data.visualImageUrl,
+            visualStatus: "ready",
+            visualError: undefined,
+          };
+          return next;
+        });
+      }
+    } catch {
+      setDrafts((prev) => {
+        const idx = prev.findIndex((d) => d.id === draftId);
+        if (idx < 0) return prev;
+        const next = [...prev];
+        next[idx] = {
+          ...next[idx],
+          visualStatus: "error",
+          visualError: "Došlo k chybě při generování.",
+        };
+        return next;
+      });
+    } finally {
+      setGeneratingVisualId(null);
     }
   }
 
@@ -142,10 +195,50 @@ function DraftsContent() {
                 </p>
               ) : null}
               {draft.visualBrief ? (
-                <p className="text-xs text-slate-500">
+                <p className="mb-3 text-xs text-slate-500">
                   <span className="font-medium">Vizuál:</span> {draft.visualBrief}
                 </p>
               ) : null}
+              <div className="mt-3 border-t border-slate-100 pt-3">
+                <button
+                  type="button"
+                  onClick={() => handleGenerateVisual(draft.id)}
+                  disabled={generatingVisualId === draft.id}
+                  className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
+                >
+                  {generatingVisualId === draft.id
+                    ? "Generuji…"
+                    : draft.visualImageUrl
+                      ? "Regenerovat"
+                      : "Vygenerovat vizuál"}
+                </button>
+                {draft.visualImageUrl ? (
+                  <div className="mt-3">
+                    <div className="relative mb-2 aspect-video w-full overflow-hidden rounded-lg border border-slate-200">
+                      <Image
+                        src={draft.visualImageUrl}
+                        alt="Náhled vizuálu"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    </div>
+                    <a
+                      href={draft.visualImageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-slate-600 underline hover:text-slate-800"
+                    >
+                      Stáhnout PNG
+                    </a>
+                  </div>
+                ) : null}
+                {draft.visualError ? (
+                  <p className="mt-2 text-sm text-red-600" role="alert">
+                    {draft.visualError}
+                  </p>
+                ) : null}
+              </div>
             </article>
           ))}
         </div>

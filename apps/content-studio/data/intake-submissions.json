@@ -1,0 +1,84 @@
+[
+  {
+    "brandName": "lucifera",
+    "website": "https://studiolucifera.cz/",
+    "industry": "foto a video služby, a ai vizualni tvorba",
+    "targetAudience": "podnikatele a tvurci contentu",
+    "offers": "vizualne sluzby, skoleni v ai a vizualne tvorbe",
+    "toneOfVoice": "neformalny",
+    "contentGoal": "edukace",
+    "platforms": [
+      "instagram",
+      "facebook",
+      "linkedin"
+    ],
+    "stylePreference": "storytelling",
+    "brandAssets": {},
+    "id": "05c6af27-dd44-4ff8-957a-7d557440ebe7",
+    "createdAt": "2026-02-18T18:41:19.201Z"
+  },
+  {
+    "brandName": "OpenAI",
+    "website": "https://openai.com",
+    "industry": "Artificial Intelligence",
+    "targetAudience": "uzivatele chtivi ai a novou technologii",
+    "offers": "ChatGPT, API for Enterprise, ChatGPT for Gov, ChatGPT for Healthcare, ChatGPT Enterprise, ChatGPT for Education",
+    "toneOfVoice": "pratelsky",
+    "contentGoal": "prodej",
+    "platforms": [
+      "instagram",
+      "facebook",
+      "linkedin"
+    ],
+    "stylePreference": "storytelling",
+    "ctaPreference": "Get started with ChatGPT Business",
+    "brandAssets": {},
+    "id": "4b417fc5-65e0-420d-92c8-7dca07acd7a0",
+    "createdAt": "2026-02-18T20:21:41.145Z"
+  },
+  {
+    "brandName": "Studio Lucifera",
+    "website": "https://studiolucifera.cz",
+    "industry": "fotografie",
+    "targetAudience": "herci, podnikatelé",
+    "offers": "profesionální portréty, retušované fotografie, stylingová konzultace, high-end postprodukce",
+    "toneOfVoice": "přátelský, profesionální",
+    "contentGoal": "důvěra",
+    "platforms": [
+      "instagram",
+      "facebook"
+    ],
+    "stylePreference": "storytelling",
+    "ctaPreference": "CHCI FOTKY",
+    "brandAssets": {
+      "photosNote": "https://studiolucifera.cz/_assets/video/1dbc74b37f0dc4bed5d70cabaa424f7e.jpg",
+      "logo": "/uploads/logos/23b657d6-e613-4cf2-8ece-52aa20b5ea25.png"
+    },
+    "id": "23b657d6-e613-4cf2-8ece-52aa20b5ea25",
+    "createdAt": "2026-02-18T20:24:55.141Z"
+  },
+  {
+    "brandName": "Studio Lucifera",
+    "website": "https://studiolucifera.cz",
+    "industry": "fotografie",
+    "targetAudience": "herci a podnikatelé",
+    "offers": "profesionální portréty, stylingová konzultace, high-end postprodukce",
+    "toneOfVoice": "přátelský a profesionální",
+    "forbiddenWords": "levné, amatérské, špatné",
+    "contentGoal": "důvěra",
+    "platforms": [
+      "instagram",
+      "facebook"
+    ],
+    "stylePreference": "storytelling",
+    "ctaPreference": "Chci fotky, Chci cenovou nabídku",
+    "brandAssets": {
+      "logoUrl": "https://studiolucifera.cz/_assets/images/0ee1ff86f2ede83cd7194a4d3d4a6092.jpg",
+      "colors": "#ffffff, #8b3dff, #0f1015, #db142c, #0d1216",
+      "fonts": "Canva Sans, Noto Sans, Helvetica, Arial, Noto Sans Variable",
+      "photosNote": "https://studiolucifera.cz/_assets/media/2038a4d9edcdb541b6bffad1460b4bb5.png"
+    },
+    "id": "abbb8f10-447e-472c-853a-e906aefe7d1b",
+    "createdAt": "2026-02-18T20:37:58.104Z"
+  }
+]

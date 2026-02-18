@@ -24,9 +24,11 @@ Vytvořte soubor `.env.local` v `apps/content-studio`:
 ```bash
 OPENAI_API_KEY=sk-…
 FIRECRAWL_API_KEY=fc-…
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ…
 ```
 
-Bez těchto proměnných tlačítko „Načíst automaticky“ skončí chybou ze serveru.
+Bez těchto proměnných tlačítko „Načíst automaticky“ skončí chybou ze serveru. **Supabase** (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) je potřeba pro ukládání intake a draftů; na Vercelu jsou tyto proměnné obvykle nastavené.
 
 **Co enrich dělá:**
 
@@ -79,26 +81,50 @@ Formulář pro zadání údajů o značce a cílech obsahu:
 
 **Logo upload:** podporován je pouze formát PNG (`image/png`), maximální velikost 5 MB. Na klientu i na serveru se validuje typ a velikost.
 
-## Kde se ukládají data
+## Kde se ukládají data (Supabase)
 
-Odeslané intake se ukládají do souboru:
+Všechna perzistentní data jsou v **Supabase** (bez lokálních souborů `data/*.json` ani `public/uploads/*`).
 
-- **Cesta:** `apps/content-studio/data/intake-submissions.json`
-- Formát: pole objektů (každý záznam má `id` a `createdAt`).
+**Env proměnné Supabase:**
+- `NEXT_PUBLIC_SUPABASE_URL` – URL projektu
+- `SUPABASE_SERVICE_ROLE_KEY` – service role klíč (pro server-side operace)
 
-Soubor se vytvoří automaticky při prvním odeslání formuláře.
+**Tabulky:**
+- `public.intake_submissions` – `id` (uuid), `created_at` (timestamptz), `payload` (jsonb)
+- `public.post_drafts` – `id` (uuid), `intake_id` (uuid), `created_at` (timestamptz), `payload` (jsonb)
 
-Nahraná loga se ukládají na disk:
+**Storage buckety:**
+- `brand-assets` (public) – loga v `logos/<uuid>.png`, public URL se ukládá do `payload.brandAssets.logo`
+- `generated-visuals` (public) – pro budoucí generovanou grafiku
 
-- **Složka:** `apps/content-studio/public/uploads/logos/`
-- Soubory: `<uuid>.png` (v záznamu je pak `brandAssets.logo` např. `/uploads/logos/<uuid>.png`).
+**Test flow na produkci (Vercel):**
+1. Nastavte na Vercelu env: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`.
+2. Ověřte, že tabulky `intake_submissions`, `post_drafts` existují a Storage bucket `brand-assets` je public.
+3. Odešlete intake (s logem i bez), ověřte záznam v Supabase Dashboard.
+4. Vygenerujte návrhy postů na /drafts, ověřte drafty v `post_drafts`.
 
 ### Návrhy postů (drafts)
 
 - **Stránka:** [http://localhost:3000/drafts](http://localhost:3000/drafts)
 - Po odeslání intake se zobrazí odkaz „Přejít na návrhy postů“. Na stránce /drafts klikněte na **„Vygenerovat 3 návrhy“** – podle posledního (nebo zvoleného) intake se vygenerují 3 návrhy postů přes OpenAI a zobrazí se v kartách (hook, caption, CTA, hashtags, visualBrief).
-- **Uložiště draftů:** `apps/content-studio/data/post-drafts.json` (vytvoří se při prvním zápisu).
+- **Uložiště:** Supabase tabulka `post_drafts`.
 - **API:** `POST /api/posts/generate` (body: `{ intakeId?: string, count?: number }`), `GET /api/posts?intakeId=...` (vrací drafty pro daný nebo poslední intake).
+
+### Generování vizuálů
+
+U každého draftu lze vygenerovat vizuál (obrázek) přes OpenAI Images API (model `gpt-image-1`). Obrázek se uloží do Supabase Storage bucketu `generated-visuals` a zobrazí se v kartě draftu.
+
+**Potřebné:**
+- **OPENAI_API_KEY** – klíč k OpenAI API (stejný jako pro enrich a generování draftů).
+- Storage bucket **generated-visuals** (public) – musí existovat v Supabase. Cesta: `drafts/<draftId>/<timestamp>.png`.
+
+**API:** `POST /api/visuals/generate` (body: `{ draftId: string, regenerate?: boolean }`). Vrací `{ ok: true, visualImageUrl }` nebo `{ ok: false, error: string }`.
+
+**Test flow:**
+1. Vygenerujte drafty na `/drafts` („Vygenerovat 3 návrhy“).
+2. U každé karty klikněte „Vygenerovat vizuál“.
+3. Po dokončení se zobrazí náhled obrázku a odkaz „Stáhnout PNG“.
+4. Při chybě se zobrazí červený text s popisem (`visualError`).
 
 ## Skripty
 

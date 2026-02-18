@@ -15,10 +15,18 @@ export const postDraftSchema = z.object({
 
 export type PostDraft = z.infer<typeof postDraftSchema>;
 
+export const VISUAL_STATUS = ["idle", "generating", "ready", "error"] as const;
+export type VisualStatus = (typeof VISUAL_STATUS)[number];
+
 export type StoredPostDraft = PostDraft & {
   id: string;
   intakeId: string;
   createdAt: string;
+  visualImageUrl?: string;
+  visualStatus?: VisualStatus;
+  visualPrompt?: string;
+  visualError?: string;
+  visualUpdatedAt?: string;
 };
 
 export const generateRequestSchema = z.object({
