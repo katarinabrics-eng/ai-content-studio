@@ -18,6 +18,7 @@ export default function RootLayout({
           <div className="max-w-4xl mx-auto px-4 py-3">
             <a href="/" className="font-semibold text-slate-800">AI Content Studio</a>
             <a href="/intake" className="ml-6 text-slate-600 hover:text-slate-900">Intake</a>
+            <a href="/drafts" className="ml-6 text-slate-600 hover:text-slate-900">Návrhy postů</a>
           </div>
         </header>
         <main className="max-w-4xl mx-auto px-4 py-8">{children}</main>

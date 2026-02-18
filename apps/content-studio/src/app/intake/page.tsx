@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   CONTENT_GOAL_OPTIONS,
@@ -47,7 +47,7 @@ function SuggestionChips({
   );
 }
 
-export default function IntakePage() {
+function IntakeContent() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [error, setError] = useState<SubmitError | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -75,6 +75,7 @@ export default function IntakePage() {
     }
   }, [searchParams]);
 
+  const [lastSubmittedIntakeId, setLastSubmittedIntakeId] = useState<string | null>(null);
   const [form, setForm] = useState<IntakeFormData>({
     brandName: "",
     website: "",
@@ -165,6 +166,7 @@ export default function IntakePage() {
 
     if (res.ok && data.ok) {
       setStatus("success");
+      if (typeof data.id === "string") setLastSubmittedIntakeId(data.id);
       setLogoFile(null);
       if (logoInputRef.current) {
         logoInputRef.current.value = "";
@@ -279,7 +281,13 @@ export default function IntakePage() {
           className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
           role="alert"
         >
-          Formulář byl úspěšně odeslán. Data jsou uložena.
+          <p>Formulář byl úspěšně odeslán. Data jsou uložena.</p>
+          <a
+            href={lastSubmittedIntakeId ? `/drafts?intakeId=${encodeURIComponent(lastSubmittedIntakeId)}` : "/drafts"}
+            className="mt-2 inline-block font-medium underline hover:no-underline"
+          >
+            Přejít na návrhy postů
+          </a>
         </div>
       )}
 
@@ -731,5 +739,13 @@ export default function IntakePage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function IntakePage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm">Načítám…</div>}>
+      <IntakeContent />
+    </Suspense>
   );
 }

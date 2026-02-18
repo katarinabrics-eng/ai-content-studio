@@ -93,6 +93,13 @@ Nahraná loga se ukládají na disk:
 - **Složka:** `apps/content-studio/public/uploads/logos/`
 - Soubory: `<uuid>.png` (v záznamu je pak `brandAssets.logo` např. `/uploads/logos/<uuid>.png`).
 
+### Návrhy postů (drafts)
+
+- **Stránka:** [http://localhost:3000/drafts](http://localhost:3000/drafts)
+- Po odeslání intake se zobrazí odkaz „Přejít na návrhy postů“. Na stránce /drafts klikněte na **„Vygenerovat 3 návrhy“** – podle posledního (nebo zvoleného) intake se vygenerují 3 návrhy postů přes OpenAI a zobrazí se v kartách (hook, caption, CTA, hashtags, visualBrief).
+- **Uložiště draftů:** `apps/content-studio/data/post-drafts.json` (vytvoří se při prvním zápisu).
+- **API:** `POST /api/posts/generate` (body: `{ intakeId?: string, count?: number }`), `GET /api/posts?intakeId=...` (vrací drafty pro daný nebo poslední intake).
+
 ## Skripty
 
 - `npm run dev` – vývojový server
