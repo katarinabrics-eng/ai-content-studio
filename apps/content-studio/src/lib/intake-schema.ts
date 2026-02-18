@@ -27,6 +27,7 @@ export const intakeSchema = z.object({
   // Brand assets (placeholder – ukládáme jen text / cesty)
   brandAssets: z
     .object({
+      logo: z.string().optional(),
       logoUrl: z.string().optional(),
       colors: z.string().optional(),
       fonts: z.string().optional(),

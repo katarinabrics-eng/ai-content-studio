@@ -1,19 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   CONTENT_GOAL_OPTIONS,
   PLATFORM_OPTIONS,
   STYLE_PREFERENCE_OPTIONS,
   type IntakeFormData,
 } from "@/lib/intake-schema";
+import type { EnrichApiResponse, EnrichPrefill, EnrichSuggestions } from "@/lib/enrich-schema";
+
+const LOGO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const LOGO_MIME = "image/png";
 
 type SubmitStatus = "idle" | "success" | "error";
 type SubmitError = { message?: string; details?: Record<string, string[]> };
 
+type EnrichMeta = { missingFields: string[]; confidence: number };
+
+function SuggestionChips({
+  items,
+  onSelect,
+  label = "AI návrhy",
+}: {
+  items: string[];
+  onSelect: (value: string) => void;
+  label?: string;
+}) {
+  if (!items.length) return null;
+  return (
+    <div className="mt-2">
+      <span className="text-xs font-medium text-slate-500">{label}:</span>
+      <div className="mt-1 flex flex-wrap gap-1.5">
+        {items.map((s, i) => (
+          <button
+            key={`${i}-${s.slice(0, 30)}`}
+            type="button"
+            onClick={() => onSelect(s)}
+            className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-200"
+          >
+            {s.length > 40 ? `${s.slice(0, 38)}…` : s}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function IntakePage() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [error, setError] = useState<SubmitError | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const [enrichWebsite, setEnrichWebsite] = useState("");
+  const [enrichPdfFile, setEnrichPdfFile] = useState<File | null>(null);
+  const [enrichLoading, setEnrichLoading] = useState(false);
+  const [enrichError, setEnrichError] = useState<string | null>(null);
+  const [enrichMeta, setEnrichMeta] = useState<EnrichMeta | null>(null);
+  const [enrichSuggestions, setEnrichSuggestions] = useState<EnrichSuggestions | null>(null);
+  const enrichPdfRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const client = searchParams.get("client");
+    const website = searchParams.get("website");
+    if (client != null && client.trim()) {
+      setForm((prev) => ({ ...prev, brandName: decodeURIComponent(client.trim()) }));
+    }
+    if (website != null && website.trim()) {
+      const w = decodeURIComponent(website.trim());
+      setForm((prev) => ({ ...prev, website: w }));
+      setEnrichWebsite(w);
+    }
+  }, [searchParams]);
 
   const [form, setForm] = useState<IntakeFormData>({
     brandName: "",
@@ -51,10 +111,29 @@ export default function IntakePage() {
     setStatus("idle");
   };
 
+  function validateLogoFile(file: File): string | null {
+    if (file.type !== LOGO_MIME) {
+      return "Logo musí být soubor PNG (image/png).";
+    }
+    if (file.size > LOGO_MAX_BYTES) {
+      return "Logo může mít maximálně 5 MB.";
+    }
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("idle");
     setError(null);
+
+    if (logoFile) {
+      const logoErr = validateLogoFile(logoFile);
+      if (logoErr) {
+        setStatus("error");
+        setError({ message: logoErr });
+        return;
+      }
+    }
 
     const payload = {
       ...form,
@@ -71,16 +150,25 @@ export default function IntakePage() {
         : undefined,
     };
 
+    const formData = new FormData();
+    formData.append("payload", JSON.stringify(payload));
+    if (logoFile) {
+      formData.append("logoFile", logoFile);
+    }
+
     const res = await fetch("/api/intake", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: formData,
     });
 
     const data = await res.json().catch(() => ({}));
 
     if (res.ok && data.ok) {
       setStatus("success");
+      setLogoFile(null);
+      if (logoInputRef.current) {
+        logoInputRef.current.value = "";
+      }
       setForm({
         brandName: "",
         website: "",
@@ -103,6 +191,77 @@ export default function IntakePage() {
       message: data.error ?? "Odeslání se nezdařilo",
       details: data.details ?? undefined,
     });
+  }
+
+  async function handleEnrich(e: React.FormEvent) {
+    e.preventDefault();
+    const website = enrichWebsite.trim();
+    if (!website) {
+      setEnrichError("Zadejte URL webu.");
+      return;
+    }
+    setEnrichError(null);
+    setEnrichMeta(null);
+    setEnrichLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("website", website);
+      if (enrichPdfFile) {
+        formData.append("brandManualPdf", enrichPdfFile);
+      }
+      const res = await fetch("/api/intake/enrich", {
+        method: "POST",
+        body: formData,
+      });
+      const json = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const detail = typeof json.detail === "string" ? json.detail : null;
+        const msg = json.error ?? "Načtení dat se nezdařilo.";
+        setEnrichError(detail ? `${msg}: ${detail}` : msg);
+        return;
+      }
+      if (!json.ok) {
+        setEnrichError("Neplatná odpověď ze serveru.");
+        return;
+      }
+
+      const apiResponse = json as EnrichApiResponse;
+      if (apiResponse.prefill) {
+        setForm({
+          brandName: apiResponse.prefill.brandName ?? "",
+          website: apiResponse.prefill.website ?? "",
+          industry: apiResponse.prefill.industry ?? "",
+          targetAudience: apiResponse.prefill.targetAudience ?? "",
+          offers: apiResponse.prefill.offers ?? "",
+          toneOfVoice: apiResponse.prefill.toneOfVoice ?? "",
+          forbiddenWords: apiResponse.prefill.forbiddenWords ?? "",
+          contentGoal: apiResponse.prefill.contentGoal ?? "edukace",
+          platforms: apiResponse.prefill.platforms ?? [],
+          stylePreference: apiResponse.prefill.stylePreference ?? "edukace",
+          ctaPreference: apiResponse.prefill.ctaPreference ?? "",
+          brandAssets: {
+            logoUrl: apiResponse.prefill.brandAssets?.logoUrl ?? "",
+            colors: apiResponse.prefill.brandAssets?.colors ?? "",
+            fonts: apiResponse.prefill.brandAssets?.fonts ?? "",
+            photosNote: apiResponse.prefill.brandAssets?.photosNote ?? "",
+          },
+        });
+        setEnrichSuggestions(apiResponse.suggestions ?? null);
+      }
+      setEnrichMeta({
+        missingFields: Array.isArray(apiResponse.missingFields) ? apiResponse.missingFields : [],
+        confidence: typeof apiResponse.confidence === "number" ? apiResponse.confidence : 0,
+      });
+      setEnrichWebsite("");
+      setEnrichPdfFile(null);
+      if (enrichPdfRef.current) enrichPdfRef.current.value = "";
+    } catch {
+      setEnrichError("Došlo k chybě při načítání.");
+    } finally {
+      setEnrichLoading(false);
+    }
   }
 
   const fieldError = (name: keyof IntakeFormData) =>
@@ -143,6 +302,78 @@ export default function IntakePage() {
           )}
         </div>
       )}
+
+      <section className="mt-6 rounded-lg border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Auto-vyplnit z webu / PDF
+        </h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Zadejte URL webu a volitelně nahrajte brand manual (PDF). Formulář se níže předvyplní podle rozpoznaných údajů.
+        </p>
+        <form onSubmit={handleEnrich} className="mt-4 flex flex-wrap items-end gap-4">
+          <div className="min-w-[200px] flex-1">
+            <label htmlFor="enrichWebsite" className="block text-sm font-medium text-slate-700">
+              URL webu *
+            </label>
+            <input
+              id="enrichWebsite"
+              type="url"
+              required
+              placeholder="https://…"
+              value={enrichWebsite}
+              onChange={(e) => {
+                setEnrichWebsite(e.target.value);
+                setEnrichError(null);
+              }}
+              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            />
+          </div>
+          <div className="min-w-[180px]">
+            <label htmlFor="enrichPdf" className="block text-sm font-medium text-slate-700">
+              Brand manual (PDF, volitelné)
+            </label>
+            <input
+              ref={enrichPdfRef}
+              id="enrichPdf"
+              type="file"
+              accept=".pdf,application/pdf"
+              onChange={(e) => {
+                setEnrichPdfFile(e.target.files?.[0] ?? null);
+                setEnrichError(null);
+              }}
+              className="mt-1 w-full rounded-md border border-slate-300 px-2 py-2 text-sm text-slate-700 file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-slate-700"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={enrichLoading}
+            className="rounded-md bg-amber-600 px-4 py-2.5 font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-60"
+          >
+            {enrichLoading ? "Načítám…" : "Načíst automaticky"}
+          </button>
+        </form>
+        {enrichError && (
+          <p className="mt-3 text-sm text-red-600" role="alert">
+            {enrichError}
+          </p>
+        )}
+        {enrichMeta && (
+          <div className="mt-3 rounded border border-amber-200 bg-white p-3 text-sm text-slate-700">
+            <p>
+              <strong>Důvěra:</strong> {Math.round(enrichMeta.confidence * 100)} %
+              {enrichMeta.missingFields.length > 0 && (
+                <>
+                  {" · "}
+                  <strong>Chybějící pole:</strong> {enrichMeta.missingFields.join(", ")}
+                </>
+              )}
+            </p>
+            <p className="mt-1 text-slate-500">
+              Formulář níže byl předvyplněn. Můžete vše upravit a poté odeslat.
+            </p>
+          </div>
+        )}
+      </section>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
         <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -214,6 +445,10 @@ export default function IntakePage() {
                 onChange={(e) => update({ targetAudience: e.target.value })}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
               />
+              <SuggestionChips
+                items={enrichSuggestions?.targetAudience ?? []}
+                onSelect={(s) => update({ targetAudience: s })}
+              />
               {fieldError("targetAudience") && (
                 <p className="mt-1 text-sm text-red-600">{fieldError("targetAudience")}</p>
               )}
@@ -229,6 +464,10 @@ export default function IntakePage() {
                 value={form.offers}
                 onChange={(e) => update({ offers: e.target.value })}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              />
+              <SuggestionChips
+                items={enrichSuggestions?.offers ?? []}
+                onSelect={(s) => update({ offers: s })}
               />
               {fieldError("offers") && (
                 <p className="mt-1 text-sm text-red-600">{fieldError("offers")}</p>
@@ -252,6 +491,10 @@ export default function IntakePage() {
                 onChange={(e) => update({ toneOfVoice: e.target.value })}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
               />
+              <SuggestionChips
+                items={enrichSuggestions?.toneOfVoice ?? []}
+                onSelect={(s) => update({ toneOfVoice: s })}
+              />
               {fieldError("toneOfVoice") && (
                 <p className="mt-1 text-sm text-red-600">{fieldError("toneOfVoice")}</p>
               )}
@@ -266,6 +509,10 @@ export default function IntakePage() {
                 value={form.forbiddenWords}
                 onChange={(e) => update({ forbiddenWords: e.target.value })}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              />
+              <SuggestionChips
+                items={enrichSuggestions?.forbiddenWords ?? []}
+                onSelect={(s) => update({ forbiddenWords: s })}
               />
             </div>
             <div>
@@ -346,6 +593,10 @@ export default function IntakePage() {
                 onChange={(e) => update({ ctaPreference: e.target.value })}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
               />
+              <SuggestionChips
+                items={enrichSuggestions?.ctaPreference ?? []}
+                onSelect={(s) => update({ ctaPreference: s })}
+              />
             </div>
           </div>
         </section>
@@ -353,33 +604,53 @@ export default function IntakePage() {
         <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-800">Brand assets</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Logo, barvy, fonty a fotky (placeholder – upload bude doplněn).
+            Logo (URL nebo PNG upload), barvy, fonty a fotky.
           </p>
           <div className="mt-4 space-y-4">
             <div>
               <label htmlFor="logoUrl" className="block text-sm font-medium text-slate-700">
-                Logo (URL nebo popis)
+                Logo URL (navržené nebo vlastní)
+              </label>
+              <input
+                id="logoUrl"
+                type="url"
+                placeholder="https://…"
+                value={form.brandAssets?.logoUrl ?? ""}
+                onChange={(e) =>
+                  update({
+                    brandAssets: { ...form.brandAssets, logoUrl: e.target.value },
+                  })
+                }
+                className="mt-1 w-full max-w-md rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="logoFile" className="block text-sm font-medium text-slate-700">
+                Logo (PNG, max 5 MB) – nebo nahrajte soubor
               </label>
               <div className="mt-1 flex items-center gap-3">
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400 text-xs">
-                  Logo
+                  {logoFile ? logoFile.name : "Logo"}
                 </div>
                 <input
-                  id="logoUrl"
-                  type="text"
-                  placeholder="URL nebo název souboru"
-                  value={form.brandAssets?.logoUrl ?? ""}
-                  onChange={(e) =>
-                    update({
-                      brandAssets: {
-                        ...form.brandAssets,
-                        logoUrl: e.target.value,
-                      },
-                    })
-                  }
-                  className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                  ref={logoInputRef}
+                  id="logoFile"
+                  type="file"
+                  accept=".png,image/png"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    setLogoFile(f ?? null);
+                    setStatus("idle");
+                    setError(null);
+                  }}
+                  className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-slate-700"
                 />
               </div>
+              {logoFile && (
+                <p className="mt-1 text-xs text-slate-500">
+                  {logoFile.name} ({(logoFile.size / 1024).toFixed(1)} KB)
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="colors" className="block text-sm font-medium text-slate-700">
