@@ -1,4 +1,4 @@
-import { getPresetById, type VisualStylePreset } from "./visual-style-presets";
+import { getPresetById } from "./visual-style-presets";
 import type { BrandSpec } from "./brand-spec";
 
 export type ResolvedVisualStyle = {
@@ -18,11 +18,10 @@ export function resolveVisualStyle(
   const preset = presetId ? getPresetById(presetId) : undefined;
 
   if (preset) {
-    const palette = preset.palette.length > 0 ? preset.palette : brandSpec.colors;
     return {
-      palette: palette.length > 0 ? palette : preset.palette,
-      moodKeywords: preset.moodKeywords.length > 0 ? preset.moodKeywords : moodKeywordsFallback,
-      negativePrompt: preset.negativePrompt,
+      palette: brandSpec.colors,
+      moodKeywords: preset.promptDirectives.length > 0 ? preset.promptDirectives : moodKeywordsFallback,
+      negativePrompt: Array.isArray(preset.negativePrompt) ? preset.negativePrompt.join(", ") : String(preset.negativePrompt ?? ""),
       visualStyle: preset.id,
       visualStyleLabel: preset.label,
       visualStyleSource: "preset",

@@ -26,7 +26,7 @@ const MAX_REGENERATE_ROUNDS = 2;
 const STRICT_SUFFIX =
   " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
-const STYLE_PROFILES = VISUAL_STYLE_PRESETS.map((p) => p.id);
+const STYLE_PROFILES = Object.keys(VISUAL_STYLE_PRESETS) as string[];
 
 const PLATFORM_TO_FORMAT: Record<string, PlatformFormatKey> = {
   instagram: "instagram-feed",

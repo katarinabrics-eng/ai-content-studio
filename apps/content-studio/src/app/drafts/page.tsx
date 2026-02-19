@@ -24,10 +24,10 @@ const FORMAT_OPTIONS = [
 ] as const;
 
 const STYLE_OPTIONS = [
-  { value: "katarina_signature", label: "Katarina signature" },
+  { value: "generic_saas", label: "SaaS (obecný)" },
   { value: "minimal_clean", label: "Minimal clean" },
   { value: "bold_growth", label: "Bold growth" },
-  { value: "simby_clean_saas", label: "SIMBY clean SaaS" },
+  { value: "simby_product_ad", label: "SIMBY produktový creative" },
 ] as const;
 
 function DraftsContent() {
