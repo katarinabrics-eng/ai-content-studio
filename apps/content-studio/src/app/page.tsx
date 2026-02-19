@@ -1,49 +1,25 @@
 import { HeroImageFull, SectionImages } from "./components/HomePlaceholders";
 
-const steps = [
-  {
-    title: "1) Brand onboarding",
-    text: "Předáte nám brand manuál, tone of voice, cílovku a cíle komunikace.",
-  },
-  {
-    title: "2) AI návrhy",
-    text: "AI připraví rychlé koncepty příspěvků, hooky, varianty CTA a obsahové úhly.",
-  },
-  {
-    title: "3) Kreativní kurátor",
-    text: "Živý člověk kontroluje kvalitu, kontext, argumentaci i soulad se značkou.",
-  },
-  {
-    title: "4) Hotový balík",
-    text: "Dostanete příspěvky připravené k publikaci v jasném redakčním plánu.",
-  },
-];
-
-const outputs = [
-  "Měsíční content plán pro vaše sítě",
-  "Příspěvky připravené k publikaci",
-  "Hooky, CTA a varianty textů pro testování",
-  "Brand-safe kontrola každého výstupu",
-  "Rychlé iterace bez ztráty kvality",
-  "Stabilní rytmus publikace bez chaosu",
+const processSteps = [
+  { title: "Vyberete tarif", text: "Zvolíte balíček podle tempa, které vaše značka právě potřebuje." },
+  { title: "Vyplníte formulář", text: "Krátký onboarding. Předáte nám brand, cílovku a tón komunikace.", day: "Pondělí" },
+  { title: "Dostanete 3 návrhy", text: "Do 24–48 hodin vám pošleme konkrétní příspěvky připravené ke schválení.", day: "Úterý/Středa" },
+  { title: "Schválíte nebo připomínkujete", text: "Pokud máte námitky, obratem je zapracujeme.", day: "Čtvrtek" },
+  { title: "Máte hotovo", text: "Do dalšího dne máte finální verzi připravenou k propagaci.", day: "Pátek" },
 ];
 
 const faqs = [
   {
-    q: "Čím se lišíte od běžných AI generátorů?",
-    a: "Neprodáváme surový AI text. Každý výstup prochází kreativním kurátorem, který hlídá kvalitu, kontext a značkovou přesnost.",
+    q: "Je potřeba hodně schůzek a callů?",
+    a: "Ne. Náš systém je postavený tak, abyste nemuseli trávit hodiny na meetinzích. Spolupráce je asynchronní a rychlá.",
   },
   {
-    q: "Za jak dlouho dostaneme první obsah?",
-    a: "První návrhy obvykle dodáváme do 48 hodin od kompletního brand onboardingu.",
+    q: "Co když s návrhem nesouhlasíme?",
+    a: "To se může stát. Jednoduše nám pošlete své námitky, my je upravíme a do dalšího dne vám dodáme finální, vyladěnou verzi.",
   },
   {
-    q: "Musíme mít hotový detailní brand manuál?",
-    a: "Ne. Stačí základní podklady a společně nastavíme tonality, témata i hranice komunikace.",
-  },
-  {
-    q: "Umíte přizpůsobit obsah různým sítím?",
-    a: "Ano. Připravujeme obsah podle formátu a publika jednotlivých platforem (např. IG, LinkedIn, FB).",
+    q: "Jak rychle uvidíme první výstupy?",
+    a: "První 3 návrhy od nás standardně dostanete do 24–48 hodin od dodání podkladů.",
   },
 ];
 
@@ -59,8 +35,9 @@ export default function HomePage() {
           </a>
           <nav className="hidden gap-8 text-sm text-stone-600 md:flex">
             <a href="#jak-to-funguje" className="transition-colors hover:text-stone-900">Jak to funguje</a>
+            <a href="#problem" className="transition-colors hover:text-stone-900">Problém</a>
+            <a href="#reseni" className="transition-colors hover:text-stone-900">Řešení</a>
             <a href="#proc-my" className="transition-colors hover:text-stone-900">Proč my</a>
-            <a href="#vystupy" className="transition-colors hover:text-stone-900">Výstupy</a>
             <a href="#faq" className="transition-colors hover:text-stone-900">FAQ</a>
             <a href="#kontakt" className="transition-colors hover:text-stone-900">Kontakt</a>
           </nav>
@@ -68,7 +45,7 @@ export default function HomePage() {
             href="#kontakt"
             className="rounded-full bg-stone-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-800"
           >
-            Poptat spolupráci
+            Zvolit tarif
           </a>
         </div>
       </header>
@@ -77,45 +54,29 @@ export default function HomePage() {
       <section className="min-h-screen w-full relative overflow-hidden bg-[#fafaf9]">
         <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
           <div className="flex flex-col justify-center px-6 py-16 lg:px-12 xl:px-16">
-            <p className="inline-flex w-fit rounded-full border border-amber-200/80 bg-amber-50/80 px-3 py-1 text-xs font-medium uppercase tracking-wide text-amber-900/80">
-              Nová služba Studia Lucifera
-            </p>
-            <h1 className="mt-6 text-4xl font-bold leading-[1.12] tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
-              Dáte nám přístup k brandu.
-              <br />
-              My vám dodáme příspěvky, které prodávají.
+            <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
+              Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-stone-600">
-              Žádná náhoda. AI + kreativní kurátor. Živý člověk dohlíží na kvalitu a zasahuje, když je třeba.
+              Znáte to: zahlcení, paralýza před prázdnou obrazovkou a pocit, že „zase nic nevyšlo“. AI Content Studio Lucifera vám vrátí klid. Vyplníte krátký formulář a my vám do 48 hodin dodáme první příspěvky. Bez chaosu, bez dlouhých schůzek.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <a
                 href="#kontakt"
                 className="rounded-full bg-amber-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-700"
               >
-                Chci návrh spolupráce
+                Chci si odlehčit tvorbu a vybrat tarif
               </a>
               <a
                 href="#jak-to-funguje"
                 className="rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
               >
-                Zobrazit proces
+                Jak probíhá spolupráce
               </a>
             </div>
-            <div className="mt-10 grid gap-4 text-sm text-stone-600 sm:grid-cols-3">
-              <div>
-                <p className="font-semibold text-stone-800">Rychlý start</p>
-                <p className="mt-1">První návrhy typicky do 48 hodin.</p>
-              </div>
-              <div>
-                <p className="font-semibold text-stone-800">Brand-safe obsah</p>
-                <p className="mt-1">Každý text prochází lidskou kontrolou.</p>
-              </div>
-              <div>
-                <p className="font-semibold text-stone-800">Bez chaosu</p>
-                <p className="mt-1">Stabilní publikační rytmus i jasný plán.</p>
-              </div>
-            </div>
+            <p className="mt-6 text-sm font-medium text-stone-700">
+              V pondělí dodáte data. V pátek publikujete.
+            </p>
           </div>
           <div className="relative min-h-[50vh] w-full lg:min-h-screen">
             <HeroImageFull />
@@ -123,81 +84,99 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PROBLEM / SOLUTION */}
-      <section className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-2">
-          <article className="rounded-2xl border border-stone-200/80 bg-white p-7 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
-            <h2 className="text-xl font-bold tracking-tight text-stone-900">Proč běžný AI obsah často selhává</h2>
-            <ul className="mt-4 space-y-2 text-stone-600">
-              <li>• Je generický a neodpovídá hlasu značky</li>
-              <li>• Chybí mu strategický záměr</li>
-              <li>• Nemá konzistentní kvalitu</li>
-            </ul>
-          </article>
-          <article className="rounded-2xl border border-stone-200/80 bg-white p-7 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
-            <h2 className="text-xl font-bold tracking-tight text-stone-900">Jak to řešíme my</h2>
-            <ul className="mt-4 space-y-2 text-stone-600">
-              <li>• AI pro rychlost a škálu</li>
-              <li>• Kurátor pro značku, smysl a kvalitu</li>
-              <li>• Výstup připravený rovnou k publikaci</li>
-            </ul>
-          </article>
-        </div>
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* Sekce 1: Agitace problému */}
+      <section id="problem" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
+          Nejste líní. Jste jen přehlcení.
+        </h2>
+        <p className="mt-4 max-w-3xl text-lg text-stone-600">
+          Většina podnikatelů a specialistů nechce „nepostovat“. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
+        </p>
+        <ul className="mt-6 space-y-3 text-stone-600">
+          <li>• Znáte své téma perfektně, ale nevíte, jak ho prodat na sítích.</li>
+          <li>• Když už si sednete k obsahu, ztrácíte hodiny přepisováním jedné věty.</li>
+          <li>• Každý příspěvek je mentální start od nuly.</li>
+          <li>• Místo toho, abyste se věnovali tomu, co vás živí, řešíte „co dnes dát na Instagram nebo LinkedIn“.</li>
+        </ul>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <SectionImages count={3} />
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="jak-to-funguje" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Jak spolupráce probíhá</h2>
-        <p className="mt-3 max-w-2xl text-stone-600">
-          Jednoduchý proces, který drží vysoký standard: rychlost AI + kontrola živým člověkem.
+      {/* Sekce 2: Řešení */}
+      <section id="reseni" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
+          Neřešíme jen texty. Řešíme vaši rozhodovací únavu.
+        </h2>
+        <p className="mt-4 max-w-3xl text-lg text-stone-600">
+          Náš cíl není vygenerovat náhodný text. Náš cíl je zařídit, aby vám z hlavy zmizel každodenní tlak na obsah. Vaše značka bude vidět pravidelně, kvalitně a konzistentně – a vy u toho nebudete muset trpět.
         </p>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2">
-          {steps.map((step) => (
-            <article
-              key={step.title}
-              className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
-            >
-              <h3 className="text-lg font-semibold text-stone-900">{step.title}</h3>
-              <p className="mt-2 text-stone-600">{step.text}</p>
-            </article>
-          ))}
+        <div className="mt-10 grid gap-8 md:grid-cols-2">
+          <div className="rounded-2xl border border-stone-200/80 bg-stone-50/50 p-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-stone-500">Dříve</h3>
+            <ul className="mt-4 space-y-2 text-stone-600">
+              <li>❌ „Co dnes postnout?“</li>
+              <li>❌ „Nemám kapacitu.“</li>
+              <li>❌ „Zase jsem nic nevydal/a.“</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-amber-200/70 bg-amber-50/50 p-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-800/80">S Luciferou</h3>
+            <ul className="mt-4 space-y-2 text-stone-700">
+              <li>✅ „Mám návrhy včas a bez stresu.“</li>
+              <li>✅ „Vím přesně, co a kdy jde ven.“</li>
+              <li>✅ „Sítě běží, já řeším svoji práci.“</li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      {/* DIFFERENTIATOR */}
-      <section id="proc-my" className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      {/* Sekce 3: Proces */}
+      <section id="jak-to-funguje" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
+          Od briefu k publikaci během jednoho týdne. Žádné zbytečné cally.
+        </h2>
+        <p className="mt-4 max-w-3xl text-stone-600">
+          Spolupráce je navržená tak, aby byla maximálně asynchronní a nezdržovala vás.
+        </p>
+        <div className="mt-10 space-y-4">
+          {processSteps.map((step) => (
+            <article
+              key={step.title}
+              className="flex flex-col gap-1 rounded-2xl border border-stone-200/80 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] sm:flex-row sm:items-start sm:justify-between"
+            >
+              <div>
+                <h3 className="text-lg font-semibold text-stone-900">{step.title}</h3>
+                <p className="mt-1 text-stone-600">{step.text}</p>
+              </div>
+              {step.day && (
+                <span className="mt-2 shrink-0 rounded-full bg-stone-100 px-3 py-1 text-sm font-medium text-stone-600 sm:mt-0">
+                  {step.day}
+                </span>
+              )}
+            </article>
+          ))}
+        </div>
+        <p className="mt-8 text-lg font-medium text-stone-700">
+          Výsledek: Vy se mezitím věnujete své profesi. My držíme obsahový rytmus.
+        </p>
+      </section>
+
+      {/* Sekce 4: Diferenciace */}
+      <section id="proc-my" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/90 to-stone-50/90 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
           <h2 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
-            Žádná náhoda. AI + kreativní kurátor.
+            Rychlost AI. Zodpovědnost člověka.
           </h2>
           <p className="mt-4 max-w-3xl text-stone-700">
-            Nejsme generátor textů. Jsme produkční systém, který dává vašemu obsahu tempo,
-            kvalitu a značkovou přesnost. Když je potřeba, kurátor zasáhne ručně, aby výsledek
-            byl prvotřídní a funkční.
+            AI dramaticky urychluje produkci a eliminuje prázdnou stránku. Ale na konci vždy stojí náš Kreativní kurátor.
+            Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen „rychlý“, ale především prvotřídní a přesný.
           </p>
         </div>
       </section>
 
-      {/* OUTPUTS */}
-      <section id="vystupy" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Co od nás dostanete</h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {outputs.map((item) => (
-            <div
-              key={item}
-              className="rounded-xl border border-stone-200/80 bg-white p-5 text-stone-700 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-[0_2px_6px_rgba(0,0,0,0.05)]"
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* Sekce 5: FAQ */}
+      <section id="faq" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Často kladené otázky</h2>
         <div className="mt-6 space-y-3">
           {faqs.map((faq) => (
@@ -214,21 +193,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Závěrečné CTA */}
       <section id="kontakt" className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="rounded-2xl bg-stone-900 p-8 text-stone-100 shadow-xl md:p-12">
           <h2 className="max-w-3xl text-3xl font-bold tracking-tight md:text-4xl">
-            Chcete obsah, který je rychlý, brandový a opravdu funguje?
+            Chcete mít v pondělí zadáno a v pátek publikováno?
           </h2>
           <p className="mt-4 max-w-2xl text-stone-400">
-            Pošlete nám krátké info o značce a cíli. Připravíme návrh spolupráce bez omáčky.
+            Vyberte si tarif, vyplňte krátký formulář a sledujte, jak váš obsah vzniká – včas, kvalitně a naprosto bez chaosu.
           </p>
           <div className="mt-8">
             <a
-              href="mailto:kontakt@studiolucifera.cz?subject=Poptavka%20AI%20Content%20Studio"
+              href="mailto:kontakt@studiolucifera.cz?subject=Tarif%20AI%20Content%20Studio"
               className="inline-flex rounded-full bg-amber-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-700"
             >
-              Napsat na kontakt@studiolucifera.cz
+              Zvolit tarif a spustit projekt
             </a>
           </div>
         </div>
