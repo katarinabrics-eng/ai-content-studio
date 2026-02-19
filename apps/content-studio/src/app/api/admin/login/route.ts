@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { verifyPasswordAsync } from "@/lib/admin-password";
 
 const COOKIE_NAME = "admin_session";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -9,8 +10,7 @@ export async function POST(request: Request) {
     const password = typeof (body as { password?: string }).password === "string" ? (body as { password: string }).password : "";
     const nextUrl = typeof (body as { next?: string }).next === "string" ? (body as { next: string }).next : "/";
 
-    const expected = process.env.ADMIN_PASSWORD ?? "";
-    const ok = expected !== "" && password === expected;
+    const ok = await verifyPasswordAsync(password);
 
     if (!ok) {
       return NextResponse.json({ ok: false, error: "Neplatné přihlášení" }, { status: 401 });
