@@ -25,14 +25,14 @@ export default function HomePage() {
             <span className="ml-2 text-xs text-stone-500">AI + kreativní kurátor</span>
           </a>
           <nav className="hidden gap-8 text-sm text-stone-600 md:flex">
-            <a href="#jak-to-funguje" className="transition-colors hover:text-lucifera-lime">Jak to funguje</a>
-            <a href="#problem" className="transition-colors hover:text-lucifera-lime">Problém</a>
-            <a href="#reseni" className="transition-colors hover:text-lucifera-lime">Řešení</a>
-            <a href="#proc-my" className="transition-colors hover:text-lucifera-lime">Proč my</a>
-            <a href="#faq" className="transition-colors hover:text-lucifera-lime">FAQ</a>
-            <a href="#kontakt" className="transition-colors hover:text-lucifera-lime">Kontakt</a>
+            <a href="#jak-to-funguje" className="transition-colors hover:text-zinc-900">Jak to funguje</a>
+            <a href="#problem" className="transition-colors hover:text-zinc-900">Problém</a>
+            <a href="#reseni" className="transition-colors hover:text-zinc-900">Řešení</a>
+            <a href="#proc-my" className="transition-colors hover:text-zinc-900">Proč my</a>
+            <a href="#faq" className="transition-colors hover:text-zinc-900">FAQ</a>
+            <a href="#kontakt" className="transition-colors hover:text-zinc-900">Kontakt</a>
           </nav>
-          <a href="/start" className="btn-lime-primary">
+          <a href="/start" className="btn-lime-primary text-zinc-900">
             Spustit test zdarma
           </a>
         </div>
@@ -93,8 +93,8 @@ export default function HomePage() {
               { text: "Když už si sednete k obsahu, ztrácíte hodiny přepisováním jedné věty.", icon: "hourglass" },
               { text: "Každý příspěvek je mentální start od nuly. Prázdný rám čeká.", icon: "frame" },
             ].map((card) => (
-              <div key={card.icon} className="flex flex-col rounded-2xl border border-stone-200 bg-stone-50/80 p-6 transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lucifera-lime/15 text-lucifera-lime">
+              <div key={card.icon} className="glass-lime flex flex-col p-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lucifera-lime/15 text-zinc-700">
                   {card.icon === "hourglass" && (
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -139,12 +139,12 @@ export default function HomePage() {
                 <li className="flex items-center gap-2"><span className="text-red-400">✕</span> „Zase jsem nic nevydal/a.“</li>
               </ul>
             </div>
-            <div className="rounded-2xl border border-lucifera-lime/30 bg-lucifera-lime/5 p-8 shadow-sm">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-lucifera-lime">S Luciferou</h3>
+            <div className="glass-lime p-8">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900">S Luciferou</h3>
               <ul className="mt-4 space-y-3 text-stone-800">
-                <li className="flex items-center gap-2"><span className="text-lucifera-lime">✓</span> „Mám návrhy včas a bez stresu.“</li>
-                <li className="flex items-center gap-2"><span className="text-lucifera-lime">✓</span> „Vím přesně, co a kdy jde ven.“</li>
-                <li className="flex items-center gap-2"><span className="text-lucifera-lime">✓</span> „Sítě běží, já řeším svoji práci.“</li>
+                <li className="flex items-center gap-2"><span className="text-zinc-700">✓</span> „Mám návrhy včas a bez stresu.“</li>
+                <li className="flex items-center gap-2"><span className="text-zinc-700">✓</span> „Vím přesně, co a kdy jde ven.“</li>
+                <li className="flex items-center gap-2"><span className="text-zinc-700">✓</span> „Sítě běží, já řeším svoji práci.“</li>
               </ul>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function HomePage() {
               <div key={step.title} className="flex flex-1 flex-col items-center lg:max-w-[180px]">
                 <div className="flex w-full items-center justify-center lg:justify-center">
                   {i > 0 && <div className="hidden h-0.5 flex-1 max-w-[20px] bg-lucifera-lime/40 lg:block" />}
-                  <div className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-lucifera-lime/50 bg-lucifera-lime/10 text-lucifera-lime">
+                  <div className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-lucifera-lime/50 bg-lucifera-lime/10 text-zinc-800">
                     {step.icon === "cursor" && <span className="text-lg">▸</span>}
                     {step.icon === "form" && <span className="text-lg">✎</span>}
                     {step.icon === "cards" && <span className="text-lg">☰</span>}
@@ -178,7 +178,7 @@ export default function HomePage() {
                   <h3 className="font-semibold text-stone-900">{step.title}</h3>
                   <p className="mt-1 text-sm text-stone-600">{step.text}</p>
                   {step.day && (
-                    <span className="mt-2 inline-block rounded-full bg-lucifera-lime/20 px-2 py-0.5 text-xs font-medium text-lucifera-lime">
+                    <span className="mt-2 inline-block rounded-full bg-lucifera-lime/15 px-2 py-0.5 text-xs font-medium text-zinc-800">
                       {step.day}
                     </span>
                   )}
@@ -199,21 +199,21 @@ export default function HomePage() {
             Rychlost AI. Zodpovědnost člověka.
           </h2>
           <div className="mt-12 flex flex-col items-center justify-center gap-8 lg:flex-row">
-            <div className="flex flex-col items-center rounded-2xl border border-stone-200 bg-white px-8 py-6 shadow-sm">
+            <div className="glass-lime flex flex-col items-center px-8 py-6">
               <div className="h-16 w-16 rounded-full border border-lucifera-lime/40 bg-lucifera-lime/10" />
               <p className="mt-3 text-sm font-medium text-stone-900">AI</p>
               <p className="text-center text-xs text-stone-500">Neuronová síť, generace</p>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lucifera-lime/30 text-lucifera-lime">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lucifera-lime/30 text-zinc-700">
               <span className="text-xl">✦</span>
             </div>
-            <div className="flex flex-col items-center rounded-2xl border border-lucifera-lime/30 bg-lucifera-lime/5 px-8 py-6 shadow-sm">
+            <div className="glass-lime flex flex-col items-center px-8 py-6">
               <div className="h-16 w-16 rounded-full border border-lucifera-lime/50 bg-lucifera-lime/20" />
               <p className="mt-3 text-sm font-medium text-stone-900">Kurátor</p>
               <p className="text-center text-xs text-stone-500">Kontrola, tón, kvalita</p>
             </div>
           </div>
-          <div className="mt-10 rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
+          <div className="glass-lime mt-10 p-8">
             <p className="text-center text-stone-700">
               AI dramaticky urychluje produkci a eliminuje prázdnou stránku. Ale na konci vždy stojí náš Kreativní kurátor.
               Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen „rychlý“, ale především prvotřídní a přesný.
@@ -230,7 +230,7 @@ export default function HomePage() {
             {faqs.map((faq) => (
               <details
                 key={faq.q}
-                className="group rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden transition-all duration-300 [&[open]]:border-lucifera-lime/40 [&[open]]:shadow-md"
+                className="group glass-lime overflow-hidden [&[open]]:border-lucifera-lime/35 [&[open]]:shadow-md"
               >
                 <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
                   {faq.q}
@@ -245,7 +245,7 @@ export default function HomePage() {
       {/* Závěrečné CTA — tarify */}
       <section id="kontakt" className="relative w-full bg-stone-50 px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
-          <div className="rounded-2xl border border-stone-200 bg-white p-10 shadow-sm md:p-14">
+          <div className="glass-lime p-10 md:p-14">
             <div className="flex flex-col items-center text-center">
               <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-stone-900 md:text-4xl lg:text-5xl">
                 Chcete mít v pondělí zadáno a v pátek publikováno?
@@ -257,23 +257,23 @@ export default function HomePage() {
                 Data se zpracovávají. Pokud něco chybí, AI spolu s lidským kurátorem vyberou nejlépe pasující variantu pro váš projekt.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <a href="/start?plan=basic" className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-4 text-left transition hover:border-lucifera-lime/40 hover:bg-lucifera-lime/5">
+                <a href="/start?plan=basic" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Základní</p>
                   <p className="text-sm text-stone-600">3 příspěvky / měsíc</p>
-                  <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
+                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
                 </a>
-                <a href="/start?plan=standard" className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-4 text-left transition hover:border-lucifera-lime/40 hover:bg-lucifera-lime/5">
+                <a href="/start?plan=standard" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Standard</p>
                   <p className="text-sm text-stone-600">8 příspěvků / měsíc</p>
-                  <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
+                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
                 </a>
-                <a href="/start?plan=premium" className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-4 text-left transition hover:border-lucifera-lime/40 hover:bg-lucifera-lime/5">
+                <a href="/start?plan=premium" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Premium</p>
                   <p className="text-sm text-stone-600">15 příspěvků / měsíc</p>
-                  <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
+                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
                 </a>
               </div>
-              <a href="/start" className="btn-lime-primary mt-10 px-8 py-4 text-base">
+              <a href="/start" className="btn-lime-primary mt-10 px-8 py-4 text-base text-zinc-900">
                 Spustit test zdarma (zvolit tarif později)
               </a>
             </div>
