@@ -19,20 +19,36 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const maxDuration = 60;
 
-/** When true (default): 1 variant, no critic, minimal overlay. Recommended on Vercel Hobby (60s limit). */
-const FAST_MODE = process.env.VISUAL_FAST_MODE !== "false";
+const VISUAL_FAST_MODE_ENV = process.env.VISUAL_FAST_MODE;
+const VISUAL_VARIANTS_ENV = process.env.VISUAL_VARIANTS;
+const VISUAL_ENABLE_CRITIC_ENV = process.env.VISUAL_ENABLE_CRITIC;
+const VISUAL_TIMEOUT_MS_ENV = process.env.VISUAL_TIMEOUT_MS;
 
-const STAGE_IMAGE_MS = 45_000;
+/** Default fast mode in production; otherwise from env (default true). */
+const FAST_MODE =
+  process.env.NODE_ENV === "production"
+    ? VISUAL_FAST_MODE_ENV !== "false"
+    : (VISUAL_FAST_MODE_ENV ?? "true") !== "false";
+
+const STAGE_IMAGE_MS = Math.min(
+  Math.max(10000, parseInt(VISUAL_TIMEOUT_MS_ENV ?? "45000", 10) || 45000),
+  55000
+);
 const STAGE_LOGO_MS = 3_000;
 const STAGE_STORAGE_MS = 10_000;
 const HARD_GUARD_ELAPSED_MS = 52_000;
+
+/** Variants: in fast mode always 1; otherwise from env (default 1), max 2. */
+const CANDIDATE_COUNT_RAW = FAST_MODE ? 1 : Math.min(Math.max(1, parseInt(VISUAL_VARIANTS_ENV ?? "1", 10) || 1), 2);
+const ENABLE_CRITIC = VISUAL_ENABLE_CRITIC_ENV === "true";
 
 function visualFail(
   draftId: string,
   draftPayload: Record<string, unknown>,
   detail: string,
   hint: string,
-  errorCode = "VISUAL_GENERATION_FAILED"
+  errorCode = "VISUAL_GENERATION_FAILED",
+  elapsedMs?: number
 ): NextResponse {
   updateDraftPayload(draftId, {
     ...draftPayload,
@@ -40,15 +56,18 @@ function visualFail(
     visualError: detail,
     visualUpdatedAt: new Date().toISOString(),
   }).catch(() => {});
-  return NextResponse.json(
-    { ok: false, error: errorCode, detail, hint },
-    { status: errorCode === "VISUAL_TIMEOUT" ? 408 : 500 }
-  );
+  const payload: { ok: false; error: string; detail: string; hint: string; elapsedMs?: number } = {
+    ok: false,
+    error: errorCode,
+    detail,
+    hint,
+  };
+  if (typeof elapsedMs === "number") payload.elapsedMs = elapsedMs;
+  return NextResponse.json(payload, { status: errorCode === "VISUAL_TIMEOUT" ? 408 : 500 });
 }
 
 const VISUAL_BUCKET = process.env.SUPABASE_VISUALS_BUCKET ?? "generated-visuals";
 const IMAGE_MODEL = "gpt-image-1";
-const CANDIDATE_COUNT = 1;
 const MAX_CANDIDATES = 2;
 const MIN_SCORE = 8;
 const MAX_REGENERATE_ROUNDS = FAST_MODE ? 0 : 1;
@@ -208,7 +227,7 @@ export async function POST(request: Request) {
       body = await request.json();
     } catch {
       return NextResponse.json(
-        { ok: false, error: "Neplatné JSON tělo požadavku" },
+        { ok: false, error: "Neplatné JSON tělo požadavku", detail: "Neplatné JSON tělo požadavku", hint: "Odešlete platné JSON.", elapsedMs: elapsed() },
         { status: 400 }
       );
     }
@@ -258,7 +277,7 @@ export async function POST(request: Request) {
       ? b.format
       : PLATFORM_TO_FORMAT[platform] ?? "instagram-feed") as PlatformFormatKey;
     const dims = PLATFORM_FORMATS[formatKey];
-    const brandLock = b.brandLock !== false;
+    const brandLock = b.brandLock === true;
     const brandSpec = getBrandSpecFromIntake(intake as Record<string, unknown>);
     const webStyle = getWebStyleFromIntake(intake as Record<string, unknown>);
     const styleProfile = typeof b.styleProfile === "string" && STYLE_PROFILES.includes(b.styleProfile)
@@ -358,15 +377,15 @@ export async function POST(request: Request) {
       };
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : "Chyba při generování creative brief";
-      return visualFail(draftId, draft.payload, errMsg, "Zkuste znovu; problém může být s draftem nebo AI modelem.");
+      return visualFail(draftId, draft.payload, errMsg, "Zkuste znovu; problém může být s draftem nebo AI modelem.", "VISUAL_GENERATION_FAILED", elapsed());
     }
 
     const imagePrompt = buildPresetStyleImagePrompt(brief, preset, brandColors, tone);
     const size = getOpenAISize(formatKey);
 
     try {
-      // Step B: Generate variants; in FAST_MODE: 1 variant, no critic
-    const candidateCount = FAST_MODE ? 1 : Math.min(Math.max(1, CANDIDATE_COUNT), MAX_CANDIDATES);
+      // Step B: Generate variants; in FAST_MODE: 1 variant; critic only when ENABLE_CRITIC
+    const candidateCount = FAST_MODE ? 1 : CANDIDATE_COUNT_RAW;
     let bestB64: string | null = null;
     let bestCritic: import("@/lib/visual-critic").VisualCriticResult | null = null;
     let lastError: Error | null = null;
@@ -405,7 +424,7 @@ export async function POST(request: Request) {
           if (msg.includes("VISUAL_TIMEOUT")) {
             updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: "Časový limit generování obrázku.", visualUpdatedAt: new Date().toISOString() }).catch(() => {});
             return NextResponse.json(
-              { ok: false, error: "VISUAL_TIMEOUT", detail: "Generování obrázku překročilo časový limit.", hint: "Zkuste znovu nebo vypněte Brand Lock." },
+              { ok: false, error: "VISUAL_TIMEOUT", detail: "Generování obrázku překročilo časový limit.", hint: "Zkuste znovu nebo vypněte Brand Lock.", elapsedMs: elapsed() },
               { status: 408 }
             );
           }
@@ -415,7 +434,7 @@ export async function POST(request: Request) {
         }
         if (!b64) continue;
 
-        if (FAST_MODE) {
+        if (FAST_MODE || !ENABLE_CRITIC) {
           candidates.push({ b64, critic: defaultCritic });
         } else {
           try {
@@ -433,7 +452,7 @@ export async function POST(request: Request) {
             if (msg.includes("VISUAL_TIMEOUT")) {
               updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: "Časový limit vyhodnocení.", visualUpdatedAt: new Date().toISOString() }).catch(() => {});
               return NextResponse.json(
-                { ok: false, error: "VISUAL_TIMEOUT", detail: "Vyhodnocení vizuálu překročilo časový limit.", hint: "Zkuste znovu nebo vypněte Brand Lock." },
+                { ok: false, error: "VISUAL_TIMEOUT", detail: "Vyhodnocení vizuálu překročilo časový limit.", hint: "Zkuste znovu nebo vypněte Brand Lock.", elapsedMs: elapsed() },
                 { status: 408 }
               );
             }
@@ -492,7 +511,7 @@ export async function POST(request: Request) {
 
     const skipOverlayDueToTime = elapsed() > HARD_GUARD_ELAPSED_MS;
     const ctaColor = !FAST_MODE && brandLock && brandSpec.colors.length > 0 ? brandSpec.colors[0] : undefined;
-    const logoUrl = FAST_MODE ? undefined : (brandLock ? brandSpec.logoUrl : undefined);
+    const logoUrl = (FAST_MODE || !ENABLE_CRITIC) ? undefined : (brandLock ? brandSpec.logoUrl : undefined);
     const logoAbort = new AbortController();
     const logoTimeoutId = setTimeout(() => logoAbort.abort(), STAGE_LOGO_MS);
 
@@ -592,7 +611,8 @@ export async function POST(request: Request) {
           draft.payload,
           "Ukládání vizuálu překročilo časový limit.",
           "Zkuste znovu nebo vypněte Brand Lock.",
-          "VISUAL_TIMEOUT"
+          "VISUAL_TIMEOUT",
+          elapsed()
         );
       }
       throw storageErr;
@@ -655,7 +675,8 @@ export async function POST(request: Request) {
           draft.payload,
           "Časový limit překročen před dokončením.",
           "Zkuste znovu nebo vypněte Brand Lock.",
-          "VISUAL_TIMEOUT"
+          "VISUAL_TIMEOUT",
+          elapsed()
         );
       }
       const msg = strictErr instanceof Error ? strictErr.message : String(strictErr);
@@ -746,7 +767,8 @@ export async function POST(request: Request) {
           draft.payload,
           isTimeout ? "Časový limit překročen (i zjednodušená generace)." : `${detailPart}. Fallback: ${fd}`,
           isTimeout ? "Zkuste znovu nebo vypněte Brand Lock." : hintPart,
-          isTimeout ? "VISUAL_TIMEOUT" : "VISUAL_GENERATION_FAILED"
+          isTimeout ? "VISUAL_TIMEOUT" : "VISUAL_GENERATION_FAILED",
+          elapsed()
         );
       }
     }
@@ -754,7 +776,7 @@ export async function POST(request: Request) {
     console.error("POST /api/visuals/generate", e);
     const message = e instanceof Error ? e.message : "Došlo k chybě serveru";
     return NextResponse.json(
-      { ok: false, error: "VISUAL_GENERATION_FAILED", detail: message, hint: "Zkuste to znovu nebo kontaktujte podporu." },
+      { ok: false, error: "VISUAL_GENERATION_FAILED", detail: message, hint: "Zkuste to znovu nebo kontaktujte podporu.", elapsedMs: Date.now() - startMs },
       { status: 500 }
     );
   }

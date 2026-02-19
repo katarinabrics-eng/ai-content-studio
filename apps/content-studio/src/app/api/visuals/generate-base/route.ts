@@ -41,24 +41,27 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   });
 }
 
-function err(detail: string, hint: string, status = 500, error = "VISUAL_GENERATION_FAILED") {
+function err(detail: string, hint: string, status = 500, error = "VISUAL_GENERATION_FAILED", elapsedMs?: number) {
   return NextResponse.json(
-    { ok: false, error, detail, hint },
+    { ok: false, error, detail, hint, ...(elapsedMs !== undefined ? { elapsedMs } : {}) },
     { status: status === 408 ? 408 : 500 }
   );
 }
 
 export async function POST(request: Request) {
+  const startMs = Date.now();
+  const elapsed = () => Date.now() - startMs;
   try {
     const body = (await request.json().catch(() => ({}))) as {
       draftId?: string;
       styleProfile?: string;
       brandLock?: boolean;
     };
+    const brandLock = body.brandLock === true;
     const draftId = typeof body.draftId === "string" ? body.draftId : null;
     if (!draftId) {
       return NextResponse.json(
-        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Chybí draftId", hint: "Odešlete draftId v těle požadavku." },
+        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Chybí draftId", hint: "Odešlete draftId v těle požadavku.", elapsedMs: elapsed() },
         { status: 400 }
       );
     }
@@ -66,7 +69,7 @@ export async function POST(request: Request) {
     const draft = await getDraftById(draftId);
     if (!draft) {
       return NextResponse.json(
-        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Draft nebyl nalezen", hint: "Zkontrolujte, že draftId existuje." },
+        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Draft nebyl nalezen", hint: "Zkontrolujte, že draftId existuje.", elapsedMs: elapsed() },
         { status: 404 }
       );
     }
@@ -74,7 +77,7 @@ export async function POST(request: Request) {
     const intake = await getIntakeByIdOrLast(draft.intake_id);
     if (!intake) {
       return NextResponse.json(
-        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Intake nebyl nalezen", hint: "Přidružený intake byl smazán." },
+        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Intake nebyl nalezen", hint: "Přidružený intake byl smazán.", elapsedMs: elapsed() },
         { status: 404 }
       );
     }
@@ -82,7 +85,7 @@ export async function POST(request: Request) {
     const openaiKey = process.env.OPENAI_API_KEY;
     if (!openaiKey) {
       return NextResponse.json(
-        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "OPENAI_API_KEY není nastaven", hint: "Nastavte OPENAI_API_KEY." },
+        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: "OPENAI_API_KEY není nastaven", hint: "Nastavte OPENAI_API_KEY.", elapsedMs: elapsed() },
         { status: 500 }
       );
     }
@@ -176,7 +179,7 @@ export async function POST(request: Request) {
     } catch (e) {
       const detail = e instanceof Error ? e.message : "Chyba při generování creative brief";
       await updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: detail, visualUpdatedAt: new Date().toISOString() }).catch(() => {});
-      return err(detail, "Zkuste znovu; problém může být s draftem nebo AI modelem.");
+      return err(detail, "Zkuste znovu; problém může být s draftem nebo AI modelem.", 500, "VISUAL_GENERATION_FAILED", elapsed());
     }
 
     const imagePrompt = buildPresetStyleImagePrompt(brief, preset, brandColors, tone);
@@ -191,19 +194,20 @@ export async function POST(request: Request) {
       const first = resp.data?.[0]?.b64_json;
       if (typeof first !== "string" || !first) {
         await updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: "OpenAI nevrátilo obrázek", visualUpdatedAt: new Date().toISOString() }).catch(() => {});
-        return err("OpenAI nevrátilo obrázek", "Zkontrolujte OPENAI_API_KEY a model gpt-image-1.");
+        return err("OpenAI nevrátilo obrázek", "Zkontrolujte OPENAI_API_KEY a model gpt-image-1.", 500, "VISUAL_GENERATION_FAILED", elapsed());
       }
       b64 = first;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       await updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: "Časový limit generování obrázku.", visualUpdatedAt: new Date().toISOString() }).catch(() => {});
+      const elapsedMs = elapsed();
       if (msg.includes("VISUAL_TIMEOUT")) {
         return NextResponse.json(
-          { ok: false, error: "VISUAL_TIMEOUT", detail: "Generování obrázku překročilo časový limit (45 s).", hint: "Zkuste znovu nebo vypněte Brand Lock." },
+          { ok: false, error: "VISUAL_TIMEOUT", detail: "Generování obrázku překročilo časový limit (45 s).", hint: "Zkuste znovu nebo vypněte Brand Lock.", elapsedMs },
           { status: 408 }
         );
       }
-      return err(msg, "Zkontrolujte OPENAI_API_KEY a dostupnost modelu.");
+      return err(msg, "Zkontrolujte OPENAI_API_KEY a dostupnost modelu.", 500, "VISUAL_GENERATION_FAILED", elapsedMs);
     }
 
     const baseBuffer = Buffer.from(b64, "base64");
@@ -218,7 +222,10 @@ export async function POST(request: Request) {
       await updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: uploadError.message, visualUpdatedAt: new Date().toISOString() }).catch(() => {});
       return err(
         `Chyba při ukládání obrázku: ${uploadError.message}`,
-        `Zkontrolujte bucket "${VISUAL_BUCKET}" a oprávnění.`
+        `Zkontrolujte bucket "${VISUAL_BUCKET}" a oprávnění.`,
+        500,
+        "VISUAL_GENERATION_FAILED",
+        elapsed()
       );
     }
 
@@ -238,7 +245,7 @@ export async function POST(request: Request) {
     console.error("POST /api/visuals/generate-base", e);
     const detail = e instanceof Error ? e.message : "Došlo k chybě serveru";
     return NextResponse.json(
-      { ok: false, error: "VISUAL_GENERATION_FAILED", detail, hint: "Zkuste to znovu nebo kontaktujte podporu." },
+      { ok: false, error: "VISUAL_GENERATION_FAILED", detail, hint: "Zkuste to znovu nebo kontaktujte podporu.", elapsedMs: Date.now() - startMs },
       { status: 500 }
     );
   }

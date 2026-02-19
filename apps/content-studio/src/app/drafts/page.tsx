@@ -359,8 +359,9 @@ function DraftsContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           draftId,
-          styleProfile: styleProfile || undefined,
           brandLock,
+          styleProfile: styleProfile || undefined,
+          fastMode: true,
         }),
         signal: controller.signal,
       });
@@ -370,7 +371,9 @@ function DraftsContent() {
         clearTimeout(timeoutId);
         const errMsg =
           baseData.error === "VISUAL_TIMEOUT"
-            ? "Náročné generování překročilo časový limit, zkuste znovu nebo vypněte Brand Lock."
+            ? brandLock
+              ? "Generování překročilo čas. Zkuste znovu nebo vypněte Brand Lock."
+              : "Generování překročilo čas. Přepnuli jsme na rychlý režim."
             : [baseData.detail, baseData.hint].filter(Boolean).join(" – ") || baseData.error || "Generování base obrázku selhalo.";
         setError(errMsg);
         return;
