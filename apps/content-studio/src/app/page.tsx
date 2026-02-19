@@ -41,23 +41,23 @@ export default function HomePage() {
       {/* HERO — full-screen, 2 sloupce: text vlevo, vizuál vpravo, bez boxed card */}
       <section className="relative min-h-screen w-full overflow-hidden bg-stone-50">
         <div className="grid min-h-screen w-full grid-cols-1 items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:gap-16 lg:px-12 xl:px-20">
-          {/* Levý sloupec: copy */}
+          {/* Levý sloupec: copy — černý/šedo-černý text, lime jen na primárním CTA */}
           <div className="animate-fade-in">
-            <h1 className="text-4xl font-bold leading-tight tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
+            <h1 className="text-4xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
               Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-stone-700">
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-zinc-700">
               Vyberete tarif, vyplníte krátký formulář a my spustíme tvorbu. Do 24–48 hodin dostanete první 3 příspěvky ke schválení.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start" className="btn-lime-primary">
+              <a href="/start" className="btn-lime-primary text-zinc-900">
                 Chci si odlehčit tvorbu
               </a>
-              <a href="#jak-to-funguje" className="btn-lime-outline-light">
+              <a href="#jak-to-funguje" className="rounded-full border border-lime-300 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lime-50">
                 Jak probíhá spolupráce
               </a>
             </div>
-            <p className="mt-6 text-sm font-medium text-lucifera-lime">
+            <p className="mt-6 text-sm font-medium text-zinc-900">
               V pondělí dodáte data. V pátek publikujete.
             </p>
           </div>

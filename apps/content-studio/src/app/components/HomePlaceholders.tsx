@@ -3,19 +3,18 @@
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 
-const HERO_SRC = PLACEHOLDER_IMAGES[0] ?? null;
+const HERO_SRC = "/placeholders/mia-mozek.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Fills parent; use in a container with relative and min-height (e.g. hero right column). */
+/** Hero obrázek: mia_mozek.png, object-contain, rounded. */
 export function HeroImageFull() {
-  if (!HERO_SRC) return null;
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-2xl bg-lucifera-anthracite animate-fade-in">
+    <div className="absolute inset-0 overflow-hidden rounded-2xl bg-stone-100 animate-fade-in">
       <Image
         src={HERO_SRC}
         alt=""
         fill
-        className="object-cover"
+        className="object-contain"
         sizes="(max-width: 1024px) 100vw, 50vw"
         priority
         onError={(e) => {
