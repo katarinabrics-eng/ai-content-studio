@@ -11,7 +11,7 @@ import { composeTextOverlay } from "@/lib/visual-composer";
 import { criticVisualFromB64 } from "@/lib/visual-critic";
 import { getWebStyleFromIntake } from "@/lib/web-style-helper";
 import { resolveVisualStyle } from "@/lib/visual-style-resolver";
-import { VISUAL_STYLE_PRESETS } from "@/lib/visual-style-presets";
+import { VISUAL_STYLE_PRESETS, type VisualStyleId } from "@/lib/visual-style-presets";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -133,6 +133,28 @@ function creativeBriefToImagePrompt(
   return parts.join(". ") + STRICT_SUFFIX;
 }
 
+function buildPresetStyleImagePrompt(
+  brief: CreativeBrief,
+  preset: import("@/lib/visual-style-presets").VisualStylePreset,
+  brandColors: string[],
+  tone: string
+): string {
+  const conceptParts = [brief.concept, brief.scene, brief.lighting, brief.composition].filter(Boolean);
+  const conceptLine = conceptParts.length > 0
+    ? `Visual concept: ${conceptParts.join(". ")}.`
+    : "";
+  const prompt = [
+    `Create a social ad background (${preset.defaultAspectRatio}) for a Czech brand.`,
+    conceptLine,
+    `Style profile: ${preset.label}.`,
+    `Tone of voice: ${tone}.`,
+    brandColors.length ? `Brand colors: ${brandColors.join(", ")}.` : "Use clean neutral palette with subtle brand accents.",
+    ...preset.promptDirectives.map((d) => `- ${d}`),
+    `Hard constraints: ${preset.negativePrompt.join(", ")}.`,
+  ].filter(Boolean).join("\n");
+  return prompt + " " + STRICT_SUFFIX;
+}
+
 export async function POST(request: Request) {
   try {
     let body: unknown = {};
@@ -184,23 +206,30 @@ export async function POST(request: Request) {
       ? b.styleProfile
       : undefined;
     const visualStyleProfile = (intake as Record<string, unknown>).visualStyleProfile as Record<string, unknown> | null | undefined;
-    const intakePayload = intake as Record<string, unknown>;
-    const requestedStyleId = styleProfile && STYLE_PROFILES.includes(styleProfile)
-      ? (styleProfile as import("@/lib/visual-style-presets").VisualStyleId)
-      : "auto";
-    const resolveResult = resolveVisualStyle({
+    const intakePayload = (intake as { payload?: unknown }).payload ?? (intake as Record<string, unknown>);
+    const intakePayloadObj = (typeof intakePayload === "object" && intakePayload !== null ? intakePayload : {}) as Record<string, unknown>;
+    const requestedStyleId = (b.styleProfile as VisualStyleId | undefined) ?? "auto";
+    const { preset, source } = resolveVisualStyle({
       requestedStyleId,
-      brandName: String(intakePayload.brandName ?? ""),
-      website: String(intakePayload.website ?? ""),
+      brandName: intakePayloadObj?.brandName as string | undefined,
+      website: intakePayloadObj?.website as string | undefined,
     });
     const resolvedStyle = {
       palette: brandSpec.colors,
-      moodKeywords: resolveResult.preset.promptDirectives,
-      negativePrompt: resolveResult.preset.negativePrompt.join(", "),
-      visualStyle: resolveResult.preset.id,
-      visualStyleLabel: resolveResult.preset.label,
-      visualStyleSource: resolveResult.source,
+      moodKeywords: preset.promptDirectives,
+      negativePrompt: preset.negativePrompt.join(", "),
+      visualStyle: preset.id,
+      visualStyleLabel: preset.label,
+      visualStyleSource: source,
     };
+
+    const brandAssetsColors = (intakePayloadObj?.brandAssets as { colors?: string | string[] } | undefined)?.colors;
+    const brandColors = Array.isArray(brandAssetsColors)
+      ? brandAssetsColors
+      : typeof brandAssetsColors === "string"
+        ? [brandAssetsColors]
+        : [];
+    const tone = (intakePayloadObj?.toneOfVoice as string) || "profesionální, důvěryhodný";
 
     const useOverride = (b.strategyModeOverride === "manual" || b.strategyIdOverride) && b.strategyIdOverride && getStrategyById(b.strategyIdOverride as import("@/lib/strategy-library").StrategyId);
 
@@ -215,15 +244,15 @@ export async function POST(request: Request) {
     } else if (draft.payload.strategyId && getStrategyById(draft.payload.strategyId as import("@/lib/strategy-library").StrategyId)) {
       strategy = getStrategyById(draft.payload.strategyId as import("@/lib/strategy-library").StrategyId);
     } else {
-      const al = (intakePayload.awarenessLevel as string) ?? "problem_aware";
+      const al = (intakePayloadObj.awarenessLevel as string) ?? "problem_aware";
       const awarenessLevel: import("@/lib/strategy-library").AwarenessLevel =
         ["unaware", "problem_aware", "solution_aware", "product_aware", "most_aware"].includes(al) ? (al as import("@/lib/strategy-library").AwarenessLevel) : "problem_aware";
       const picked = pickStrategy({
-        contentGoal: (intakePayload.contentGoal as "prodej" | "důvěra" | "edukace") ?? "edukace",
-        platforms: (intakePayload.platforms as string[]) ?? [],
-        targetAudience: String(intakePayload.targetAudience ?? ""),
-        offers: String(intakePayload.offers ?? ""),
-        toneOfVoice: String(intakePayload.toneOfVoice ?? ""),
+        contentGoal: (intakePayloadObj.contentGoal as "prodej" | "důvěra" | "edukace") ?? "edukace",
+        platforms: (intakePayloadObj.platforms as string[]) ?? [],
+        targetAudience: String(intakePayloadObj.targetAudience ?? ""),
+        offers: String(intakePayloadObj.offers ?? ""),
+        toneOfVoice: String(intakePayloadObj.toneOfVoice ?? ""),
         awarenessLevel,
       });
       strategy = picked.strategy;
@@ -281,7 +310,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkuste znovu; problém může být s draftem nebo AI modelem." }, { status: 500 });
     }
 
-    const imagePrompt = creativeBriefToImagePrompt(brief, resolvedStyle, brandSpec);
+    const imagePrompt = buildPresetStyleImagePrompt(brief, preset, brandColors, tone);
     const size = getOpenAISize(formatKey);
 
     // Step B: Generate 4 variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if hasTextArtifacts or score < 8
