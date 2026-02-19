@@ -3,18 +3,18 @@
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 
-const HERO_SRC = "/placeholders/ja-a-mia.jpeg";
+const HERO_SRC = "/placeholders/ja-a-mia4.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek: ja a mia.jpeg, object-contain, na desktopu scale ~1.07. */
+/** Hero obrázek: ja a mia4.png, fit uvnitř rámu. */
 export function HeroImageFull() {
   return (
-    <div className="absolute inset-0 animate-fade-in">
+    <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
       <Image
         src={HERO_SRC}
         alt=""
         fill
-        className="object-contain lg:scale-[1.07]"
+        className="object-contain"
         sizes="(max-width: 1024px) 100vw, 800px"
         priority
         onError={(e) => {
