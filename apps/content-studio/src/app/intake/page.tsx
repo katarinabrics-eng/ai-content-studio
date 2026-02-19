@@ -79,6 +79,13 @@ function IntakeContent() {
   }, [searchParams]);
 
   const [lastSubmittedIntakeId, setLastSubmittedIntakeId] = useState<string | null>(null);
+  const [clientEmailForPipeline, setClientEmailForPipeline] = useState("");
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [brandPdfFile, setBrandPdfFile] = useState<File | null>(null);
+  const [pipelineSubmitting, setPipelineSubmitting] = useState(false);
+  const [pipelineResult, setPipelineResult] = useState<{ projectCode: string; pin: string | null; projectId: string; loginUrl?: string } | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const brandPdfInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState<IntakeFormData>({
     brandName: "",
     website: "",
@@ -216,6 +223,70 @@ function IntakeContent() {
     });
   }
 
+  async function handlePipelineSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("idle");
+    setError(null);
+    setPipelineResult(null);
+    if (logoFile) {
+      const logoErr = validateLogoFile(logoFile);
+      if (logoErr) {
+        setStatus("error");
+        setError({ message: logoErr });
+        return;
+      }
+    }
+    const payload = {
+      ...form,
+      website: form.website?.trim() || undefined,
+      forbiddenWords: form.forbiddenWords?.trim() || undefined,
+      ctaPreference: form.ctaPreference?.trim() || undefined,
+      brandCoreOneLiner: form.brandCoreOneLiner?.trim() || undefined,
+      allowedTopics: form.allowedTopics?.length ? form.allowedTopics : undefined,
+      disallowedTopics: form.disallowedTopics?.length ? form.disallowedTopics : undefined,
+      brandAssets: form.brandAssets
+        ? {
+            logoUrl: form.brandAssets.logoUrl?.trim() || undefined,
+            colors: form.brandAssets.colors?.trim() || undefined,
+            fonts: form.brandAssets.fonts?.trim() || undefined,
+            photosNote: form.brandAssets.photosNote?.trim() || undefined,
+          }
+        : undefined,
+      client_email: clientEmailForPipeline.trim() || undefined,
+    };
+    const formData = new FormData();
+    formData.append("payload", JSON.stringify(payload));
+    if (logoFile) formData.append("logo", logoFile);
+    photoFiles.forEach((f) => formData.append("photos", f));
+    if (brandPdfFile) formData.append("brandPdf", brandPdfFile);
+    setPipelineSubmitting(true);
+    try {
+      const res = await fetch("/api/intake/pipeline", { method: "POST", body: formData });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        setPipelineResult({
+          projectCode: data.projectCode ?? "",
+          pin: data.pin ?? null,
+          projectId: data.projectId ?? "",
+          loginUrl: data.loginUrl,
+        });
+        setStatus("success");
+        setLogoFile(null);
+        if (logoInputRef.current) logoInputRef.current.value = "";
+        setPhotoFiles([]);
+        if (photoInputRef.current) photoInputRef.current.value = "";
+        setBrandPdfFile(null);
+        if (brandPdfInputRef.current) brandPdfInputRef.current.value = "";
+        return;
+      }
+      setStatus("error");
+      const msg = data.detail ? `${data.error ?? "Chyba"}: ${data.detail}` : (data.error ?? "Vytvoření projektu se nezdařilo");
+      setError({ message: msg, details: data.details });
+    } finally {
+      setPipelineSubmitting(false);
+    }
+  }
+
   async function handleEnrich(e: React.FormEvent) {
     e.preventDefault();
     const website = enrichWebsite.trim();
@@ -307,7 +378,7 @@ function IntakeContent() {
         Vyplňte údaje o značce a cílech obsahu.
       </p>
 
-      {status === "success" && (
+      {status === "success" && !pipelineResult && (
         <div
           className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
           role="alert"
@@ -318,6 +389,31 @@ function IntakeContent() {
             className="mt-2 inline-block font-medium underline hover:no-underline"
           >
             Přejít na návrhy postů
+          </a>
+        </div>
+      )}
+
+      {status === "success" && pipelineResult && (
+        <div
+          className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
+          role="alert"
+        >
+          <p className="font-medium">Projekt byl vytvořen.</p>
+          <p className="mt-2 font-mono text-sm">
+            Kód: {pipelineResult.projectCode}
+            {pipelineResult.pin && <> · PIN: {pipelineResult.pin}</>}
+          </p>
+          <p className="mt-1 text-sm">Uložte si kód a PIN pro přístup k projektu.</p>
+          {pipelineResult.loginUrl && (
+            <a
+              href={pipelineResult.loginUrl}
+              className="mt-2 inline-block font-medium underline hover:no-underline"
+            >
+              Přihlásit se k projektu
+            </a>
+          )}
+          <a href="/admin/projects" className="ml-4 mt-2 inline-block text-sm underline hover:no-underline">
+            Admin: přehled projektů
           </a>
         </div>
       )}
@@ -919,15 +1015,75 @@ function IntakeContent() {
                 />
               </div>
             </div>
+            <div className="rounded border border-slate-200 bg-slate-50/50 p-4">
+              <p className="text-sm font-medium text-slate-700">Vytvořit projekt (pipeline)</p>
+              <p className="mt-1 text-xs text-slate-500">
+                E-mail (volitelné), fotky a PDF se uloží do složky projektu a budou vidět v adminu.
+              </p>
+              <div className="mt-3 space-y-3">
+                <div>
+                  <label htmlFor="clientEmailPipeline" className="block text-xs font-medium text-slate-600">
+                    E-mail klienta (volitelné – pro magický odkaz)
+                  </label>
+                  <input
+                    id="clientEmailPipeline"
+                    type="email"
+                    placeholder="klient@example.com"
+                    value={clientEmailForPipeline}
+                    onChange={(e) => setClientEmailForPipeline(e.target.value)}
+                    className="mt-1 w-full max-w-md rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="photoFiles" className="block text-xs font-medium text-slate-600">
+                    Fotky (JPEG/PNG/WebP, max 20 souborů)
+                  </label>
+                  <input
+                    ref={photoInputRef}
+                    id="photoFiles"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={(e) => setPhotoFiles(Array.from(e.target.files ?? []))}
+                    className="mt-1 w-full max-w-md rounded-md border border-slate-300 px-2 py-2 text-sm text-slate-700 file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-slate-700"
+                  />
+                  {photoFiles.length > 0 && (
+                    <p className="mt-1 text-xs text-slate-500">{photoFiles.length} soubor(ů) vybráno</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="brandPdfPipeline" className="block text-xs font-medium text-slate-600">
+                    Brand manuál (PDF, volitelné)
+                  </label>
+                  <input
+                    ref={brandPdfInputRef}
+                    id="brandPdfPipeline"
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={(e) => setBrandPdfFile(e.target.files?.[0] ?? null)}
+                    className="mt-1 w-full max-w-md rounded-md border border-slate-300 px-2 py-2 text-sm text-slate-700 file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-slate-700"
+                  />
+                  {brandPdfFile && <p className="mt-1 text-xs text-slate-500">{brandPdfFile.name}</p>}
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
             type="submit"
             className="rounded-md bg-slate-800 px-5 py-2.5 font-medium text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
           >
-            Odeslat
+            Odeslat (pouze intake)
+          </button>
+          <button
+            type="button"
+            disabled={pipelineSubmitting}
+            onClick={handlePipelineSubmit}
+            className="rounded-md bg-lucifera-lime px-5 py-2.5 font-medium text-zinc-900 hover:bg-lucifera-lime/90 focus:outline-none focus:ring-2 focus:ring-lucifera-lime focus:ring-offset-2 disabled:opacity-60"
+          >
+            {pipelineSubmitting ? "Vytvářím projekt…" : "Odeslat a vytvořit projekt (včetně souborů)"}
           </button>
           <button
             type="button"

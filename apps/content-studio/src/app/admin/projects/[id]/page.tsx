@@ -62,7 +62,15 @@ export default function AdminProjectDetailPage() {
       <div className="mx-auto max-w-3xl">
         <a href="/admin/projects" className="text-sm text-stone-600 hover:underline">← Přehled projektů</a>
         <h1 className="mt-4 text-2xl font-bold text-stone-900">{brief?.brand_name || "Projekt"}</h1>
-        <p className="text-stone-600">ID: {project.id} · Tarif: {project.plan_id}</p>
+        <p className="text-stone-600">
+          ID: {project.id} · Tarif: {project.plan_id}
+          {(project as unknown as { project_code?: string | null }).project_code && (
+            <> · Kód: <span className="font-mono">{(project as unknown as { project_code: string }).project_code}</span></>
+          )}
+          {(project as unknown as { storage_prefix?: string | null }).storage_prefix && (
+            <> · Složka: <span className="font-mono text-xs">{(project as unknown as { storage_prefix: string }).storage_prefix}</span></>
+          )}
+        </p>
 
         <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
           <h2 className="font-semibold text-stone-900">Completeness briefu</h2>
@@ -95,6 +103,30 @@ export default function AdminProjectDetailPage() {
             {brief?.brand_pdf_url && <><dt className="text-stone-500">PDF</dt><dd className="text-stone-900">{brief.brand_pdf_url}</dd></>}
           </dl>
         </section>
+
+        {Array.isArray((project as unknown as { files?: unknown[] }).files) &&
+        (project as unknown as { files: { id: string; kind: string; original_name: string | null; download_url: string | null }[] }).files.length > 0 && (
+          <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
+            <h2 className="font-semibold text-stone-900">Soubory (logo, fotky, PDF)</h2>
+            <ul className="mt-3 space-y-2">
+              {(project as unknown as { files: { id: string; kind: string; original_name: string | null; download_url: string | null }[] }).files.map((f) => (
+                <li key={f.id} className="flex items-center justify-between rounded border border-stone-100 bg-stone-50 px-3 py-2 text-sm">
+                  <span className="text-stone-700">
+                    <span className="font-medium text-stone-500">{f.kind}</span>
+                    {f.original_name && ` · ${f.original_name}`}
+                  </span>
+                  {f.download_url ? (
+                    <a href={f.download_url} target="_blank" rel="noreferrer" className="text-lucifera-lime hover:underline">
+                      Stáhnout
+                    </a>
+                  ) : (
+                    <span className="text-stone-400">—</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
           <h2 className="font-semibold text-stone-900">Stav zakázky</h2>

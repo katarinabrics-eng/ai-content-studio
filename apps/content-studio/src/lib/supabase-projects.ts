@@ -60,8 +60,21 @@ export type ProjectRow = {
   status: string;
   client_email: string | null;
   assigned_curator_id: string | null;
+  storage_prefix: string | null;
   created_at: string;
   updated_at: string;
+};
+
+/** Záznam v project_files (nahraný soubor). */
+export type ProjectFileRow = {
+  id: string;
+  project_id: string;
+  storage_path: string;
+  kind: "logo" | "photo" | "manual";
+  original_name: string | null;
+  content_type: string | null;
+  size_bytes: number | null;
+  created_at: string;
 };
 
 /** Projekt včetně briefu a admin meta (pro admin dashboard). */
@@ -116,6 +129,16 @@ function generateCode(): string {
   return s;
 }
 
+/** Formát LCF-YYYYMMDD-XXXX pro intake pipeline. */
+export function generatePipelineProjectCode(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  const suffix = generateCode().slice(0, 4);
+  return `LCF-${y}${m}${d}-${suffix}`;
+}
+
 function generatePin(): string {
   let s = "";
   const bytes = randomBytes(PIN_LENGTH);
@@ -149,6 +172,9 @@ export type CreateProjectParams = {
   image_refs?: string | null;
   source_url?: string | null;
   brand_pdf_url?: string | null;
+  /** Pro intake pipeline: přednastavený project_code a storage_prefix. */
+  project_code?: string | null;
+  storage_prefix?: string | null;
 };
 
 export async function createProject(params: CreateProjectParams): Promise<{
@@ -166,7 +192,11 @@ export async function createProject(params: CreateProjectParams): Promise<{
   let pin: string | undefined;
   let pinHash: string | null = null;
 
-  if (email) {
+  if (params.project_code != null && params.project_code !== "") {
+    projectCode = params.project_code;
+    pin = generatePin();
+    pinHash = hashToken(pin);
+  } else if (email) {
     magicToken = generateMagicToken();
     magicTokenHash = hashToken(magicToken);
   } else {
@@ -175,16 +205,19 @@ export async function createProject(params: CreateProjectParams): Promise<{
     pinHash = hashToken(pin);
   }
 
+  const insertRow: Record<string, unknown> = {
+    plan_id: params.plan_id || "basic",
+    project_code: projectCode ?? null,
+    project_pin_hash: pinHash,
+    magic_token_hash: magicTokenHash,
+    status: "PROCESSING_DATA",
+    client_email: email,
+    storage_prefix: params.storage_prefix ?? null,
+  };
+
   const { data: project, error: errProject } = await supabase
     .from("projects")
-    .insert({
-      plan_id: params.plan_id || "basic",
-      project_code: projectCode ?? null,
-      project_pin_hash: pinHash,
-      magic_token_hash: magicTokenHash,
-      status: "PROCESSING_DATA",
-      client_email: email,
-    })
+    .insert(insertRow)
     .select()
     .single();
 
@@ -361,4 +394,29 @@ export async function getProjectBySessionToken(token: string): Promise<(ProjectR
   const row = session as { project_id: string; expires_at: string };
   if (new Date(row.expires_at) < new Date()) return null;
   return getProjectByIdForClient(row.project_id);
+}
+
+export async function getProjectFiles(projectId: string): Promise<ProjectFileRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("project_files")
+    .select("id, project_id, storage_path, kind, original_name, content_type, size_bytes, created_at")
+    .eq("project_id", projectId)
+    .order("kind")
+    .order("created_at", { ascending: true });
+  if (error) return [];
+  return (data ?? []) as ProjectFileRow[];
+}
+
+export async function insertProjectFile(row: {
+  project_id: string;
+  storage_path: string;
+  kind: "logo" | "photo" | "manual";
+  original_name?: string | null;
+  content_type?: string | null;
+  size_bytes?: number | null;
+}): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("project_files").insert(row);
+  if (error) throw new Error(`Chyba při ukládání záznamu souboru: ${error.message}`);
 }

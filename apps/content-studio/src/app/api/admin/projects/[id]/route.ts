@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
-import { getProjectById, updateProjectStatus } from "@/lib/supabase-projects";
+import { getSupabaseClient } from "@/lib/supabase-server";
+import { getProjectById, getProjectFiles, updateProjectStatus } from "@/lib/supabase-projects";
 import { isProjectStatus, canTransition } from "@/lib/project-status-engine";
+
+const CLIENT_PROJECTS_BUCKET = "client-projects";
+const SIGNED_URL_EXPIRY_SEC = 3600; // 1 hour
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,7 +16,31 @@ export async function GET(
   const { id } = await params;
   const project = await getProjectById(id);
   if (!project) return NextResponse.json({ ok: false, error: "Projekt nenalezen" }, { status: 404 });
-  return NextResponse.json({ ok: true, project });
+
+  const files = await getProjectFiles(id);
+  const supabase = getSupabaseClient();
+  const filesWithUrls = await Promise.all(
+    files.map(async (f) => {
+      const { data: signed } = await supabase.storage
+        .from(CLIENT_PROJECTS_BUCKET)
+        .createSignedUrl(f.storage_path, SIGNED_URL_EXPIRY_SEC);
+      return {
+        id: f.id,
+        storage_path: f.storage_path,
+        kind: f.kind,
+        original_name: f.original_name,
+        content_type: f.content_type,
+        size_bytes: f.size_bytes,
+        created_at: f.created_at,
+        download_url: signed?.signedUrl ?? null,
+      };
+    })
+  );
+
+  return NextResponse.json({
+    ok: true,
+    project: { ...project, files: filesWithUrls },
+  });
 }
 
 export async function PATCH(
