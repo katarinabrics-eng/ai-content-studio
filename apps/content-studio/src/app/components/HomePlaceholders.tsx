@@ -1,21 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
-import { PLACEHOLDER_POOL, getSessionPlaceholderPaths } from "@/lib/placeholder-pool";
+import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
+
+const HERO_SRC = PLACEHOLDER_IMAGES[0] ?? null;
+const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
 /** Fills parent; use in a container with relative and min-height (e.g. hero right column). */
 export function HeroImageFull() {
-  const [src, setSrc] = useState<string | null>(null);
-  useEffect(() => {
-    const paths = getSessionPlaceholderPaths();
-    setSrc(paths[0] ?? PLACEHOLDER_POOL[0] ?? null);
-  }, []);
-  if (!src) return null;
+  if (!HERO_SRC) return null;
   return (
     <div className="absolute inset-0 overflow-hidden rounded-2xl bg-lucifera-anthracite animate-fade-in">
       <Image
-        src={src}
+        src={HERO_SRC}
         alt=""
         fill
         className="object-cover"
@@ -30,16 +27,11 @@ export function HeroImageFull() {
 }
 
 export function HeroImage() {
-  const [src, setSrc] = useState<string | null>(null);
-  useEffect(() => {
-    const paths = getSessionPlaceholderPaths();
-    setSrc(paths[0] ?? PLACEHOLDER_POOL[0] ?? null);
-  }, []);
-  if (!src) return null;
+  if (!HERO_SRC) return null;
   return (
     <div className="relative aspect-[21/10] w-full overflow-hidden rounded-2xl bg-stone-200 shadow-md animate-fade-in">
       <Image
-        src={src}
+        src={HERO_SRC}
         alt=""
         fill
         className="object-cover"
@@ -54,11 +46,7 @@ export function HeroImage() {
 }
 
 export function SectionImages({ count = 3 }: { count?: number }) {
-  const [paths, setPaths] = useState<string[]>([]);
-  useEffect(() => {
-    const all = getSessionPlaceholderPaths();
-    setPaths(all.slice(1, 1 + count));
-  }, [count]);
+  const paths = SECTION_SRCS.slice(0, count);
   if (paths.length === 0) return null;
   return (
     <>
