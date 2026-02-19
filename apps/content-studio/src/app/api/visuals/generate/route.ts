@@ -8,7 +8,8 @@ import { getStrategyById } from "@/lib/strategy-library";
 import { pickStrategy } from "@/lib/strategy-picker";
 import { PLATFORM_FORMATS, type CreativeBrief, type PlatformFormatKey } from "@/lib/visual-schema";
 import { composeTextOverlay } from "@/lib/visual-composer";
-import { scoreVisualFromB64 } from "@/lib/visual-score";
+import { criticVisualFromB64 } from "@/lib/visual-critic";
+import { getWebStyleFromIntake } from "@/lib/web-style-helper";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,8 +17,11 @@ export const revalidate = 0;
 
 const VISUAL_BUCKET = process.env.SUPABASE_VISUALS_BUCKET ?? "generated-visuals";
 const IMAGE_MODEL = "gpt-image-1";
-const CANDIDATE_COUNT = 3;
+const CANDIDATE_COUNT = 4;
 const MIN_SCORE = 8;
+const MAX_REGENERATE_ROUNDS = 2;
+const STRICT_SUFFIX =
+  " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
 const STYLE_PROFILES = ["katarina_signature", "minimal_clean", "bold_growth"] as const;
 
@@ -41,6 +45,7 @@ function buildCreativeBriefPrompt(
   draft: { payload: Record<string, unknown> },
   intake: Record<string, unknown>,
   brandSpec: import("@/lib/brand-spec").BrandSpec,
+  moodKeywords: string[],
   styleProfile?: string,
   visualStyleProfile?: Record<string, unknown> | null,
   strategy?: import("@/lib/strategy-library").StrategyPreset
@@ -48,15 +53,17 @@ function buildCreativeBriefPrompt(
   const p = draft.payload;
   const paletteNote = brandSpec.colors.length ? `Použij barvy z palety: ${brandSpec.colors.join(", ")}` : "";
   const toneNote = brandSpec.toneOfVoice ? `Mood/tón: ${brandSpec.toneOfVoice}` : "";
+  const moodNote = moodKeywords.length ? `Mood keywords (web/style): ${moodKeywords.join(", ")}` : "";
   const styleNote = styleProfile ? `Styl: ${styleProfile}` : "";
   const visualDirectivesNote = strategy?.visualDirectives?.length
     ? `Art direction: ${strategy.visualDirectives.join("; ")}`
     : "";
-  return `Jsi art director. Na základě draftu a intake vytvoř creative brief pro vizuál.
+  return `Jsi art director. Na základě draftu a intake vytvoř creative brief pro vizuál (POUZE POZADÍ – žádný text v obrázku).
 Draft: platform=${p.platform}, hook=${p.hook}, caption=${p.caption}, cta=${p.cta}, visualBrief=${p.visualBrief}
 Intake: toneOfVoice=${intake.toneOfVoice}, offers=${intake.offers}, targetAudience=${intake.targetAudience}
 ${paletteNote}
 ${toneNote}
+${moodNote}
 ${styleNote}
 ${visualDirectivesNote}
 ${visualStyleProfile ? `Visual style profile: ${JSON.stringify(visualStyleProfile)}` : ""}
@@ -69,16 +76,21 @@ Vrať POUZE validní JSON bez markdownu:
   "lighting": "osvětlení",
   "composition": "kompozice",
   "palette": "barvy",
-  "headline": "hlavní nadpis (max 8 slov)",
-  "subheadline": "podnadpis (volitelné)",
+  "headline": "hlavní nadpis max 6 slov",
+  "subheadline": "podnadpis max 12 slov (volitelné)",
   "cta": "CTA text",
-  "negativePrompt": "co NEPOUŽÍVAT: text v obraze, watermark, logo overlay, collage chaos, rušné pozadí"
+  "negativePrompt": "co NEPOUŽÍVAT: text v obraze, písmena, watermark, logo v obraze, collage chaos, rušné pozadí"
 }
-Pravidla: žádný text v samotném obrázku (text overlay přijde zvlášť). Čistá, kampaně podobná kompozice.`;
+Pravidla: žádný text v samotném obrázku (text overlay přijde zvlášť). Čistá kompozice, negativní prostor pro overlay.`;
 }
 
-function creativeBriefToImagePrompt(brief: CreativeBrief, brandSpec: import("@/lib/brand-spec").BrandSpec): string {
+function creativeBriefToImagePrompt(
+  brief: CreativeBrief,
+  brandSpec: import("@/lib/brand-spec").BrandSpec,
+  moodKeywords: string[]
+): string {
   const paletteStr = brandSpec.colors.length ? brandSpec.colors.join(", ") : brief.palette;
+  const moodStr = moodKeywords.length ? moodKeywords.join(", ") : "";
   const parts = [
     brief.concept,
     brief.shotType,
@@ -87,11 +99,14 @@ function creativeBriefToImagePrompt(brief: CreativeBrief, brandSpec: import("@/l
     brief.composition,
     `Palette: ${paletteStr}`,
   ];
+  if (moodStr) parts.push(`Mood: ${moodStr}`);
   if (brief.negativePrompt) {
     parts.push(`AVOID: ${brief.negativePrompt}`);
   }
-  parts.push("Clean composition, no text, no watermark, no logo overlay, human-centric, campaign-like.");
-  return parts.join(". ");
+  parts.push(
+    "Clean composition, human-centric, campaign-like background only."
+  );
+  return parts.join(". ") + STRICT_SUFFIX;
 }
 
 export async function POST(request: Request) {
@@ -140,6 +155,7 @@ export async function POST(request: Request) {
     const dims = PLATFORM_FORMATS[formatKey];
     const brandLock = b.brandLock !== false;
     const brandSpec = getBrandSpecFromIntake(intake as Record<string, unknown>);
+    const webStyle = getWebStyleFromIntake(intake as Record<string, unknown>);
     const styleProfile = typeof b.styleProfile === "string" && STYLE_PROFILES.includes(b.styleProfile as (typeof STYLE_PROFILES)[number])
       ? b.styleProfile
       : undefined;
@@ -188,7 +204,7 @@ export async function POST(request: Request) {
     // Step A: Generate creative brief
     let brief: CreativeBrief;
     try {
-      const briefPrompt = buildCreativeBriefPrompt(draft, intake as Record<string, unknown>, brandSpec, styleProfile, visualStyleProfile, strategy);
+      const briefPrompt = buildCreativeBriefPrompt(draft, intake as Record<string, unknown>, brandSpec, webStyle.moodKeywords, styleProfile, visualStyleProfile, strategy);
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: briefPrompt }],
@@ -225,39 +241,84 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: errMsg }, { status: 500 });
     }
 
-    const imagePrompt = creativeBriefToImagePrompt(brief, brandSpec);
+    const imagePrompt = creativeBriefToImagePrompt(brief, brandSpec, webStyle.moodKeywords);
     const size = getOpenAISize(formatKey);
 
-    // Step B: Generate base image(s) - try up to CANDIDATE_COUNT, score, pick best
+    // Step B: Generate 4 variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if hasTextArtifacts or score < 8
     let bestB64: string | null = null;
-    let bestScore = 0;
+    let bestCritic: import("@/lib/visual-critic").VisualCriticResult | null = null;
     let lastError: Error | null = null;
+    let warningMessage: string | undefined;
 
-    for (let i = 0; i < CANDIDATE_COUNT; i++) {
-      try {
-        const resp = await openai.images.generate({
-          model: IMAGE_MODEL,
-          prompt: imagePrompt,
-          n: 1,
-          size,
-        });
-        const first = resp.data?.[0];
-        const b64 = first?.b64_json;
-        if (typeof b64 !== "string" || !b64) continue;
+    for (let round = 0; round <= MAX_REGENERATE_ROUNDS; round++) {
+      const candidates: { b64: string; critic: import("@/lib/visual-critic").VisualCriticResult }[] = [];
 
-        const scoreResult = await scoreVisualFromB64(b64, openaiKey);
-        if (scoreResult) {
-          const s = scoreResult.overall;
-          if (s > bestScore) {
-            bestScore = s;
-            bestB64 = b64;
+      for (let i = 0; i < CANDIDATE_COUNT; i++) {
+        try {
+          const resp = await openai.images.generate({
+            model: IMAGE_MODEL,
+            prompt: imagePrompt,
+            n: 1,
+            size,
+          });
+          const first = resp.data?.[0];
+          const b64 = first?.b64_json;
+          if (typeof b64 !== "string" || !b64) continue;
+
+          const criticResult = await criticVisualFromB64(b64, openaiKey, {
+            brandColors: brandSpec.colors,
+            moodKeywords: webStyle.moodKeywords,
+          });
+          if (criticResult) {
+            candidates.push({ b64, critic: criticResult });
+          } else {
+            candidates.push({
+              b64,
+              critic: {
+                score: 5,
+                hasTextArtifacts: false,
+                brandColorMatch: 5,
+                brandStyleMatch: 5,
+                note: "Critic nevrátil výsledek",
+              },
+            });
           }
-          if (s >= MIN_SCORE) break;
+        } catch (e) {
+          lastError = e instanceof Error ? e : new Error(String(e));
         }
-        if (!bestB64) bestB64 = b64;
-      } catch (e) {
-        lastError = e instanceof Error ? e : new Error(String(e));
       }
+
+      // Pick best: prefer no text artifacts, then highest score
+      const valid = candidates.filter((c) => c.critic.score >= 0);
+      const noText = valid.filter((c) => !c.critic.hasTextArtifacts);
+      const pool = noText.length > 0 ? noText : valid;
+      const best = pool.length > 0 ? pool.reduce((a, b) => (a.critic.score >= b.critic.score ? a : b)) : null;
+
+      if (best) {
+        bestB64 = best.b64;
+        bestCritic = best.critic;
+      } else if (candidates.length > 0) {
+        const fallback = candidates.reduce((a, b) => (a.critic.score >= b.critic.score ? a : b));
+        bestB64 = fallback.b64;
+        bestCritic = fallback.critic;
+      }
+
+      const shouldRegenerate =
+        bestCritic &&
+        (bestCritic.hasTextArtifacts || bestCritic.score < MIN_SCORE) &&
+        round < MAX_REGENERATE_ROUNDS;
+
+      if (shouldRegenerate) continue;
+
+      if (bestCritic && (bestCritic.hasTextArtifacts || bestCritic.score < MIN_SCORE)) {
+        warningMessage =
+          bestCritic.hasTextArtifacts && bestCritic.score < MIN_SCORE
+            ? "Vizuál může obsahovat nežádoucí text nebo nedosahuje cílové kvality."
+            : bestCritic.hasTextArtifacts
+              ? "Vizuál může obsahovat nežádoucí text v obraze."
+              : "Kvalita vizuálu nedosahuje cílového skóre 8.";
+      }
+      break;
     }
 
     if (!bestB64) {
@@ -279,11 +340,14 @@ export async function POST(request: Request) {
     }
 
     const baseBuffer = Buffer.from(bestB64, "base64");
+    const criticScore = bestCritic?.score ?? 0;
+    const criticNote = bestCritic?.note ?? "";
 
     const ctaColor = brandLock && brandSpec.colors.length > 0 ? brandSpec.colors[0] : undefined;
     const logoUrl = brandLock ? brandSpec.logoUrl : undefined;
 
     let finalBuffer: Buffer;
+    let overlayError: string | undefined;
     try {
       finalBuffer = await composeTextOverlay(baseBuffer, {
         headline: brief.headline,
@@ -293,19 +357,26 @@ export async function POST(request: Request) {
         targetHeight: dims.height,
         ctaColor,
         logoUrl,
+        brandColors: brandLock ? brandSpec.colors : undefined,
+        brandLock,
       });
     } catch (e) {
+      overlayError = e instanceof Error ? e.message : String(e);
       finalBuffer = baseBuffer;
     }
 
+    const colorsApplied = brandLock && brandSpec.colors.length > 0;
+    const logoApplied = brandLock && !!logoUrl;
     const visualBrandApplied = {
-      colors: brandLock && brandSpec.colors.length > 0,
-      logo: brandLock && !!brandSpec.logoUrl,
+      colors: colorsApplied,
+      logo: logoApplied,
       tone: !!brandSpec.toneOfVoice,
       layout: true,
     };
     const visualBrandWarnings: string[] = [];
     if (brandLock && brandSpec.colors.length === 0) visualBrandWarnings.push("Žádné brand barvy v intake");
+    if (overlayError) visualBrandWarnings.push(`Overlay: ${overlayError}`);
+    if (warningMessage) visualBrandWarnings.push(warningMessage);
 
     const timestamp = Date.now();
     const supabase = getSupabaseClient();
@@ -363,7 +434,8 @@ export async function POST(request: Request) {
       visualStatus: "ready",
       visualPrompt: imagePrompt,
       visualCreativeBrief: brief,
-      visualCreativeScore: bestScore > 0 ? bestScore : undefined,
+      visualCreativeScore: criticScore > 0 ? criticScore : undefined,
+      visualCriticNote: criticNote || undefined,
       visualFormat: formatKey,
       visualStyle: styleProfile ?? strategy?.publicLabel ?? "default",
       strategyId: strategy?.id ?? draft.payload.strategyId,
@@ -380,7 +452,8 @@ export async function POST(request: Request) {
       ok: true,
       visualImageUrl: finalUrl,
       visualBaseImageUrl: baseUrl,
-      visualCreativeScore: bestScore > 0 ? bestScore : undefined,
+      visualCreativeScore: criticScore > 0 ? criticScore : undefined,
+      visualCriticNote: criticNote || undefined,
       visualFormat: formatKey,
       visualStyle: styleProfile ?? "default",
       brandApplied: visualBrandApplied,

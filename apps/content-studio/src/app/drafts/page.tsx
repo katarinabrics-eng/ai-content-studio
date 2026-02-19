@@ -36,6 +36,8 @@ function DraftsContent() {
   const [styleProfilePerDraft, setStyleProfilePerDraft] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  /** "studio" = 1 column (default), "compact" = 2 columns */
+  const [viewMode, setViewMode] = useState<"studio" | "compact">("studio");
 
   useEffect(() => {
     let cancelled = false;
@@ -140,6 +142,7 @@ function DraftsContent() {
             visualBrandWarnings: data.brandWarnings ?? next[idx].visualBrandWarnings,
             visualStrategyId: data.visualStrategyId ?? next[idx].visualStrategyId,
             visualStrategySource: data.visualStrategySource ?? next[idx].visualStrategySource,
+            visualCriticNote: data.visualCriticNote ?? next[idx].visualCriticNote,
           };
           return next;
         });
@@ -212,14 +215,34 @@ function DraftsContent() {
           Zatím žádné návrhy. Klikněte na „Vygenerovat 3 návrhy“ nebo nejdřív odešlete intake.
         </p>
       ) : (
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-700">Zobrazení:</span>
+            <button
+              type="button"
+              onClick={() => setViewMode("studio")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium ${viewMode === "studio" ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
+            >
+              Studio (1 sloupec)
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("compact")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium ${viewMode === "compact" ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
+            >
+              Kompaktní (2 sloupce)
+            </button>
+          </div>
+          <div
+            className={`mt-6 grid gap-6 ${viewMode === "compact" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"}`}
+          >
           {[...drafts]
             .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""))
             .slice(0, 3)
             .map((draft) => (
             <article
               key={draft.id}
-              className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+              className="max-w-none rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
             >
               <div className="mb-2 flex items-center justify-between">
                 <span className="rounded bg-slate-100 px-2 py-0.5 text-sm font-medium text-slate-700">
@@ -265,6 +288,9 @@ function DraftsContent() {
                   <span className="mb-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
                     Creative quality: {draft.visualCreativeScore}/10
                   </span>
+                ) : null}
+                {draft.visualCriticNote ? (
+                  <p className="mb-2 text-xs text-slate-600 italic">{draft.visualCriticNote}</p>
                 ) : null}
                 {draft.visualBrandApplied ? (
                   <div className="mb-2 flex flex-wrap gap-1 text-xs text-slate-600">
@@ -405,7 +431,7 @@ function DraftsContent() {
                         </button>
                       ) : null}
                     </div>
-                    <div className="relative mb-2 aspect-video w-full overflow-hidden rounded-lg border border-slate-200">
+                    <div className="relative mb-2 w-full overflow-hidden rounded-lg border border-slate-200" style={{ aspectRatio: "4/5" }}>
                       <Image
                         src={
                           showBasePerDraft[draft.id] && draft.visualBaseImageUrl
@@ -415,7 +441,7 @@ function DraftsContent() {
                         alt="Náhled vizuálu"
                         fill
                         className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 1280px) 100vw, 50vw"
                       />
                     </div>
                     <a
@@ -436,7 +462,8 @@ function DraftsContent() {
               </div>
             </article>
           ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
