@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 
-const HERO_SRC = "/placeholders/mia-mozek.png";
+const HERO_SRC = "/placeholders/ja a mia2 ve střední velikosti.jpg";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek: mia_mozek.png, object-contain, na desktopu scale ~1.07. */
+/** Hero obrázek: ja a mia2 ve střední velikosti.jpg, object-contain, na desktopu scale ~1.07. */
 export function HeroImageFull() {
   return (
     <div className="absolute inset-0 animate-fade-in">
