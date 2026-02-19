@@ -67,7 +67,7 @@ export default function HomePage() {
               </a>
               <a
                 href="#jak-to-funguje"
-                className="rounded-full border border-lime-300 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lime-50"
+                className="rounded-full border border-lucifera-lime/50 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lucifera-lime/10"
               >
                 Jak probíhá spolupráce
               </a>
