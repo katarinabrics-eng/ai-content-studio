@@ -12,6 +12,7 @@ import {
   type EnrichSuggestions,
 } from "@/lib/enrich-schema";
 import { extractAssetsFromWeb, extractHeroFallback } from "@/lib/extract-assets";
+import { chooseProcessingMode } from "@/lib/openai-processing";
 import OpenAI from "openai";
 
 export const runtime = "nodejs";
@@ -216,6 +217,12 @@ export async function POST(request: Request) {
     const websiteValue =
       typeof websiteRaw === "string" ? websiteRaw.trim() : "";
     const website = normalizeWebsiteUrl(websiteValue);
+    const rush = formData.get("rush") === "true";
+    const { mode: processingMode, reason: processingReason } = chooseProcessingMode({
+      jobType: "enrich",
+      rush,
+    });
+    const processingStartedAt = new Date().toISOString();
 
     const parsedReq = enrichRequestSchema.safeParse({ website });
     if (!parsedReq.success) {
@@ -398,6 +405,8 @@ export async function POST(request: Request) {
     const allowedTopicsList = Array.isArray(d.allowedTopics) ? d.allowedTopics.filter((x): x is string => typeof x === "string") : [];
     const disallowedTopicsList = Array.isArray(d.disallowedTopics) ? d.disallowedTopics.filter((x): x is string => typeof x === "string") : [];
 
+    const processingFinishedAt = new Date().toISOString();
+
     return NextResponse.json({
       ok: true,
       prefill,
@@ -409,6 +418,10 @@ export async function POST(request: Request) {
       allowedTopics: allowedTopicsList.length > 0 ? allowedTopicsList : (d.offers?.trim() ? d.offers.split(/[,;]/).map((s) => s.trim()).filter(Boolean) : []),
       disallowedTopics: disallowedTopicsList,
       evidence: evidenceList,
+      processingMode,
+      processingReason,
+      startedAt: processingStartedAt,
+      finishedAt: processingFinishedAt,
     });
   } catch (e) {
     if (e instanceof Error) {

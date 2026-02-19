@@ -12,6 +12,7 @@ import { criticVisualFromB64 } from "@/lib/visual-critic";
 import { getWebStyleFromIntake } from "@/lib/web-style-helper";
 import { resolveVisualStyle } from "@/lib/visual-style-resolver";
 import { CANONICAL_STYLE_IDS, normalizeStyleId, type VisualStyleId } from "@/lib/visual-style-presets";
+import { chooseProcessingMode } from "@/lib/openai-processing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -171,8 +172,16 @@ export async function POST(request: Request) {
       draftId?: string; format?: string; regenerate?: boolean; lockStyle?: boolean; brandLock?: boolean; styleProfile?: string;
       strategyMode?: string; strategyId?: string;
       strategyIdOverride?: string; strategyModeOverride?: "auto" | "manual";
+      rush?: boolean;
     };
     const draftId = typeof b.draftId === "string" ? b.draftId : null;
+    const rush = b.rush === true;
+    const { mode: processingMode, reason: processingReason } = chooseProcessingMode({
+      jobType: "single_visual_regen",
+      rush,
+    });
+    const processingStartedAt = new Date().toISOString();
+
     if (!draftId) {
       return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Chybí draftId", hint: "Odešlete draftId v těle požadavku." }, { status: 400 });
     }
@@ -514,6 +523,10 @@ export async function POST(request: Request) {
       visualStyleSource: resolvedStyle.visualStyleSource,
       visualStyle: resolvedStyle.visualStyleId,
       brandContextApplied: resolvedStyle.brandContextApplied,
+      processingMode,
+      processingReason,
+      processingStartedAt: processingStartedAt,
+      processingFinishedAt: new Date().toISOString(),
       strategyId: strategy?.id ?? draft.payload.strategyId,
       visualStrategyId: strategy?.id,
       visualStrategySource,
@@ -535,6 +548,8 @@ export async function POST(request: Request) {
       visualStyleLabel: resolvedStyle.visualStyleLabel,
       visualStyleSource: resolvedStyle.visualStyleSource,
       brandContextApplied: resolvedStyle.brandContextApplied,
+      processingMode,
+      processingReason,
       brandApplied: visualBrandApplied,
       brandWarnings: visualBrandWarnings,
       visualStrategyId: strategy?.id,

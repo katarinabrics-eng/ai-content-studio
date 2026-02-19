@@ -66,6 +66,9 @@ function DraftsContent() {
   const [styleProfilePerDraft, setStyleProfilePerDraft] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  const [generateJobId, setGenerateJobId] = useState<string | null>(null);
+  const [generateEta, setGenerateEta] = useState<string | null>(null);
+  const jobPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [exportSelectedIds, setExportSelectedIds] = useState<Set<string>>(new Set());
   const [exportLoading, setExportLoading] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -86,6 +89,15 @@ function DraftsContent() {
       return next;
     });
   };
+
+  useEffect(() => {
+    return () => {
+      if (jobPollRef.current) {
+        clearInterval(jobPollRef.current);
+        jobPollRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -177,9 +189,15 @@ function DraftsContent() {
 
   async function handleGenerate() {
     setGenerateError(null);
+    setGenerateJobId(null);
+    setGenerateEta(null);
     setGenerateLoading(true);
+    if (jobPollRef.current) {
+      clearInterval(jobPollRef.current);
+      jobPollRef.current = null;
+    }
     try {
-      const body: { intakeId?: string; count?: number; brandLock?: boolean } = intakeIdParam
+      const body: { intakeId?: string; count?: number; brandLock?: boolean; rush?: boolean } = intakeIdParam
         ? { intakeId: intakeIdParam, count: 3, brandLock }
         : { count: 3, brandLock };
       const res = await fetch("/api/posts/generate", {
@@ -190,6 +208,39 @@ function DraftsContent() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setGenerateError(data.error ?? "Generování selhalo.");
+        return;
+      }
+      if (data.ok && data.queued && data.jobId) {
+        setGenerateJobId(data.jobId);
+        setGenerateEta(data.eta ?? null);
+        const pollJob = async () => {
+          try {
+            const jRes = await fetch(`/api/jobs/${data.jobId}`);
+            const jData = await jRes.json().catch(() => ({}));
+            if (jData.ok && jData.status === "completed" && Array.isArray(jData.drafts)) {
+              if (jobPollRef.current) {
+                clearInterval(jobPollRef.current);
+                jobPollRef.current = null;
+              }
+              setGenerateJobId(null);
+              setGenerateEta(null);
+              setGenerateLoading(false);
+              setDrafts(jData.drafts);
+            } else if (jData.ok && jData.status === "failed") {
+              if (jobPollRef.current) {
+                clearInterval(jobPollRef.current);
+                jobPollRef.current = null;
+              }
+              setGenerateJobId(null);
+              setGenerateLoading(false);
+              setGenerateError(jData.error ?? "Job selhal.");
+            }
+          } catch {
+            // keep polling
+          }
+        };
+        jobPollRef.current = setInterval(pollJob, 3000);
+        pollJob();
         return;
       }
       if (data.ok && Array.isArray(data.drafts)) {
@@ -378,8 +429,13 @@ function DraftsContent() {
           disabled={generateLoading}
           className="rounded-md bg-slate-800 px-4 py-2.5 font-medium text-white hover:bg-slate-700 disabled:opacity-60"
         >
-          {generateLoading ? "Generuji…" : "Vygenerovat 3 návrhy"}
+          {generateJobId ? "Ve frontě (Batch)…" : generateLoading ? "Generuji…" : "Vygenerovat 3 návrhy"}
         </button>
+        {generateJobId && generateEta && (
+          <span className="text-sm text-slate-500">
+            Očekávané dokončení: {new Date(generateEta).toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" })}
+          </span>
+        )}
         <a
           href="/intake"
           className="rounded-md border border-slate-300 bg-white px-4 py-2.5 font-medium text-slate-700 hover:bg-slate-50"

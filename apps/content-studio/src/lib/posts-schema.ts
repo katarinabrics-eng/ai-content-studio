@@ -56,4 +56,5 @@ export const generateRequestSchema = z.object({
   brandLock: z.boolean().optional().default(true),
   strategyMode: z.enum(["auto", "manual"]).optional().default("auto"),
   strategyId: z.string().optional(),
+  rush: z.boolean().optional(),
 });

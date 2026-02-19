@@ -26,6 +26,12 @@ OPENAI_API_KEY=sk-…
 FIRECRAWL_API_KEY=fc-…
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ…
+
+# Processing Modes (volitelné)
+OPENAI_DEFAULT_MODE=batch
+OPENAI_ENABLE_PRIORITY=true
+OPENAI_PRIORITY_MAX_PER_DAY=20
+OPENAI_BATCH_ENABLED=true
 ```
 
 Bez těchto proměnných tlačítko „Načíst automaticky“ skončí chybou ze serveru. **Supabase** (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) je potřeba pro ukládání intake a draftů; na Vercelu jsou tyto proměnné obvykle nastavené.
@@ -94,6 +100,24 @@ Všechna perzistentní data jsou v **Supabase** (bez lokálních souborů `data/
 **Tabulky:**
 - `public.intake_submissions` – `id` (uuid), `created_at` (timestamptz), `payload` (jsonb)
 - `public.post_drafts` – `id` (uuid), `intake_id` (uuid), `created_at` (timestamptz), `payload` (jsonb)
+- `public.processing_jobs` – `id` (uuid), `job_type`, `status` (queued|processing|completed|failed), `payload` (jsonb), `result` (jsonb), `processing_mode`, `processing_reason`, `started_at`, `finished_at`, `created_at`, `updated_at` – pro Batch režim
+
+**Tabulka processing_jobs:** Vytvořte v Supabase SQL Editor:
+```sql
+create table if not exists public.processing_jobs (
+  id uuid primary key default gen_random_uuid(),
+  job_type text not null,
+  status text not null default 'queued',
+  payload jsonb default '{}',
+  result jsonb,
+  processing_mode text not null,
+  processing_reason text not null,
+  started_at timestamptz,
+  finished_at timestamptz,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+```
 
 **Storage buckety:**
 - `brand-assets` (public) – loga v `logos/<uuid>.png`, public URL se ukládá do `payload.brandAssets.logo`
@@ -239,6 +263,28 @@ Export balíček pro snadnou úpravu postů v Canvě (bez přímé Canva API int
 3. Klikněte „Export Canva-ready“, ověřte loading stav.
 4. Po úspěchu klikněte „Stáhnout balíček“, ověřte ZIP obsah (assets, texts, meta, README).
 5. Test bez výběru: klikněte „Export Canva-ready“ bez zaškrtnutí – exportuje poslední 4 schválené.
+
+### Processing Modes (chytrý routing OpenAI)
+
+OpenAI požadavky se směrují do tří režimů podle typu úlohy a naléhavosti:
+
+| Režim | Použití | Popis |
+|-------|---------|-------|
+| **batch** | Plánované úlohy (weekly_posts) | Levný asynchronní režim – job se zařadí do fronty, klient dostane `jobId` a polluje `/api/jobs/:id`. Používá se pro generování 3 návrhů postů bez rush. |
+| **realtime** | Interaktivní kliknutí v UI | Synchronní odpověď – enrich, single_post_regen, single_visual_regen. Používá se pro okamžitou zpětnou vazbu. |
+| **priority** | Urgentní případy (rush) | Aktivuje se při `rush=true` nebo `dueAt < 24h`. Vyžaduje `OPENAI_ENABLE_PRIORITY=true`. |
+
+**Pravidla:** `weekly_posts` → batch (pokud `OPENAI_BATCH_ENABLED=true`), `enrich` / `single_post_regen` / `single_visual_regen` → realtime. Rush nebo dueAt &lt; 24h → priority.
+
+**ENV proměnné:**
+- `OPENAI_DEFAULT_MODE` – výchozí režim (batch)
+- `OPENAI_ENABLE_PRIORITY` – povolit priority režim (true)
+- `OPENAI_PRIORITY_MAX_PER_DAY` – max priority requestů za den (20)
+- `OPENAI_BATCH_ENABLED` – povolit batch režim (true)
+
+**API:** `POST /api/posts/generate` přijímá `rush?: boolean`. Při batch vrací `{ ok: true, queued: true, jobId, eta }`. `GET /api/jobs/:id` vrací stav jobu; při prvním pollu queued job se spustí zpracování.
+
+**Fallback:** Když Batch API nebo vytvoření jobu selže, automatický fallback na realtime. Odpověď může obsahovat `warnings`.
 
 ## Skripty
 
