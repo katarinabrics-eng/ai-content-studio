@@ -43,7 +43,8 @@ function StartForm() {
       const res = await fetch("/api/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(json.error ?? "Nepodařilo se vytvořit projekt.");
+        const msg = typeof json.detail === "string" ? (json.detail || json.error) : (json.error ?? "Nepodařilo se vytvořit projekt.");
+        setError(msg);
         setLoading(false);
         return;
       }
@@ -52,8 +53,9 @@ function StartForm() {
         return;
       }
       router.push("/start/success?projectCode=" + encodeURIComponent(json.projectCode ?? "") + "&pin=" + encodeURIComponent(json.pin ?? ""));
-    } catch {
-      setError("Chyba odeslání.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Chyba odeslání.";
+      setError(msg);
       setLoading(false);
     }
   }
