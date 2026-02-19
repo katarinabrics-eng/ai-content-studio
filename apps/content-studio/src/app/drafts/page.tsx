@@ -332,7 +332,9 @@ function DraftsContent() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const errMsg = [data.error, data.detail, data.hint].filter(Boolean).join(" – ") || "Generování vizuálu selhalo.";
+        const detail = data.detail ?? data.error ?? "Generování vizuálu selhalo.";
+        const hint = data.hint ? `Nápověda: ${data.hint}` : "";
+        const errMsg = hint ? `${detail} ${hint}` : detail;
         setVisualCardState(draftId, "error", errMsg);
         setDrafts((prev) => {
           const idx = prev.findIndex((d) => d.id === draftId);
@@ -370,7 +372,8 @@ function DraftsContent() {
           return next;
         });
         setStyleProfilePerDraft((p) => (data.visualStyleId ? { ...p, [draftId]: data.visualStyleId } : p));
-        setVisualCardState(draftId, "done", "Hotovo. Vizuál je připraven.");
+        const doneMsg = data.warning ? `Hotovo. ${data.warning}` : "Hotovo. Vizuál je připraven.";
+        setVisualCardState(draftId, "done", doneMsg);
         setTimeout(() => {
           setVisualStatusByDraftId((p) => {
             const next = { ...p };

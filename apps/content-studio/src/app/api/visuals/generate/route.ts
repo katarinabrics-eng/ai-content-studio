@@ -17,13 +17,32 @@ import { chooseProcessingMode } from "@/lib/openai-processing";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const maxDuration = 60;
+export const maxDuration = 55;
+
+function visualFail(
+  draftId: string,
+  draftPayload: Record<string, unknown>,
+  detail: string,
+  hint: string
+): NextResponse {
+  updateDraftPayload(draftId, {
+    ...draftPayload,
+    visualStatus: "error",
+    visualError: detail,
+    visualUpdatedAt: new Date().toISOString(),
+  }).catch(() => {});
+  return NextResponse.json(
+    { ok: false, error: "VISUAL_GENERATION_FAILED", detail, hint },
+    { status: 500 }
+  );
+}
 
 const VISUAL_BUCKET = process.env.SUPABASE_VISUALS_BUCKET ?? "generated-visuals";
 const IMAGE_MODEL = "gpt-image-1";
-const CANDIDATE_COUNT = 2;
+const CANDIDATE_COUNT = 1;
+const MAX_CANDIDATES = 2;
 const MIN_SCORE = 8;
-const MAX_REGENERATE_ROUNDS = 2;
+const MAX_REGENERATE_ROUNDS = 1;
 const STRICT_SUFFIX =
   " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
@@ -199,7 +218,12 @@ export async function POST(request: Request) {
     const openaiKey = process.env.OPENAI_API_KEY;
     if (!openaiKey) {
       return NextResponse.json(
-        { ok: false, error: "OPENAI_API_KEY není nastaven" },
+        {
+          ok: false,
+          error: "VISUAL_GENERATION_FAILED",
+          detail: "OPENAI_API_KEY není nastaven",
+          hint: "Nastavte OPENAI_API_KEY v prostředí serveru.",
+        },
         { status: 500 }
       );
     }
@@ -309,32 +333,26 @@ export async function POST(request: Request) {
       };
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : "Chyba při generování creative brief";
-      try {
-        await updateDraftPayload(draftId, {
-          ...draft.payload,
-          visualStatus: "error",
-          visualError: errMsg,
-          visualUpdatedAt: new Date().toISOString(),
-        });
-      } catch {
-        // ignore
-      }
-      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkuste znovu; problém může být s draftem nebo AI modelem." }, { status: 500 });
+      return visualFail(draftId, draft.payload, errMsg, "Zkuste znovu; problém může být s draftem nebo AI modelem.");
     }
 
     const imagePrompt = buildPresetStyleImagePrompt(brief, preset, brandColors, tone);
     const size = getOpenAISize(formatKey);
 
-    // Step B: Generate 4 variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if hasTextArtifacts or score < 8
+    try {
+      // Step B: Generate variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if needed
+    const candidateCount = Math.min(Math.max(1, CANDIDATE_COUNT), MAX_CANDIDATES);
     let bestB64: string | null = null;
     let bestCritic: import("@/lib/visual-critic").VisualCriticResult | null = null;
     let lastError: Error | null = null;
+    let lastStage: "image_generation" | "critic_scoring" = "image_generation";
     let warningMessage: string | undefined;
 
     for (let round = 0; round <= MAX_REGENERATE_ROUNDS; round++) {
       const candidates: { b64: string; critic: import("@/lib/visual-critic").VisualCriticResult }[] = [];
 
-      for (let i = 0; i < CANDIDATE_COUNT; i++) {
+      for (let i = 0; i < candidateCount; i++) {
+        let b64: string | null = null;
         try {
           const resp = await openai.images.generate({
             model: IMAGE_MODEL,
@@ -343,9 +361,15 @@ export async function POST(request: Request) {
             size,
           });
           const first = resp.data?.[0];
-          const b64 = first?.b64_json;
-          if (typeof b64 !== "string" || !b64) continue;
+          b64 = typeof first?.b64_json === "string" ? first.b64_json : null;
+        } catch (e) {
+          lastError = e instanceof Error ? e : new Error(String(e));
+          lastStage = "image_generation";
+          continue;
+        }
+        if (!b64) continue;
 
+        try {
           const criticResult = await criticVisualFromB64(b64, openaiKey, {
             brandColors: brandSpec.colors,
             moodKeywords: webStyle.moodKeywords,
@@ -366,6 +390,17 @@ export async function POST(request: Request) {
           }
         } catch (e) {
           lastError = e instanceof Error ? e : new Error(String(e));
+          lastStage = "critic_scoring";
+          candidates.push({
+            b64,
+            critic: {
+              score: 5,
+              hasTextArtifacts: false,
+              brandColorMatch: 5,
+              brandStyleMatch: 5,
+              note: "Critic selhal",
+            },
+          });
         }
       }
 
@@ -404,20 +439,11 @@ export async function POST(request: Request) {
 
     if (!bestB64) {
       const errMsg = lastError?.message ?? "OpenAI nevrátilo obrázek";
-      try {
-        await updateDraftPayload(draftId, {
-          ...draft.payload,
-          visualStatus: "error",
-          visualError: errMsg,
-          visualUpdatedAt: new Date().toISOString(),
-        });
-      } catch {
-        // ignore
-      }
-      return NextResponse.json(
-        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkontrolujte OPENAI_API_KEY a dostupnost modelu gpt-image-1." },
-        { status: 500 }
-      );
+      const hint =
+        lastStage === "image_generation"
+          ? "Zkontrolujte OPENAI_API_KEY a dostupnost modelu gpt-image-1."
+          : "Vyhodnocení kvality vizuálu selhalo; zkuste znovu.";
+      throw new Error(`[${lastStage}] ${errMsg}|${hint}`);
     }
 
     const baseBuffer = Buffer.from(bestB64, "base64");
@@ -469,20 +495,8 @@ export async function POST(request: Request) {
       .upload(basePath, baseBuffer, { contentType: "image/png", upsert: true });
 
     if (baseUploadError) {
-      const errMsg = `Chyba při ukládání obrázku (bucket: ${VISUAL_BUCKET}): ${baseUploadError.message}`;
-      try {
-        await updateDraftPayload(draftId, {
-          ...draft.payload,
-          visualStatus: "error",
-          visualError: errMsg,
-          visualUpdatedAt: new Date().toISOString(),
-        });
-      } catch {
-        // ignore
-      }
-      return NextResponse.json(
-        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: `Zkontrolujte, že bucket "${VISUAL_BUCKET}" existuje a je public.` },
-        { status: 500 }
+      throw new Error(
+        `[storage_upload] Chyba při ukládání obrázku (bucket: ${VISUAL_BUCKET}): ${baseUploadError.message}|Zkontrolujte, že bucket "${VISUAL_BUCKET}" existuje a je public.`
       );
     }
 
@@ -491,18 +505,9 @@ export async function POST(request: Request) {
       .upload(finalPath, finalBuffer, { contentType: "image/png", upsert: true });
 
     if (finalUploadError) {
-      const errMsg = `Chyba při ukládání finálního obrázku: ${finalUploadError.message}`;
-      try {
-        await updateDraftPayload(draftId, {
-          ...draft.payload,
-          visualStatus: "error",
-          visualError: errMsg,
-          visualUpdatedAt: new Date().toISOString(),
-        });
-      } catch {
-        // ignore
-      }
-      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkontrolujte Supabase storage a oprávnění." }, { status: 500 });
+      throw new Error(
+        `[storage_upload] Chyba při ukládání finálního obrázku: ${finalUploadError.message}|Zkontrolujte Supabase storage a oprávnění.`
+      );
     }
 
     const baseUrl = supabase.storage.from(VISUAL_BUCKET).getPublicUrl(basePath).data.publicUrl;
@@ -555,9 +560,94 @@ export async function POST(request: Request) {
       visualStrategyId: strategy?.id,
       visualStrategySource,
     });
+    } catch (strictErr) {
+      const msg = strictErr instanceof Error ? strictErr.message : String(strictErr);
+      const pipeIdx = msg.indexOf("|");
+      const detailPart = pipeIdx >= 0 ? msg.slice(0, pipeIdx).replace(/^\[[\w_]+\]\s*/, "").trim() : msg;
+      const hintPart =
+        pipeIdx >= 0 ? msg.slice(pipeIdx + 1).trim() : "Zkuste znovu nebo použijte zjednodušenou generaci.";
+
+      try {
+        const resp = await openai.images.generate({
+          model: IMAGE_MODEL,
+          prompt: imagePrompt,
+          n: 1,
+          size,
+        });
+        const b64 = resp.data?.[0]?.b64_json;
+        if (typeof b64 !== "string" || !b64) throw new Error("OpenAI nevrátilo obrázek");
+        const fallbackBaseBuffer = Buffer.from(b64, "base64");
+        let fallbackFinalBuffer: Buffer = fallbackBaseBuffer;
+        try {
+          const withOverlay = await composeTextOverlay(Buffer.from(fallbackBaseBuffer), {
+            headline: brief.headline,
+            subheadline: brief.subheadline,
+            cta: brief.cta,
+            targetWidth: dims.width,
+            targetHeight: dims.height,
+            logoUrl: undefined,
+            brandLock: false,
+          });
+          fallbackFinalBuffer = Buffer.from(withOverlay);
+        } catch {
+          // keep base
+        }
+        const ts = Date.now();
+        const supabaseFallback = getSupabaseClient();
+        const basePathF = `drafts/${draftId}/${ts}_base.png`;
+        const finalPathF = `drafts/${draftId}/${ts}_final.png`;
+        const { error: be } = await supabaseFallback.storage
+          .from(VISUAL_BUCKET)
+          .upload(basePathF, fallbackBaseBuffer, { contentType: "image/png", upsert: true });
+        if (be) throw new Error(be.message);
+        const { error: fe } = await supabaseFallback.storage
+          .from(VISUAL_BUCKET)
+          .upload(finalPathF, fallbackFinalBuffer, { contentType: "image/png", upsert: true });
+        if (fe) throw new Error(fe.message);
+        const baseUrlF = supabaseFallback.storage.from(VISUAL_BUCKET).getPublicUrl(basePathF).data.publicUrl;
+        const finalUrlF = supabaseFallback.storage.from(VISUAL_BUCKET).getPublicUrl(finalPathF).data.publicUrl;
+        const fallbackWarn = "Použita zjednodušená generace (bez kritiky a loga).";
+        await updateDraftPayload(draftId, {
+          ...draft.payload,
+          visualImageUrl: finalUrlF,
+          visualBaseImageUrl: baseUrlF,
+          visualStatus: "ready",
+          visualPrompt: imagePrompt,
+          visualFormat: formatKey,
+          visualStyleId: resolvedStyle.visualStyleId,
+          visualStyleLabel: resolvedStyle.visualStyleLabel,
+          visualStyleSource: resolvedStyle.visualStyleSource,
+          visualStyle: resolvedStyle.visualStyleId,
+          brandContextApplied: resolvedStyle.brandContextApplied,
+          visualBrandWarnings: [fallbackWarn],
+          visualError: undefined,
+          visualUpdatedAt: new Date().toISOString(),
+        });
+        return NextResponse.json({
+          ok: true,
+          visualImageUrl: finalUrlF,
+          visualBaseImageUrl: baseUrlF,
+          visualFormat: formatKey,
+          fallbackUsed: true,
+          warning: fallbackWarn,
+          brandApplied: { colors: false, logo: false, tone: !!brandSpec.toneOfVoice, layout: true },
+          brandWarnings: [fallbackWarn],
+          visualStyleId: resolvedStyle.visualStyleId,
+          visualStyleLabel: resolvedStyle.visualStyleLabel,
+          visualStrategyId: strategy?.id,
+          visualStrategySource,
+        });
+      } catch (fallbackErr) {
+        const fd = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+        return visualFail(draftId, draft.payload, `${detailPart}. Fallback: ${fd}`, hintPart);
+      }
+    }
   } catch (e) {
     console.error("POST /api/visuals/generate", e);
     const message = e instanceof Error ? e.message : "Došlo k chybě serveru";
-    return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: message, hint: "Zkuste to znovu nebo kontaktujte podporu." }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: "VISUAL_GENERATION_FAILED", detail: message, hint: "Zkuste to znovu nebo kontaktujte podporu." },
+      { status: 500 }
+    );
   }
 }
