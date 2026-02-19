@@ -301,7 +301,7 @@ function DraftsContent() {
   );
 
   async function handleGenerateVisual(draftId: string, sameStyle = false) {
-    setVisualCardState(draftId, "running", "Analyzuji brand a připravuji scénu...");
+    setVisualCardState(draftId, "running", "Generuji base...");
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), VISUAL_TIMEOUT_MS);
@@ -312,81 +312,106 @@ function DraftsContent() {
     const useOverride = useStrategyOverridePerDraft[draftId] ?? false;
     const strategyIdOverride = useOverride && strategyOverridePerDraft[draftId] ? strategyOverridePerDraft[draftId] : undefined;
 
+    function setError(detail: string) {
+      setVisualCardState(draftId, "error", detail);
+      setDrafts((prev) => {
+        const idx = prev.findIndex((d) => d.id === draftId);
+        if (idx < 0) return prev;
+        const next = [...prev];
+        next[idx] = { ...next[idx], visualStatus: "error", visualError: detail };
+        return next;
+      });
+    }
+
+    function setSuccess(finalUrl: string, baseUrl: string, warning?: string) {
+      setDrafts((prev) => {
+        const idx = prev.findIndex((d) => d.id === draftId);
+        if (idx < 0) return prev;
+        const next = [...prev];
+        next[idx] = {
+          ...next[idx],
+          visualImageUrl: finalUrl,
+          visualBaseImageUrl: baseUrl,
+          visualStatus: "ready",
+          visualError: undefined,
+        };
+        return next;
+      });
+      const doneMsg = warning ? `Hotovo. ${warning}` : "Hotovo. Vizuál je připraven.";
+      setVisualCardState(draftId, "done", doneMsg);
+      setTimeout(() => {
+        setVisualStatusByDraftId((p) => {
+          const next = { ...p };
+          if (next[draftId] === "done") delete next[draftId];
+          return next;
+        });
+        setVisualMessageByDraftId((p) => {
+          const next = { ...p };
+          delete next[draftId];
+          return next;
+        });
+      }, SUCCESS_MESSAGE_DURATION_MS);
+    }
+
     try {
-      const res = await fetch("/api/visuals/generate", {
+      const baseRes = await fetch("/api/visuals/generate-base", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           draftId,
-          format: format || undefined,
-          lockStyle,
-          brandLock,
           styleProfile: styleProfile || undefined,
-          strategyIdOverride: strategyIdOverride || undefined,
-          strategyModeOverride: useOverride && strategyIdOverride ? "manual" : undefined,
+          brandLock,
+        }),
+        signal: controller.signal,
+      });
+      const baseData = await baseRes.json().catch(() => ({}));
+
+      if (!baseRes.ok) {
+        clearTimeout(timeoutId);
+        const errMsg =
+          baseData.error === "VISUAL_TIMEOUT"
+            ? "Náročné generování překročilo časový limit, zkuste znovu nebo vypněte Brand Lock."
+            : [baseData.detail, baseData.hint].filter(Boolean).join(" – ") || baseData.error || "Generování base obrázku selhalo.";
+        setError(errMsg);
+        return;
+      }
+
+      if (!baseData.ok || !baseData.baseImageUrl) {
+        clearTimeout(timeoutId);
+        setError(baseData.detail ?? "Base obrázek nebyl vrácen.");
+        return;
+      }
+
+      setVisualCardState(draftId, "running", "Aplikuji brand...");
+
+      const applyRes = await fetch("/api/visuals/apply-brand", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          draftId,
+          baseImageUrl: baseData.baseImageUrl,
+          brandLock,
         }),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
 
-      const data = await res.json().catch(() => ({}));
+      const applyData = await applyRes.json().catch(() => ({}));
 
-      if (!res.ok) {
-        const errMsg =
-          data.error === "VISUAL_TIMEOUT"
-            ? "Náročné generování překročilo časový limit, zkuste znovu nebo vypněte Brand Lock."
-            : [data.detail, data.hint].filter(Boolean).join(" – ") || data.error || "Generování vizuálu selhalo.";
-        setVisualCardState(draftId, "error", errMsg);
-        setDrafts((prev) => {
-          const idx = prev.findIndex((d) => d.id === draftId);
-          if (idx < 0) return prev;
-          const next = [...prev];
-          next[idx] = { ...next[idx], visualStatus: "error", visualError: errMsg };
-          return next;
-        });
+      if (!applyRes.ok) {
+        const errDetail = [applyData.detail, applyData.hint].filter(Boolean).join(" – ") || applyData.error || "Aplikace brand overlay selhala.";
+        setSuccess(baseData.baseImageUrl, baseData.baseImageUrl, `Brand overlay se nepodařilo aplikovat; zobrazuje se base obrázek. (${errDetail})`);
         return;
       }
 
-      if (data.ok && data.visualImageUrl) {
-        setDrafts((prev) => {
-          const idx = prev.findIndex((d) => d.id === draftId);
-          if (idx < 0) return prev;
-          const next = [...prev];
-          next[idx] = {
-            ...next[idx],
-            visualImageUrl: data.visualImageUrl,
-            visualBaseImageUrl: data.visualBaseImageUrl ?? next[idx].visualBaseImageUrl,
-            visualStatus: "ready",
-            visualError: undefined,
-            visualCreativeScore: data.visualCreativeScore ?? next[idx].visualCreativeScore,
-            visualFormat: data.visualFormat ?? next[idx].visualFormat,
-            visualStyleId: data.visualStyleId ?? next[idx].visualStyleId,
-            visualStyleLabel: data.visualStyleLabel ?? next[idx].visualStyleLabel,
-            visualStyle: data.visualStyleId ?? next[idx].visualStyle,
-            brandContextApplied: data.brandContextApplied ?? next[idx].brandContextApplied,
-            visualBrandApplied: data.brandApplied ?? next[idx].visualBrandApplied,
-            visualBrandWarnings: data.brandWarnings ?? next[idx].visualBrandWarnings,
-            visualStrategyId: data.visualStrategyId ?? next[idx].visualStrategyId,
-            visualStrategySource: data.visualStrategySource ?? next[idx].visualStrategySource,
-            visualCriticNote: data.visualCriticNote ?? next[idx].visualCriticNote,
-          };
-          return next;
-        });
-        setStyleProfilePerDraft((p) => (data.visualStyleId ? { ...p, [draftId]: data.visualStyleId } : p));
-        const doneMsg = data.warning ? `Hotovo. ${data.warning}` : "Hotovo. Vizuál je připraven.";
-        setVisualCardState(draftId, "done", doneMsg);
-        setTimeout(() => {
-          setVisualStatusByDraftId((p) => {
-            const next = { ...p };
-            if (next[draftId] === "done") delete next[draftId];
-            return next;
-          });
-          setVisualMessageByDraftId((p) => {
-            const next = { ...p };
-            delete next[draftId];
-            return next;
-          });
-        }, SUCCESS_MESSAGE_DURATION_MS);
+      if (applyData.ok && applyData.finalVisualUrl) {
+        setSuccess(
+          applyData.finalVisualUrl,
+          applyData.baseImageUrl ?? baseData.baseImageUrl,
+          applyData.warnings?.length ? applyData.warnings.join(" ") : undefined
+        );
+      } else {
+        setSuccess(baseData.baseImageUrl, baseData.baseImageUrl, "Zobrazuje se base obrázek bez overlay.");
       }
     } catch (e) {
       clearTimeout(timeoutId);
@@ -394,14 +419,7 @@ function DraftsContent() {
       const errMsg = isAbort
         ? "Generování trvá déle než obvykle. Zkuste to znovu."
         : (e instanceof Error ? e.message : "Došlo k chybě při generování.");
-      setVisualCardState(draftId, "error", errMsg);
-      setDrafts((prev) => {
-        const idx = prev.findIndex((d) => d.id === draftId);
-        if (idx < 0) return prev;
-        const next = [...prev];
-        next[idx] = { ...next[idx], visualStatus: "error", visualError: errMsg };
-        return next;
-      });
+      setError(errMsg);
     }
   }
 
