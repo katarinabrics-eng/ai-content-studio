@@ -47,13 +47,13 @@ export default function HomePage() {
           {/* Levý sloupec: velký výrazný text, černý/šedo-černý, lime jen na CTA */}
           <div className="animate-fade-in">
             <h1
-              className="font-black tracking-tight text-zinc-900"
+              className="font-normal tracking-tight text-zinc-900"
               style={{
                 fontSize: "clamp(2.25rem, 5.2vw, 6rem)",
                 lineHeight: 0.95,
               }}
             >
-              Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
+              Tvorba sítí nemá být <span className="font-bold">každodenní boj</span>. Věnujte se <span className="font-bold">své profesi</span>, <span className="font-bold">obsah nechte na nás</span>.
             </h1>
             <p
               className="mt-6 max-w-xl text-lg text-zinc-700"
@@ -76,10 +76,10 @@ export default function HomePage() {
               V pondělí dodáte data. V pátek publikujete.
             </p>
           </div>
-          {/* Pravý sloupec: velký obrázek blíž k textu, wrapper 760–820px */}
-          <div className="relative hidden min-h-[50vh] lg:block">
-            <div className="animate-float flex justify-end">
-              <div className="relative h-full min-h-[420px] w-full max-w-[800px] overflow-hidden rounded-2xl bg-[#f0f0ef]">
+          {/* Pravý sloupec: velký obrázek vyvážený k levé straně */}
+          <div className="relative hidden min-h-[70vh] lg:flex lg:items-center lg:justify-end">
+            <div className="animate-float flex w-full justify-end">
+              <div className="relative h-full min-h-[520px] w-full max-w-[900px] overflow-hidden rounded-2xl bg-[#f0f0ef]">
                 <HeroImageFull />
               </div>
             </div>
