@@ -12,10 +12,10 @@ import {
 type Project = {
   id: string;
   plan_id: string;
-  brand: string;
   status: string;
   created_at: string;
   updated_at: string;
+  brief?: { brand_name?: string } | null;
 };
 
 function TimelineSteps({ currentStatus }: { currentStatus: string }) {
@@ -92,7 +92,7 @@ function ProjectContent() {
   return (
     <main className="min-h-screen bg-lucifera-dark px-4 py-8">
       <div className="mx-auto max-w-2xl">
-        <h1 className="text-2xl font-bold text-white">Váš projekt: {project.brand}</h1>
+        <h1 className="text-2xl font-bold text-white">Váš projekt: {project.brief?.brand_name ?? "Projekt"}</h1>
         <p className="mt-1 text-white/70">Tarif: {project.plan_id}</p>
 
         <section className="glass-panel mt-8 p-6">

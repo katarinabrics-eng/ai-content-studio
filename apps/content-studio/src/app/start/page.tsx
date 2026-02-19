@@ -9,6 +9,7 @@ function StartForm() {
   const planFromUrl = searchParams.get("plan") || "basic";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,6 +25,18 @@ function StartForm() {
       tonalita: (form.querySelector("[name=tonalita]") as HTMLInputElement)?.value ?? "",
       poznamka: (form.querySelector("[name=poznamka]") as HTMLTextAreaElement)?.value ?? "",
       email: (form.querySelector("[name=email]") as HTMLInputElement)?.value ?? "",
+      cilova_skupina: (form.querySelector("[name=cilova_skupina]") as HTMLInputElement)?.value ?? "",
+      nabidky_produkty: (form.querySelector("[name=nabidky_produkty]") as HTMLTextAreaElement)?.value ?? "",
+      zakazana_slova: (form.querySelector("[name=zakazana_slova]") as HTMLInputElement)?.value ?? "",
+      preferovany_styl: (form.querySelector("[name=preferovany_styl]") as HTMLInputElement)?.value ?? "",
+      preferovana_cta: (form.querySelector("[name=preferovana_cta]") as HTMLInputElement)?.value ?? "",
+      url_pdf_autofill: (form.querySelector("[name=url_pdf_autofill]") as HTMLInputElement)?.value ?? "",
+      brand_assets: {
+        logo_url: (form.querySelector("[name=logo_url]") as HTMLInputElement)?.value ?? "",
+        barvy: (form.querySelector("[name=barvy]") as HTMLInputElement)?.value ?? "",
+        fonty: (form.querySelector("[name=fonty]") as HTMLInputElement)?.value ?? "",
+        obrazky: (form.querySelector("[name=obrazky]") as HTMLTextAreaElement)?.value ?? "",
+      },
     };
 
     try {
@@ -45,49 +58,113 @@ function StartForm() {
     }
   }
 
+  const inputClass = "mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40";
+  const labelClass = "block text-sm font-medium text-white/90";
+
   return (
     <main className="min-h-screen bg-lucifera-dark px-4 py-12">
       <div className="mx-auto max-w-lg">
         <h1 className="text-2xl font-bold text-white">Spustit test zdarma</h1>
         <p className="mt-2 text-white/70">Testovací provoz bez platby. Projekt se vytvoří ihned.</p>
+
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <input type="hidden" name="plan_id" value={planFromUrl} />
-          <div>
-            <label className="block text-sm font-medium text-white/90">Značka / název *</label>
-            <input name="brand" required className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40" placeholder="Např. Moje firma" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/90">Obor</label>
-            <input name="obor" className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40" placeholder="Např. poradenství" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/90">Cíl komunikace</label>
-            <input name="cil" className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40" placeholder="Např. získat klienty" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/90">Síť</label>
-            <select name="sit" className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white">
-              <option value="instagram">Instagram</option>
-              <option value="linkedin">LinkedIn</option>
-              <option value="facebook">Facebook</option>
-              <option value="vse">Vše</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/90">Tonalita</label>
-            <input name="tonalita" className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40" placeholder="Např. profesionální" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/90">Poznámka</label>
-            <textarea name="poznamka" rows={2} className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40" placeholder="Volitelně" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/90">E-mail (volitelný)</label>
-            <input type="email" name="email" className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40" placeholder="napr@email.cz" />
-            <p className="mt-1 text-xs text-white/50">Bez e-mailu dostanete kód a PIN pro přístup.</p>
-          </div>
+
+          <section>
+            <h2 className="text-lg font-semibold text-white">Rychlý start</h2>
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className={labelClass}>Značka / název *</label>
+                <input name="brand" required className={inputClass} placeholder="Např. Moje firma" />
+              </div>
+              <div>
+                <label className={labelClass}>Obor</label>
+                <input name="obor" className={inputClass} placeholder="Např. poradenství" />
+              </div>
+              <div>
+                <label className={labelClass}>Cíl komunikace</label>
+                <input name="cil" className={inputClass} placeholder="Např. získat klienty" />
+              </div>
+              <div>
+                <label className={labelClass}>Síť</label>
+                <select name="sit" className={inputClass}>
+                  <option value="instagram">Instagram</option>
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="vse">Vše</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>Web / profil (volitelně)</label>
+                <input name="website_or_profile" type="url" className={inputClass} placeholder="https://…" />
+              </div>
+              <div>
+                <label className={labelClass}>Tonalita</label>
+                <input name="tonalita" className={inputClass} placeholder="Např. profesionální" />
+              </div>
+              <div>
+                <label className={labelClass}>Poznámka</label>
+                <textarea name="poznamka" rows={2} className={inputClass} placeholder="Volitelně" />
+              </div>
+              <div>
+                <label className={labelClass}>E-mail (volitelný)</label>
+                <input type="email" name="email" className={inputClass} placeholder="napr@email.cz" />
+                <p className="mt-1 text-xs text-white/50">Bez e-mailu dostanete kód a PIN pro přístup.</p>
+              </div>
+            </div>
+          </section>
+
+          <p className="text-sm text-white/80">
+            Čím víc informací doplníte, tím přesnější budou první návrhy.
+          </p>
+
+          <details
+            open={advancedOpen}
+            onToggle={(e) => setAdvancedOpen((e.target as HTMLDetailsElement).open)}
+            className="rounded-lg border border-white/20 bg-white/5"
+          >
+            <summary className="cursor-pointer list-none px-4 py-3 font-medium text-white [&::-webkit-details-marker]:hidden">
+              Pokročilé upřesnění (doporučeno pro přesnější návrhy)
+            </summary>
+            <div className="space-y-4 border-t border-white/10 px-4 py-4">
+              <div>
+                <label className={labelClass}>Cílová skupina</label>
+                <input name="cilova_skupina" className={inputClass} placeholder="Např. majitelé firem 30–50 let" />
+              </div>
+              <div>
+                <label className={labelClass}>Nabídky / produkty</label>
+                <textarea name="nabidky_produkty" rows={2} className={inputClass} placeholder="Hlavní produkty nebo služby" />
+              </div>
+              <div>
+                <label className={labelClass}>Zakázaná slova</label>
+                <input name="zakazana_slova" className={inputClass} placeholder="Slova, která nemají být v textech" />
+              </div>
+              <div>
+                <label className={labelClass}>Preferovaný styl</label>
+                <input name="preferovany_styl" className={inputClass} placeholder="Např. minimalistický, hravý" />
+              </div>
+              <div>
+                <label className={labelClass}>Preferovaná CTA</label>
+                <input name="preferovana_cta" className={inputClass} placeholder="Např. Napište nám, Rezervujte si hovor" />
+              </div>
+              <div>
+                <label className={labelClass}>Brand assets</label>
+                <div className="mt-2 space-y-2">
+                  <input name="logo_url" type="url" className={inputClass} placeholder="Logo URL" />
+                  <input name="barvy" className={inputClass} placeholder="Barvy (hex nebo popis)" />
+                  <input name="fonty" className={inputClass} placeholder="Fonty" />
+                  <textarea name="obrazky" rows={1} className={inputClass} placeholder="Odkazy na obrázky (volitelně)" />
+                </div>
+              </div>
+              <div>
+                <label className={labelClass}>URL / PDF auto-fill</label>
+                <input name="url_pdf_autofill" type="url" className={inputClass} placeholder="Odkaz na web nebo PDF k rozboru" />
+              </div>
+            </div>
+          </details>
+
           {error && <p className="text-sm text-red-400">{error}</p>}
-          <button type="submit" disabled={loading} className="btn-lime-primary w-full">
+          <button type="submit" disabled={loading} className="btn-lime-primary w-full text-zinc-900">
             {loading ? "Vytvářím projekt…" : "Vytvořit test projekt"}
           </button>
         </form>

@@ -7,11 +7,10 @@ import type { ProjectStatus } from "@/lib/project-status-engine";
 type Project = {
   id: string;
   plan_id: string;
-  brand: string;
-  obor: string;
-  email: string | null;
+  client_email: string | null;
   status: string;
   created_at: string;
+  brief?: { brand_name?: string } | null;
 };
 
 export default function AdminProjectsPage() {
@@ -41,9 +40,9 @@ export default function AdminProjectsPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <a href={"/admin/projects/" + p.id} className="font-medium text-stone-900 hover:underline">
-                      {p.brand || "—"}
+                      {p.brief?.brand_name ?? "—"}
                     </a>
-                    <p className="text-sm text-stone-500">{p.email ?? "Přístup: kód + PIN"}</p>
+                    <p className="text-sm text-stone-500">{p.client_email ?? "Přístup: kód + PIN"}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="rounded bg-stone-100 px-2 py-0.5 text-sm text-stone-700">

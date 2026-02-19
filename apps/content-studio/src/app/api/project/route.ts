@@ -30,13 +30,13 @@ export async function GET(request: Request) {
   return NextResponse.json({ ok: true, project: sanitize(project) });
 }
 
-function sanitize(p: { id: string; plan_id: string; brand: string; status: string; created_at: string; updated_at: string }) {
+function sanitize(p: { id: string; plan_id: string; status: string; created_at: string; updated_at: string; brief?: { brand_name?: string } | null }) {
   return {
     id: p.id,
     plan_id: p.plan_id,
-    brand: p.brand,
     status: p.status,
     created_at: p.created_at,
     updated_at: p.updated_at,
+    brief: p.brief ?? null,
   };
 }

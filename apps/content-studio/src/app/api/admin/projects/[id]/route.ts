@@ -33,5 +33,6 @@ export async function PATCH(
   }
   const updated = await updateProjectStatus(id, status);
   if (!updated) return NextResponse.json({ ok: false, error: "Chyba při ukládání" }, { status: 500 });
-  return NextResponse.json({ ok: true, project: updated });
+  const project = await getProjectById(id);
+  return NextResponse.json({ ok: true, project: project ?? updated });
 }

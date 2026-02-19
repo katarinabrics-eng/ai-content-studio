@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
   PROJECT_STATUS_LABELS,
@@ -8,27 +8,13 @@ import {
   ALLOWED_TRANSITIONS,
   type ProjectStatus,
 } from "@/lib/project-status-engine";
-
-type Project = {
-  id: string;
-  plan_id: string;
-  brand: string;
-  obor: string;
-  cil: string;
-  sit: string;
-  tonalita: string;
-  poznamka: string;
-  email: string | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
+import { getBriefCompleteness } from "@/lib/supabase-projects";
+import type { ProjectWithBriefAndMeta } from "@/lib/supabase-projects";
 
 export default function AdminProjectDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<ProjectWithBriefAndMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
@@ -65,24 +51,48 @@ export default function AdminProjectDetailPage() {
 
   const current = project.status as ProjectStatus;
   const nextStatuses = ALLOWED_TRANSITIONS[current] ?? [];
+  const brief = project.brief;
+  const meta = project.admin_meta;
+  const { percent: completenessPercent, missing: missingFields } = meta
+    ? { percent: meta.brief_completeness, missing: meta.missing_fields }
+    : getBriefCompleteness(brief);
 
   return (
     <main className="min-h-screen bg-stone-100 p-6">
       <div className="mx-auto max-w-3xl">
         <a href="/admin/projects" className="text-sm text-stone-600 hover:underline">← Přehled projektů</a>
-        <h1 className="mt-4 text-2xl font-bold text-stone-900">{project.brand || "Projekt"}</h1>
+        <h1 className="mt-4 text-2xl font-bold text-stone-900">{brief?.brand_name || "Projekt"}</h1>
         <p className="text-stone-600">ID: {project.id} · Tarif: {project.plan_id}</p>
 
-        <section className="mt-8 rounded-lg border border-stone-200 bg-white p-6">
+        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
+          <h2 className="font-semibold text-stone-900">Completeness briefu</h2>
+          <p className="mt-1 text-2xl font-bold text-stone-900">{completenessPercent} %</p>
+          {missingFields.length > 0 && (
+            <p className="mt-2 text-sm text-stone-600">Chybějící klíčová pole: {missingFields.join(", ")}</p>
+          )}
+        </section>
+
+        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
           <h2 className="font-semibold text-stone-900">Dodané informace</h2>
           <dl className="mt-3 space-y-1 text-sm">
-            <dt className="text-stone-500">Značka</dt><dd className="text-stone-900">{project.brand || "—"}</dd>
-            <dt className="text-stone-500">Obor</dt><dd className="text-stone-900">{project.obor || "—"}</dd>
-            <dt className="text-stone-500">Cíl</dt><dd className="text-stone-900">{project.cil || "—"}</dd>
-            <dt className="text-stone-500">Síť</dt><dd className="text-stone-900">{project.sit || "—"}</dd>
-            <dt className="text-stone-500">Tonalita</dt><dd className="text-stone-900">{project.tonalita || "—"}</dd>
-            <dt className="text-stone-500">Poznámka</dt><dd className="text-stone-900">{project.poznamka || "—"}</dd>
-            <dt className="text-stone-500">E-mail</dt><dd className="text-stone-900">{project.email ?? "— (přístup kód + PIN)"}</dd>
+            <dt className="text-stone-500">Značka</dt><dd className="text-stone-900">{brief?.brand_name ?? "—"}</dd>
+            <dt className="text-stone-500">Obor</dt><dd className="text-stone-900">{brief?.industry ?? "—"}</dd>
+            <dt className="text-stone-500">Cíl</dt><dd className="text-stone-900">{brief?.communication_goal ?? "—"}</dd>
+            <dt className="text-stone-500">Síť(e)</dt><dd className="text-stone-900">{brief?.platforms?.length ? brief.platforms.join(", ") : "—"}</dd>
+            <dt className="text-stone-500">Tonalita</dt><dd className="text-stone-900">{brief?.tone_of_voice ?? "—"}</dd>
+            <dt className="text-stone-500">Web / profil</dt><dd className="text-stone-900">{brief?.website_or_profile ?? "—"}</dd>
+            <dt className="text-stone-500">Poznámka</dt><dd className="text-stone-900">{brief?.note ?? "—"}</dd>
+            <dt className="text-stone-500">E-mail</dt><dd className="text-stone-900">{project.client_email ?? "— (přístup kód + PIN)"}</dd>
+            {brief?.target_audience && <><dt className="text-stone-500">Cílová skupina</dt><dd className="text-stone-900">{brief.target_audience}</dd></>}
+            {brief?.offers && <><dt className="text-stone-500">Nabídky / produkty</dt><dd className="text-stone-900">{brief.offers}</dd></>}
+            {brief?.forbidden_words && <><dt className="text-stone-500">Zakázaná slova</dt><dd className="text-stone-900">{brief.forbidden_words}</dd></>}
+            {brief?.preferred_style && <><dt className="text-stone-500">Preferovaný styl</dt><dd className="text-stone-900">{brief.preferred_style}</dd></>}
+            {brief?.preferred_cta && <><dt className="text-stone-500">Preferovaná CTA</dt><dd className="text-stone-900">{brief.preferred_cta}</dd></>}
+            {brief?.logo_url && <><dt className="text-stone-500">Logo URL</dt><dd className="text-stone-900">{brief.logo_url}</dd></>}
+            {brief?.brand_colors && <><dt className="text-stone-500">Barvy</dt><dd className="text-stone-900">{brief.brand_colors}</dd></>}
+            {brief?.brand_fonts && <><dt className="text-stone-500">Fonty</dt><dd className="text-stone-900">{brief.brand_fonts}</dd></>}
+            {brief?.source_url && <><dt className="text-stone-500">URL auto-fill</dt><dd className="text-stone-900">{brief.source_url}</dd></>}
+            {brief?.brand_pdf_url && <><dt className="text-stone-500">PDF</dt><dd className="text-stone-900">{brief.brand_pdf_url}</dd></>}
           </dl>
         </section>
 

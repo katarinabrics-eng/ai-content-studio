@@ -6,23 +6,103 @@ const CODE_LENGTH = 8;
 const PIN_LENGTH = 6;
 const TOKEN_BYTES = 32;
 
-export type ProjectRow = {
-  id: string;
+/** Pole briefu (project_brief tabulka) — required + optional. */
+export type ProjectBriefRow = {
+  project_id: string;
   plan_id: string;
-  brand: string;
-  obor: string;
-  cil: string;
-  sit: string;
-  tonalita: string;
-  poznamka: string;
-  email: string | null;
-  project_code: string | null;
-  pin_hash: string | null;
-  magic_token_hash: string | null;
-  status: string;
+  brand_name: string;
+  industry: string;
+  communication_goal: string;
+  platforms: string[];
+  tone_of_voice: string;
+  website_or_profile: string;
+  client_email: string | null;
+  note: string;
+  target_audience: string | null;
+  offers: string | null;
+  forbidden_words: string | null;
+  preferred_style: string | null;
+  preferred_cta: string | null;
+  logo_url: string | null;
+  brand_colors: string | null;
+  brand_fonts: string | null;
+  image_refs: string | null;
+  source_url: string | null;
+  brand_pdf_url: string | null;
   created_at: string;
   updated_at: string;
 };
+
+/** Admin-only metadata (project_admin_meta). Klient nikdy nečte. */
+export type ProjectAdminMetaRow = {
+  project_id: string;
+  assigned_curator_id: string | null;
+  brief_completeness: number;
+  missing_fields: string[];
+  ai_confidence: number | null;
+  qa_score: number | null;
+  internal_notes: string | null;
+  risk_flags: string[];
+  sla_due_at: string | null;
+  revision_count: number;
+  last_ai_run_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Hlavní řádek projektu (projects). */
+export type ProjectRow = {
+  id: string;
+  plan_id: string;
+  project_code: string | null;
+  project_pin_hash: string | null;
+  magic_token_hash: string | null;
+  status: string;
+  client_email: string | null;
+  assigned_curator_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Projekt včetně briefu a admin meta (pro admin dashboard). */
+export type ProjectWithBriefAndMeta = ProjectRow & {
+  brief: ProjectBriefRow | null;
+  admin_meta: ProjectAdminMetaRow | null;
+};
+
+/** Klíčová pole pro výpočet completeness. */
+const BRIEF_KEY_FIELDS = [
+  "brand_name",
+  "industry",
+  "communication_goal",
+  "platforms",
+  "tone_of_voice",
+] as const;
+
+const BRIEF_KEY_LABELS: Record<string, string> = {
+  brand_name: "Značka / název",
+  industry: "Obor",
+  communication_goal: "Cíl komunikace",
+  platforms: "Síť(e)",
+  tone_of_voice: "Tonalita",
+};
+
+export function getBriefCompleteness(brief: ProjectBriefRow | null): {
+  percent: number;
+  missing: string[];
+} {
+  if (!brief) return { percent: 0, missing: BRIEF_KEY_FIELDS.map((k) => BRIEF_KEY_LABELS[k] ?? k) };
+  const missing: string[] = [];
+  for (const key of BRIEF_KEY_FIELDS) {
+    const v = brief[key as keyof ProjectBriefRow];
+    if (v === undefined || v === null) missing.push(BRIEF_KEY_LABELS[key] ?? key);
+    else if (Array.isArray(v) && v.length === 0) missing.push(BRIEF_KEY_LABELS[key] ?? key);
+    else if (typeof v === "string" && v.trim() === "") missing.push(BRIEF_KEY_LABELS[key] ?? key);
+  }
+  const filled = BRIEF_KEY_FIELDS.length - missing.length;
+  const percent = BRIEF_KEY_FIELDS.length ? Math.round((filled / BRIEF_KEY_FIELDS.length) * 100) : 0;
+  return { percent, missing };
+}
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token, "utf8").digest("hex");
@@ -47,23 +127,38 @@ export function generateMagicToken(): string {
   return randomBytes(TOKEN_BYTES).toString("hex");
 }
 
-export async function createProject(params: {
+/** Parametry pro vytvoření projektu (mapování z formuláře). */
+export type CreateProjectParams = {
   plan_id: string;
-  brand: string;
-  obor: string;
-  cil: string;
-  sit: string;
-  tonalita: string;
-  poznamka: string;
-  email?: string | null;
-}): Promise<{
+  brand_name: string;
+  industry: string;
+  communication_goal: string;
+  platforms: string[];
+  tone_of_voice: string;
+  website_or_profile: string;
+  client_email?: string | null;
+  note?: string;
+  target_audience?: string | null;
+  offers?: string | null;
+  forbidden_words?: string | null;
+  preferred_style?: string | null;
+  preferred_cta?: string | null;
+  logo_url?: string | null;
+  brand_colors?: string | null;
+  brand_fonts?: string | null;
+  image_refs?: string | null;
+  source_url?: string | null;
+  brand_pdf_url?: string | null;
+};
+
+export async function createProject(params: CreateProjectParams): Promise<{
   project: ProjectRow;
   magicToken?: string;
   projectCode?: string;
   pin?: string;
 }> {
   const supabase = getSupabaseClient();
-  const email = params.email?.trim() || null;
+  const email = params.client_email?.trim() || null;
 
   let magicToken: string | undefined;
   let magicTokenHash: string | null = null;
@@ -80,75 +175,144 @@ export async function createProject(params: {
     pinHash = hashToken(pin);
   }
 
-  const { data, error } = await supabase
+  const { data: project, error: errProject } = await supabase
     .from("projects")
     .insert({
       plan_id: params.plan_id || "basic",
-      brand: (params.brand || "").trim(),
-      obor: (params.obor || "").trim(),
-      cil: (params.cil || "").trim(),
-      sit: (params.sit || "").trim(),
-      tonalita: (params.tonalita || "").trim(),
-      poznamka: (params.poznamka || "").trim(),
-      email,
       project_code: projectCode ?? null,
-      pin_hash: pinHash,
+      project_pin_hash: pinHash,
       magic_token_hash: magicTokenHash,
       status: "PROCESSING_DATA",
+      client_email: email,
     })
     .select()
     .single();
 
-  if (error) throw new Error(`Chyba při vytváření projektu: ${error.message}`);
+  if (errProject) throw new Error(`Chyba při vytváření projektu: ${errProject.message}`);
+  const projectId = (project as ProjectRow).id;
+
+  const briefRow: Omit<ProjectBriefRow, "project_id" | "created_at" | "updated_at"> = {
+    plan_id: params.plan_id || "basic",
+    brand_name: (params.brand_name || "").trim(),
+    industry: (params.industry || "").trim(),
+    communication_goal: (params.communication_goal || "").trim(),
+    platforms: Array.isArray(params.platforms) ? params.platforms : [],
+    tone_of_voice: (params.tone_of_voice || "").trim(),
+    website_or_profile: (params.website_or_profile || "").trim(),
+    client_email: email,
+    note: (params.note || "").trim(),
+    target_audience: params.target_audience?.trim() || null,
+    offers: params.offers?.trim() || null,
+    forbidden_words: params.forbidden_words?.trim() || null,
+    preferred_style: params.preferred_style?.trim() || null,
+    preferred_cta: params.preferred_cta?.trim() || null,
+    logo_url: params.logo_url?.trim() || null,
+    brand_colors: params.brand_colors?.trim() || null,
+    brand_fonts: params.brand_fonts?.trim() || null,
+    image_refs: params.image_refs?.trim() || null,
+    source_url: params.source_url?.trim() || null,
+    brand_pdf_url: params.brand_pdf_url?.trim() || null,
+  };
+
+  const { error: errBrief } = await supabase.from("project_brief").insert({
+    project_id: projectId,
+    ...briefRow,
+  });
+  if (errBrief) throw new Error(`Chyba při ukládání briefu: ${errBrief.message}`);
+
+  const { percent, missing } = getBriefCompleteness({ ...briefRow, project_id: projectId, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+  await supabase.from("project_admin_meta").insert({
+    project_id: projectId,
+    brief_completeness: percent,
+    missing_fields: missing,
+  });
+
   return {
-    project: data as ProjectRow,
+    project: project as ProjectRow,
     magicToken,
     projectCode,
     pin,
   };
 }
 
-export async function getProjectById(id: string): Promise<ProjectRow | null> {
+export async function getProjectById(id: string): Promise<ProjectWithBriefAndMeta | null> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("projects").select("*").eq("id", id).single();
-  if (error?.code === "PGRST116" || !data) return null;
-  return data as ProjectRow;
+  const { data: proj, error: eProj } = await supabase.from("projects").select("*").eq("id", id).single();
+  if (eProj?.code === "PGRST116" || !proj) return null;
+  const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", id).single();
+  const { data: adminMeta } = await supabase.from("project_admin_meta").select("*").eq("project_id", id).single();
+  return {
+    ...(proj as ProjectRow),
+    brief: (brief as ProjectBriefRow) ?? null,
+    admin_meta: (adminMeta as ProjectAdminMetaRow) ?? null,
+  };
 }
 
-export async function getProjectByCodeAndPin(code: string, pin: string): Promise<ProjectRow | null> {
+/** Pro klienta: projekt + brief (bez admin_meta). */
+export async function getProjectByIdForClient(id: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
+  const supabase = getSupabaseClient();
+  const { data: proj, error: eProj } = await supabase.from("projects").select("*").eq("id", id).single();
+  if (eProj?.code === "PGRST116" || !proj) return null;
+  const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", id).single();
+  return {
+    ...(proj as ProjectRow),
+    brief: (brief as ProjectBriefRow) ?? null,
+  };
+}
+
+export async function getProjectByCodeAndPin(code: string, pin: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
   const supabase = getSupabaseClient();
   const pinHash = hashToken(pin.trim());
   const codeTrim = code.trim().toUpperCase();
-  const { data, error } = await supabase
+  const { data: proj, error } = await supabase
     .from("projects")
     .select("*")
     .eq("project_code", codeTrim)
-    .eq("pin_hash", pinHash)
+    .eq("project_pin_hash", pinHash)
     .single();
-  if (error || !data) return null;
-  return data as ProjectRow;
+  if (error || !proj) return null;
+  const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", proj.id).single();
+  return {
+    ...(proj as ProjectRow),
+    brief: (brief as ProjectBriefRow) ?? null,
+  };
 }
 
-export async function getProjectByMagicToken(token: string): Promise<ProjectRow | null> {
+export async function getProjectByMagicToken(token: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
   const supabase = getSupabaseClient();
   const tokenHash = hashToken(token.trim());
-  const { data, error } = await supabase
+  const { data: proj, error } = await supabase
     .from("projects")
     .select("*")
     .eq("magic_token_hash", tokenHash)
     .single();
-  if (error || !data) return null;
-  return data as ProjectRow;
+  if (error || !proj) return null;
+  const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", proj.id).single();
+  return {
+    ...(proj as ProjectRow),
+    brief: (brief as ProjectBriefRow) ?? null,
+  };
 }
 
-export async function listProjects(): Promise<ProjectRow[]> {
+export async function listProjects(): Promise<ProjectWithBriefAndMeta[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
+  const { data: rows, error } = await supabase
     .from("projects")
     .select("*")
     .order("created_at", { ascending: false });
   if (error) return [];
-  return (data ?? []) as ProjectRow[];
+  const list: ProjectWithBriefAndMeta[] = [];
+  for (const r of rows ?? []) {
+    const id = (r as ProjectRow).id;
+    const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", id).single();
+    const { data: adminMeta } = await supabase.from("project_admin_meta").select("*").eq("project_id", id).single();
+    list.push({
+      ...(r as ProjectRow),
+      brief: (brief as ProjectBriefRow) ?? null,
+      admin_meta: (adminMeta as ProjectAdminMetaRow) ?? null,
+    });
+  }
+  return list;
 }
 
 export async function updateProjectStatus(id: string, status: ProjectStatus): Promise<ProjectRow | null> {
@@ -185,7 +349,7 @@ export async function createProjectSession(projectId: string): Promise<string> {
   return token;
 }
 
-export async function getProjectBySessionToken(token: string): Promise<ProjectRow | null> {
+export async function getProjectBySessionToken(token: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
   const supabase = getSupabaseClient();
   const tokenHash = hashToken(token.trim());
   const { data: session, error: sessionError } = await supabase
@@ -196,5 +360,5 @@ export async function getProjectBySessionToken(token: string): Promise<ProjectRo
   if (sessionError || !session) return null;
   const row = session as { project_id: string; expires_at: string };
   if (new Date(row.expires_at) < new Date()) return null;
-  return getProjectById(row.project_id);
+  return getProjectByIdForClient(row.project_id);
 }

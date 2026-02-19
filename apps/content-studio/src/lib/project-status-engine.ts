@@ -1,5 +1,6 @@
 /**
- * Test project status workflow (no payment).
+ * Status workflow: processing_data -> in_production -> draft_ready -> revision -> final_ready -> closed.
+ * Klientovi zobrazovat jen human label (žádné interní kódy).
  */
 
 export const PROJECT_STATUSES = [
@@ -8,16 +9,19 @@ export const PROJECT_STATUSES = [
   "DRAFT_READY",
   "REVISION",
   "FINAL_READY",
+  "CLOSED",
 ] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
+/** Lidské popisky pro klienta (bez interních kódů). */
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
-  PROCESSING_DATA: "Zpracováváme data",
-  IN_PRODUCTION: "V produkci",
-  DRAFT_READY: "Návrh připraven",
-  REVISION: "Revize / úpravy",
-  FINAL_READY: "Finální verze připravena",
+  PROCESSING_DATA: "Data se zpracovávají",
+  IN_PRODUCTION: "Tvorba probíhá",
+  DRAFT_READY: "Návrhy připraveny ke schválení",
+  REVISION: "Zapracováváme připomínky",
+  FINAL_READY: "Finální příspěvky připraveny",
+  CLOSED: "Zakázka uzavřena",
 };
 
 export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
@@ -26,6 +30,7 @@ export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
   "DRAFT_READY",
   "REVISION",
   "FINAL_READY",
+  "CLOSED",
 ];
 
 export function getStatusOrder(status: ProjectStatus): number {
@@ -42,7 +47,8 @@ export const ALLOWED_TRANSITIONS: Partial<Record<ProjectStatus, ProjectStatus[]>
   IN_PRODUCTION: ["DRAFT_READY", "REVISION"],
   DRAFT_READY: ["REVISION", "FINAL_READY"],
   REVISION: ["DRAFT_READY", "FINAL_READY"],
-  FINAL_READY: [],
+  FINAL_READY: ["CLOSED"],
+  CLOSED: [],
 };
 
 export function canTransition(from: ProjectStatus, to: ProjectStatus): boolean {
