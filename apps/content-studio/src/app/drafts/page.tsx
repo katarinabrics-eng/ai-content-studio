@@ -1,10 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { StoredPostDraft } from "@/lib/posts-schema";
 import { STRATEGY_PRESETS } from "@/lib/strategy-library";
+
+const VISUAL_TIMEOUT_MS = 120_000;
+const SUCCESS_MESSAGE_DURATION_MS = 2000;
+
+function getProgressMessage(elapsedSec: number): string {
+  if (elapsedSec >= 45) return "Dokončuji finální kompozici...";
+  if (elapsedSec >= 25) return "Vyhodnocuji nejlepší variantu...";
+  if (elapsedSec >= 10) return "Generuji varianty vizuálu...";
+  return "Analyzuji brand a připravuji scénu...";
+}
 
 const FORMAT_OPTIONS = [
   { value: "instagram-feed", label: "IG Feed 1080×1350" },
@@ -26,7 +36,11 @@ function DraftsContent() {
   const [drafts, setDrafts] = useState<StoredPostDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [generateLoading, setGenerateLoading] = useState(false);
-  const [generatingVisualId, setGeneratingVisualId] = useState<string | null>(null);
+  const [visualStatusByDraftId, setVisualStatusByDraftId] = useState<Record<string, "idle" | "running" | "done" | "error">>({});
+  const [visualMessageByDraftId, setVisualMessageByDraftId] = useState<Record<string, string>>({});
+  const [visualStartedAtByDraftId, setVisualStartedAtByDraftId] = useState<Record<string, number | null>>({});
+  const [visualElapsedByDraftId, setVisualElapsedByDraftId] = useState<Record<string, number>>({});
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [showBasePerDraft, setShowBasePerDraft] = useState<Record<string, boolean>>({});
   const [formatPerDraft, setFormatPerDraft] = useState<Record<string, string>>({});
   const [styleLockedPerDraft, setStyleLockedPerDraft] = useState<Record<string, boolean>>({});
@@ -65,6 +79,60 @@ function DraftsContent() {
     };
   }, [intakeIdParam]);
 
+  // Elapsed timer + progress messages for running visual generation
+  useEffect(() => {
+    const runningIds = Object.entries(visualStatusByDraftId)
+      .filter(([, s]) => s === "running")
+      .map(([id]) => id);
+    if (runningIds.length === 0) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
+    timerRef.current = setInterval(() => {
+      const now = Date.now();
+      setVisualElapsedByDraftId((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        for (const id of runningIds) {
+          const started = visualStartedAtByDraftId[id];
+          if (started != null) {
+            const elapsed = Math.floor((now - started) / 1000);
+            if (next[id] !== elapsed) {
+              next[id] = elapsed;
+              changed = true;
+            }
+          }
+        }
+        return changed ? next : prev;
+      });
+      setVisualMessageByDraftId((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        for (const id of runningIds) {
+          const started = visualStartedAtByDraftId[id];
+          if (started != null) {
+            const elapsed = Math.floor((now - started) / 1000);
+            const msg = getProgressMessage(elapsed);
+            if (next[id] !== msg) {
+              next[id] = msg;
+              changed = true;
+            }
+          }
+        }
+        return changed ? next : prev;
+      });
+    }, 1000);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [visualStatusByDraftId, visualStartedAtByDraftId]);
+
   async function handleGenerate() {
     setGenerateError(null);
     setGenerateLoading(true);
@@ -92,13 +160,32 @@ function DraftsContent() {
     }
   }
 
+  const setVisualCardState = useCallback(
+    (id: string, status: "idle" | "running" | "done" | "error", message?: string) => {
+      setVisualStatusByDraftId((p) => ({ ...p, [id]: status }));
+      if (message !== undefined) setVisualMessageByDraftId((p) => ({ ...p, [id]: message }));
+      if (status === "running") {
+        setVisualStartedAtByDraftId((p) => ({ ...p, [id]: Date.now() }));
+        setVisualElapsedByDraftId((p) => ({ ...p, [id]: 0 }));
+      } else {
+        setVisualStartedAtByDraftId((p) => ({ ...p, [id]: null }));
+      }
+    },
+    []
+  );
+
   async function handleGenerateVisual(draftId: string, sameStyle = false) {
-    setGeneratingVisualId(draftId);
+    setVisualCardState(draftId, "running", "Analyzuji brand a připravuji scénu...");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), VISUAL_TIMEOUT_MS);
+
     const format = formatPerDraft[draftId];
     const styleProfile = styleProfilePerDraft[draftId];
     const lockStyle = sameStyle || styleLockedPerDraft[draftId];
     const useOverride = useStrategyOverridePerDraft[draftId] ?? false;
     const strategyIdOverride = useOverride && strategyOverridePerDraft[draftId] ? strategyOverridePerDraft[draftId] : undefined;
+
     try {
       const res = await fetch("/api/visuals/generate", {
         method: "POST",
@@ -112,10 +199,15 @@ function DraftsContent() {
           strategyIdOverride: strategyIdOverride || undefined,
           strategyModeOverride: useOverride && strategyIdOverride ? "manual" : undefined,
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
+
       const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const errMsg = data.error ?? "Generování vizuálu selhalo.";
+        const errMsg = data.error ?? data.detail ?? "Generování vizuálu selhalo.";
+        setVisualCardState(draftId, "error", errMsg);
         setDrafts((prev) => {
           const idx = prev.findIndex((d) => d.id === draftId);
           if (idx < 0) return prev;
@@ -125,6 +217,7 @@ function DraftsContent() {
         });
         return;
       }
+
       if (data.ok && data.visualImageUrl) {
         setDrafts((prev) => {
           const idx = prev.findIndex((d) => d.id === draftId);
@@ -146,21 +239,34 @@ function DraftsContent() {
           };
           return next;
         });
+        setVisualCardState(draftId, "done", "Hotovo. Vizuál je připraven.");
+        setTimeout(() => {
+          setVisualStatusByDraftId((p) => {
+            const next = { ...p };
+            if (next[draftId] === "done") delete next[draftId];
+            return next;
+          });
+          setVisualMessageByDraftId((p) => {
+            const next = { ...p };
+            delete next[draftId];
+            return next;
+          });
+        }, SUCCESS_MESSAGE_DURATION_MS);
       }
-    } catch {
+    } catch (e) {
+      clearTimeout(timeoutId);
+      const isAbort = e instanceof Error && e.name === "AbortError";
+      const errMsg = isAbort
+        ? "Generování trvá déle než obvykle. Zkuste to znovu."
+        : (e instanceof Error ? e.message : "Došlo k chybě při generování.");
+      setVisualCardState(draftId, "error", errMsg);
       setDrafts((prev) => {
         const idx = prev.findIndex((d) => d.id === draftId);
         if (idx < 0) return prev;
         const next = [...prev];
-        next[idx] = {
-          ...next[idx],
-          visualStatus: "error",
-          visualError: "Došlo k chybě při generování.",
-        };
+        next[idx] = { ...next[idx], visualStatus: "error", visualError: errMsg };
         return next;
       });
-    } finally {
-      setGeneratingVisualId(null);
     }
   }
 
@@ -387,10 +493,10 @@ function DraftsContent() {
                   <button
                     type="button"
                     onClick={() => handleGenerateVisual(draft.id, false)}
-                    disabled={generatingVisualId === draft.id}
-                    className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
+                    disabled={visualStatusByDraftId[draft.id] === "running"}
+                    className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {generatingVisualId === draft.id
+                    {visualStatusByDraftId[draft.id] === "running"
                       ? "Generuji…"
                       : draft.visualImageUrl
                         ? "Regenerovat"
@@ -400,13 +506,35 @@ function DraftsContent() {
                     <button
                       type="button"
                       onClick={() => handleGenerateVisual(draft.id, true)}
-                      disabled={generatingVisualId === draft.id}
-                      className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                      disabled={visualStatusByDraftId[draft.id] === "running"}
+                      className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       Regenerovat ve stejném stylu
                     </button>
                   ) : null}
                 </div>
+                {(visualStatusByDraftId[draft.id] === "running" ||
+                  visualStatusByDraftId[draft.id] === "done" ||
+                  visualStatusByDraftId[draft.id] === "error") && (
+                  <div className="mt-2 min-h-[2.5rem] rounded border border-slate-200 bg-slate-50 px-3 py-2" role="status">
+                    {visualStatusByDraftId[draft.id] === "running" && (
+                      <div className="flex items-center gap-2 text-sm text-slate-700">
+                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-400 border-t-slate-700" aria-hidden />
+                        <span>{visualMessageByDraftId[draft.id] ?? "Generuji…"}</span>
+                        <span className="text-slate-500">
+                          ({visualElapsedByDraftId[draft.id] ?? 0} s)
+                        </span>
+                      </div>
+                    )}
+                    {(visualStatusByDraftId[draft.id] === "done" || visualStatusByDraftId[draft.id] === "error") && (
+                      <p
+                        className={`text-sm ${visualStatusByDraftId[draft.id] === "error" ? "text-red-700" : "text-green-700"}`}
+                      >
+                        {visualMessageByDraftId[draft.id]}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {draft.visualImageUrl || draft.visualBaseImageUrl ? (
                   <div className="mt-3">
                     <div className="mb-1 flex gap-2">
