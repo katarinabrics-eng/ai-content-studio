@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 import { getIntakeByIdOrLast } from "@/lib/supabase-intake";
 import { getPostDraftsByIntakeId } from "@/lib/supabase-posts";
 import type { StoredPostDraft } from "@/lib/posts-schema";
@@ -18,14 +22,27 @@ function toStoredDraft(row: { id: string; intake_id: string; created_at: string;
     visualBrief: String(p.visualBrief ?? ""),
     status: "draft",
     visualImageUrl: typeof p.visualImageUrl === "string" ? p.visualImageUrl : undefined,
+    visualBaseImageUrl: typeof p.visualBaseImageUrl === "string" ? p.visualBaseImageUrl : undefined,
     visualStatus: p.visualStatus as StoredPostDraft["visualStatus"] | undefined,
     visualPrompt: typeof p.visualPrompt === "string" ? p.visualPrompt : undefined,
     visualError: typeof p.visualError === "string" ? p.visualError : undefined,
     visualUpdatedAt: typeof p.visualUpdatedAt === "string" ? p.visualUpdatedAt : undefined,
+    visualCreativeScore: typeof p.visualCreativeScore === "number" ? p.visualCreativeScore : undefined,
+    visualFormat: typeof p.visualFormat === "string" ? p.visualFormat : undefined,
+    visualStyleLocked: typeof p.visualStyleLocked === "boolean" ? p.visualStyleLocked : undefined,
+    brandApplied: p.brandApplied as StoredPostDraft["brandApplied"],
+    brandWarnings: Array.isArray(p.brandWarnings) ? p.brandWarnings.map(String) : undefined,
+    visualStyle: typeof p.visualStyle === "string" ? p.visualStyle : undefined,
+    visualVariants: Array.isArray(p.visualVariants) ? p.visualVariants as { url: string; score: number }[] : undefined,
+    visualCriticNote: typeof p.visualCriticNote === "string" ? p.visualCriticNote : undefined,
+    visualBrandApplied: p.visualBrandApplied as StoredPostDraft["visualBrandApplied"],
+    visualBrandWarnings: Array.isArray(p.visualBrandWarnings) ? p.visualBrandWarnings.map(String) : undefined,
+    strategyId: typeof p.strategyId === "string" ? p.strategyId : undefined,
+    strategyLabel: typeof p.strategyLabel === "string" ? p.strategyLabel : undefined,
+    strategyRationale: typeof p.strategyRationale === "string" ? p.strategyRationale : undefined,
+    awarenessLevel: typeof p.awarenessLevel === "string" ? p.awarenessLevel : undefined,
   };
 }
-
-export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {

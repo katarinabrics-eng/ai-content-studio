@@ -15,6 +15,8 @@ import { extractAssetsFromWeb } from "@/lib/extract-assets";
 import OpenAI from "openai";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export const maxDuration = 90;
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
@@ -326,6 +328,9 @@ export async function POST(request: Request) {
           ? d.stylePreference
           : "storytelling",
       ctaPreference: d.ctaPreference?.trim() || "",
+      strategyMode: "auto",
+      strategyId: undefined,
+      awarenessLevel: "problem_aware",
       brandAssets: {
         logoUrl: detectedAssets.logoCandidates[0] ?? d.brandAssets?.logo?.trim() ?? "",
         colors: detectedAssets.colors.length > 0

@@ -3,11 +3,14 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  AWARENESS_LEVELS,
   CONTENT_GOAL_OPTIONS,
   PLATFORM_OPTIONS,
   STYLE_PREFERENCE_OPTIONS,
+  type AwarenessLevel,
   type IntakeFormData,
 } from "@/lib/intake-schema";
+import { STRATEGY_PRESETS } from "@/lib/strategy-library";
 import type { EnrichApiResponse, EnrichPrefill, EnrichSuggestions } from "@/lib/enrich-schema";
 
 const LOGO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -88,6 +91,9 @@ function IntakeContent() {
     platforms: [],
     stylePreference: "edukace",
     ctaPreference: "",
+    strategyMode: "auto",
+    strategyId: undefined,
+    awarenessLevel: "problem_aware",
     brandAssets: {
       logoUrl: "",
       colors: "",
@@ -183,14 +189,20 @@ function IntakeContent() {
         platforms: [],
         stylePreference: "edukace",
         ctaPreference: "",
+        strategyMode: "auto",
+        strategyId: undefined,
+        awarenessLevel: "problem_aware",
         brandAssets: { logoUrl: "", colors: "", fonts: "", photosNote: "" },
       });
       return;
     }
 
     setStatus("error");
+    const msg = data.detail
+      ? `${data.error ?? "Chyba"}: ${data.detail}`
+      : (data.error ?? "Odeslání se nezdařilo");
     setError({
-      message: data.error ?? "Odeslání se nezdařilo",
+      message: msg,
       details: data.details ?? undefined,
     });
   }
@@ -243,6 +255,11 @@ function IntakeContent() {
           platforms: apiResponse.prefill.platforms ?? [],
           stylePreference: apiResponse.prefill.stylePreference ?? "edukace",
           ctaPreference: apiResponse.prefill.ctaPreference ?? "",
+          strategyMode: apiResponse.prefill.strategyMode ?? "auto",
+          strategyId: apiResponse.prefill.strategyId,
+          awarenessLevel: (AWARENESS_LEVELS as readonly string[]).includes(String(apiResponse.prefill.awarenessLevel ?? ""))
+            ? (apiResponse.prefill.awarenessLevel as AwarenessLevel)
+            : "problem_aware",
           brandAssets: {
             logoUrl: apiResponse.prefill.brandAssets?.logoUrl ?? "",
             colors: apiResponse.prefill.brandAssets?.colors ?? "",
@@ -605,6 +622,66 @@ function IntakeContent() {
                 items={enrichSuggestions?.ctaPreference ?? []}
                 onSelect={(s) => update({ ctaPreference: s })}
               />
+            </div>
+            <div>
+              <span className="block text-sm font-medium text-slate-700">
+                Režim strategie
+              </span>
+              <div className="mt-2 flex flex-wrap gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="strategyMode"
+                    checked={form.strategyMode === "auto"}
+                    onChange={() => update({ strategyMode: "auto", strategyId: undefined })}
+                    className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                  />
+                  <span className="text-slate-700">Automatický (doporučeno)</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="strategyMode"
+                    checked={form.strategyMode === "manual"}
+                    onChange={() => update({ strategyMode: "manual" })}
+                    className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                  />
+                  <span className="text-slate-700">Ruční výběr</span>
+                </label>
+              </div>
+              {form.strategyMode === "manual" && (
+                <div className="mt-2">
+                  <select
+                    value={form.strategyId ?? ""}
+                    onChange={(e) => update({ strategyId: e.target.value || undefined })}
+                    className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                  >
+                    <option value="">Vyberte strategii</option>
+                    {STRATEGY_PRESETS.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.publicLabel}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+            <div>
+              <label htmlFor="awarenessLevel" className="block text-sm font-medium text-slate-700">
+                Úroveň povědomí publika
+              </label>
+              <select
+                id="awarenessLevel"
+                value={form.awarenessLevel ?? "problem_aware"}
+                onChange={(e) => update({ awarenessLevel: e.target.value as AwarenessLevel })}
+                className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              >
+                <option value="unaware">Nevědomé (ještě neví o problému)</option>
+                <option value="problem_aware">Vědomí problému</option>
+                <option value="solution_aware">Vědomí řešení</option>
+                <option value="product_aware">Vědomí produktu</option>
+                <option value="most_aware">Plně připravení (ready to buy)</option>
+              </select>
             </div>
           </div>
         </section>

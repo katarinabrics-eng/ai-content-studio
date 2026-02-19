@@ -59,6 +59,9 @@ export type EnrichPrefill = {
   platforms: (typeof PLATFORMS)[number][];
   stylePreference: (typeof STYLE_PREFERENCE)[number];
   ctaPreference: string;
+  strategyMode?: "auto" | "manual";
+  strategyId?: string;
+  awarenessLevel?: string;
   brandAssets: {
     logoUrl: string;
     colors: string;

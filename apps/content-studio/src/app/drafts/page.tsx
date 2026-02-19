@@ -4,6 +4,20 @@ import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { StoredPostDraft } from "@/lib/posts-schema";
+import { STRATEGY_PRESETS } from "@/lib/strategy-library";
+
+const FORMAT_OPTIONS = [
+  { value: "instagram-feed", label: "IG Feed 1080×1350" },
+  { value: "instagram-story", label: "IG Story 1080×1920" },
+  { value: "facebook-feed", label: "FB Feed 1080×1350" },
+  { value: "linkedin-post", label: "LinkedIn 1200×627" },
+] as const;
+
+const STYLE_OPTIONS = [
+  { value: "katarina_signature", label: "Katarina signature" },
+  { value: "minimal_clean", label: "Minimal clean" },
+  { value: "bold_growth", label: "Bold growth" },
+] as const;
 
 function DraftsContent() {
   const searchParams = useSearchParams();
@@ -13,6 +27,13 @@ function DraftsContent() {
   const [loading, setLoading] = useState(true);
   const [generateLoading, setGenerateLoading] = useState(false);
   const [generatingVisualId, setGeneratingVisualId] = useState<string | null>(null);
+  const [showBasePerDraft, setShowBasePerDraft] = useState<Record<string, boolean>>({});
+  const [formatPerDraft, setFormatPerDraft] = useState<Record<string, string>>({});
+  const [styleLockedPerDraft, setStyleLockedPerDraft] = useState<Record<string, boolean>>({});
+  const [strategyOverridePerDraft, setStrategyOverridePerDraft] = useState<Record<string, string>>({});
+  const [useStrategyOverridePerDraft, setUseStrategyOverridePerDraft] = useState<Record<string, boolean>>({});
+  const [brandLock, setBrandLock] = useState(true);
+  const [styleProfilePerDraft, setStyleProfilePerDraft] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
 
@@ -46,7 +67,9 @@ function DraftsContent() {
     setGenerateError(null);
     setGenerateLoading(true);
     try {
-      const body: { intakeId?: string; count?: number } = intakeIdParam ? { intakeId: intakeIdParam, count: 3 } : { count: 3 };
+      const body: { intakeId?: string; count?: number; brandLock?: boolean } = intakeIdParam
+        ? { intakeId: intakeIdParam, count: 3, brandLock }
+        : { count: 3, brandLock };
       const res = await fetch("/api/posts/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -67,13 +90,26 @@ function DraftsContent() {
     }
   }
 
-  async function handleGenerateVisual(draftId: string) {
+  async function handleGenerateVisual(draftId: string, sameStyle = false) {
     setGeneratingVisualId(draftId);
+    const format = formatPerDraft[draftId];
+    const styleProfile = styleProfilePerDraft[draftId];
+    const lockStyle = sameStyle || styleLockedPerDraft[draftId];
+    const useOverride = useStrategyOverridePerDraft[draftId] ?? false;
+    const strategyIdOverride = useOverride && strategyOverridePerDraft[draftId] ? strategyOverridePerDraft[draftId] : undefined;
     try {
       const res = await fetch("/api/visuals/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ draftId }),
+        body: JSON.stringify({
+          draftId,
+          format: format || undefined,
+          lockStyle,
+          brandLock,
+          styleProfile: styleProfile || undefined,
+          strategyIdOverride: strategyIdOverride || undefined,
+          strategyModeOverride: useOverride && strategyIdOverride ? "manual" : undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -95,8 +131,15 @@ function DraftsContent() {
           next[idx] = {
             ...next[idx],
             visualImageUrl: data.visualImageUrl,
+            visualBaseImageUrl: data.visualBaseImageUrl ?? next[idx].visualBaseImageUrl,
             visualStatus: "ready",
             visualError: undefined,
+            visualCreativeScore: data.visualCreativeScore ?? next[idx].visualCreativeScore,
+            visualFormat: data.visualFormat ?? next[idx].visualFormat,
+            visualBrandApplied: data.brandApplied ?? next[idx].visualBrandApplied,
+            visualBrandWarnings: data.brandWarnings ?? next[idx].visualBrandWarnings,
+            visualStrategyId: data.visualStrategyId ?? next[idx].visualStrategyId,
+            visualStrategySource: data.visualStrategySource ?? next[idx].visualStrategySource,
           };
           return next;
         });
@@ -132,6 +175,14 @@ function DraftsContent() {
       )}
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={brandLock}
+            onChange={(e) => setBrandLock(e.target.checked)}
+          />
+          <span className="text-sm font-medium text-slate-700">Brand Lock</span>
+        </label>
         <button
           type="button"
           onClick={handleGenerate}
@@ -178,6 +229,16 @@ function DraftsContent() {
                   <span className="text-xs text-slate-500">Úhel: {draft.angle}</span>
                 ) : null}
               </div>
+              {draft.strategyLabel ? (
+                <div className="mb-2 rounded-md bg-slate-50 p-2 text-sm">
+                  <p className="font-medium text-slate-700">
+                    Použitá strategie: {draft.strategyLabel}
+                  </p>
+                  {draft.strategyRationale ? (
+                    <p className="mt-1 text-xs text-slate-600">{draft.strategyRationale}</p>
+                  ) : null}
+                </div>
+              ) : null}
               {draft.hook ? (
                 <p className="mb-2 font-medium text-slate-800">{draft.hook}</p>
               ) : null}
@@ -200,23 +261,157 @@ function DraftsContent() {
                 </p>
               ) : null}
               <div className="mt-3 border-t border-slate-100 pt-3">
-                <button
-                  type="button"
-                  onClick={() => handleGenerateVisual(draft.id)}
-                  disabled={generatingVisualId === draft.id}
-                  className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
-                >
-                  {generatingVisualId === draft.id
-                    ? "Generuji…"
-                    : draft.visualImageUrl
-                      ? "Regenerovat"
-                      : "Vygenerovat vizuál"}
-                </button>
-                {draft.visualImageUrl ? (
+                {draft.visualCreativeScore != null ? (
+                  <span className="mb-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                    Creative quality: {draft.visualCreativeScore}/10
+                  </span>
+                ) : null}
+                {draft.visualBrandApplied ? (
+                  <div className="mb-2 flex flex-wrap gap-1 text-xs text-slate-600">
+                    {draft.visualBrandApplied.colors ? <span className="rounded bg-green-100 px-1.5 py-0.5">barvy</span> : null}
+                    {draft.visualBrandApplied.logo ? <span className="rounded bg-green-100 px-1.5 py-0.5">logo</span> : null}
+                    {draft.visualBrandApplied.tone ? <span className="rounded bg-green-100 px-1.5 py-0.5">tón</span> : null}
+                    {draft.visualBrandApplied.layout ? <span className="rounded bg-green-100 px-1.5 py-0.5">layout</span> : null}
+                  </div>
+                ) : null}
+                {draft.brandApplied ? (
+                  <div className="mb-2 flex flex-wrap gap-1 text-xs text-slate-600">
+                    {draft.brandApplied.tone ? <span className="rounded bg-green-100 px-1.5 py-0.5">tón</span> : null}
+                    {draft.brandApplied.forbiddenWords ? <span className="rounded bg-green-100 px-1.5 py-0.5">zakázaná slova</span> : null}
+                    {draft.brandApplied.platform ? <span className="rounded bg-green-100 px-1.5 py-0.5">platforma</span> : null}
+                  </div>
+                ) : null}
+                {(draft.visualBrandWarnings?.length ?? draft.brandWarnings?.length ?? 0) > 0 ? (
+                  <div className="mb-2 text-xs text-amber-700">
+                    {(draft.visualBrandWarnings ?? draft.brandWarnings ?? []).map((w, i) => (
+                      <div key={i}>⚠ {w}</div>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="mb-2 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={useStrategyOverridePerDraft[draft.id] ?? false}
+                        onChange={(e) =>
+                          setUseStrategyOverridePerDraft((p) => ({ ...p, [draft.id]: e.target.checked }))
+                        }
+                      />
+                      Použít override jen pro tento vizuál
+                    </label>
+                  </div>
+                  {(useStrategyOverridePerDraft[draft.id] ?? false) && (
+                    <select
+                      value={strategyOverridePerDraft[draft.id] ?? ""}
+                      onChange={(e) =>
+                        setStrategyOverridePerDraft((p) => ({ ...p, [draft.id]: e.target.value }))
+                      }
+                      className="rounded border border-slate-300 px-2 py-1 text-sm"
+                    >
+                      <option value="">Vyberte strategii</option>
+                      {STRATEGY_PRESETS.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.publicLabel}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <select
+                    value={formatPerDraft[draft.id] ?? draft.visualFormat ?? "instagram-feed"}
+                    onChange={(e) =>
+                      setFormatPerDraft((p) => ({ ...p, [draft.id]: e.target.value }))
+                    }
+                    className="rounded border border-slate-300 px-2 py-1 text-sm"
+                  >
+                    {FORMAT_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={styleProfilePerDraft[draft.id] ?? ""}
+                    onChange={(e) =>
+                      setStyleProfilePerDraft((p) => ({ ...p, [draft.id]: e.target.value }))
+                    }
+                    className="rounded border border-slate-300 px-2 py-1 text-sm"
+                  >
+                    <option value="">Styl (default)</option>
+                    {STYLE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  <label className="flex items-center gap-1 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={styleLockedPerDraft[draft.id] ?? draft.visualStyleLocked ?? false}
+                      onChange={(e) =>
+                        setStyleLockedPerDraft((p) => ({ ...p, [draft.id]: e.target.checked }))
+                      }
+                    />
+                    Uzamknout styl
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateVisual(draft.id, false)}
+                    disabled={generatingVisualId === draft.id}
+                    className="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
+                  >
+                    {generatingVisualId === draft.id
+                      ? "Generuji…"
+                      : draft.visualImageUrl
+                        ? "Regenerovat"
+                        : "Vygenerovat vizuál"}
+                  </button>
+                  {draft.visualImageUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => handleGenerateVisual(draft.id, true)}
+                      disabled={generatingVisualId === draft.id}
+                      className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                    >
+                      Regenerovat ve stejném stylu
+                    </button>
+                  ) : null}
+                </div>
+                {draft.visualImageUrl || draft.visualBaseImageUrl ? (
                   <div className="mt-3">
+                    <div className="mb-1 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowBasePerDraft((p) => ({ ...p, [draft.id]: false }))
+                        }
+                        className={`text-xs ${!showBasePerDraft[draft.id] ? "font-bold underline" : "text-slate-500"}`}
+                      >
+                        Finální
+                      </button>
+                      {draft.visualBaseImageUrl ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowBasePerDraft((p) => ({ ...p, [draft.id]: true }))
+                          }
+                          className={`text-xs ${showBasePerDraft[draft.id] ? "font-bold underline" : "text-slate-500"}`}
+                        >
+                          Base
+                        </button>
+                      ) : null}
+                    </div>
                     <div className="relative mb-2 aspect-video w-full overflow-hidden rounded-lg border border-slate-200">
                       <Image
-                        src={draft.visualImageUrl}
+                        src={
+                          showBasePerDraft[draft.id] && draft.visualBaseImageUrl
+                            ? draft.visualBaseImageUrl
+                            : draft.visualImageUrl!
+                        }
                         alt="Náhled vizuálu"
                         fill
                         className="object-cover"
@@ -224,7 +419,7 @@ function DraftsContent() {
                       />
                     </div>
                     <a
-                      href={draft.visualImageUrl}
+                      href={draft.visualImageUrl ?? draft.visualBaseImageUrl ?? "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-slate-600 underline hover:text-slate-800"

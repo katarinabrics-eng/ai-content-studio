@@ -4,6 +4,8 @@ import { getSupabaseClient } from "@/lib/supabase-server";
 import { getIntakes, insertIntake } from "@/lib/supabase-intake";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const LOGO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 const LOGO_MIME = "image/png";
@@ -99,25 +101,28 @@ export async function POST(request: Request) {
         });
 
       if (uploadError) {
-        console.error("Storage upload error:", uploadError);
-        return NextResponse.json(
-          { ok: false, error: "INTAKE_SAVE_FAILED", detail: uploadError.message },
-          { status: 500 }
-        );
+        console.error("Storage upload error (non-fatal):", uploadError);
+        // Logo upload failed – save intake without logo, add warning
+      } else {
+        const { data: urlData } = supabase.storage.from(BUCKET_BRAND_ASSETS).getPublicUrl(path);
+        const logoUrl = urlData?.publicUrl ?? "";
+        payloadToInsert.brandAssets = {
+          ...(payloadToInsert.brandAssets ?? {}),
+          logo: logoUrl,
+        };
       }
+    }
 
-      const { data: urlData } = supabase.storage.from(BUCKET_BRAND_ASSETS).getPublicUrl(path);
-      const logoUrl = urlData?.publicUrl ?? "";
-
-      payloadToInsert.brandAssets = {
-        ...(payloadToInsert.brandAssets ?? {}),
-        logo: logoUrl,
-      };
+    const warnings: string[] = [];
+    if (logoFile && !(payloadToInsert.brandAssets as Record<string, unknown> | undefined)?.logo) {
+      warnings.push("Logo upload failed");
     }
 
     try {
       const { id } = await insertIntake(payloadToInsert as Record<string, unknown>);
-      return NextResponse.json({ ok: true, id });
+      return NextResponse.json(
+        warnings.length ? { ok: true, id, warnings } : { ok: true, id }
+      );
     } catch (e) {
       const detail = e instanceof Error ? e.message : String(e);
       console.error("POST /api/intake insertIntake:", e);

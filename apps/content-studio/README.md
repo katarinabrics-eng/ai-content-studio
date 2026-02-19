@@ -36,6 +36,8 @@ Bez těchto proměnných tlačítko „Načíst automaticky“ skončí chybou z
 - Z webu heuristicky vytáhne **brand assety**: kandidáty na logo (og:image, twitter:image, img s „logo“, favicon), barvy (hex/rgb z HTML a až 5 CSS souborů, top 5), fonty (font-family z CSS, top 5).
 - LLM (OpenAI) extrahuje údaje a vrátí **prefill** (všechna pole formuláře s výchozími hodnotami, bez null) a **suggestions** (alternativní návrhy pro cílovou skupinu, nabídky, tón, CTA, zakázaná slova).
 
+**Enrich persistence – strategy pole:** Prefill obsahuje i `strategyMode`, `strategyId`, `awarenessLevel` (defaulty: strategyMode `"auto"`, awarenessLevel `"problem_aware"`). Tato pole se při merge udržují ve formuláři a odesílají v POST /api/intake.
+
 **Odpověď endpointu** (úspěch):
 
 - `prefill` – objekt se všemi intake poli (předvyplnění formuláře).
@@ -76,7 +78,7 @@ Očekávaná odpověď: `ok: true`, `prefill`, `suggestions`, `detectedAssets`, 
 Formulář pro zadání údajů o značce a cílech obsahu:
 
 - **URL:** [http://localhost:3000/intake](http://localhost:3000/intake)
-- Pola: název značky, web, odvětví, cílová skupina, nabídky, tón hlasu, zakázaná slova, cíl obsahu (prodej / důvěra / edukace), platformy (Instagram, Facebook, LinkedIn), styl (humor / storytelling / edukace / prodejní), CTA preference.
+- Pola: název značky, web, odvětví, cílová skupina, nabídky, tón hlasu, zakázaná slova, cíl obsahu (prodej / důvěra / edukace), platformy (Instagram, Facebook, LinkedIn), styl (humor / storytelling / edukace / prodejní), CTA preference, **Úroveň povědomí publika** (awarenessLevel).
 - Sekce **Brand assets**: upload loga (pouze PNG, max 5 MB), barvy, fonty, fotky (placeholder).
 
 **Logo upload:** podporován je pouze formát PNG (`image/png`), maximální velikost 5 MB. Na klientu i na serveru se validuje typ a velikost.
@@ -108,23 +110,103 @@ Všechna perzistentní data jsou v **Supabase** (bez lokálních souborů `data/
 - **Stránka:** [http://localhost:3000/drafts](http://localhost:3000/drafts)
 - Po odeslání intake se zobrazí odkaz „Přejít na návrhy postů“. Na stránce /drafts klikněte na **„Vygenerovat 3 návrhy“** – podle posledního (nebo zvoleného) intake se vygenerují 3 návrhy postů přes OpenAI a zobrazí se v kartách (hook, caption, CTA, hashtags, visualBrief).
 - **Uložiště:** Supabase tabulka `post_drafts`.
-- **API:** `POST /api/posts/generate` (body: `{ intakeId?: string, count?: number }`), `GET /api/posts?intakeId=...` (vrací drafty pro daný nebo poslední intake).
+- **API:** `POST /api/posts/generate` (body: `{ intakeId?, count?, brandLock?, strategyMode?, strategyId? }`), `GET /api/posts?intakeId=...` (vrací drafty pro daný nebo poslední intake).
 
-### Generování vizuálů
+### Generování vizuálů (Art-directed creative pipeline)
 
-U každého draftu lze vygenerovat vizuál (obrázek) přes OpenAI Images API (model `gpt-image-1`). Obrázek se uloží do Supabase Storage bucketu `generated-visuals` a zobrazí se v kartě draftu.
+Dvoukrokový pipeline pro generování reklamních vizuálů ve konzistentním brand stylu.
+
+**Pipeline:**
+1. **Step A – Creative brief:** LLM vytvoří `creativeBrief` (concept, shotType, scene, lighting, composition, palette, headline, subheadline, cta, negativePrompt) z draftu + intake + volitelného visualStyleProfile.
+2. **Step B – Base image:** OpenAI gpt-image-1 vygeneruje základní obrázek BEZ textu.
+3. **Text overlay:** Sharp přesně položí headline/subheadline/CTA s bezpečnými okraji.
+4. **Quality scoring:** Vision model ohodnotí kandidáty (brand fit, readability, composition, conversion clarity); vybere se nejlepší s score ≥ 8, jinak se regeneruje.
+
+**Platformové formáty:**
+- instagram-feed: 1080×1350
+- instagram-story: 1080×1920
+- facebook-feed: 1080×1350
+- linkedin-post: 1200×627
+
+**Visual strategy override:**
+
+- Na stránce /drafts lze u každé karty zapnout toggle „Použít override jen pro tento vizuál“ a vybrat jinou strategii ze seznamu (public labels).
+- Body POST /api/visuals/generate: volitelně `strategyIdOverride?: string`, `strategyModeOverride?: "auto" | "manual"`.
+- Při override se použije zvolená strategie pro art direction prompt; jinak strategie z draft payload.
+- Metadata v draft payload: `visualStrategyId`, `visualStrategySource` (`"draft"` | `"override"`).
+
+**API:**
+- `POST /api/visuals/generate` – body: `{ draftId, format?, lockStyle?, brandLock?, styleProfile?, strategyIdOverride?, strategyModeOverride? }` → `{ ok, visualImageUrl, visualBaseImageUrl, visualCreativeScore, visualFormat, brandApplied, brandWarnings, visualStrategyId?, visualStrategySource? }`
+- `POST /api/visuals/style-profile` – body: `{ referenceImageUrls: string[] }` → `{ ok, visualStyleProfile }`
+- `POST /api/visuals/score` – body: `{ imageUrl? | imageB64? }` → `{ ok, score: { brandFit, readability, composition, conversionClarity, overall, passed } }`
 
 **Potřebné:**
-- **OPENAI_API_KEY** – klíč k OpenAI API (stejný jako pro enrich a generování draftů).
-- Storage bucket **generated-visuals** (public) – musí existovat v Supabase. Cesta: `drafts/<draftId>/<timestamp>.png`.
+- **OPENAI_API_KEY** – pro gpt-image-1, gpt-4o-mini, gpt-4o (vision).
+- Storage bucket **generated-visuals** (public). `SUPABASE_VISUALS_BUCKET` přepíše výchozí název.
+- **Sharp** – pro text overlay (závislost v package.json).
 
-**API:** `POST /api/visuals/generate` (body: `{ draftId: string, regenerate?: boolean }`). Vrací `{ ok: true, visualImageUrl }` nebo `{ ok: false, error: string }`.
+**Intake – volitelný Brand Visual DNA:**
+- `visualStyleProfile`: `{ styleName, palette[], typographyTone, compositionRules[], doNotUse[], referenceImageUrls[] }`
+- Lze vytvořit přes `/api/visuals/style-profile` z referenčních obrázků.
 
 **Test flow:**
-1. Vygenerujte drafty na `/drafts` („Vygenerovat 3 návrhy“).
-2. U každé karty klikněte „Vygenerovat vizuál“.
-3. Po dokončení se zobrazí náhled obrázku a odkaz „Stáhnout PNG“.
-4. Při chybě se zobrazí červený text s popisem (`visualError`).
+1. Vygenerujte drafty na `/drafts`.
+2. Zvolte formát (IG Feed, IG Story, FB, LinkedIn).
+3. Klikněte „Vygenerovat vizuál“ nebo „Regenerovat“ / „Regenerovat ve stejném stylu“.
+4. Ověřte badge Creative quality (score), přepínač Base/Finální náhled, „Uzamknout styl“.
+5. Ověřte odkaz „Stáhnout PNG“.
+
+### Strategy Engine
+
+Strategy Engine řídí, podle jakých marketingových technik AI vytváří posty a vizuály. V UI se zobrazují pouze veřejné názvy režimů, nikoli jména marketérů ani frameworků.
+
+**Režimy (publicLabel):**
+- Konverzní tah
+- Důvěra a autorita
+- Příběh značky
+- Edukační magnet
+- Komunitní rezonance
+- Prémiový positioning
+
+**Auto vs. ruční výběr:**
+- **Auto (default):** AI vybere strategii podle `contentGoal` a `awarenessLevel`:
+  - unaware/problem_aware → více edukace a problémového rámování (education_magnet, community_resonance)
+  - solution_aware/product_aware → více diferenciace a důkazů (premium_positioning, trust_authority)
+  - most_aware → přímější CTA a konverzní režim (conversion_push)
+- **Ruční:** Uživatel vybere strategii v intake formuláři. Uloží se do `strategyMode`, `strategyId` v intake payload.
+- **Ruční:** Uživatel vybere strategii v intake formuláři. Uloží se do `strategyMode`, `strategyId` v intake payload.
+
+**Jak funguje Brand Lock se strategií:**
+- Brand Lock zůstává oddělený – vynucuje barvy, logo, tón, zakázaná slova.
+- Strategie ovlivňuje copy frameworks a CTA styl v promptu; visual directives ovlivňují art direction.
+- Výstupní text a UI nikdy neobsahují jména frameworků (PAS, AIDA, StoryBrand atd.).
+
+**API:**
+- `POST /api/posts/generate`: `strategyMode?: "auto"|"manual"`, `strategyId?: string` (pokud manual). Použije intake payload při chybějících hodnotách.
+- `POST /api/visuals/generate`: `strategyMode?`, `strategyId?` – nebo převezme z draft payload.
+- Draft payload: `strategyId`, `strategyLabel`, `strategyRationale`.
+
+### Brand Lock
+
+Brand Lock (ON/OFF) zajišťuje, že výstupy – text i vizuál – striktně respektují data klienta z intake.
+
+**Když je ON (default):**
+- **Text (drafty):** Zakázaná slova jsou zakázána (validace, při fail regenerace max 2×). Tón odpovídá toneOfVoice. Platforma odpovídá brand spec.
+- **Vizuály:** Paleta brand barev v promptu, CTA barva z palety, logo v safe area (pokud existuje). Brand fit v image promptu.
+
+**Validace brand compliance:**
+- Text: `containsForbiddenWords` → fail, regenerace. `brandApplied: { tone, forbiddenWords, platform }`, `brandWarnings`.
+- Vizuál: `brandApplied: { colors, logo, tone, layout }`, `brandWarnings`. Při nesplnění constraints (barvy/logo) max 2× regenerace.
+
+**API rozšíření:**
+- `POST /api/posts/generate`: `brandLock?: boolean` (default true)
+- `POST /api/visuals/generate`: `brandLock?: boolean` (default true), `styleProfile?: "katarina_signature"|"minimal_clean"|"bold_growth"`
+
+**Chybové odpovědi:** `{ ok: false, error, detail?, hint? }`
+
+**Známé limity:**
+- Čistá image AI (gpt-image-1) nemá přesnou font fidelity – text overlay je vykreslen Sharpem (Arial).
+- Logo overlay se stahuje z URL – pro CORS/SSL problémy může selhat tichým skipem.
 
 ## Skripty
 

@@ -4,6 +4,9 @@ const CONTENT_GOAL = ["prodej", "důvěra", "edukace"] as const;
 const STYLE_PREFERENCE = ["humor", "storytelling", "edukace", "prodejní"] as const;
 const PLATFORMS = ["instagram", "facebook", "linkedin"] as const;
 
+export const AWARENESS_LEVELS = ["unaware", "problem_aware", "solution_aware", "product_aware", "most_aware"] as const;
+export type AwarenessLevel = (typeof AWARENESS_LEVELS)[number];
+
 export const intakeSchema = z.object({
   brandName: z.string().min(1, "Název značky je povinný"),
   website: z
@@ -34,6 +37,20 @@ export const intakeSchema = z.object({
       photosNote: z.string().optional(),
     })
     .optional(),
+  // Optional Brand Visual DNA
+  visualStyleProfile: z
+    .object({
+      styleName: z.string().optional(),
+      palette: z.array(z.string()).optional(),
+      typographyTone: z.string().optional(),
+      compositionRules: z.array(z.string()).optional(),
+      doNotUse: z.array(z.string()).optional(),
+      referenceImageUrls: z.array(z.string()).optional(),
+    })
+    .optional(),
+  strategyMode: z.enum(["auto", "manual"]).optional().default("auto"),
+  strategyId: z.string().optional(),
+  awarenessLevel: z.enum(AWARENESS_LEVELS).optional().default("problem_aware"),
 });
 
 export type IntakeFormData = z.infer<typeof intakeSchema>;

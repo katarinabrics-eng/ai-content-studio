@@ -3,12 +3,18 @@ import OpenAI from "openai";
 import { getIntakeByIdOrLast } from "@/lib/supabase-intake";
 import { insertPostDrafts } from "@/lib/supabase-posts";
 import { generateRequestSchema, postDraftSchema, type PostDraft, type StoredPostDraft } from "@/lib/posts-schema";
+import { getBrandSpecFromIntake } from "@/lib/brand-spec";
+import { getStrategyById } from "@/lib/strategy-library";
+import { pickStrategy } from "@/lib/strategy-picker";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const DRAFT_COUNT = 3;
+const MAX_REGENERATE = 2;
 
-const SYSTEM_PROMPT = `Jsi copywriter. Na základě intake (značka, cílová skupina, nabídky, tón, cíle) vygeneruj přesně 3 návrhy sociálních postů.
+const BASE_SYSTEM_PROMPT = `Jsi copywriter. Na základě intake (značka, cílová skupina, nabídky, tón, cíle) vygeneruj přesně 3 návrhy sociálních postů.
 Vrať POUZE validní JSON bez markdownu:
 {
   "drafts": [
@@ -25,6 +31,28 @@ Vrať POUZE validní JSON bez markdownu:
   ]
 }
 Každý draft musí mít platform, angle, hook, caption, cta, hashtags (pole), visualBrief, status "draft".`;
+
+function containsForbiddenWords(text: string, forbidden: string[]): string[] {
+  if (forbidden.length === 0) return [];
+  const lower = text.toLowerCase();
+  return forbidden.filter((w) => lower.includes(w.toLowerCase()));
+}
+
+function validateDraftBrand(draft: PostDraft, brandSpec: import("@/lib/brand-spec").BrandSpec): {
+  forbiddenWords: string[];
+  toneOk: boolean;
+  platformOk: boolean;
+  warnings: string[];
+} {
+  const combined = `${draft.hook} ${draft.caption} ${draft.cta} ${draft.visualBrief}`.toLowerCase();
+  const forbiddenFound = containsForbiddenWords(combined, brandSpec.forbiddenWords);
+  const platformOk = brandSpec.platforms.length === 0 || brandSpec.platforms.includes(draft.platform);
+  const toneOk = true; // heuristic: we rely on prompt for tone
+  const warnings: string[] = [];
+  if (forbiddenFound.length > 0) warnings.push(`Zakázaná slova: ${forbiddenFound.join(", ")}`);
+  if (!platformOk) warnings.push(`Platforma ${draft.platform} není v brand spec`);
+  return { forbiddenWords: forbiddenFound, toneOk, platformOk, warnings };
+}
 
 function normalizeDraft(raw: Record<string, unknown>): PostDraft {
   const parsed = postDraftSchema.safeParse({
@@ -65,10 +93,27 @@ function toStoredDraft(row: { id: string; intake_id: string; created_at: string;
     visualBrief: String(p.visualBrief ?? ""),
     status: "draft",
     visualImageUrl: typeof p.visualImageUrl === "string" ? p.visualImageUrl : undefined,
+    visualBaseImageUrl: typeof p.visualBaseImageUrl === "string" ? p.visualBaseImageUrl : undefined,
     visualStatus: p.visualStatus as StoredPostDraft["visualStatus"] | undefined,
     visualPrompt: typeof p.visualPrompt === "string" ? p.visualPrompt : undefined,
     visualError: typeof p.visualError === "string" ? p.visualError : undefined,
     visualUpdatedAt: typeof p.visualUpdatedAt === "string" ? p.visualUpdatedAt : undefined,
+    visualCreativeScore: typeof p.visualCreativeScore === "number" ? p.visualCreativeScore : undefined,
+    visualFormat: typeof p.visualFormat === "string" ? p.visualFormat : undefined,
+    visualStyleLocked: typeof p.visualStyleLocked === "boolean" ? p.visualStyleLocked : undefined,
+    brandApplied: p.brandApplied as StoredPostDraft["brandApplied"],
+    brandWarnings: Array.isArray(p.brandWarnings) ? p.brandWarnings.map(String) : undefined,
+    visualStyle: typeof p.visualStyle === "string" ? p.visualStyle : undefined,
+    visualVariants: Array.isArray(p.visualVariants) ? p.visualVariants as { url: string; score: number }[] : undefined,
+    visualCriticNote: typeof p.visualCriticNote === "string" ? p.visualCriticNote : undefined,
+    visualBrandApplied: p.visualBrandApplied as StoredPostDraft["visualBrandApplied"],
+    visualBrandWarnings: Array.isArray(p.visualBrandWarnings) ? p.visualBrandWarnings.map(String) : undefined,
+    strategyId: typeof p.strategyId === "string" ? p.strategyId : undefined,
+    strategyLabel: typeof p.strategyLabel === "string" ? p.strategyLabel : undefined,
+    strategyRationale: typeof p.strategyRationale === "string" ? p.strategyRationale : undefined,
+    awarenessLevel: typeof p.awarenessLevel === "string" ? p.awarenessLevel : undefined,
+    visualStrategyId: typeof p.visualStrategyId === "string" ? p.visualStrategyId : undefined,
+    visualStrategySource: p.visualStrategySource === "draft" || p.visualStrategySource === "override" ? p.visualStrategySource : undefined,
   };
 }
 
@@ -83,7 +128,7 @@ export async function POST(request: Request) {
     const parsed = generateRequestSchema.safeParse(body);
     const intakeId = parsed.success ? parsed.data.intakeId : undefined;
     const count = parsed.success ? Math.min(3, Math.max(1, parsed.data.count)) : DRAFT_COUNT;
-
+    const brandLock = parsed.success ? parsed.data.brandLock !== false : true;
     const intake = await getIntakeByIdOrLast(intakeId);
     if (!intake) {
       return NextResponse.json(
@@ -100,66 +145,134 @@ export async function POST(request: Request) {
       );
     }
 
+    const intakePayload = intake as Record<string, unknown>;
+    const strategyMode = parsed.success ? (parsed.data.strategyMode ?? intakePayload.strategyMode ?? "auto") : (intakePayload.strategyMode ?? "auto");
+    const strategyIdParam = parsed.success ? parsed.data.strategyId : intakePayload.strategyId;
+
+    const brandSpec = getBrandSpecFromIntake(intakePayload);
+
+    let strategy: { id: string; publicLabel: string; publicDescription: string; ctaStyle: string; copyFrameworks: string[] };
+    let strategyRationale: string;
+    if (strategyMode === "manual" && strategyIdParam && getStrategyById(strategyIdParam as import("@/lib/strategy-library").StrategyId)) {
+      const s = getStrategyById(strategyIdParam as import("@/lib/strategy-library").StrategyId)!;
+      strategy = s;
+      strategyRationale = s.publicDescription;
+    } else {
+      const al = (intakePayload.awarenessLevel as string) ?? "problem_aware";
+      const awarenessLevel: import("@/lib/strategy-library").AwarenessLevel =
+        ["unaware", "problem_aware", "solution_aware", "product_aware", "most_aware"].includes(al) ? (al as import("@/lib/strategy-library").AwarenessLevel) : "problem_aware";
+      const picked = pickStrategy({
+        contentGoal: (intakePayload.contentGoal as "prodej" | "důvěra" | "edukace") ?? "edukace",
+        platforms: (intakePayload.platforms as string[]) ?? [],
+        targetAudience: String(intakePayload.targetAudience ?? ""),
+        offers: String(intakePayload.offers ?? ""),
+        toneOfVoice: String(intakePayload.toneOfVoice ?? ""),
+        awarenessLevel,
+      });
+      strategy = picked.strategy;
+      strategyRationale = picked.rationale;
+    }
+
+    const strategyInstructions = `
+Strategie: ${strategy.publicLabel}
+${strategy.publicDescription}
+CTA styl: ${strategy.ctaStyle}
+DŮLEŽITÉ: Výstup musí být čistě klientsky čitelný obsah. Nikdy nepoužívej odbornou terminologii ani jména v textu.`;
+
+    const brandLockRules = brandLock
+      ? `
+DŮLEŽITÉ (BRAND LOCK ON):
+- NIKDY nepoužívej zakázaná slova: ${brandSpec.forbiddenWords.length ? brandSpec.forbiddenWords.join(", ") : "(žádná)"}
+- Tón MUSÍ odpovídat: ${brandSpec.toneOfVoice ?? "(neuvedeno)"}
+- Platformy pouze z: ${brandSpec.platforms.join(", ")}
+- Styl: ${brandSpec.stylePreference ?? "storytelling"}
+`
+      : "";
+
     const context = `
-Značka: ${(intake as Record<string, unknown>).brandName ?? ""}
-Odvětví: ${(intake as Record<string, unknown>).industry ?? ""}
-Cílová skupina: ${(intake as Record<string, unknown>).targetAudience ?? ""}
-Nabídky: ${(intake as Record<string, unknown>).offers ?? ""}
-Tón: ${(intake as Record<string, unknown>).toneOfVoice ?? ""}
-Cíl obsahu: ${(intake as Record<string, unknown>).contentGoal ?? ""}
-Platformy: ${JSON.stringify((intake as Record<string, unknown>).platforms ?? [])}
-Styl: ${(intake as Record<string, unknown>).stylePreference ?? ""}
-CTA preference: ${(intake as Record<string, unknown>).ctaPreference ?? ""}
-Zakázaná slova: ${(intake as Record<string, unknown>).forbiddenWords ?? ""}
-`.trim();
+Značka: ${intakePayload.brandName ?? ""}
+Odvětví: ${intakePayload.industry ?? ""}
+Cílová skupina: ${intakePayload.targetAudience ?? ""}
+Nabídky: ${intakePayload.offers ?? ""}
+Tón: ${intakePayload.toneOfVoice ?? ""}
+Cíl obsahu: ${intakePayload.contentGoal ?? ""}
+Platformy: ${JSON.stringify(intakePayload.platforms ?? [])}
+Styl: ${intakePayload.stylePreference ?? ""}
+CTA preference: ${intakePayload.ctaPreference ?? ""}
+Zakázaná slova: ${brandSpec.forbiddenWords.length ? brandSpec.forbiddenWords.join(", ") : "(žádná)"}
+${brandLockRules}
+${strategyInstructions}`.trim();
 
     const openai = new OpenAI({ apiKey: openaiKey });
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `Vygeneruj přesně ${count} návrhů postů.\n\nKontext intake:\n${context}` },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-    });
+    let content: string | undefined;
+    let draftsRaw: unknown[] = [];
+    let payloads: { payload: Record<string, unknown> }[] = [];
+    let regenerateCount = 0;
 
-    const content = completion.choices[0]?.message?.content?.trim();
-    if (!content) {
-      return NextResponse.json(
-        { ok: false, error: "AI nevrátilo odpověď" },
-        { status: 500 }
-      );
-    }
-
-    let parsedContent: { drafts?: unknown[] };
-    try {
-      parsedContent = JSON.parse(content) as { drafts?: unknown[] };
-    } catch {
-      return NextResponse.json(
-        { ok: false, error: "Neplatná JSON odpověď od AI" },
-        { status: 500 }
-      );
-    }
-
-    const draftsRaw = Array.isArray(parsedContent.drafts) ? parsedContent.drafts.slice(0, DRAFT_COUNT) : [];
-    const payloads: { payload: Record<string, unknown> }[] = [];
-
-    for (const item of draftsRaw) {
-      const obj = typeof item === "object" && item != null ? (item as Record<string, unknown>) : {};
-      const normalized = normalizeDraft(obj);
-      payloads.push({
-        payload: {
-          platform: normalized.platform,
-          angle: normalized.angle,
-          hook: normalized.hook,
-          caption: normalized.caption,
-          cta: normalized.cta,
-          hashtags: normalized.hashtags,
-          visualBrief: normalized.visualBrief,
-          status: "draft",
-        },
+    while (regenerateCount <= MAX_REGENERATE) {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: BASE_SYSTEM_PROMPT },
+          { role: "user", content: `Vygeneruj přesně ${count} návrhů postů.\n\nKontext intake:\n${context}` },
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
       });
+
+      content = completion.choices[0]?.message?.content?.trim();
+      if (!content) {
+        return NextResponse.json(
+          { ok: false, error: "AI nevrátilo odpověď" },
+          { status: 500 }
+        );
+      }
+
+      let parsedContent: { drafts?: unknown[] };
+      try {
+        parsedContent = JSON.parse(content) as { drafts?: unknown[] };
+      } catch {
+        return NextResponse.json(
+          { ok: false, error: "Neplatná JSON odpověď od AI" },
+          { status: 500 }
+        );
+      }
+
+      draftsRaw = Array.isArray(parsedContent.drafts) ? parsedContent.drafts.slice(0, DRAFT_COUNT) : [];
+      payloads = [];
+      let hasForbiddenFail = false;
+
+      for (const item of draftsRaw) {
+        const obj = typeof item === "object" && item != null ? (item as Record<string, unknown>) : {};
+        const normalized = normalizeDraft(obj);
+        const validation = brandLock ? validateDraftBrand(normalized, brandSpec) : { forbiddenWords: [], toneOk: true, platformOk: true, warnings: [] };
+        if (validation.forbiddenWords.length > 0 && brandLock) hasForbiddenFail = true;
+
+        payloads.push({
+          payload: {
+            platform: normalized.platform,
+            angle: normalized.angle,
+            hook: normalized.hook,
+            caption: normalized.caption,
+            cta: normalized.cta,
+            hashtags: normalized.hashtags,
+            visualBrief: normalized.visualBrief,
+            status: "draft",
+            strategyId: strategy.id,
+            strategyLabel: strategy.publicLabel,
+            strategyRationale,
+            awarenessLevel: (intakePayload.awarenessLevel as string) ?? "problem_aware",
+            brandApplied: brandLock ? { tone: validation.toneOk, forbiddenWords: validation.forbiddenWords.length === 0, platform: validation.platformOk } : undefined,
+            brandWarnings: validation.warnings.length ? validation.warnings : undefined,
+          },
+        });
+      }
+
+      if (brandLock && hasForbiddenFail && regenerateCount < MAX_REGENERATE) {
+        regenerateCount++;
+        continue;
+      }
+      break;
     }
 
     while (payloads.length < DRAFT_COUNT) {
@@ -173,6 +286,10 @@ Zakázaná slova: ${(intake as Record<string, unknown>).forbiddenWords ?? ""}
           hashtags: [],
           visualBrief: "",
           status: "draft",
+          strategyId: strategy.id,
+          strategyLabel: strategy.publicLabel,
+          strategyRationale,
+          awarenessLevel: (intakePayload.awarenessLevel as string) ?? "problem_aware",
         },
       });
     }
