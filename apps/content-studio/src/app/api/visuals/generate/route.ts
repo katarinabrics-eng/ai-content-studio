@@ -10,6 +10,8 @@ import { PLATFORM_FORMATS, type CreativeBrief, type PlatformFormatKey } from "@/
 import { composeTextOverlay } from "@/lib/visual-composer";
 import { criticVisualFromB64 } from "@/lib/visual-critic";
 import { getWebStyleFromIntake } from "@/lib/web-style-helper";
+import { resolveVisualStyle } from "@/lib/visual-style-resolver";
+import { VISUAL_STYLE_PRESETS } from "@/lib/visual-style-presets";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,7 +26,7 @@ const MAX_REGENERATE_ROUNDS = 2;
 const STRICT_SUFFIX =
   " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
-const STYLE_PROFILES = ["katarina_signature", "minimal_clean", "bold_growth", "simby_clean_saas"] as const;
+const STYLE_PROFILES = VISUAL_STYLE_PRESETS.map((p) => p.id);
 
 const PLATFORM_TO_FORMAT: Record<string, PlatformFormatKey> = {
   instagram: "instagram-feed",
@@ -46,25 +48,23 @@ function buildCreativeBriefPrompt(
   draft: { payload: Record<string, unknown> },
   intake: Record<string, unknown>,
   brandSpec: import("@/lib/brand-spec").BrandSpec,
-  moodKeywords: string[],
-  styleProfile?: string,
+  resolvedStyle: import("@/lib/visual-style-resolver").ResolvedVisualStyle,
   visualStyleProfile?: Record<string, unknown> | null,
   strategy?: import("@/lib/strategy-library").StrategyPreset
 ): string {
   const p = draft.payload;
-  const isSimby = styleProfile === "simby_clean_saas";
-  const paletteNote = isSimby
-    ? "Palette: green (#22c55e), light gray (#f8fafc), dark text (#0f172a). Clean SaaS aesthetic."
+  const paletteNote = resolvedStyle.palette.length > 0
+    ? `Palette: ${resolvedStyle.palette.join(", ")}`
     : brandSpec.colors.length
       ? `Použij barvy z palety: ${brandSpec.colors.join(", ")}`
       : "";
   const toneNote = brandSpec.toneOfVoice ? `Mood/tón: ${brandSpec.toneOfVoice}` : "";
-  const moodNote = moodKeywords.length ? `Mood keywords (web/style): ${moodKeywords.join(", ")}` : "";
-  const styleNote = isSimby
-    ? "SIMBY clean SaaS: minimalist UI, cards, device mockup feel. NO random collage, NO text/gibberish in image. Clean composition, negative space."
-    : styleProfile
-      ? `Styl: ${styleProfile}`
-      : "";
+  const moodNote = resolvedStyle.moodKeywords.length > 0
+    ? `Mood keywords: ${resolvedStyle.moodKeywords.join(", ")}`
+    : "";
+  const styleNote = resolvedStyle.visualStyleLabel !== "Default"
+    ? `Styl: ${resolvedStyle.visualStyleLabel}. ${resolvedStyle.negativePrompt}`
+    : "";
   const visualDirectivesNote = strategy?.visualDirectives?.length
     ? `Art direction: ${strategy.visualDirectives.join("; ")}`
     : "";
@@ -96,17 +96,15 @@ Pravidla: žádný text v samotném obrázku (text overlay přijde zvlášť). �
 
 function creativeBriefToImagePrompt(
   brief: CreativeBrief,
-  brandSpec: import("@/lib/brand-spec").BrandSpec,
-  moodKeywords: string[],
-  styleProfile?: string
+  resolvedStyle: import("@/lib/visual-style-resolver").ResolvedVisualStyle,
+  brandSpec: import("@/lib/brand-spec").BrandSpec
 ): string {
-  const isSimby = styleProfile === "simby_clean_saas";
-  const paletteStr = isSimby
-    ? "green #22c55e, light gray #f8fafc, dark text #0f172a"
+  const paletteStr = resolvedStyle.palette.length > 0
+    ? resolvedStyle.palette.join(", ")
     : brandSpec.colors.length
       ? brandSpec.colors.join(", ")
       : brief.palette;
-  const moodStr = moodKeywords.length ? moodKeywords.join(", ") : "";
+  const moodStr = resolvedStyle.moodKeywords.length > 0 ? resolvedStyle.moodKeywords.join(", ") : "";
   const parts = [
     brief.concept,
     brief.shotType,
@@ -116,8 +114,9 @@ function creativeBriefToImagePrompt(
     `Palette: ${paletteStr}`,
   ];
   if (moodStr) parts.push(`Mood: ${moodStr}`);
-  if (brief.negativePrompt) {
-    parts.push(`AVOID: ${brief.negativePrompt}`);
+  const negPrompt = brief.negativePrompt || resolvedStyle.negativePrompt;
+  if (negPrompt) {
+    parts.push(`AVOID: ${negPrompt}`);
   }
   parts.push(
     "Clean composition, human-centric, campaign-like background only."
@@ -172,10 +171,11 @@ export async function POST(request: Request) {
     const brandLock = b.brandLock !== false;
     const brandSpec = getBrandSpecFromIntake(intake as Record<string, unknown>);
     const webStyle = getWebStyleFromIntake(intake as Record<string, unknown>);
-    const styleProfile = typeof b.styleProfile === "string" && STYLE_PROFILES.includes(b.styleProfile as (typeof STYLE_PROFILES)[number])
+    const styleProfile = typeof b.styleProfile === "string" && STYLE_PROFILES.includes(b.styleProfile)
       ? b.styleProfile
       : undefined;
     const visualStyleProfile = (intake as Record<string, unknown>).visualStyleProfile as Record<string, unknown> | null | undefined;
+    const resolvedStyle = resolveVisualStyle(styleProfile, brandSpec, webStyle.moodKeywords);
 
     const intakePayload = intake as Record<string, unknown>;
     const useOverride = (b.strategyModeOverride === "manual" || b.strategyIdOverride) && b.strategyIdOverride && getStrategyById(b.strategyIdOverride as import("@/lib/strategy-library").StrategyId);
@@ -220,7 +220,7 @@ export async function POST(request: Request) {
     // Step A: Generate creative brief
     let brief: CreativeBrief;
     try {
-      const briefPrompt = buildCreativeBriefPrompt(draft, intake as Record<string, unknown>, brandSpec, webStyle.moodKeywords, styleProfile, visualStyleProfile, strategy);
+      const briefPrompt = buildCreativeBriefPrompt(draft, intake as Record<string, unknown>, brandSpec, resolvedStyle, visualStyleProfile, strategy);
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: briefPrompt }],
@@ -257,7 +257,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkuste znovu; problém může být s draftem nebo AI modelem." }, { status: 500 });
     }
 
-    const imagePrompt = creativeBriefToImagePrompt(brief, brandSpec, webStyle.moodKeywords, styleProfile);
+    const imagePrompt = creativeBriefToImagePrompt(brief, resolvedStyle, brandSpec);
     const size = getOpenAISize(formatKey);
 
     // Step B: Generate 4 variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if hasTextArtifacts or score < 8
@@ -453,7 +453,9 @@ export async function POST(request: Request) {
       visualCreativeScore: criticScore > 0 ? criticScore : undefined,
       visualCriticNote: criticNote || undefined,
       visualFormat: formatKey,
-      visualStyle: styleProfile ?? strategy?.publicLabel ?? "default",
+      visualStyle: resolvedStyle.visualStyle,
+      visualStyleLabel: resolvedStyle.visualStyleLabel,
+      visualStyleSource: resolvedStyle.visualStyleSource,
       strategyId: strategy?.id ?? draft.payload.strategyId,
       visualStrategyId: strategy?.id,
       visualStrategySource,
@@ -471,7 +473,9 @@ export async function POST(request: Request) {
       visualCreativeScore: criticScore > 0 ? criticScore : undefined,
       visualCriticNote: criticNote || undefined,
       visualFormat: formatKey,
-      visualStyle: styleProfile ?? "default",
+      visualStyle: resolvedStyle.visualStyle,
+      visualStyleLabel: resolvedStyle.visualStyleLabel,
+      visualStyleSource: resolvedStyle.visualStyleSource,
       brandApplied: visualBrandApplied,
       brandWarnings: visualBrandWarnings,
       visualStrategyId: strategy?.id,
