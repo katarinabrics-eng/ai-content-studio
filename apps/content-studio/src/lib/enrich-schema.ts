@@ -164,13 +164,12 @@ export type EnrichApiResponse = {
   evidence: EnrichEvidence[];
   /** Např. "Suggestions normalized due to invalid shape" */
   warnings?: string[];
-  /** Enrich diagnostika: confidence, source, evidenceCount, scrapeStatus */
+  /** Enrich diagnostika: confidence, source, warnings, evidenceCount */
   diagnostics?: {
     confidence: number;
-    source: "llm" | "fallback_cached";
+    source: "scrape" | "fallback_cached";
     warnings: string[];
     evidenceCount: number;
-    scrapeStatus: string;
   };
 };
 

@@ -386,8 +386,6 @@ export async function POST(request: Request) {
     const blockOnly = confidence === 0 && evidenceCount === 0;
     const lowConfidence = confidence < 0.75;
 
-    const scrapeStatus = webText ? "ok" : pdfText ? "pdf_only" : "ok";
-
     const heroBrand = heroFallback?.h1?.trim() || "";
     const heroOffers = heroFallback?.features?.length
       ? heroFallback.features.slice(0, 5).join("; ")
@@ -437,32 +435,34 @@ export async function POST(request: Request) {
       },
     };
 
-    let source: "llm" | "fallback_cached" = "llm";
-    if (lowConfidence && confidence < CONFIDENCE_PARTIAL_PREFILL) {
+    let source: "scrape" | "fallback_cached" = "scrape";
+    if (lowConfidence) {
       const hostname = hostnameFromWebsite(website);
       const cached = await getLatestIntakeByHostname(hostname);
       if (cached && typeof cached === "object") {
         const c = cached as Record<string, unknown>;
+        const cv = (key: string) => String(c[key] ?? "").trim();
+        const ba = c.brandAssets as { logo?: string; colors?: string; fonts?: string } | undefined;
         prefill = {
           ...prefill,
-          brandName: (prefill.brandName && prefill.brandName !== "Značka" ? prefill.brandName : String(c.brandName ?? "").trim()) || prefill.brandName,
+          brandName: (prefill.brandName && prefill.brandName !== "Značka" ? prefill.brandName : cv("brandName")) || prefill.brandName,
           website: prefill.website,
-          industry: prefill.industry || String(c.industry ?? "").trim(),
-          targetAudience: prefill.targetAudience || String(c.targetAudience ?? "").trim(),
-          offers: prefill.offers || String(c.offers ?? "").trim(),
-          toneOfVoice: prefill.toneOfVoice || String(c.toneOfVoice ?? "").trim(),
-          forbiddenWords: prefill.forbiddenWords || String(c.forbiddenWords ?? "").trim(),
+          industry: prefill.industry || cv("industry"),
+          targetAudience: prefill.targetAudience || cv("targetAudience"),
+          offers: prefill.offers || cv("offers"),
+          toneOfVoice: prefill.toneOfVoice || cv("toneOfVoice"),
+          forbiddenWords: prefill.forbiddenWords || cv("forbiddenWords"),
           contentGoal: prefill.contentGoal,
           platforms: prefill.platforms,
           stylePreference: prefill.stylePreference,
-          ctaPreference: prefill.ctaPreference || String(c.ctaPreference ?? "").trim(),
+          ctaPreference: prefill.ctaPreference || cv("ctaPreference"),
           strategyMode: prefill.strategyMode,
           strategyId: prefill.strategyId,
           awarenessLevel: prefill.awarenessLevel,
           brandAssets: {
-            logoUrl: prefill.brandAssets.logoUrl || String((c.brandAssets as { logo?: string })?.logo ?? "").trim(),
-            colors: prefill.brandAssets.colors || String((c.brandAssets as { colors?: string })?.colors ?? "").trim(),
-            fonts: prefill.brandAssets.fonts || String((c.brandAssets as { fonts?: string })?.fonts ?? "").trim(),
+            logoUrl: prefill.brandAssets.logoUrl || (ba?.logo?.trim() ?? ""),
+            colors: prefill.brandAssets.colors || (ba?.colors?.trim() ?? ""),
+            fonts: prefill.brandAssets.fonts || (ba?.fonts?.trim() ?? ""),
             photosNote: prefill.brandAssets.photosNote || "",
           },
         };
@@ -500,7 +500,6 @@ export async function POST(request: Request) {
       source,
       warnings,
       evidenceCount,
-      scrapeStatus,
     };
 
     return NextResponse.json({

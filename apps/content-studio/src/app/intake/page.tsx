@@ -19,7 +19,7 @@ const LOGO_MIME = "image/png";
 type SubmitStatus = "idle" | "success" | "error";
 type SubmitError = { message?: string; details?: Record<string, string[]> };
 
-type EnrichMeta = { missingFields: string[]; confidence: number; lowConfidence?: boolean };
+type EnrichMeta = { missingFields: string[]; confidence: number; lowConfidence?: boolean; warnings?: string[] };
 
 function SuggestionChips({
   items,
@@ -285,6 +285,7 @@ function IntakeContent() {
         missingFields: Array.isArray(apiResponse.missingFields) ? apiResponse.missingFields : [],
         confidence: typeof apiResponse.confidence === "number" ? apiResponse.confidence : 0,
         lowConfidence: (apiResponse.confidence ?? 0) < 0.75,
+        warnings: apiResponse.diagnostics?.warnings ?? [],
       });
       setEnrichWebsite("");
       setEnrichPdfFile(null);
@@ -407,10 +408,15 @@ function IntakeContent() {
               )}
               {enrichMeta.lowConfidence && (
                 <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-amber-800">
-                  Nízká důvěra – část polí byla ponechána prázdná. Zkontrolujte a doplňte ručně.
+                  Nízká důvěra – zkontrolujte předvyplněné údaje před odesláním.
                 </span>
               )}
             </p>
+            {enrichMeta.warnings?.length ? (
+              <p className="mt-1 text-amber-700">
+                {enrichMeta.warnings.join(" ")}
+              </p>
+            ) : null}
             <p className="mt-1 text-slate-500">
               Formulář níže byl předvyplněn. Potvrďte hlavní nabídku a témata v sekci níže, poté odešlete.
             </p>
