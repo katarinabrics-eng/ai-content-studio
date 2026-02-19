@@ -14,16 +14,17 @@ import { getWebStyleFromIntake } from "@/lib/web-style-helper";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const maxDuration = 60;
 
 const VISUAL_BUCKET = process.env.SUPABASE_VISUALS_BUCKET ?? "generated-visuals";
 const IMAGE_MODEL = "gpt-image-1";
-const CANDIDATE_COUNT = 4;
+const CANDIDATE_COUNT = 2;
 const MIN_SCORE = 8;
 const MAX_REGENERATE_ROUNDS = 2;
 const STRICT_SUFFIX =
   " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
-const STYLE_PROFILES = ["katarina_signature", "minimal_clean", "bold_growth"] as const;
+const STYLE_PROFILES = ["katarina_signature", "minimal_clean", "bold_growth", "simby_clean_saas"] as const;
 
 const PLATFORM_TO_FORMAT: Record<string, PlatformFormatKey> = {
   instagram: "instagram-feed",
@@ -51,10 +52,19 @@ function buildCreativeBriefPrompt(
   strategy?: import("@/lib/strategy-library").StrategyPreset
 ): string {
   const p = draft.payload;
-  const paletteNote = brandSpec.colors.length ? `Použij barvy z palety: ${brandSpec.colors.join(", ")}` : "";
+  const isSimby = styleProfile === "simby_clean_saas";
+  const paletteNote = isSimby
+    ? "Palette: green (#22c55e), light gray (#f8fafc), dark text (#0f172a). Clean SaaS aesthetic."
+    : brandSpec.colors.length
+      ? `Použij barvy z palety: ${brandSpec.colors.join(", ")}`
+      : "";
   const toneNote = brandSpec.toneOfVoice ? `Mood/tón: ${brandSpec.toneOfVoice}` : "";
   const moodNote = moodKeywords.length ? `Mood keywords (web/style): ${moodKeywords.join(", ")}` : "";
-  const styleNote = styleProfile ? `Styl: ${styleProfile}` : "";
+  const styleNote = isSimby
+    ? "SIMBY clean SaaS: minimalist UI, cards, device mockup feel. NO random collage, NO text/gibberish in image. Clean composition, negative space."
+    : styleProfile
+      ? `Styl: ${styleProfile}`
+      : "";
   const visualDirectivesNote = strategy?.visualDirectives?.length
     ? `Art direction: ${strategy.visualDirectives.join("; ")}`
     : "";
@@ -87,9 +97,15 @@ Pravidla: žádný text v samotném obrázku (text overlay přijde zvlášť). �
 function creativeBriefToImagePrompt(
   brief: CreativeBrief,
   brandSpec: import("@/lib/brand-spec").BrandSpec,
-  moodKeywords: string[]
+  moodKeywords: string[],
+  styleProfile?: string
 ): string {
-  const paletteStr = brandSpec.colors.length ? brandSpec.colors.join(", ") : brief.palette;
+  const isSimby = styleProfile === "simby_clean_saas";
+  const paletteStr = isSimby
+    ? "green #22c55e, light gray #f8fafc, dark text #0f172a"
+    : brandSpec.colors.length
+      ? brandSpec.colors.join(", ")
+      : brief.palette;
   const moodStr = moodKeywords.length ? moodKeywords.join(", ") : "";
   const parts = [
     brief.concept,
@@ -127,17 +143,17 @@ export async function POST(request: Request) {
     };
     const draftId = typeof b.draftId === "string" ? b.draftId : null;
     if (!draftId) {
-      return NextResponse.json({ ok: false, error: "Chybí draftId" }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Chybí draftId", hint: "Odešlete draftId v těle požadavku." }, { status: 400 });
     }
 
     const draft = await getDraftById(draftId);
     if (!draft) {
-      return NextResponse.json({ ok: false, error: "Draft nebyl nalezen" }, { status: 404 });
+      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Draft nebyl nalezen", hint: "Zkontrolujte, že draftId existuje v databázi." }, { status: 404 });
     }
 
     const intake = await getIntakeByIdOrLast(draft.intake_id);
     if (!intake) {
-      return NextResponse.json({ ok: false, error: "Intake nebyl nalezen" }, { status: 404 });
+      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: "Intake nebyl nalezen", hint: "Přidružený intake byl smazán nebo neexistuje." }, { status: 404 });
     }
 
     const openaiKey = process.env.OPENAI_API_KEY;
@@ -238,10 +254,10 @@ export async function POST(request: Request) {
       } catch {
         // ignore
       }
-      return NextResponse.json({ ok: false, error: errMsg }, { status: 500 });
+      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkuste znovu; problém může být s draftem nebo AI modelem." }, { status: 500 });
     }
 
-    const imagePrompt = creativeBriefToImagePrompt(brief, brandSpec, webStyle.moodKeywords);
+    const imagePrompt = creativeBriefToImagePrompt(brief, brandSpec, webStyle.moodKeywords, styleProfile);
     const size = getOpenAISize(formatKey);
 
     // Step B: Generate 4 variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if hasTextArtifacts or score < 8
@@ -334,7 +350,7 @@ export async function POST(request: Request) {
         // ignore
       }
       return NextResponse.json(
-        { ok: false, error: errMsg, detail: "OpenAI nevrátilo obrázek", hint: "Zkontrolujte OPENAI_API_KEY a model gpt-image-1" },
+        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkontrolujte OPENAI_API_KEY a dostupnost modelu gpt-image-1." },
         { status: 500 }
       );
     }
@@ -400,7 +416,7 @@ export async function POST(request: Request) {
         // ignore
       }
       return NextResponse.json(
-        { ok: false, error: errMsg, detail: `bucket: ${VISUAL_BUCKET}, ${baseUploadError.message}`, hint: "Zkontrolujte, že bucket existuje a je public" },
+        { ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: `Zkontrolujte, že bucket "${VISUAL_BUCKET}" existuje a je public.` },
         { status: 500 }
       );
     }
@@ -421,7 +437,7 @@ export async function POST(request: Request) {
       } catch {
         // ignore
       }
-      return NextResponse.json({ ok: false, error: errMsg }, { status: 500 });
+      return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: errMsg, hint: "Zkontrolujte Supabase storage a oprávnění." }, { status: 500 });
     }
 
     const baseUrl = supabase.storage.from(VISUAL_BUCKET).getPublicUrl(basePath).data.publicUrl;
@@ -464,6 +480,6 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error("POST /api/visuals/generate", e);
     const message = e instanceof Error ? e.message : "Došlo k chybě serveru";
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "VISUAL_GENERATION_FAILED", detail: message, hint: "Zkuste to znovu nebo kontaktujte podporu." }, { status: 500 });
   }
 }

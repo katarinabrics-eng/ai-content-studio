@@ -178,3 +178,49 @@ export async function extractAssetsFromWeb(
   }
   return result;
 }
+
+/** Fallback pro enrich: hero/h1/h2/features z markdown (homepage). */
+export type HeroFallback = {
+  h1: string;
+  h2s: string[];
+  features: string[];
+  pricing: string[];
+  sourceUrl: string;
+};
+
+export function extractHeroFallback(markdown: string, sourceUrl: string): HeroFallback {
+  const result: HeroFallback = { h1: "", h2s: [], features: [], pricing: [], sourceUrl };
+  if (!markdown?.trim()) return result;
+
+  const lines = markdown.split(/\r?\n/);
+  let inFeatures = false;
+  let inPricing = false;
+  const featureKeywords = /^(features?|nabídky|služby|services?|produkty|co nabízíme)/i;
+  const pricingKeywords = /^(pricing|ceník|ceny|price)/i;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const h1Match = line.match(/^#\s+(.+)$/);
+    const h2Match = line.match(/^##\s+(.+)$/);
+    if (h1Match && !result.h1) result.h1 = h1Match[1].trim();
+    if (h2Match) {
+      result.h2s.push(h2Match[1].trim());
+      inFeatures = featureKeywords.test(h2Match[1]);
+      inPricing = pricingKeywords.test(h2Match[1]);
+      if (!inFeatures && !inPricing) {
+        if (/služby|nabídky|features?/i.test(h2Match[1])) inFeatures = true;
+        if (/cen|price/i.test(h2Match[1])) inPricing = true;
+      }
+    }
+    if (inFeatures && line.trim() && !line.startsWith("#") && result.features.length < 10) {
+      const t = line.replace(/^[-*]\s*/, "").trim().slice(0, 120);
+      if (t) result.features.push(t);
+    }
+    if (inPricing && line.trim() && !line.startsWith("#") && result.pricing.length < 5) {
+      const t = line.replace(/^[-*]\s*/, "").trim().slice(0, 120);
+      if (t) result.pricing.push(t);
+    }
+    if (line.match(/^###/)) inFeatures = inPricing = false;
+  }
+  return result;
+}

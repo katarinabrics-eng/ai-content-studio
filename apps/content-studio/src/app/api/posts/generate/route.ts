@@ -43,15 +43,35 @@ function validateDraftBrand(draft: PostDraft, brandSpec: import("@/lib/brand-spe
   toneOk: boolean;
   platformOk: boolean;
   warnings: string[];
+  topicCompliance: { passed: boolean; violations: string[] };
 } {
-  const combined = `${draft.hook} ${draft.caption} ${draft.cta} ${draft.visualBrief}`.toLowerCase();
+  const combined = `${draft.hook} ${draft.caption} ${draft.cta} ${draft.visualBrief} ${draft.angle}`.toLowerCase();
   const forbiddenFound = containsForbiddenWords(combined, brandSpec.forbiddenWords);
   const platformOk = brandSpec.platforms.length === 0 || brandSpec.platforms.includes(draft.platform);
-  const toneOk = true; // heuristic: we rely on prompt for tone
+  const toneOk = true;
   const warnings: string[] = [];
   if (forbiddenFound.length > 0) warnings.push(`Zakázaná slova: ${forbiddenFound.join(", ")}`);
   if (!platformOk) warnings.push(`Platforma ${draft.platform} není v brand spec`);
-  return { forbiddenWords: forbiddenFound, toneOk, platformOk, warnings };
+
+  const violations: string[] = [];
+  if (brandSpec.disallowedTopics.length > 0) {
+    for (const t of brandSpec.disallowedTopics) {
+      if (combined.includes(t)) violations.push(`Obsahuje zakázané téma: "${t}"`);
+    }
+  }
+  if (brandSpec.allowedTopics.length > 0) {
+    const hasAllowed = brandSpec.allowedTopics.some((t) => combined.includes(t));
+    if (!hasAllowed) violations.push(`Text neodpovídá povoleným tématům: ${brandSpec.allowedTopics.join(", ")}`);
+  }
+  if (forbiddenFound.length > 0) violations.push(`Zakázaná slova: ${forbiddenFound.join(", ")}`);
+
+  return {
+    forbiddenWords: forbiddenFound,
+    toneOk,
+    platformOk,
+    warnings,
+    topicCompliance: { passed: violations.length === 0, violations },
+  };
 }
 
 function normalizeDraft(raw: Record<string, unknown>): PostDraft {
@@ -114,6 +134,15 @@ function toStoredDraft(row: { id: string; intake_id: string; created_at: string;
     awarenessLevel: typeof p.awarenessLevel === "string" ? p.awarenessLevel : undefined,
     visualStrategyId: typeof p.visualStrategyId === "string" ? p.visualStrategyId : undefined,
     visualStrategySource: p.visualStrategySource === "draft" || p.visualStrategySource === "override" ? p.visualStrategySource : undefined,
+    topicCompliance:
+      p.topicCompliance && typeof p.topicCompliance === "object" && typeof (p.topicCompliance as { passed?: unknown }).passed === "boolean"
+        ? {
+            passed: (p.topicCompliance as { passed: boolean }).passed,
+            violations: Array.isArray((p.topicCompliance as { violations?: unknown }).violations)
+              ? ((p.topicCompliance as { violations: string[] }).violations).filter((x): x is string => typeof x === "string")
+              : [],
+          }
+        : undefined,
   };
 }
 
@@ -179,13 +208,23 @@ ${strategy.publicDescription}
 CTA styl: ${strategy.ctaStyle}
 DŮLEŽITÉ: Výstup musí být čistě klientsky čitelný obsah. Nikdy nepoužívej odbornou terminologii ani jména v textu.`;
 
+    const brandCore = brandSpec.brandCoreOneLiner || intakePayload.offers || "";
+    const topicRules =
+      brandLock && (brandSpec.allowedTopics.length > 0 || brandSpec.disallowedTopics.length > 0)
+        ? `
+TÉMATA (source of truth):
+- Hlavní nabídka: ${brandCore}
+- Povolená témata (text MUSÍ zůstat v těchto): ${brandSpec.allowedTopics.length ? brandSpec.allowedTopics.join(", ") : "(vše z hlavní nabídky)"}
+- Zakázaná témata (text NESMÍ obsahovat): ${brandSpec.disallowedTopics.length ? brandSpec.disallowedTopics.join(", ") : "(žádná)"}`
+        : "";
+
     const brandLockRules = brandLock
       ? `
 DŮLEŽITÉ (BRAND LOCK ON):
 - NIKDY nepoužívej zakázaná slova: ${brandSpec.forbiddenWords.length ? brandSpec.forbiddenWords.join(", ") : "(žádná)"}
 - Tón MUSÍ odpovídat: ${brandSpec.toneOfVoice ?? "(neuvedeno)"}
 - Platformy pouze z: ${brandSpec.platforms.join(", ")}
-- Styl: ${brandSpec.stylePreference ?? "storytelling"}
+- Styl: ${brandSpec.stylePreference ?? "storytelling"}${topicRules}
 `
       : "";
 
@@ -242,11 +281,21 @@ ${strategyInstructions}`.trim();
       payloads = [];
       let hasForbiddenFail = false;
 
+      let hasTopicFail = false;
       for (const item of draftsRaw) {
         const obj = typeof item === "object" && item != null ? (item as Record<string, unknown>) : {};
         const normalized = normalizeDraft(obj);
-        const validation = brandLock ? validateDraftBrand(normalized, brandSpec) : { forbiddenWords: [], toneOk: true, platformOk: true, warnings: [] };
+        const validation = brandLock
+          ? validateDraftBrand(normalized, brandSpec)
+          : {
+              forbiddenWords: [] as string[],
+              toneOk: true,
+              platformOk: true,
+              warnings: [] as string[],
+              topicCompliance: { passed: true, violations: [] as string[] },
+            };
         if (validation.forbiddenWords.length > 0 && brandLock) hasForbiddenFail = true;
+        if (!validation.topicCompliance.passed && brandLock) hasTopicFail = true;
 
         payloads.push({
           payload: {
@@ -264,11 +313,12 @@ ${strategyInstructions}`.trim();
             awarenessLevel: (intakePayload.awarenessLevel as string) ?? "problem_aware",
             brandApplied: brandLock ? { tone: validation.toneOk, forbiddenWords: validation.forbiddenWords.length === 0, platform: validation.platformOk } : undefined,
             brandWarnings: validation.warnings.length ? validation.warnings : undefined,
+            topicCompliance: validation.topicCompliance,
           },
         });
       }
 
-      if (brandLock && hasForbiddenFail && regenerateCount < MAX_REGENERATE) {
+      if (brandLock && (hasForbiddenFail || hasTopicFail) && regenerateCount < MAX_REGENERATE) {
         regenerateCount++;
         continue;
       }
@@ -290,6 +340,7 @@ ${strategyInstructions}`.trim();
           strategyLabel: strategy.publicLabel,
           strategyRationale,
           awarenessLevel: (intakePayload.awarenessLevel as string) ?? "problem_aware",
+          topicCompliance: { passed: true, violations: [] },
         },
       });
     }

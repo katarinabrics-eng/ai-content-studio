@@ -41,6 +41,17 @@ function toStoredDraft(row: { id: string; intake_id: string; created_at: string;
     strategyLabel: typeof p.strategyLabel === "string" ? p.strategyLabel : undefined,
     strategyRationale: typeof p.strategyRationale === "string" ? p.strategyRationale : undefined,
     awarenessLevel: typeof p.awarenessLevel === "string" ? p.awarenessLevel : undefined,
+    visualStrategyId: typeof p.visualStrategyId === "string" ? p.visualStrategyId : undefined,
+    visualStrategySource: p.visualStrategySource === "draft" || p.visualStrategySource === "override" ? p.visualStrategySource : undefined,
+    topicCompliance:
+      p.topicCompliance && typeof p.topicCompliance === "object" && typeof (p.topicCompliance as { passed?: unknown }).passed === "boolean"
+        ? {
+            passed: (p.topicCompliance as { passed: boolean }).passed,
+            violations: Array.isArray((p.topicCompliance as { violations?: unknown }).violations)
+              ? ((p.topicCompliance as { violations: string[] }).violations).filter((x): x is string => typeof x === "string")
+              : [],
+          }
+        : undefined,
   };
 }
 

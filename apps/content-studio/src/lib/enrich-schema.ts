@@ -25,7 +25,13 @@ const suggestionsSchema = z.object({
   forbiddenWords: z.array(z.string()).optional().default([]),
 });
 
-/** Schema pro výstup z LLM – všechna pole optional (enrich je jen předvyplnění), offers string po normalizaci. */
+const evidenceSchema = z.object({
+  field: z.string(),
+  sourceUrl: z.string(),
+  snippet: z.string(),
+});
+
+/** Schema pro výstup z LLM – všechna pole optional (enrich je jen předvyplnění). */
 export const enrichResultSchema = z.object({
   brandName: z.string().optional(),
   website: z.string().optional(),
@@ -42,6 +48,10 @@ export const enrichResultSchema = z.object({
   suggestions: suggestionsSchema.optional(),
   missingFields: z.array(z.string()).optional().default([]),
   confidence: z.number().min(0).max(1).optional().default(0.5),
+  brandCoreOneLiner: z.string().optional(),
+  allowedTopics: z.array(z.string()).optional().default([]),
+  disallowedTopics: z.array(z.string()).optional().default([]),
+  evidence: z.array(evidenceSchema).optional().default([]),
 });
 
 export type EnrichResponse = z.infer<typeof enrichResultSchema>;
@@ -86,6 +96,13 @@ export type DetectedAssets = {
   fonts: string[];
 };
 
+/** Evidence pro klíčový claim – url + snippet. */
+export type EnrichEvidence = {
+  field: string;
+  sourceUrl: string;
+  snippet: string;
+};
+
 /** Odpověď /api/intake/enrich při úspěchu. */
 export type EnrichApiResponse = {
   ok: true;
@@ -94,6 +111,14 @@ export type EnrichApiResponse = {
   detectedAssets: DetectedAssets;
   missingFields: string[];
   confidence: number;
+  /** Hlavní nabídka značky (1 věta) – zdroj pravdy pro content */
+  brandCoreOneLiner: string;
+  /** Povolená témata – content musí zůstat v těchto tématech */
+  allowedTopics: string[];
+  /** Zakázaná témata – content nesmí obsahovat */
+  disallowedTopics: string[];
+  /** Evidence pro klíčové claims (offers, industry, targetAudience) */
+  evidence: EnrichEvidence[];
 };
 
 export const PDF_MIME = "application/pdf";

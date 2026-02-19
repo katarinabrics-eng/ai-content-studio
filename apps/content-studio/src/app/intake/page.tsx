@@ -19,7 +19,7 @@ const LOGO_MIME = "image/png";
 type SubmitStatus = "idle" | "success" | "error";
 type SubmitError = { message?: string; details?: Record<string, string[]> };
 
-type EnrichMeta = { missingFields: string[]; confidence: number };
+type EnrichMeta = { missingFields: string[]; confidence: number; lowConfidence?: boolean };
 
 function SuggestionChips({
   items,
@@ -94,6 +94,9 @@ function IntakeContent() {
     strategyMode: "auto",
     strategyId: undefined,
     awarenessLevel: "problem_aware",
+    brandCoreOneLiner: "",
+    allowedTopics: [],
+    disallowedTopics: [],
     brandAssets: {
       logoUrl: "",
       colors: "",
@@ -147,6 +150,9 @@ function IntakeContent() {
       website: form.website?.trim() || undefined,
       forbiddenWords: form.forbiddenWords?.trim() || undefined,
       ctaPreference: form.ctaPreference?.trim() || undefined,
+      brandCoreOneLiner: form.brandCoreOneLiner?.trim() || undefined,
+      allowedTopics: form.allowedTopics?.length ? form.allowedTopics : undefined,
+      disallowedTopics: form.disallowedTopics?.length ? form.disallowedTopics : undefined,
       brandAssets: form.brandAssets
         ? {
             logoUrl: form.brandAssets.logoUrl?.trim() || undefined,
@@ -192,6 +198,9 @@ function IntakeContent() {
         strategyMode: "auto",
         strategyId: undefined,
         awarenessLevel: "problem_aware",
+        brandCoreOneLiner: "",
+        allowedTopics: [],
+        disallowedTopics: [],
         brandAssets: { logoUrl: "", colors: "", fonts: "", photosNote: "" },
       });
       return;
@@ -260,6 +269,9 @@ function IntakeContent() {
           awarenessLevel: (AWARENESS_LEVELS as readonly string[]).includes(String(apiResponse.prefill.awarenessLevel ?? ""))
             ? (apiResponse.prefill.awarenessLevel as AwarenessLevel)
             : "problem_aware",
+          brandCoreOneLiner: typeof apiResponse.brandCoreOneLiner === "string" ? apiResponse.brandCoreOneLiner : "",
+          allowedTopics: Array.isArray(apiResponse.allowedTopics) ? apiResponse.allowedTopics : [],
+          disallowedTopics: Array.isArray(apiResponse.disallowedTopics) ? apiResponse.disallowedTopics : [],
           brandAssets: {
             logoUrl: apiResponse.prefill.brandAssets?.logoUrl ?? "",
             colors: apiResponse.prefill.brandAssets?.colors ?? "",
@@ -272,6 +284,7 @@ function IntakeContent() {
       setEnrichMeta({
         missingFields: Array.isArray(apiResponse.missingFields) ? apiResponse.missingFields : [],
         confidence: typeof apiResponse.confidence === "number" ? apiResponse.confidence : 0,
+        lowConfidence: (apiResponse.confidence ?? 0) < 0.75,
       });
       setEnrichWebsite("");
       setEnrichPdfFile(null);
@@ -392,9 +405,14 @@ function IntakeContent() {
                   <strong>Chybějící pole:</strong> {enrichMeta.missingFields.join(", ")}
                 </>
               )}
+              {enrichMeta.lowConfidence && (
+                <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-amber-800">
+                  Nízká důvěra – část polí byla ponechána prázdná. Zkontrolujte a doplňte ručně.
+                </span>
+              )}
             </p>
             <p className="mt-1 text-slate-500">
-              Formulář níže byl předvyplněn. Můžete vše upravit a poté odeslat.
+              Formulář níže byl předvyplněn. Potvrďte hlavní nabídku a témata v sekci níže, poté odešlete.
             </p>
           </div>
         )}
@@ -682,6 +700,108 @@ function IntakeContent() {
                 <option value="product_aware">Vědomí produktu</option>
                 <option value="most_aware">Plně připravení (ready to buy)</option>
               </select>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-800">Potvrďte hlavní nabídku značky</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Hlavní nabídka a témata slouží jako zdroj pravdy pro generování obsahu. Obsah nesmí jít mimo povolená témata.
+          </p>
+          <div className="mt-4 space-y-4">
+            <div>
+              <label htmlFor="brandCoreOneLiner" className="block text-sm font-medium text-slate-700">
+                Hlavní nabídka (1 věta)
+              </label>
+              <input
+                id="brandCoreOneLiner"
+                type="text"
+                placeholder="Např. Poskytujeme web development a email automaci pro B2B firmy."
+                value={form.brandCoreOneLiner ?? ""}
+                onChange={(e) => update({ brandCoreOneLiner: e.target.value })}
+                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Povolená témata</label>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {(form.allowedTopics ?? []).map((t, i) => (
+                  <span
+                    key={`a-${i}`}
+                    className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"
+                  >
+                    {t}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        update({
+                          allowedTopics: (form.allowedTopics ?? []).filter((_, j) => j !== i),
+                        })
+                      }
+                      className="ml-1.5 inline-flex rounded-full p-0.5 hover:bg-green-200"
+                      aria-label="Odstranit"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                <input
+                  type="text"
+                  placeholder="Přidat téma (Enter)"
+                  className="min-w-[120px] rounded border border-slate-300 px-2 py-1 text-sm focus:border-slate-500 focus:outline-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val) {
+                        update({ allowedTopics: [...(form.allowedTopics ?? []), val] });
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Zakázaná témata</label>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {(form.disallowedTopics ?? []).map((t, i) => (
+                  <span
+                    key={`d-${i}`}
+                    className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+                  >
+                    {t}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        update({
+                          disallowedTopics: (form.disallowedTopics ?? []).filter((_, j) => j !== i),
+                        })
+                      }
+                      className="ml-1.5 inline-flex rounded-full p-0.5 hover:bg-red-200"
+                      aria-label="Odstranit"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                <input
+                  type="text"
+                  placeholder="Přidat zakázané téma (Enter)"
+                  className="min-w-[120px] rounded border border-slate-300 px-2 py-1 text-sm focus:border-slate-500 focus:outline-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      e.preventDefault();
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val) {
+                        update({ disallowedTopics: [...(form.disallowedTopics ?? []), val] });
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
         </section>

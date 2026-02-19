@@ -7,6 +7,9 @@ export type BrandSpec = {
   forbiddenWords: string[];
   platforms: ("instagram" | "facebook" | "linkedin")[];
   stylePreference?: "humor" | "storytelling" | "edukace" | "prodejní";
+  brandCoreOneLiner?: string;
+  allowedTopics: string[];
+  disallowedTopics: string[];
 };
 
 const HEX_REGEX = /#?[0-9A-Fa-f]{6}|#?[0-9A-Fa-f]{3}/g;
@@ -66,6 +69,13 @@ export function getBrandSpecFromIntake(intakePayload: Record<string, unknown>): 
   const colorsRaw = brandAssets.colors ?? intakePayload.brandColors;
   const fontsRaw = brandAssets.fonts ?? intakePayload.brandFonts;
 
+  const allowedTopics = Array.isArray(intakePayload.allowedTopics)
+    ? (intakePayload.allowedTopics as string[]).filter((x): x is string => typeof x === "string").map((s) => s.trim().toLowerCase()).filter(Boolean)
+    : [];
+  const disallowedTopics = Array.isArray(intakePayload.disallowedTopics)
+    ? (intakePayload.disallowedTopics as string[]).filter((x): x is string => typeof x === "string").map((s) => s.trim().toLowerCase()).filter(Boolean)
+    : [];
+
   return {
     colors: parseHexColors(colorsRaw),
     logoUrl,
@@ -74,5 +84,8 @@ export function getBrandSpecFromIntake(intakePayload: Record<string, unknown>): 
     forbiddenWords: parseForbiddenWords(intakePayload.forbiddenWords),
     platforms: parsePlatforms(intakePayload.platforms),
     stylePreference: parseStyle(intakePayload.stylePreference),
+    brandCoreOneLiner: typeof intakePayload.brandCoreOneLiner === "string" ? intakePayload.brandCoreOneLiner.trim() : undefined,
+    allowedTopics,
+    disallowedTopics,
   };
 }

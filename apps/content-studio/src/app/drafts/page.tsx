@@ -27,6 +27,7 @@ const STYLE_OPTIONS = [
   { value: "katarina_signature", label: "Katarina signature" },
   { value: "minimal_clean", label: "Minimal clean" },
   { value: "bold_growth", label: "Bold growth" },
+  { value: "simby_clean_saas", label: "SIMBY clean SaaS" },
 ] as const;
 
 function DraftsContent() {
@@ -206,7 +207,7 @@ function DraftsContent() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const errMsg = data.error ?? data.detail ?? "Generování vizuálu selhalo.";
+        const errMsg = [data.error, data.detail, data.hint].filter(Boolean).join(" – ") || "Generování vizuálu selhalo.";
         setVisualCardState(draftId, "error", errMsg);
         setDrafts((prev) => {
           const idx = prev.findIndex((d) => d.id === draftId);
@@ -527,11 +528,30 @@ function DraftsContent() {
                       </div>
                     )}
                     {(visualStatusByDraftId[draft.id] === "done" || visualStatusByDraftId[draft.id] === "error") && (
-                      <p
-                        className={`text-sm ${visualStatusByDraftId[draft.id] === "error" ? "text-red-700" : "text-green-700"}`}
-                      >
-                        {visualMessageByDraftId[draft.id]}
-                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p
+                          className={`text-sm ${visualStatusByDraftId[draft.id] === "error" ? "text-red-700" : "text-green-700"}`}
+                        >
+                          {visualMessageByDraftId[draft.id]}
+                        </p>
+                        {visualStatusByDraftId[draft.id] === "error" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setVisualStatusByDraftId((p) => ({ ...p, [draft.id]: "idle" }));
+                              setVisualMessageByDraftId((p) => {
+                                const n = { ...p };
+                                delete n[draft.id];
+                                return n;
+                              });
+                              handleGenerateVisual(draft.id, false);
+                            }}
+                            className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                          >
+                            Zkusit znovu
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}

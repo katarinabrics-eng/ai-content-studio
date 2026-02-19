@@ -51,6 +51,9 @@ export const intakeSchema = z.object({
   strategyMode: z.enum(["auto", "manual"]).optional().default("auto"),
   strategyId: z.string().optional(),
   awarenessLevel: z.enum(AWARENESS_LEVELS).optional().default("problem_aware"),
+  brandCoreOneLiner: z.string().optional(),
+  allowedTopics: z.array(z.string()).optional().default([]),
+  disallowedTopics: z.array(z.string()).optional().default([]),
 });
 
 export type IntakeFormData = z.infer<typeof intakeSchema>;

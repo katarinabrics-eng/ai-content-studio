@@ -44,6 +44,7 @@ export type StoredPostDraft = PostDraft & {
   awarenessLevel?: string;
   visualStrategyId?: string;
   visualStrategySource?: "draft" | "override";
+  topicCompliance?: { passed: boolean; violations: string[] };
 }
 
 export const generateRequestSchema = z.object({

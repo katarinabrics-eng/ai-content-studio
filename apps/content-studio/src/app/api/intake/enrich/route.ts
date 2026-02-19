@@ -11,7 +11,7 @@ import {
   type EnrichPrefill,
   type EnrichSuggestions,
 } from "@/lib/enrich-schema";
-import { extractAssetsFromWeb } from "@/lib/extract-assets";
+import { extractAssetsFromWeb, extractHeroFallback } from "@/lib/extract-assets";
 import OpenAI from "openai";
 
 export const runtime = "nodejs";
@@ -23,12 +23,19 @@ const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
 const REQUEST_TIMEOUT_MS = 85_000;
 
 const ENRICH_SYSTEM_PROMPT = `Jsi asistent, který z textu webu a/nebo brand manuálu (PDF) extrahuje strukturované údaje pro intake formulář.
-Pravidla: Vrať POUZE validní JSON bez markdownu. Nikdy nevracej null – u každého pole uveď konkrétní hodnotu nebo rozumný draft.
-Výchozí hodnoty když nevíš: contentGoal "důvěra", stylePreference "storytelling", platforms ["instagram","facebook"].
-Pro KAŽDÉ pole uveď návrh (i když odhad). Přidej objekt "suggestions" s poli stringů – alternativní návrhy pro úpravu:
-suggestions: { targetAudience: string[], offers: string[], toneOfVoice: string[], ctaPreference: string[], forbiddenWords: string[] }
-(min. 1 návrh v každém poli, může být i více variant).
-Schéma: brandName, website, industry, targetAudience, offers, toneOfVoice, forbiddenWords, ctaPreference (vše string), contentGoal (enum), platforms (pole), stylePreference (enum), brandAssets: { logo, colors, fonts, photos }, suggestions (jak výše), missingFields (pole chybějících polí), confidence (0-1).`;
+
+PRAVIDLA PRO PŘESNOST – NEPŘIDÁVEJ HALUCINACE:
+- offers, industry, targetAudience: Vyplň JEN pokud máš EVIDENCI z webu (konkrétní URL + snippet). Pokud důkaz chybí, nech prázdné ("").
+- evidence: Pro KAŽDÝ klíčový claim (offers, industry, targetAudience), který vyplňuješ, UVEĎ: { "field": "offers"|"industry"|"targetAudience", "sourceUrl": "https://...", "snippet": "citace z webu max 200 znaků" }.
+- brandCoreOneLiner: Jedna věta shrnující HLAVNÍ nabídku firmy (co prodávají/poskytují) – pouze z evidence.
+- allowedTopics: Pole témat, o kterých firma MLUVÍ (z webu). Např. ["web development","email automace","konzultace"] – jen z evidence.
+- disallowedTopics: Témata, která na webu NEJSOU – např. generická ["data","komunita"] pokud web o nich nemluví.
+
+Fallback: Můžeš použít hero/h1/h2/features z homepage – uveď jako sourceUrl homepage URL.
+
+Vrať POUZE validní JSON bez markdownu.
+Schéma: brandName, website, industry, targetAudience, offers, toneOfVoice, forbiddenWords, ctaPreference (string), contentGoal (enum), platforms (pole), stylePreference (enum), brandAssets: { logo, colors, fonts, photos }, suggestions: { targetAudience, offers, toneOfVoice, ctaPreference, forbiddenWords } (pole stringů), missingFields (pole), confidence (0-1).
+Plus: brandCoreOneLiner (string), allowedTopics (string[]), disallowedTopics (string[]), evidence: [{ field, sourceUrl, snippet }].`;
 
 /**
  * Normalizuje hodnotu na string pro textová pole: null/undefined -> undefined,
@@ -72,6 +79,25 @@ function normalizeLlmOutput(raw: Record<string, unknown>): Record<string, unknow
     ? (raw.platforms as unknown[]).filter((p) => (PLATFORMS as readonly string[]).includes(String(p)))
     : undefined;
 
+  const evidenceRaw = raw.evidence;
+  const evidence = Array.isArray(evidenceRaw)
+    ? (evidenceRaw as unknown[])
+        .filter((e): e is Record<string, unknown> => e != null && typeof e === "object")
+        .map((e) => ({
+          field: String(e.field ?? ""),
+          sourceUrl: String(e.sourceUrl ?? ""),
+          snippet: String(e.snippet ?? ""),
+        }))
+        .filter((e) => e.field && e.sourceUrl && e.snippet)
+    : [];
+
+  const allowedTopics = Array.isArray(raw.allowedTopics)
+    ? (raw.allowedTopics as unknown[]).filter((x): x is string => typeof x === "string").map((s) => s.trim()).filter(Boolean)
+    : [];
+  const disallowedTopics = Array.isArray(raw.disallowedTopics)
+    ? (raw.disallowedTopics as unknown[]).filter((x): x is string => typeof x === "string").map((s) => s.trim()).filter(Boolean)
+    : [];
+
   return {
     ...raw,
     brandName: normalizeText(raw.brandName),
@@ -93,6 +119,10 @@ function normalizeLlmOutput(raw: Record<string, unknown>): Record<string, unknow
       typeof raw.confidence === "number" && raw.confidence >= 0 && raw.confidence <= 1
         ? raw.confidence
         : 0.5,
+    brandCoreOneLiner: normalizeText(raw.brandCoreOneLiner),
+    allowedTopics,
+    disallowedTopics,
+    evidence,
   };
 }
 
@@ -241,6 +271,12 @@ export async function POST(request: Request) {
       (webText ? `## Obsah webu\n${webText}\n\n` : "") +
       (pdfText ? `## Brand manual (PDF)\n${pdfText}` : "");
 
+    const firstPageMarkdown = urlResults[0] && typeof urlResults[0] === "string" ? urlResults[0] : "";
+    const heroFallback = firstPageMarkdown ? extractHeroFallback(firstPageMarkdown, urls[0] ?? website) : null;
+    const fallbackNote = heroFallback
+      ? `\n\n## Fallback z homepage (${urls[0]}):\nh1: ${heroFallback.h1}\nh2: ${heroFallback.h2s.slice(0, 8).join("; ")}\nfeatures: ${heroFallback.features.slice(0, 5).join("; ")}\npricing: ${heroFallback.pricing.slice(0, 3).join("; ")}`
+      : "";
+
     const openaiKey = process.env.OPENAI_API_KEY;
     if (!openaiKey) {
       return NextResponse.json(
@@ -254,7 +290,7 @@ export async function POST(request: Request) {
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: ENRICH_SYSTEM_PROMPT },
-        { role: "user", content: `Extrahuj údaje z následujícího textu. Website zadaný uživatelem: ${website}\n\n${combined.slice(0, 120000)}` },
+        { role: "user", content: `Extrahuj údaje z následujícího textu. Website: ${website}\n\n${combined.slice(0, 115000)}${fallbackNote}` },
       ],
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -306,15 +342,19 @@ export async function POST(request: Request) {
 
     const d = parsed.data;
     const sug = d.suggestions;
+    const confidence = d.confidence ?? 0.5;
+    const evidenceList = Array.isArray(d.evidence) ? d.evidence : [];
+    const hasEvidence = (field: string) => evidenceList.some((e) => e.field === field);
+    const lowConfidence = confidence < 0.75;
 
     const prefill: EnrichPrefill = {
       brandName: d.brandName?.trim() || "Značka",
       website: d.website?.trim() || website,
-      industry: d.industry?.trim() || "",
-      targetAudience: d.targetAudience?.trim() || "",
-      offers: d.offers?.trim() || "",
-      toneOfVoice: d.toneOfVoice?.trim() || "",
-      forbiddenWords: d.forbiddenWords?.trim() || "",
+      industry: lowConfidence && !hasEvidence("industry") ? "" : (d.industry?.trim() ?? ""),
+      targetAudience: lowConfidence && !hasEvidence("targetAudience") ? "" : (d.targetAudience?.trim() ?? ""),
+      offers: lowConfidence && !hasEvidence("offers") ? "" : (d.offers?.trim() ?? ""),
+      toneOfVoice: d.toneOfVoice?.trim() ?? "",
+      forbiddenWords: d.forbiddenWords?.trim() ?? "",
       contentGoal:
         d.contentGoal && (CONTENT_GOAL as readonly string[]).includes(d.contentGoal)
           ? d.contentGoal
@@ -351,13 +391,24 @@ export async function POST(request: Request) {
       forbiddenWords: Array.isArray(sug?.forbiddenWords) ? sug.forbiddenWords.filter((x) => typeof x === "string") : [],
     };
 
+    const brandCoreOneLiner =
+      typeof d.brandCoreOneLiner === "string" && d.brandCoreOneLiner.trim()
+        ? d.brandCoreOneLiner.trim()
+        : (d.offers?.trim() ? `Nabídka: ${d.offers.trim()}` : "");
+    const allowedTopicsList = Array.isArray(d.allowedTopics) ? d.allowedTopics.filter((x): x is string => typeof x === "string") : [];
+    const disallowedTopicsList = Array.isArray(d.disallowedTopics) ? d.disallowedTopics.filter((x): x is string => typeof x === "string") : [];
+
     return NextResponse.json({
       ok: true,
       prefill,
       suggestions,
       detectedAssets,
       missingFields: parsed.data.missingFields ?? [],
-      confidence: parsed.data.confidence ?? 0.5,
+      confidence,
+      brandCoreOneLiner: brandCoreOneLiner || "Hlavní nabídka firmy z webu",
+      allowedTopics: allowedTopicsList.length > 0 ? allowedTopicsList : (d.offers?.trim() ? d.offers.split(/[,;]/).map((s) => s.trim()).filter(Boolean) : []),
+      disallowedTopics: disallowedTopicsList,
+      evidence: evidenceList,
     });
   } catch (e) {
     if (e instanceof Error) {
