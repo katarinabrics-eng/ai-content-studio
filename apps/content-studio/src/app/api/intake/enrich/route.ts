@@ -5,6 +5,7 @@ import {
   STYLE_PREFERENCE,
   enrichRequestSchema,
   enrichResultSchema,
+  normalizeSuggestionsInput,
   PDF_MIME,
   PDF_MAX_BYTES,
   type DetectedAssets,
@@ -35,7 +36,8 @@ PRAVIDLA PRO PŘESNOST – NEPŘIDÁVEJ HALUCINACE:
 Fallback: Můžeš použít hero/h1/h2/features z homepage – uveď jako sourceUrl homepage URL.
 
 Vrať POUZE validní JSON bez markdownu.
-Schéma: brandName, website, industry, targetAudience, offers, toneOfVoice, forbiddenWords, ctaPreference (string), contentGoal (enum), platforms (pole), stylePreference (enum), brandAssets: { logo, colors, fonts, photos }, suggestions: { targetAudience, offers, toneOfVoice, ctaPreference, forbiddenWords } (pole stringů), missingFields (pole), confidence (0-1).
+Schéma: brandName, website, industry, targetAudience, offers, toneOfVoice, forbiddenWords, ctaPreference (string), contentGoal (enum), platforms (pole), stylePreference (enum), brandAssets: { logo, colors, fonts, photos }, missingFields (pole), confidence (0-1).
+Return suggestions as OBJECT with keys (each value = array of strings): targetAudience, offers, toneOfVoice, ctaPreference, forbiddenWords.
 Plus: brandCoreOneLiner (string), allowedTopics (string[]), disallowedTopics (string[]), evidence: [{ field, sourceUrl, snippet }].`;
 
 /**
@@ -54,8 +56,9 @@ function normalizeText(value: unknown): string | undefined {
 
 /**
  * Před validací Zod normalizuje surový výstup LLM (null/array -> string).
+ * Suggestions se normalizují na objekt; vrací též flag, zda byl tvar neplatný (pro warning).
  */
-function normalizeLlmOutput(raw: Record<string, unknown>): Record<string, unknown> {
+function normalizeLlmOutput(raw: Record<string, unknown>): { normalized: Record<string, unknown>; suggestionsNormalized: boolean } {
   const brandAssets = raw.brandAssets as Record<string, unknown> | null | undefined;
   const normalizedAssets =
     brandAssets && typeof brandAssets === "object" && !Array.isArray(brandAssets)
@@ -66,6 +69,14 @@ function normalizeLlmOutput(raw: Record<string, unknown>): Record<string, unknow
           photos: normalizeText(brandAssets.photos),
         }
       : undefined;
+
+  const rawSuggestions = raw.suggestions;
+  const suggestionsNormalized =
+    rawSuggestions !== undefined &&
+    (Array.isArray(rawSuggestions) ||
+      typeof rawSuggestions !== "object" ||
+      rawSuggestions === null);
+  const suggestions = normalizeSuggestionsInput(rawSuggestions);
 
   const contentGoal =
     raw.contentGoal != null && (CONTENT_GOAL as readonly string[]).includes(String(raw.contentGoal))
@@ -100,30 +111,34 @@ function normalizeLlmOutput(raw: Record<string, unknown>): Record<string, unknow
     : [];
 
   return {
-    ...raw,
-    brandName: normalizeText(raw.brandName),
-    website: normalizeText(raw.website),
-    industry: normalizeText(raw.industry),
-    targetAudience: normalizeText(raw.targetAudience),
-    offers: normalizeText(raw.offers),
-    toneOfVoice: normalizeText(raw.toneOfVoice),
-    forbiddenWords: normalizeText(raw.forbiddenWords),
-    ctaPreference: normalizeText(raw.ctaPreference),
-    contentGoal,
-    stylePreference,
-    platforms,
-    brandAssets: normalizedAssets,
-    missingFields: Array.isArray(raw.missingFields)
-      ? (raw.missingFields as unknown[]).map((x) => String(x)).filter(Boolean)
-      : [],
-    confidence:
-      typeof raw.confidence === "number" && raw.confidence >= 0 && raw.confidence <= 1
-        ? raw.confidence
-        : 0.5,
-    brandCoreOneLiner: normalizeText(raw.brandCoreOneLiner),
-    allowedTopics,
-    disallowedTopics,
-    evidence,
+    normalized: {
+      ...raw,
+      brandName: normalizeText(raw.brandName),
+      website: normalizeText(raw.website),
+      industry: normalizeText(raw.industry),
+      targetAudience: normalizeText(raw.targetAudience),
+      offers: normalizeText(raw.offers),
+      toneOfVoice: normalizeText(raw.toneOfVoice),
+      forbiddenWords: normalizeText(raw.forbiddenWords),
+      ctaPreference: normalizeText(raw.ctaPreference),
+      contentGoal,
+      stylePreference,
+      platforms,
+      brandAssets: normalizedAssets,
+      suggestions,
+      missingFields: Array.isArray(raw.missingFields)
+        ? (raw.missingFields as unknown[]).map((x) => String(x)).filter(Boolean)
+        : [],
+      confidence:
+        typeof raw.confidence === "number" && raw.confidence >= 0 && raw.confidence <= 1
+          ? raw.confidence
+          : 0.5,
+      brandCoreOneLiner: normalizeText(raw.brandCoreOneLiner),
+      allowedTopics,
+      disallowedTopics,
+      evidence,
+    },
+    suggestionsNormalized,
   };
 }
 
@@ -331,10 +346,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const toValidate =
-      raw != null && typeof raw === "object" && !Array.isArray(raw)
-        ? normalizeLlmOutput(raw as Record<string, unknown>)
-        : raw;
+    let toValidate: unknown = raw;
+    let suggestionsNormalized = false;
+    if (raw != null && typeof raw === "object" && !Array.isArray(raw)) {
+      const { normalized, suggestionsNormalized: sn } = normalizeLlmOutput(raw as Record<string, unknown>);
+      toValidate = normalized;
+      suggestionsNormalized = sn;
+    }
 
     const parsed = enrichResultSchema.safeParse(toValidate);
     if (!parsed.success) {
@@ -348,7 +366,7 @@ export async function POST(request: Request) {
     }
 
     const d = parsed.data;
-    const sug = d.suggestions;
+    const sug = d.suggestions ?? normalizeSuggestionsInput(null);
     const confidence = d.confidence ?? 0.5;
     const evidenceList = Array.isArray(d.evidence) ? d.evidence : [];
     const hasEvidence = (field: string) => evidenceList.some((e) => e.field === field);
@@ -391,12 +409,17 @@ export async function POST(request: Request) {
     };
 
     const suggestions: EnrichSuggestions = {
-      targetAudience: Array.isArray(sug?.targetAudience) ? sug.targetAudience.filter((x) => typeof x === "string") : [],
-      offers: Array.isArray(sug?.offers) ? sug.offers.filter((x) => typeof x === "string") : [],
-      toneOfVoice: Array.isArray(sug?.toneOfVoice) ? sug.toneOfVoice.filter((x) => typeof x === "string") : [],
-      ctaPreference: Array.isArray(sug?.ctaPreference) ? sug.ctaPreference.filter((x) => typeof x === "string") : [],
-      forbiddenWords: Array.isArray(sug?.forbiddenWords) ? sug.forbiddenWords.filter((x) => typeof x === "string") : [],
+      targetAudience: Array.isArray(sug.targetAudience) ? sug.targetAudience.filter((x) => typeof x === "string") : [],
+      offers: Array.isArray(sug.offers) ? sug.offers.filter((x) => typeof x === "string") : [],
+      toneOfVoice: Array.isArray(sug.toneOfVoice) ? sug.toneOfVoice.filter((x) => typeof x === "string") : [],
+      ctaPreference: Array.isArray(sug.ctaPreference) ? sug.ctaPreference.filter((x) => typeof x === "string") : [],
+      forbiddenWords: Array.isArray(sug.forbiddenWords) ? sug.forbiddenWords.filter((x) => typeof x === "string") : [],
     };
+
+    const warnings: string[] = [];
+    if (suggestionsNormalized) {
+      warnings.push("Suggestions normalized due to invalid shape");
+    }
 
     const brandCoreOneLiner =
       typeof d.brandCoreOneLiner === "string" && d.brandCoreOneLiner.trim()
@@ -418,6 +441,7 @@ export async function POST(request: Request) {
       allowedTopics: allowedTopicsList.length > 0 ? allowedTopicsList : (d.offers?.trim() ? d.offers.split(/[,;]/).map((s) => s.trim()).filter(Boolean) : []),
       disallowedTopics: disallowedTopicsList,
       evidence: evidenceList,
+      ...(warnings.length > 0 ? { warnings } : {}),
       processingMode,
       processingReason,
       startedAt: processingStartedAt,

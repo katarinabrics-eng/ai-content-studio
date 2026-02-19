@@ -17,13 +17,56 @@ const brandAssetsSchema = z
   })
   .optional();
 
-const suggestionsSchema = z.object({
-  targetAudience: z.array(z.string()).optional().default([]),
-  offers: z.array(z.string()).optional().default([]),
-  toneOfVoice: z.array(z.string()).optional().default([]),
-  ctaPreference: z.array(z.string()).optional().default([]),
-  forbiddenWords: z.array(z.string()).optional().default([]),
-});
+function toStringArray(v: unknown): string[] {
+  if (Array.isArray(v)) {
+    return v.filter((x): x is string => typeof x === "string").map((s) => s.trim()).filter(Boolean);
+  }
+  if (typeof v === "string" && v.trim()) return [v.trim()];
+  return [];
+}
+
+/** Normalize LLM variance: object, array (legacy), or null/undefined → object with string[] keys. */
+export function normalizeSuggestionsInput(input: unknown): {
+  targetAudience: string[];
+  offers: string[];
+  toneOfVoice: string[];
+  ctaPreference: string[];
+  forbiddenWords: string[];
+} {
+  const empty = {
+    targetAudience: [] as string[],
+    offers: [] as string[],
+    toneOfVoice: [] as string[],
+    ctaPreference: [] as string[],
+    forbiddenWords: [] as string[],
+  };
+  if (input == null) return empty;
+  if (Array.isArray(input)) {
+    return { ...empty, offers: toStringArray(input) };
+  }
+  if (typeof input === "object" && !Array.isArray(input)) {
+    const o = input as Record<string, unknown>;
+    return {
+      targetAudience: toStringArray(o.targetAudience),
+      offers: toStringArray(o.offers),
+      toneOfVoice: toStringArray(o.toneOfVoice),
+      ctaPreference: toStringArray(o.ctaPreference),
+      forbiddenWords: toStringArray(o.forbiddenWords),
+    };
+  }
+  return empty;
+}
+
+const suggestionsSchema = z.preprocess(
+  normalizeSuggestionsInput,
+  z.object({
+    targetAudience: z.array(z.string()),
+    offers: z.array(z.string()),
+    toneOfVoice: z.array(z.string()),
+    ctaPreference: z.array(z.string()),
+    forbiddenWords: z.array(z.string()),
+  })
+);
 
 const evidenceSchema = z.object({
   field: z.string(),
@@ -45,7 +88,7 @@ export const enrichResultSchema = z.object({
   stylePreference: z.enum(STYLE_PREFERENCE).optional().nullable().transform((v) => v ?? undefined),
   ctaPreference: z.string().optional(),
   brandAssets: brandAssetsSchema,
-  suggestions: suggestionsSchema.optional(),
+  suggestions: suggestionsSchema.optional().transform((v) => v ?? normalizeSuggestionsInput(null)),
   missingFields: z.array(z.string()).optional().default([]),
   confidence: z.number().min(0).max(1).optional().default(0.5),
   brandCoreOneLiner: z.string().optional(),
@@ -119,6 +162,8 @@ export type EnrichApiResponse = {
   disallowedTopics: string[];
   /** Evidence pro klíčové claims (offers, industry, targetAudience) */
   evidence: EnrichEvidence[];
+  /** Např. "Suggestions normalized due to invalid shape" */
+  warnings?: string[];
 };
 
 export const PDF_MIME = "application/pdf";
