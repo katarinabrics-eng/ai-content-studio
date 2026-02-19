@@ -16,15 +16,15 @@ const faqs = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-lucifera-dark">
-      {/* NAV — Lucifera Glass */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-lucifera-dark/80 backdrop-blur-xl">
+    <main className="min-h-screen bg-stone-50">
+      {/* NAV — clean, světlé pozadí */}
+      <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <a href="/" className="focus:outline-none">
-            <span className="text-sm font-semibold tracking-wide text-white">AI CONTENT STUDIO LUCIFERA</span>
-            <span className="ml-2 text-xs text-white/60">AI + kreativní kurátor</span>
+            <span className="text-sm font-semibold tracking-wide text-stone-900">AI CONTENT STUDIO LUCIFERA</span>
+            <span className="ml-2 text-xs text-stone-500">AI + kreativní kurátor</span>
           </a>
-          <nav className="hidden gap-8 text-sm text-white/80 md:flex">
+          <nav className="hidden gap-8 text-sm text-stone-600 md:flex">
             <a href="#jak-to-funguje" className="transition-colors hover:text-lucifera-lime">Jak to funguje</a>
             <a href="#problem" className="transition-colors hover:text-lucifera-lime">Problém</a>
             <a href="#reseni" className="transition-colors hover:text-lucifera-lime">Řešení</a>
@@ -38,77 +38,53 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* HERO — moving light map bg + big glass panel + visual */}
-      <section className="relative min-h-screen w-full overflow-hidden">
-        {/* Abstract moving light map background */}
-        <div
-          className="absolute inset-0 opacity-40 animate-light-map"
-          style={{
-            background: "radial-gradient(ellipse 80% 50% at 20% 40%, rgba(192, 255, 0, 0.15) 0%, transparent 50%), radial-gradient(ellipse 60% 80% at 80% 60%, rgba(192, 255, 0, 0.08) 0%, transparent 45%), radial-gradient(ellipse 100% 100% at 50% 50%, rgba(10, 15, 13, 0) 0%, #0d1210 70%)",
-          }}
-        />
-        <div className="absolute inset-0 bg-lucifera-dark" />
-        <div className="relative z-10 grid min-h-screen w-full grid-cols-1 items-center px-4 py-20 lg:grid-cols-2 lg:gap-12 lg:px-12 xl:px-16">
-          {/* Main glass panel with copy */}
-          <div className="glass-panel p-8 md:p-10 lg:p-12">
-            <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+      {/* HERO — full-screen, 2 sloupce: text vlevo, vizuál vpravo, bez boxed card */}
+      <section className="relative min-h-screen w-full overflow-hidden bg-stone-50">
+        <div className="grid min-h-screen w-full grid-cols-1 items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:gap-16 lg:px-12 xl:px-20">
+          {/* Levý sloupec: copy */}
+          <div className="animate-fade-in">
+            <h1 className="text-4xl font-bold leading-tight tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
               Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/80">
-              Znáte to: zahlcení, paralýza před prázdnou obrazovkou a pocit, že „zase nic nevyšlo“. AI Content Studio Lucifera vám vrátí klid. Vyplníte krátký formulář a my vám do 48 hodin dodáme první příspěvky. Bez chaosu, bez dlouhých schůzek.
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-stone-700">
+              Vyberete tarif, vyplníte krátký formulář a my spustíme tvorbu. Do 24–48 hodin dostanete první 3 příspěvky ke schválení.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <a href="/start" className="btn-lime-primary">
-                Spustit test zdarma
+                Chci si odlehčit tvorbu
               </a>
-              <a href="#jak-to-funguje" className="btn-lime-outline">
+              <a href="#jak-to-funguje" className="btn-lime-outline-light">
                 Jak probíhá spolupráce
               </a>
             </div>
             <p className="mt-6 text-sm font-medium text-lucifera-lime">
-              Testovací provoz bez platby. Projekt se vytvoří ihned.
-            </p>
-            <p className="mt-1 text-sm text-white/70">
               V pondělí dodáte data. V pátek publikujete.
             </p>
           </div>
-          {/* Hero visual: abstract 3D glass / network with pulsing lime */}
+          {/* Pravý sloupec: vizuál — jemný float */}
           <div className="relative hidden min-h-[50vh] lg:block">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative h-80 w-80 animate-pulse-lime">
-                <div
-                  className="absolute inset-0 rounded-full opacity-30 blur-3xl"
-                  style={{ background: "radial-gradient(circle, rgba(192,255,0,0.4) 0%, transparent 70%)" }}
-                />
-                <div
-                  className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-lucifera-lime/30 opacity-60"
-                  style={{ boxShadow: "0 0 60px rgba(192,255,0,0.2), inset 0 0 40px rgba(192,255,0,0.05)" }}
-                />
-                <div
-                  className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lucifera-lime/10"
-                  style={{ boxShadow: "inset 0 0 30px rgba(192,255,0,0.2), 0 0 40px rgba(192,255,0,0.15)" }}
-                />
-                <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lucifera-lime shadow-lime-glow" />
+            <div className="animate-float absolute inset-0 flex items-center justify-end">
+              <div className="relative h-full w-full max-w-lg">
+                <HeroImageFull />
               </div>
             </div>
-            <div className="absolute right-0 top-1/2 h-full w-full -translate-y-1/2 lg:w-[80%]">
+          </div>
+          {/* Mobile: obrázek pod textem */}
+          <div className="relative min-h-[40vh] w-full lg:hidden">
+            <div className="animate-fade-in">
               <HeroImageFull />
             </div>
-          </div>
-          {/* Mobile: image below copy */}
-          <div className="relative min-h-[40vh] w-full lg:hidden">
-            <HeroImageFull />
           </div>
         </div>
       </section>
 
-      {/* Sekce 1: Agitace — 3 glass karty s ikonami */}
-      <section id="problem" className="relative w-full bg-lucifera-dark-green px-4 py-20 sm:px-6 lg:px-8">
+      {/* Sekce 1: Agitace — 3 karty, clean */}
+      <section id="problem" className="relative w-full bg-white px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
             Nejste líní. Jste jen přehlcení.
           </h2>
-          <p className="mt-4 max-w-3xl text-lg text-white/80">
+          <p className="mt-4 max-w-3xl text-lg text-stone-600">
             Většina podnikatelů a specialistů nechce „nepostovat“. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
           </p>
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
@@ -117,8 +93,8 @@ export default function HomePage() {
               { text: "Když už si sednete k obsahu, ztrácíte hodiny přepisováním jedné věty.", icon: "hourglass" },
               { text: "Každý příspěvek je mentální start od nuly. Prázdný rám čeká.", icon: "frame" },
             ].map((card) => (
-              <div key={card.icon} className="glass-panel flex flex-col p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lucifera-lime/10 text-lucifera-lime">
+              <div key={card.icon} className="flex flex-col rounded-2xl border border-stone-200 bg-stone-50/80 p-6 transition-shadow hover:shadow-md">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lucifera-lime/15 text-lucifera-lime">
                   {card.icon === "hourglass" && (
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -135,37 +111,37 @@ export default function HomePage() {
                     </svg>
                   )}
                 </div>
-                <p className="text-white/90">{card.text}</p>
+                <p className="text-stone-700">{card.text}</p>
               </div>
             ))}
           </div>
-          <p className="mt-6 text-white/70">
+          <p className="mt-6 text-stone-600">
             Místo toho, abyste se věnovali tomu, co vás živí, řešíte „co dnes dát na Instagram nebo LinkedIn“.
           </p>
         </div>
       </section>
 
-      {/* Sekce 2: Řešení — Dříve (dim) vs S Luciferou (bright) */}
-      <section id="reseni" className="relative w-full bg-lucifera-dark px-4 py-20 sm:px-6 lg:px-8">
+      {/* Sekce 2: Řešení — Dříve vs S Luciferou */}
+      <section id="reseni" className="relative w-full bg-stone-50 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
             Neřešíme jen texty. Řešíme vaši rozhodovací únavu.
           </h2>
-          <p className="mt-4 max-w-3xl text-lg text-white/80">
+          <p className="mt-4 max-w-3xl text-lg text-stone-600">
             Náš cíl není vygenerovat náhodný text. Náš cíl je zařídit, aby vám z hlavy zmizel každodenní tlak na obsah. Vaše značka bude vidět pravidelně, kvalitně a konzistentně – a vy u toho nebudete muset trpět.
           </p>
           <div className="mt-12 grid gap-8 md:grid-cols-2">
-            <div className="glass-panel-dim p-8">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-red-400/90">Dříve</h3>
-              <ul className="mt-4 space-y-3 text-white/70">
-                <li className="flex items-center gap-2"><span className="text-red-400/80">✕</span> „Co dnes postnout?“</li>
-                <li className="flex items-center gap-2"><span className="text-red-400/80">✕</span> „Nemám kapacitu.“</li>
-                <li className="flex items-center gap-2"><span className="text-red-400/80">✕</span> „Zase jsem nic nevydal/a.“</li>
+            <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-red-500">Dříve</h3>
+              <ul className="mt-4 space-y-3 text-stone-600">
+                <li className="flex items-center gap-2"><span className="text-red-400">✕</span> „Co dnes postnout?“</li>
+                <li className="flex items-center gap-2"><span className="text-red-400">✕</span> „Nemám kapacitu.“</li>
+                <li className="flex items-center gap-2"><span className="text-red-400">✕</span> „Zase jsem nic nevydal/a.“</li>
               </ul>
             </div>
-            <div className="glass-panel-bright p-8">
+            <div className="rounded-2xl border border-lucifera-lime/30 bg-lucifera-lime/5 p-8 shadow-sm">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-lucifera-lime">S Luciferou</h3>
-              <ul className="mt-4 space-y-3 text-white/90">
+              <ul className="mt-4 space-y-3 text-stone-800">
                 <li className="flex items-center gap-2"><span className="text-lucifera-lime">✓</span> „Mám návrhy včas a bez stresu.“</li>
                 <li className="flex items-center gap-2"><span className="text-lucifera-lime">✓</span> „Vím přesně, co a kdy jde ven.“</li>
                 <li className="flex items-center gap-2"><span className="text-lucifera-lime">✓</span> „Sítě běží, já řeším svoji práci.“</li>
@@ -175,22 +151,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sekce 3: Proces — timeline, 5 kruhů + limetková linka */}
-      <section id="jak-to-funguje" className="relative w-full bg-lucifera-dark-green px-4 py-20 sm:px-6 lg:px-8">
+      {/* Sekce 3: Proces — timeline */}
+      <section id="jak-to-funguje" className="relative w-full bg-white px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
             Od briefu k publikaci během jednoho týdne. Žádné zbytečné cally.
           </h2>
-          <p className="mt-4 max-w-3xl text-white/80">
+          <p className="mt-4 max-w-3xl text-stone-600">
             Spolupráce je navržená tak, aby byla maximálně asynchronní a nezdržovala vás.
           </p>
-          {/* Timeline: 5 kruhů + limetková linka mezi nimi */}
           <div className="mt-14 flex flex-col items-center gap-8 lg:flex-row lg:items-start lg:justify-between">
             {processSteps.map((step, i) => (
               <div key={step.title} className="flex flex-1 flex-col items-center lg:max-w-[180px]">
                 <div className="flex w-full items-center justify-center lg:justify-center">
                   {i > 0 && <div className="hidden h-0.5 flex-1 max-w-[20px] bg-lucifera-lime/40 lg:block" />}
-                  <div className="glass-panel z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-lucifera-lime/40 text-lucifera-lime">
+                  <div className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-lucifera-lime/50 bg-lucifera-lime/10 text-lucifera-lime">
                     {step.icon === "cursor" && <span className="text-lg">▸</span>}
                     {step.icon === "form" && <span className="text-lg">✎</span>}
                     {step.icon === "cards" && <span className="text-lg">☰</span>}
@@ -200,8 +175,8 @@ export default function HomePage() {
                   {i < processSteps.length - 1 && <div className="hidden h-0.5 flex-1 min-w-[8px] max-w-[40px] bg-lucifera-lime/40 lg:block" />}
                 </div>
                 <div className="mt-4 text-center">
-                  <h3 className="font-semibold text-white">{step.title}</h3>
-                  <p className="mt-1 text-sm text-white/70">{step.text}</p>
+                  <h3 className="font-semibold text-stone-900">{step.title}</h3>
+                  <p className="mt-1 text-sm text-stone-600">{step.text}</p>
                   {step.day && (
                     <span className="mt-2 inline-block rounded-full bg-lucifera-lime/20 px-2 py-0.5 text-xs font-medium text-lucifera-lime">
                       {step.day}
@@ -211,35 +186,35 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <p className="mt-10 text-lg font-medium text-white/90">
+          <p className="mt-10 text-lg font-medium text-stone-800">
             Výsledek: Vy se mezitím věnujete své profesi. My držíme obsahový rytmus.
           </p>
         </div>
       </section>
 
-      {/* Sekce 4: Diferenciace — AI + Kurátor, centrální záblesk */}
-      <section id="proc-my" className="relative w-full bg-lucifera-dark px-4 py-20 sm:px-6 lg:px-8">
+      {/* Sekce 4: AI + Kurátor */}
+      <section id="proc-my" className="relative w-full bg-stone-50 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-white md:text-4xl">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
             Rychlost AI. Zodpovědnost člověka.
           </h2>
           <div className="mt-12 flex flex-col items-center justify-center gap-8 lg:flex-row">
-            <div className="flex flex-col items-center rounded-2xl border border-white/10 bg-white/5 px-8 py-6 backdrop-blur-sm">
-              <div className="h-16 w-16 rounded-full border border-lucifera-lime/30 bg-lucifera-lime/10" style={{ boxShadow: "0 0 30px rgba(192,255,0,0.15)" }} />
-              <p className="mt-3 text-sm font-medium text-white/90">AI</p>
-              <p className="text-center text-xs text-white/60">Neuronová síť, generace</p>
+            <div className="flex flex-col items-center rounded-2xl border border-stone-200 bg-white px-8 py-6 shadow-sm">
+              <div className="h-16 w-16 rounded-full border border-lucifera-lime/40 bg-lucifera-lime/10" />
+              <p className="mt-3 text-sm font-medium text-stone-900">AI</p>
+              <p className="text-center text-xs text-stone-500">Neuronová síť, generace</p>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lucifera-lime/30 text-lucifera-lime" style={{ boxShadow: "0 0 40px rgba(192,255,0,0.4)" }}>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lucifera-lime/30 text-lucifera-lime">
               <span className="text-xl">✦</span>
             </div>
-            <div className="flex flex-col items-center rounded-2xl border border-lucifera-lime/20 bg-lucifera-lime/5 px-8 py-6 backdrop-blur-sm">
-              <div className="h-16 w-16 rounded-full border border-lucifera-lime/50 bg-lucifera-lime/20" style={{ boxShadow: "0 0 30px rgba(192,255,0,0.2)" }} />
-              <p className="mt-3 text-sm font-medium text-white/90">Kurátor</p>
-              <p className="text-center text-xs text-white/60">Kontrola, tón, kvalita</p>
+            <div className="flex flex-col items-center rounded-2xl border border-lucifera-lime/30 bg-lucifera-lime/5 px-8 py-6 shadow-sm">
+              <div className="h-16 w-16 rounded-full border border-lucifera-lime/50 bg-lucifera-lime/20" />
+              <p className="mt-3 text-sm font-medium text-stone-900">Kurátor</p>
+              <p className="text-center text-xs text-stone-500">Kontrola, tón, kvalita</p>
             </div>
           </div>
-          <div className="glass-panel mt-10 p-8">
-            <p className="text-center text-white/90">
+          <div className="mt-10 rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
+            <p className="text-center text-stone-700">
               AI dramaticky urychluje produkci a eliminuje prázdnou stránku. Ale na konci vždy stojí náš Kreativní kurátor.
               Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen „rychlý“, ale především prvotřídní a přesný.
             </p>
@@ -247,56 +222,54 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sekce 5: FAQ — glass accordion */}
-      <section id="faq" className="relative w-full bg-lucifera-dark-green px-4 py-20 sm:px-6 lg:px-8">
+      {/* Sekce 5: FAQ */}
+      <section id="faq" className="relative w-full bg-white px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">Často kladené otázky</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Často kladené otázky</h2>
           <div className="mt-8 space-y-3">
             {faqs.map((faq) => (
               <details
                 key={faq.q}
-                className="group glass-panel overflow-hidden transition-all duration-300 [&[open]]:border-lucifera-lime/30 [&[open]]:shadow-[0_0_30px_rgba(192,255,0,0.12)]"
+                className="group rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden transition-all duration-300 [&[open]]:border-lucifera-lime/40 [&[open]]:shadow-md"
               >
-                <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-white [&::-webkit-details-marker]:hidden">
+                <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
                   {faq.q}
                 </summary>
-                <p className="border-t border-white/10 px-6 py-4 text-white/80">{faq.a}</p>
+                <p className="border-t border-stone-200 px-6 py-4 text-stone-600">{faq.a}</p>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Závěrečné CTA — tarify + Spustit test zdarma (bez platby) */}
-      <section id="kontakt" className="relative w-full overflow-hidden bg-lucifera-dark px-4 py-24 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-lucifera-dark blur-3xl" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-lucifera-dark-green/80" />
-        <div className="relative z-10 mx-auto max-w-4xl">
-          <div className="glass-panel p-10 md:p-14">
+      {/* Závěrečné CTA — tarify */}
+      <section id="kontakt" className="relative w-full bg-stone-50 px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
+          <div className="rounded-2xl border border-stone-200 bg-white p-10 shadow-sm md:p-14">
             <div className="flex flex-col items-center text-center">
-              <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl">
+              <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-stone-900 md:text-4xl lg:text-5xl">
                 Chcete mít v pondělí zadáno a v pátek publikováno?
               </h2>
-              <p className="mt-4 max-w-xl text-lg text-white/80">
+              <p className="mt-4 max-w-xl text-lg text-stone-600">
                 Testovací provoz bez platby. Projekt se vytvoří ihned. Vyberte tarif, vyplňte krátký formulář a sledujte, jak váš obsah vzniká – včas, kvalitně a naprosto bez chaosu.
               </p>
-              <p className="mt-2 text-sm text-white/60">
+              <p className="mt-2 text-sm text-stone-500">
                 Data se zpracovávají. Pokud něco chybí, AI spolu s lidským kurátorem vyberou nejlépe pasující variantu pro váš projekt.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <a href="/start?plan=basic" className="glass-panel rounded-xl px-6 py-4 text-left transition hover:border-lucifera-lime/30">
-                  <p className="font-semibold text-white">Základní</p>
-                  <p className="text-sm text-white/70">3 příspěvky / měsíc</p>
+                <a href="/start?plan=basic" className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-4 text-left transition hover:border-lucifera-lime/40 hover:bg-lucifera-lime/5">
+                  <p className="font-semibold text-stone-900">Základní</p>
+                  <p className="text-sm text-stone-600">3 příspěvky / měsíc</p>
                   <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
                 </a>
-                <a href="/start?plan=standard" className="glass-panel rounded-xl px-6 py-4 text-left transition hover:border-lucifera-lime/30">
-                  <p className="font-semibold text-white">Standard</p>
-                  <p className="text-sm text-white/70">8 příspěvků / měsíc</p>
+                <a href="/start?plan=standard" className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-4 text-left transition hover:border-lucifera-lime/40 hover:bg-lucifera-lime/5">
+                  <p className="font-semibold text-stone-900">Standard</p>
+                  <p className="text-sm text-stone-600">8 příspěvků / měsíc</p>
                   <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
                 </a>
-                <a href="/start?plan=premium" className="glass-panel rounded-xl px-6 py-4 text-left transition hover:border-lucifera-lime/30">
-                  <p className="font-semibold text-white">Premium</p>
-                  <p className="text-sm text-white/70">15 příspěvků / měsíc</p>
+                <a href="/start?plan=premium" className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-4 text-left transition hover:border-lucifera-lime/40 hover:bg-lucifera-lime/5">
+                  <p className="font-semibold text-stone-900">Premium</p>
+                  <p className="text-sm text-stone-600">15 příspěvků / měsíc</p>
                   <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
                 </a>
               </div>
@@ -308,7 +281,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="border-t border-white/10 py-8 text-center text-sm text-white/50">
+      <footer className="border-t border-stone-200 py-8 text-center text-sm text-stone-500">
         © {new Date().getFullYear()} AI Content Studio Lucifera
       </footer>
     </main>
