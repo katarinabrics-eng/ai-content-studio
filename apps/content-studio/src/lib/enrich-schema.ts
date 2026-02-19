@@ -164,6 +164,14 @@ export type EnrichApiResponse = {
   evidence: EnrichEvidence[];
   /** Např. "Suggestions normalized due to invalid shape" */
   warnings?: string[];
+  /** Enrich diagnostika: confidence, source, evidenceCount, scrapeStatus */
+  diagnostics?: {
+    confidence: number;
+    source: "llm" | "fallback_cached";
+    warnings: string[];
+    evidenceCount: number;
+    scrapeStatus: string;
+  };
 };
 
 export const PDF_MIME = "application/pdf";

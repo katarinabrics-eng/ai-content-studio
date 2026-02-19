@@ -14,7 +14,19 @@ import {
 } from "@/lib/enrich-schema";
 import { extractAssetsFromWeb, extractHeroFallback } from "@/lib/extract-assets";
 import { chooseProcessingMode } from "@/lib/openai-processing";
+import { getLatestIntakeByHostname } from "@/lib/supabase-intake";
 import OpenAI from "openai";
+
+const CONFIDENCE_PARTIAL_PREFILL = 0.35;
+
+function hostnameFromWebsite(website: string): string {
+  try {
+    const u = new URL(website.startsWith("http") ? website : `https://${website}`);
+    return u.hostname.toLowerCase().replace(/^www\./, "") || "unknown";
+  } catch {
+    return "unknown";
+  }
+}
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -369,15 +381,32 @@ export async function POST(request: Request) {
     const sug = d.suggestions ?? normalizeSuggestionsInput(null);
     const confidence = d.confidence ?? 0.5;
     const evidenceList = Array.isArray(d.evidence) ? d.evidence : [];
+    const evidenceCount = evidenceList.length;
     const hasEvidence = (field: string) => evidenceList.some((e) => e.field === field);
+    const blockOnly = confidence === 0 && evidenceCount === 0;
     const lowConfidence = confidence < 0.75;
 
-    const prefill: EnrichPrefill = {
-      brandName: d.brandName?.trim() || "Značka",
+    const scrapeStatus = webText ? "ok" : pdfText ? "pdf_only" : "ok";
+
+    const heroBrand = heroFallback?.h1?.trim() || "";
+    const heroOffers = heroFallback?.features?.length
+      ? heroFallback.features.slice(0, 5).join("; ")
+      : heroFallback?.h2s?.slice(0, 3).join("; ") || "";
+    const heroAudience = heroFallback?.h2s?.find((h) => /cílová|audience|pro koho|target/i.test(h)) || "";
+
+    const industryVal =
+      blockOnly && !hasEvidence("industry") ? "" : (d.industry?.trim() ?? "");
+    const targetAudienceVal =
+      blockOnly && !hasEvidence("targetAudience") ? "" : (d.targetAudience?.trim() ?? "");
+    const offersVal =
+      blockOnly && !hasEvidence("offers") ? "" : (d.offers?.trim() ?? "");
+
+    let prefill: EnrichPrefill = {
+      brandName: (d.brandName?.trim() || heroBrand).trim() || "Značka",
       website: d.website?.trim() || website,
-      industry: lowConfidence && !hasEvidence("industry") ? "" : (d.industry?.trim() ?? ""),
-      targetAudience: lowConfidence && !hasEvidence("targetAudience") ? "" : (d.targetAudience?.trim() ?? ""),
-      offers: lowConfidence && !hasEvidence("offers") ? "" : (d.offers?.trim() ?? ""),
+      industry: industryVal.trim() || (lowConfidence ? (heroFallback?.h2s?.[0] ?? "") : ""),
+      targetAudience: targetAudienceVal.trim() || (lowConfidence ? heroAudience : ""),
+      offers: offersVal.trim() || (lowConfidence ? heroOffers : ""),
       toneOfVoice: d.toneOfVoice?.trim() ?? "",
       forbiddenWords: d.forbiddenWords?.trim() ?? "",
       contentGoal:
@@ -408,6 +437,39 @@ export async function POST(request: Request) {
       },
     };
 
+    let source: "llm" | "fallback_cached" = "llm";
+    if (lowConfidence && confidence < CONFIDENCE_PARTIAL_PREFILL) {
+      const hostname = hostnameFromWebsite(website);
+      const cached = await getLatestIntakeByHostname(hostname);
+      if (cached && typeof cached === "object") {
+        const c = cached as Record<string, unknown>;
+        prefill = {
+          ...prefill,
+          brandName: (prefill.brandName && prefill.brandName !== "Značka" ? prefill.brandName : String(c.brandName ?? "").trim()) || prefill.brandName,
+          website: prefill.website,
+          industry: prefill.industry || String(c.industry ?? "").trim(),
+          targetAudience: prefill.targetAudience || String(c.targetAudience ?? "").trim(),
+          offers: prefill.offers || String(c.offers ?? "").trim(),
+          toneOfVoice: prefill.toneOfVoice || String(c.toneOfVoice ?? "").trim(),
+          forbiddenWords: prefill.forbiddenWords || String(c.forbiddenWords ?? "").trim(),
+          contentGoal: prefill.contentGoal,
+          platforms: prefill.platforms,
+          stylePreference: prefill.stylePreference,
+          ctaPreference: prefill.ctaPreference || String(c.ctaPreference ?? "").trim(),
+          strategyMode: prefill.strategyMode,
+          strategyId: prefill.strategyId,
+          awarenessLevel: prefill.awarenessLevel,
+          brandAssets: {
+            logoUrl: prefill.brandAssets.logoUrl || String((c.brandAssets as { logo?: string })?.logo ?? "").trim(),
+            colors: prefill.brandAssets.colors || String((c.brandAssets as { colors?: string })?.colors ?? "").trim(),
+            fonts: prefill.brandAssets.fonts || String((c.brandAssets as { fonts?: string })?.fonts ?? "").trim(),
+            photosNote: prefill.brandAssets.photosNote || "",
+          },
+        };
+        source = "fallback_cached";
+      }
+    }
+
     const suggestions: EnrichSuggestions = {
       targetAudience: Array.isArray(sug.targetAudience) ? sug.targetAudience.filter((x) => typeof x === "string") : [],
       offers: Array.isArray(sug.offers) ? sug.offers.filter((x) => typeof x === "string") : [],
@@ -420,6 +482,9 @@ export async function POST(request: Request) {
     if (suggestionsNormalized) {
       warnings.push("Suggestions normalized due to invalid shape");
     }
+    if (lowConfidence) {
+      warnings.push("Nízká confidence – hodnoty z heuristik a best-effort; zkontrolujte před odesláním.");
+    }
 
     const brandCoreOneLiner =
       typeof d.brandCoreOneLiner === "string" && d.brandCoreOneLiner.trim()
@@ -429,6 +494,14 @@ export async function POST(request: Request) {
     const disallowedTopicsList = Array.isArray(d.disallowedTopics) ? d.disallowedTopics.filter((x): x is string => typeof x === "string") : [];
 
     const processingFinishedAt = new Date().toISOString();
+
+    const diagnostics = {
+      confidence,
+      source,
+      warnings,
+      evidenceCount,
+      scrapeStatus,
+    };
 
     return NextResponse.json({
       ok: true,
@@ -442,6 +515,7 @@ export async function POST(request: Request) {
       disallowedTopics: disallowedTopicsList,
       evidence: evidenceList,
       ...(warnings.length > 0 ? { warnings } : {}),
+      diagnostics,
       processingMode,
       processingReason,
       startedAt: processingStartedAt,
