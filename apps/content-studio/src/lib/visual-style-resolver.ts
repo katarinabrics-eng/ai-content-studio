@@ -1,50 +1,58 @@
-import { getPresetById } from "./visual-style-presets";
-import type { BrandSpec } from "./brand-spec";
+import {
+  VISUAL_STYLE_PRESETS,
+  type VisualStyleId,
+  type VisualStylePreset,
+} from "@/lib/visual-style-presets";
 
-export type ResolvedVisualStyle = {
-  palette: string[];
-  moodKeywords: string[];
-  negativePrompt: string;
-  visualStyle: string;
-  visualStyleLabel: string;
-  visualStyleSource: "preset" | "brand" | "default";
+type ResolveInput = {
+  requestedStyleId?: VisualStyleId;
+  brandName?: string;
+  website?: string;
 };
 
-export function resolveVisualStyle(
-  presetId: string | undefined,
-  brandSpec: BrandSpec,
-  moodKeywordsFallback: string[]
-): ResolvedVisualStyle {
-  const preset = presetId ? getPresetById(presetId) : undefined;
+type ResolveResult = {
+  preset: VisualStylePreset;
+  source: "manual" | "auto_brand_rule" | "auto_default";
+};
 
-  if (preset) {
+function normalizeHost(url?: string): string {
+  if (!url) return "";
+  try {
+    const u = new URL(url.startsWith("http") ? url : `https://${url}`);
+    return u.hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function isSimby(brandName?: string, website?: string): boolean {
+  const host = normalizeHost(website);
+  const b = (brandName || "").toLowerCase();
+  return b.includes("simby") || host.includes("simby.cz");
+}
+
+export function resolveVisualStyle(input: ResolveInput): ResolveResult {
+  const requested = input.requestedStyleId ?? "auto";
+
+  // manual override
+  if (requested !== "auto") {
     return {
-      palette: brandSpec.colors,
-      moodKeywords: preset.promptDirectives.length > 0 ? preset.promptDirectives : moodKeywordsFallback,
-      negativePrompt: Array.isArray(preset.negativePrompt) ? preset.negativePrompt.join(", ") : String(preset.negativePrompt ?? ""),
-      visualStyle: preset.id,
-      visualStyleLabel: preset.label,
-      visualStyleSource: "preset",
+      preset: VISUAL_STYLE_PRESETS[requested],
+      source: "manual",
     };
   }
 
-  if (brandSpec.colors.length > 0) {
+  // auto brand-specific
+  if (isSimby(input.brandName, input.website)) {
     return {
-      palette: brandSpec.colors,
-      moodKeywords: moodKeywordsFallback,
-      negativePrompt: "text in image, watermark, gibberish, chaos",
-      visualStyle: "brand",
-      visualStyleLabel: "Brand palette",
-      visualStyleSource: "brand",
+      preset: VISUAL_STYLE_PRESETS.simby_product_ad,
+      source: "auto_brand_rule",
     };
   }
 
+  // default generic
   return {
-    palette: [],
-    moodKeywords: moodKeywordsFallback,
-    negativePrompt: "text in image, watermark, gibberish, chaos",
-    visualStyle: "default",
-    visualStyleLabel: "Default",
-    visualStyleSource: "default",
+    preset: VISUAL_STYLE_PRESETS.generic_saas,
+    source: "auto_default",
   };
 }

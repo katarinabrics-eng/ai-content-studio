@@ -44,11 +44,20 @@ function getOpenAISize(format: PlatformFormatKey): (typeof OPENAI_SIZES)[number]
   return "1024x1024";
 }
 
+type ResolvedStyleForPrompt = {
+  palette: string[];
+  moodKeywords: string[];
+  negativePrompt: string;
+  visualStyle: string;
+  visualStyleLabel: string;
+  visualStyleSource: string;
+};
+
 function buildCreativeBriefPrompt(
   draft: { payload: Record<string, unknown> },
   intake: Record<string, unknown>,
   brandSpec: import("@/lib/brand-spec").BrandSpec,
-  resolvedStyle: import("@/lib/visual-style-resolver").ResolvedVisualStyle,
+  resolvedStyle: ResolvedStyleForPrompt,
   visualStyleProfile?: Record<string, unknown> | null,
   strategy?: import("@/lib/strategy-library").StrategyPreset
 ): string {
@@ -96,7 +105,7 @@ Pravidla: žádný text v samotném obrázku (text overlay přijde zvlášť). �
 
 function creativeBriefToImagePrompt(
   brief: CreativeBrief,
-  resolvedStyle: import("@/lib/visual-style-resolver").ResolvedVisualStyle,
+  resolvedStyle: ResolvedStyleForPrompt,
   brandSpec: import("@/lib/brand-spec").BrandSpec
 ): string {
   const paletteStr = resolvedStyle.palette.length > 0
@@ -175,9 +184,24 @@ export async function POST(request: Request) {
       ? b.styleProfile
       : undefined;
     const visualStyleProfile = (intake as Record<string, unknown>).visualStyleProfile as Record<string, unknown> | null | undefined;
-    const resolvedStyle = resolveVisualStyle(styleProfile, brandSpec, webStyle.moodKeywords);
-
     const intakePayload = intake as Record<string, unknown>;
+    const requestedStyleId = styleProfile && STYLE_PROFILES.includes(styleProfile)
+      ? (styleProfile as import("@/lib/visual-style-presets").VisualStyleId)
+      : "auto";
+    const resolveResult = resolveVisualStyle({
+      requestedStyleId,
+      brandName: String(intakePayload.brandName ?? ""),
+      website: String(intakePayload.website ?? ""),
+    });
+    const resolvedStyle = {
+      palette: brandSpec.colors,
+      moodKeywords: resolveResult.preset.promptDirectives,
+      negativePrompt: resolveResult.preset.negativePrompt.join(", "),
+      visualStyle: resolveResult.preset.id,
+      visualStyleLabel: resolveResult.preset.label,
+      visualStyleSource: resolveResult.source,
+    };
+
     const useOverride = (b.strategyModeOverride === "manual" || b.strategyIdOverride) && b.strategyIdOverride && getStrategyById(b.strategyIdOverride as import("@/lib/strategy-library").StrategyId);
 
     let strategy: import("@/lib/strategy-library").StrategyPreset | undefined;
