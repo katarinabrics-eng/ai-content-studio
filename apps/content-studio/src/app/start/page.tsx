@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 
 function StartForm() {
   const router = useRouter();
@@ -10,6 +10,9 @@ function StartForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const logoRef = useRef<HTMLInputElement>(null);
+  const photosRef = useRef<HTMLInputElement>(null);
+  const brandPdfRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,11 +42,35 @@ function StartForm() {
       },
     };
 
+    const logo = logoRef.current?.files?.[0];
+    const photos = Array.from(photosRef.current?.files ?? []);
+    const brandPdf = brandPdfRef.current?.files?.[0];
+    const hasFiles = (logo?.size ?? 0) > 0 || photos.some((f) => f.size > 0) || (brandPdf?.size ?? 0) > 0;
+
     try {
-      const res = await fetch("/api/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      let res: Response;
+      if (hasFiles) {
+        const formData = new FormData();
+        formData.append("payload", JSON.stringify(data));
+        if (logo) formData.append("logo", logo);
+        photos.forEach((f) => formData.append("photos", f));
+        if (brandPdf) formData.append("brandPdf", brandPdf);
+        res = await fetch("/api/start", { method: "POST", body: formData });
+      } else {
+        res = await fetch("/api/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      }
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const msg = typeof json.detail === "string" ? (json.detail || json.error) : (json.error ?? "Nepodařilo se vytvořit projekt.");
+        const msg =
+          typeof json.errorMessage === "string"
+            ? json.errorMessage
+            : typeof json.detail === "string"
+              ? json.detail
+              : json.error ?? "Nepodařilo se vytvořit projekt.";
         setError(msg);
         setLoading(false);
         return;
@@ -161,6 +188,18 @@ function StartForm() {
               <div>
                 <label className={labelClass}>URL / PDF auto-fill</label>
                 <input name="url_pdf_autofill" type="url" className={inputClass} placeholder="Odkaz na web nebo PDF k rozboru" />
+              </div>
+              <div>
+                <label className={labelClass}>Logo (PNG, volitelně)</label>
+                <input ref={logoRef} name="logo" type="file" accept=".png,image/png" className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Fotky (JPEG/PNG, volitelně)</label>
+                <input ref={photosRef} name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Brand manuál PDF (volitelně)</label>
+                <input ref={brandPdfRef} name="brandPdf" type="file" accept=".pdf,application/pdf" className={inputClass} />
               </div>
             </div>
           </details>

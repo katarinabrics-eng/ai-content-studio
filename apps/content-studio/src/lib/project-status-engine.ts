@@ -1,10 +1,11 @@
 /**
- * Status workflow: processing_data -> in_production -> draft_ready -> revision -> final_ready -> closed.
+ * Status workflow: PROCESSING_DATA -> READY_FOR_AI -> DRAFT_READY -> REVISION -> FINAL_READY -> CLOSED.
  * Klientovi zobrazovat jen human label (žádné interní kódy).
  */
 
 export const PROJECT_STATUSES = [
   "PROCESSING_DATA",
+  "READY_FOR_AI",
   "IN_PRODUCTION",
   "DRAFT_READY",
   "REVISION",
@@ -17,6 +18,7 @@ export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 /** Lidské popisky pro klienta (bez interních kódů). */
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   PROCESSING_DATA: "Data se zpracovávají",
+  READY_FOR_AI: "Připraveno pro AI",
   IN_PRODUCTION: "Tvorba probíhá",
   DRAFT_READY: "Návrhy připraveny ke schválení",
   REVISION: "Zapracováváme připomínky",
@@ -26,6 +28,7 @@ export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
 
 export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
   "PROCESSING_DATA",
+  "READY_FOR_AI",
   "IN_PRODUCTION",
   "DRAFT_READY",
   "REVISION",
@@ -43,7 +46,8 @@ export function isProjectStatus(s: string): s is ProjectStatus {
 }
 
 export const ALLOWED_TRANSITIONS: Partial<Record<ProjectStatus, ProjectStatus[]>> = {
-  PROCESSING_DATA: ["IN_PRODUCTION"],
+  PROCESSING_DATA: ["READY_FOR_AI", "IN_PRODUCTION"],
+  READY_FOR_AI: ["IN_PRODUCTION"],
   IN_PRODUCTION: ["DRAFT_READY", "REVISION"],
   DRAFT_READY: ["REVISION", "FINAL_READY"],
   REVISION: ["DRAFT_READY", "FINAL_READY"],
