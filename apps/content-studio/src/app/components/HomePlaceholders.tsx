@@ -13,7 +13,7 @@ export function HeroImageFull() {
   }, []);
   if (!src) return null;
   return (
-    <div className="absolute inset-0 overflow-hidden bg-stone-200 animate-fade-in">
+    <div className="absolute inset-0 overflow-hidden rounded-2xl bg-lucifera-anthracite animate-fade-in">
       <Image
         src={src}
         alt=""

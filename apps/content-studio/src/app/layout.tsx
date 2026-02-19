@@ -13,10 +13,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="cs">
-      <body className="antialiased min-h-screen bg-stone-50 text-stone-900">
+      <body className="antialiased min-h-screen bg-lucifera-dark text-white">
         <a
           href="/admin/login"
-          className="fixed top-4 right-4 z-[100] h-2 w-2 rounded-full bg-stone-400 hover:bg-stone-600 focus:bg-stone-600 focus:outline-none"
+          className="fixed top-4 right-4 z-[100] h-2 w-2 rounded-full bg-stone-500 hover:bg-lucifera-lime focus:bg-lucifera-lime focus:outline-none"
           style={{ minWidth: 6, minHeight: 6 }}
           aria-label="Administrace"
         />
