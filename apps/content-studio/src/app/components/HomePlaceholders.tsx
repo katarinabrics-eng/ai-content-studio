@@ -6,16 +6,16 @@ import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 const HERO_SRC = "/placeholders/mia-mozek.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek: mia_mozek.png, object-contain, rounded. */
+/** Hero obrázek: mia_mozek.png, object-contain, na desktopu scale ~1.07. */
 export function HeroImageFull() {
   return (
-    <div className="absolute inset-0 overflow-hidden rounded-2xl bg-stone-100 animate-fade-in">
+    <div className="absolute inset-0 animate-fade-in">
       <Image
         src={HERO_SRC}
         alt=""
         fill
-        className="object-contain"
-        sizes="(max-width: 1024px) 100vw, 50vw"
+        className="object-contain lg:scale-[1.07]"
+        sizes="(max-width: 1024px) 100vw, 800px"
         priority
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";

@@ -38,22 +38,37 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* HERO — full-screen, 2 sloupce: text vlevo, vizuál vpravo, bez boxed card */}
-      <section className="relative min-h-screen w-full overflow-hidden bg-stone-50">
-        <div className="grid min-h-screen w-full grid-cols-1 items-center gap-12 px-4 py-16 lg:grid-cols-2 lg:gap-16 lg:px-12 xl:px-20">
-          {/* Levý sloupec: copy — černý/šedo-černý text, lime jen na primárním CTA */}
+      {/* HERO — velké monitory: výrazný text vlevo, velký obrázek vpravo, max-w ~1720px */}
+      <section
+        className="relative w-full overflow-hidden bg-stone-50"
+        style={{ minHeight: "calc(100vh - 76px)" }}
+      >
+        <div className="mx-auto flex min-h-[calc(100vh-76px)] max-w-[1720px] flex-col items-center justify-center gap-12 px-4 py-12 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-14 lg:px-12 xl:px-16 2xl:px-20">
+          {/* Levý sloupec: velký výrazný text, černý/šedo-černý, lime jen na CTA */}
           <div className="animate-fade-in">
-            <h1 className="text-4xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+            <h1
+              className="font-black tracking-tight text-zinc-900"
+              style={{
+                fontSize: "clamp(2.25rem, 5.2vw, 6rem)",
+                lineHeight: 0.95,
+              }}
+            >
               Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-zinc-700">
+            <p
+              className="mt-6 max-w-xl text-lg text-zinc-700"
+              style={{ lineHeight: "1.875rem" }}
+            >
               Vyberete tarif, vyplníte krátký formulář a my spustíme tvorbu. Do 24–48 hodin dostanete první 3 příspěvky ke schválení.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <a href="/start" className="btn-lime-primary text-zinc-900">
                 Chci si odlehčit tvorbu
               </a>
-              <a href="#jak-to-funguje" className="rounded-full border border-lime-300 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lime-50">
+              <a
+                href="#jak-to-funguje"
+                className="rounded-full border border-lime-300 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lime-50"
+              >
                 Jak probíhá spolupráce
               </a>
             </div>
@@ -61,17 +76,17 @@ export default function HomePage() {
               V pondělí dodáte data. V pátek publikujete.
             </p>
           </div>
-          {/* Pravý sloupec: vizuál — jemný float */}
+          {/* Pravý sloupec: velký obrázek blíž k textu, wrapper 760–820px */}
           <div className="relative hidden min-h-[50vh] lg:block">
-            <div className="animate-float absolute inset-0 flex items-center justify-end">
-              <div className="relative h-full w-full max-w-lg">
+            <div className="animate-float flex justify-end">
+              <div className="relative h-full min-h-[420px] w-full max-w-[800px] overflow-hidden rounded-2xl bg-[#f0f0ef]">
                 <HeroImageFull />
               </div>
             </div>
           </div>
           {/* Mobile: obrázek pod textem */}
           <div className="relative min-h-[40vh] w-full lg:hidden">
-            <div className="animate-fade-in">
+            <div className="animate-fade-in overflow-hidden rounded-2xl bg-[#f0f0ef]">
               <HeroImageFull />
             </div>
           </div>
