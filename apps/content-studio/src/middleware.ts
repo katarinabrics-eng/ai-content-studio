@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = ["/intake", "/navrhy-postu", "/kurator", "/drafts", "/curator"] as const;
+const PROTECTED_PREFIXES = ["/intake", "/navrhy-postu", "/kurator", "/drafts", "/curator", "/admin"] as const;
 
 function isProtectedPath(pathname: string): boolean {
+  if (pathname === "/admin/login" || pathname.startsWith("/admin/login")) return false;
   return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
@@ -23,15 +24,11 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/intake",
-    "/intake/:path*",
-    "/navrhy-postu",
-    "/navrhy-postu/:path*",
-    "/kurator",
-    "/kurator/:path*",
-    "/drafts",
-    "/drafts/:path*",
-    "/curator",
-    "/curator/:path*",
+    "/intake", "/intake/:path*",
+    "/navrhy-postu", "/navrhy-postu/:path*",
+    "/kurator", "/kurator/:path*",
+    "/drafts", "/drafts/:path*",
+    "/curator", "/curator/:path*",
+    "/admin", "/admin/:path*",
   ],
 };

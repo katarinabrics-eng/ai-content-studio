@@ -32,8 +32,8 @@ export default function HomePage() {
             <a href="#faq" className="transition-colors hover:text-lucifera-lime">FAQ</a>
             <a href="#kontakt" className="transition-colors hover:text-lucifera-lime">Kontakt</a>
           </nav>
-          <a href="#kontakt" className="btn-lime-primary">
-            Zvolit tarif
+          <a href="/start" className="btn-lime-primary">
+            Spustit test zdarma
           </a>
         </div>
       </header>
@@ -58,14 +58,17 @@ export default function HomePage() {
               Znáte to: zahlcení, paralýza před prázdnou obrazovkou a pocit, že „zase nic nevyšlo“. AI Content Studio Lucifera vám vrátí klid. Vyplníte krátký formulář a my vám do 48 hodin dodáme první příspěvky. Bez chaosu, bez dlouhých schůzek.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a href="#kontakt" className="btn-lime-primary">
-                Chci si odlehčit tvorbu a vybrat tarif
+              <a href="/start" className="btn-lime-primary">
+                Spustit test zdarma
               </a>
               <a href="#jak-to-funguje" className="btn-lime-outline">
                 Jak probíhá spolupráce
               </a>
             </div>
             <p className="mt-6 text-sm font-medium text-lucifera-lime">
+              Testovací provoz bez platby. Projekt se vytvoří ihned.
+            </p>
+            <p className="mt-1 text-sm text-white/70">
               V pondělí dodáte data. V pátek publikujete.
             </p>
           </div>
@@ -264,7 +267,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Závěrečné CTA — obří skleněný panel */}
+      {/* Závěrečné CTA — tarify + Spustit test zdarma (bez platby) */}
       <section id="kontakt" className="relative w-full overflow-hidden bg-lucifera-dark px-4 py-24 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-lucifera-dark blur-3xl" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-lucifera-dark-green/80" />
@@ -275,13 +278,30 @@ export default function HomePage() {
                 Chcete mít v pondělí zadáno a v pátek publikováno?
               </h2>
               <p className="mt-4 max-w-xl text-lg text-white/80">
-                Vyberte si tarif, vyplňte krátký formulář a sledujte, jak váš obsah vzniká – včas, kvalitně a naprosto bez chaosu.
+                Testovací provoz bez platby. Projekt se vytvoří ihned. Vyberte tarif, vyplňte krátký formulář a sledujte, jak váš obsah vzniká – včas, kvalitně a naprosto bez chaosu.
               </p>
-              <a
-                href="mailto:kontakt@studiolucifera.cz?subject=Tarif%20AI%20Content%20Studio"
-                className="btn-lime-primary mt-10 px-8 py-4 text-base"
-              >
-                Zvolit tarif a spustit projekt
+              <p className="mt-2 text-sm text-white/60">
+                Data se zpracovávají. Pokud něco chybí, AI spolu s lidským kurátorem vyberou nejlépe pasující variantu pro váš projekt.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <a href="/start?plan=basic" className="glass-panel rounded-xl px-6 py-4 text-left transition hover:border-lucifera-lime/30">
+                  <p className="font-semibold text-white">Základní</p>
+                  <p className="text-sm text-white/70">3 příspěvky / měsíc</p>
+                  <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
+                </a>
+                <a href="/start?plan=standard" className="glass-panel rounded-xl px-6 py-4 text-left transition hover:border-lucifera-lime/30">
+                  <p className="font-semibold text-white">Standard</p>
+                  <p className="text-sm text-white/70">8 příspěvků / měsíc</p>
+                  <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
+                </a>
+                <a href="/start?plan=premium" className="glass-panel rounded-xl px-6 py-4 text-left transition hover:border-lucifera-lime/30">
+                  <p className="font-semibold text-white">Premium</p>
+                  <p className="text-sm text-white/70">15 příspěvků / měsíc</p>
+                  <span className="mt-2 inline-block text-sm text-lucifera-lime">Spustit test zdarma →</span>
+                </a>
+              </div>
+              <a href="/start" className="btn-lime-primary mt-10 px-8 py-4 text-base">
+                Spustit test zdarma (zvolit tarif později)
               </a>
             </div>
           </div>
