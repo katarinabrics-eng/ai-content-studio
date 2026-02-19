@@ -97,11 +97,14 @@ Všechna perzistentní data jsou v **Supabase** (bez lokálních souborů `data/
 
 **Storage buckety:**
 - `brand-assets` (public) – loga v `logos/<uuid>.png`, public URL se ukládá do `payload.brandAssets.logo`
-- `generated-visuals` (public) – pro budoucí generovanou grafiku
+- `generated-visuals` (public) – generovaná grafika vizuálů
+- `exports` (public) – Canva-ready ZIP balíčky v `packages/<intakeId>/<timestamp>-canva-ready.zip`
+
+**Bucket `exports`:** Pokud neexistuje, vytvořte ho v Supabase Dashboard → Storage → New bucket, název `exports`, public. Nebo `SUPABASE_EXPORTS_BUCKET` přepíše výchozí název.
 
 **Test flow na produkci (Vercel):**
 1. Nastavte na Vercelu env: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `FIRECRAWL_API_KEY`.
-2. Ověřte, že tabulky `intake_submissions`, `post_drafts` existují a Storage bucket `brand-assets` je public.
+2. Ověřte, že tabulky `intake_submissions`, `post_drafts` existují a Storage buckety `brand-assets`, `generated-visuals`, `exports` jsou public.
 3. Odešlete intake (s logem i bez), ověřte záznam v Supabase Dashboard.
 4. Vygenerujte návrhy postů na /drafts, ověřte drafty v `post_drafts`.
 
@@ -207,6 +210,35 @@ Brand Lock (ON/OFF) zajišťuje, že výstupy – text i vizuál – striktně r
 **Známé limity:**
 - Čistá image AI (gpt-image-1) nemá přesnou font fidelity – text overlay je vykreslen Sharpem (Arial).
 - Logo overlay se stahuje z URL – pro CORS/SSL problémy může selhat tichým skipem.
+
+### Canva-ready export
+
+Export balíček pro snadnou úpravu postů v Canvě (bez přímé Canva API integrace).
+
+**Použití:**
+1. Na stránce `/drafts` vyberte 1–4 návrhy s vygenerovaným vizuálem (checkbox „Vybrat pro export“).
+2. Klikněte „Export Canva-ready“.
+3. Systém vytvoří ZIP balíček a vrátí odkaz ke stažení.
+4. Klikněte „Stáhnout balíček“.
+
+**Obsah ZIP balíčku** (`export-<date>-<client>/`):
+- `assets/` – obrázky postů (post-01.png, post-02.png, …)
+- `texts/` – texty postů (post-01.txt, …): Hook, Caption, CTA, Hashtags, Visual brief
+- `meta/brand.json` – brandName, website, toneOfVoice, brandColors, brandFonts, logoUrl, forbiddenWords
+- `meta/posts.json` – platform, strategyLabel, visualStyleLabel, creativeScore pro každý post
+- `meta/captions.csv` – post_id, platform, hook, caption, cta, hashtags
+- `README.txt` – popis balíčku, upozornění (např. chybějící obrázky)
+
+**Uložení:** ZIP se ukládá do Supabase Storage bucket `exports` pod cestou `packages/<intakeId>/<timestamp>-canva-ready.zip`. URL je public.
+
+**API:** `POST /api/exports/canva-ready` – body: `{ intakeId?, draftIds?, format?: "png"|"jpg", packageName? }` → `{ ok, downloadUrl, warnings[] }`. Pokud `draftIds` chybí, vezmou se poslední 4 schválené drafty (s vizuálem).
+
+**Test kroky:**
+1. Vygenerujte drafty a vizuály na `/drafts`.
+2. Zaškrtněte 1–4 návrhů s vizuálem.
+3. Klikněte „Export Canva-ready“, ověřte loading stav.
+4. Po úspěchu klikněte „Stáhnout balíček“, ověřte ZIP obsah (assets, texts, meta, README).
+5. Test bez výběru: klikněte „Export Canva-ready“ bez zaškrtnutí – exportuje poslední 4 schválené.
 
 ## Skripty
 

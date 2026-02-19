@@ -66,8 +66,26 @@ function DraftsContent() {
   const [styleProfilePerDraft, setStyleProfilePerDraft] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  const [exportSelectedIds, setExportSelectedIds] = useState<Set<string>>(new Set());
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportDownloadUrl, setExportDownloadUrl] = useState<string | null>(null);
+  const [exportWarnings, setExportWarnings] = useState<string[]>([]);
   /** "studio" = 1 column (default), "compact" = 2 columns */
   const [viewMode, setViewMode] = useState<"studio" | "compact">("studio");
+
+  const draftsWithVisual = drafts.filter((d) => d.visualImageUrl || d.visualBaseImageUrl);
+  const toggleExportSelect = (draftId: string) => {
+    setExportSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(draftId)) {
+        next.delete(draftId);
+      } else if (next.size < 4) {
+        next.add(draftId);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -181,6 +199,39 @@ function DraftsContent() {
       setGenerateError("Došlo k chybě při generování.");
     } finally {
       setGenerateLoading(false);
+    }
+  }
+
+  async function handleExportCanvaReady() {
+    setExportError(null);
+    setExportDownloadUrl(null);
+    setExportWarnings([]);
+    setExportLoading(true);
+    try {
+      const draftIds = exportSelectedIds.size > 0 ? Array.from(exportSelectedIds) : undefined;
+      const res = await fetch("/api/exports/canva-ready", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          intakeId: intakeIdParam || undefined,
+          draftIds,
+          format: "png",
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMsg = [data.detail, data.hint].filter(Boolean).join(" – ") || data.error || "Export selhal.";
+        setExportError(errMsg);
+        return;
+      }
+      if (data.ok && data.downloadUrl) {
+        setExportDownloadUrl(data.downloadUrl);
+        setExportWarnings(Array.isArray(data.warnings) ? data.warnings : []);
+      }
+    } catch {
+      setExportError("Došlo k chybě při exportu.");
+    } finally {
+      setExportLoading(false);
     }
   }
 
@@ -351,6 +402,47 @@ function DraftsContent() {
         </p>
       ) : (
         <>
+          {draftsWithVisual.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <span className="text-sm font-medium text-slate-700">
+                Export Canva-ready: vyberte 1–4 návrhy s vizuálem
+              </span>
+              <button
+                type="button"
+                onClick={handleExportCanvaReady}
+                disabled={exportLoading}
+                className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
+              >
+                {exportLoading ? "Vytvářím balíček…" : "Export Canva-ready"}
+              </button>
+              {exportDownloadUrl && (
+                <a
+                  href={exportDownloadUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-md border border-green-600 bg-green-50 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-100"
+                >
+                  Stáhnout balíček
+                </a>
+              )}
+            </div>
+          )}
+          {exportError && (
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800" role="alert">
+              {exportError}
+            </div>
+          )}
+          {exportWarnings.length > 0 && (
+            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
+              <p className="font-medium">Upozornění při exportu:</p>
+              <ul className="mt-1 list-inside list-disc text-sm">
+                {exportWarnings.map((w, i) => (
+                  <li key={i}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="mt-4 flex items-center gap-2">
             <span className="text-sm font-medium text-slate-700">Zobrazení:</span>
             <button
@@ -380,6 +472,17 @@ function DraftsContent() {
               className="max-w-none rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
             >
                 <div className="mb-2 flex flex-wrap items-center gap-2">
+                {(draft.visualImageUrl || draft.visualBaseImageUrl) && (
+                  <label className="flex items-center gap-1 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={exportSelectedIds.has(draft.id)}
+                      onChange={() => toggleExportSelect(draft.id)}
+                      disabled={exportSelectedIds.size >= 4 && !exportSelectedIds.has(draft.id)}
+                    />
+                    <span className="text-slate-600">Vybrat pro export</span>
+                  </label>
+                )}
                 <span className="rounded bg-slate-100 px-2 py-0.5 text-sm font-medium text-slate-700">
                   {draft.platform}
                 </span>
