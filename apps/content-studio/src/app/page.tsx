@@ -1,4 +1,4 @@
-import { HeroImage, SectionImages } from "./components/HomePlaceholders";
+import { HeroImageFull, SectionImages } from "./components/HomePlaceholders";
 
 const steps = [
   {
@@ -50,9 +50,9 @@ const faqs = [
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#fafaf9] text-stone-900">
-      {/* NAV */}
+      {/* NAV — veřejná, bez interních odkazů */}
       <header className="sticky top-0 z-50 border-b border-stone-200/60 bg-[#fafaf9]/95 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <a href="/" className="focus:outline-none">
             <span className="text-sm font-semibold tracking-wide text-stone-800">AI CONTENT STUDIO LUCIFERA</span>
             <span className="ml-2 text-xs text-stone-500">AI + kreativní kurátor</span>
@@ -73,50 +73,52 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="mx-auto w-full max-w-5xl px-4 pb-16 pt-16 sm:px-6 lg:px-8 lg:pt-24">
-        <div className="rounded-[1.75rem] border border-stone-200/80 bg-white p-8 shadow-[0_1px_3px_rgba(0,0,0,0.04)] md:p-12">
-          <p className="inline-flex rounded-full border border-amber-200/80 bg-amber-50/80 px-3 py-1 text-xs font-medium uppercase tracking-wide text-amber-900/80">
-            Nová služba Studia Lucifera
-          </p>
-          <h1 className="mt-8 max-w-4xl text-4xl font-bold leading-[1.12] tracking-tight text-stone-900 md:text-5xl lg:text-6xl">
-            Dáte nám přístup k brandu.
-            <br />
-            My vám dodáme příspěvky, které prodávají.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-stone-600">
-            Žádná náhoda. AI + kreativní kurátor. Živý člověk dohlíží na kvalitu a zasahuje, když je třeba.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <a
-              href="#kontakt"
-              className="rounded-full bg-amber-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-700"
-            >
-              Chci návrh spolupráce
-            </a>
-            <a
-              href="#jak-to-funguje"
-              className="rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
-            >
-              Zobrazit proces
-            </a>
+      {/* HERO — full screen / full width, 2 sloupce (copy vlevo, vizuál vpravo), na mobile 1 sloupec */}
+      <section className="min-h-screen w-full relative overflow-hidden bg-[#fafaf9]">
+        <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
+          <div className="flex flex-col justify-center px-6 py-16 lg:px-12 xl:px-16">
+            <p className="inline-flex w-fit rounded-full border border-amber-200/80 bg-amber-50/80 px-3 py-1 text-xs font-medium uppercase tracking-wide text-amber-900/80">
+              Nová služba Studia Lucifera
+            </p>
+            <h1 className="mt-6 text-4xl font-bold leading-[1.12] tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
+              Dáte nám přístup k brandu.
+              <br />
+              My vám dodáme příspěvky, které prodávají.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-stone-600">
+              Žádná náhoda. AI + kreativní kurátor. Živý člověk dohlíží na kvalitu a zasahuje, když je třeba.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <a
+                href="#kontakt"
+                className="rounded-full bg-amber-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-700"
+              >
+                Chci návrh spolupráce
+              </a>
+              <a
+                href="#jak-to-funguje"
+                className="rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
+              >
+                Zobrazit proces
+              </a>
+            </div>
+            <div className="mt-10 grid gap-4 text-sm text-stone-600 sm:grid-cols-3">
+              <div>
+                <p className="font-semibold text-stone-800">Rychlý start</p>
+                <p className="mt-1">První návrhy typicky do 48 hodin.</p>
+              </div>
+              <div>
+                <p className="font-semibold text-stone-800">Brand-safe obsah</p>
+                <p className="mt-1">Každý text prochází lidskou kontrolou.</p>
+              </div>
+              <div>
+                <p className="font-semibold text-stone-800">Bez chaosu</p>
+                <p className="mt-1">Stabilní publikační rytmus i jasný plán.</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-12">
-            <HeroImage />
-          </div>
-          <div className="mt-8 grid gap-4 text-sm text-stone-600 sm:grid-cols-3">
-            <div className="rounded-xl border border-stone-100 bg-stone-50/80 p-5 shadow-sm transition-shadow hover:shadow-[0_1px_6px_rgba(0,0,0,0.04)]">
-              <p className="font-semibold text-stone-800">Rychlý start</p>
-              <p className="mt-1">První návrhy typicky do 48 hodin.</p>
-            </div>
-            <div className="rounded-xl border border-stone-100 bg-stone-50/80 p-5 shadow-sm transition-shadow hover:shadow-[0_1px_6px_rgba(0,0,0,0.04)]">
-              <p className="font-semibold text-stone-800">Brand-safe obsah</p>
-              <p className="mt-1">Každý text prochází lidskou kontrolou.</p>
-            </div>
-            <div className="rounded-xl border border-stone-100 bg-stone-50/80 p-5 shadow-sm transition-shadow hover:shadow-[0_1px_6px_rgba(0,0,0,0.04)]">
-              <p className="font-semibold text-stone-800">Bez chaosu</p>
-              <p className="mt-1">Stabilní publikační rytmus i jasný plán.</p>
-            </div>
+          <div className="relative min-h-[50vh] w-full lg:min-h-screen">
+            <HeroImageFull />
           </div>
         </div>
       </section>
