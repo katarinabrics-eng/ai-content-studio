@@ -332,9 +332,10 @@ function DraftsContent() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const detail = data.detail ?? data.error ?? "Generování vizuálu selhalo.";
-        const hint = data.hint ? `Nápověda: ${data.hint}` : "";
-        const errMsg = hint ? `${detail} ${hint}` : detail;
+        const errMsg =
+          data.error === "VISUAL_TIMEOUT"
+            ? "Náročné generování překročilo časový limit, zkuste znovu nebo vypněte Brand Lock."
+            : [data.detail, data.hint].filter(Boolean).join(" – ") || data.error || "Generování vizuálu selhalo.";
         setVisualCardState(draftId, "error", errMsg);
         setDrafts((prev) => {
           const idx = prev.findIndex((d) => d.id === draftId);

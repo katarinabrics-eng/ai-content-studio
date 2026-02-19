@@ -36,6 +36,8 @@ OPENAI_BATCH_ENABLED=true
 
 Bez těchto proměnných tlačítko „Načíst automaticky“ skončí chybou ze serveru. **Supabase** (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) je potřeba pro ukládání intake a draftů; na Vercelu jsou tyto proměnné obvykle nastavené.
 
+- **VISUAL_FAST_MODE** (volitelné, výchozí `true`) – při `true` generování vizuálů používá 1 variantu, bez kritiky a s minimálním overlay (headline + CTA). **Doporučeno na Vercel Hobby** (limit 60 s). Pro plnou kvalitu nastavte `VISUAL_FAST_MODE=false`.
+
 **Co enrich dělá:**
 
 - Stáhne obsah webu (Firecrawl) a volitelně text z PDF (brand manual).

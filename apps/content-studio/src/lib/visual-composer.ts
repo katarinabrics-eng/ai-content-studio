@@ -27,6 +27,8 @@ export type ComposeOverlayOptions = {
   brandColors?: string[];
   /** Apply brand color grade overlay. */
   brandLock?: boolean;
+  /** AbortSignal for logo fetch (e.g. 3s timeout). */
+  logoFetchSignal?: AbortSignal;
 };
 
 /** Overlay headline (max 6 words), subheadline (max 12 words), CTA button. Text only via Sharp+SVG; no text in base image. */
@@ -44,6 +46,7 @@ export async function composeTextOverlay(
     logoUrl,
     brandColors = [],
     brandLock = false,
+    logoFetchSignal,
   } = opts;
 
   const headlineText = truncateWords(headline, HEADLINE_MAX_WORDS).slice(0, 60);
@@ -129,10 +132,10 @@ export async function composeTextOverlay(
     }
   }
 
-  // 3) Logo in safe zone – bottom-right
+  // 3) Logo in safe zone – bottom-right (respects logoFetchSignal for timeout)
   if (logoUrl && logoUrl.startsWith("http")) {
     try {
-      const logoRes = await fetch(logoUrl);
+      const logoRes = await fetch(logoUrl, { signal: logoFetchSignal });
       if (!logoRes.ok) throw new Error(`HTTP ${logoRes.status}`);
       const logoBuf = Buffer.from(await logoRes.arrayBuffer());
       const logoSize = 80;

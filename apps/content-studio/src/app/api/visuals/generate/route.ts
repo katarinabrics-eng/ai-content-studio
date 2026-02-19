@@ -17,13 +17,22 @@ import { chooseProcessingMode } from "@/lib/openai-processing";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-export const maxDuration = 55;
+export const maxDuration = 60;
+
+/** When true (default): 1 variant, no critic, minimal overlay. Recommended on Vercel Hobby (60s limit). */
+const FAST_MODE = process.env.VISUAL_FAST_MODE !== "false";
+
+const STAGE_IMAGE_MS = 45_000;
+const STAGE_LOGO_MS = 3_000;
+const STAGE_STORAGE_MS = 10_000;
+const HARD_GUARD_ELAPSED_MS = 52_000;
 
 function visualFail(
   draftId: string,
   draftPayload: Record<string, unknown>,
   detail: string,
-  hint: string
+  hint: string,
+  errorCode = "VISUAL_GENERATION_FAILED"
 ): NextResponse {
   updateDraftPayload(draftId, {
     ...draftPayload,
@@ -32,8 +41,8 @@ function visualFail(
     visualUpdatedAt: new Date().toISOString(),
   }).catch(() => {});
   return NextResponse.json(
-    { ok: false, error: "VISUAL_GENERATION_FAILED", detail, hint },
-    { status: 500 }
+    { ok: false, error: errorCode, detail, hint },
+    { status: errorCode === "VISUAL_TIMEOUT" ? 408 : 500 }
   );
 }
 
@@ -42,7 +51,7 @@ const IMAGE_MODEL = "gpt-image-1";
 const CANDIDATE_COUNT = 1;
 const MAX_CANDIDATES = 2;
 const MIN_SCORE = 8;
-const MAX_REGENERATE_ROUNDS = 1;
+const MAX_REGENERATE_ROUNDS = FAST_MODE ? 0 : 1;
 const STRICT_SUFFIX =
   " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
@@ -176,7 +185,23 @@ function buildPresetStyleImagePrompt(
   return prompt + " " + STRICT_SUFFIX;
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, stage: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`VISUAL_TIMEOUT|${stage}|${ms}ms`)), ms);
+    promise.then((v) => {
+      clearTimeout(t);
+      resolve(v);
+    }, (e) => {
+      clearTimeout(t);
+      reject(e);
+    });
+  });
+}
+
 export async function POST(request: Request) {
+  const startMs = Date.now();
+  const elapsed = () => Date.now() - startMs;
+
   try {
     let body: unknown = {};
     try {
@@ -340,8 +365,8 @@ export async function POST(request: Request) {
     const size = getOpenAISize(formatKey);
 
     try {
-      // Step B: Generate variants, critic each, pick best; regenerate up to MAX_REGENERATE_ROUNDS if needed
-    const candidateCount = Math.min(Math.max(1, CANDIDATE_COUNT), MAX_CANDIDATES);
+      // Step B: Generate variants; in FAST_MODE: 1 variant, no critic
+    const candidateCount = FAST_MODE ? 1 : Math.min(Math.max(1, CANDIDATE_COUNT), MAX_CANDIDATES);
     let bestB64: string | null = null;
     let bestCritic: import("@/lib/visual-critic").VisualCriticResult | null = null;
     let lastError: Error | null = null;
@@ -349,58 +374,73 @@ export async function POST(request: Request) {
     let warningMessage: string | undefined;
 
     for (let round = 0; round <= MAX_REGENERATE_ROUNDS; round++) {
+      if (elapsed() > HARD_GUARD_ELAPSED_MS && bestB64) break;
+
       const candidates: { b64: string; critic: import("@/lib/visual-critic").VisualCriticResult }[] = [];
+      const defaultCritic: import("@/lib/visual-critic").VisualCriticResult = {
+        score: 6,
+        hasTextArtifacts: false,
+        brandColorMatch: 5,
+        brandStyleMatch: 5,
+        note: FAST_MODE ? "Fast mode – critic skipped" : "",
+      };
 
       for (let i = 0; i < candidateCount; i++) {
         let b64: string | null = null;
         try {
-          const resp = await openai.images.generate({
-            model: IMAGE_MODEL,
-            prompt: imagePrompt,
-            n: 1,
-            size,
-          });
+          const resp = await withTimeout(
+            openai.images.generate({
+              model: IMAGE_MODEL,
+              prompt: imagePrompt,
+              n: 1,
+              size,
+            }),
+            STAGE_IMAGE_MS,
+            "image_generation"
+          );
           const first = resp.data?.[0];
           b64 = typeof first?.b64_json === "string" ? first.b64_json : null;
         } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (msg.includes("VISUAL_TIMEOUT")) {
+            updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: "Časový limit generování obrázku.", visualUpdatedAt: new Date().toISOString() }).catch(() => {});
+            return NextResponse.json(
+              { ok: false, error: "VISUAL_TIMEOUT", detail: "Generování obrázku překročilo časový limit.", hint: "Zkuste znovu nebo vypněte Brand Lock." },
+              { status: 408 }
+            );
+          }
           lastError = e instanceof Error ? e : new Error(String(e));
           lastStage = "image_generation";
           continue;
         }
         if (!b64) continue;
 
-        try {
-          const criticResult = await criticVisualFromB64(b64, openaiKey, {
-            brandColors: brandSpec.colors,
-            moodKeywords: webStyle.moodKeywords,
-          });
-          if (criticResult) {
-            candidates.push({ b64, critic: criticResult });
-          } else {
-            candidates.push({
-              b64,
-              critic: {
-                score: 5,
-                hasTextArtifacts: false,
-                brandColorMatch: 5,
-                brandStyleMatch: 5,
-                note: "Critic nevrátil výsledek",
-              },
+        if (FAST_MODE) {
+          candidates.push({ b64, critic: defaultCritic });
+        } else {
+          try {
+            const criticResult = await criticVisualFromB64(b64, openaiKey, {
+              brandColors: brandSpec.colors,
+              moodKeywords: webStyle.moodKeywords,
             });
+            if (criticResult) {
+              candidates.push({ b64, critic: criticResult });
+            } else {
+              candidates.push({ b64, critic: defaultCritic });
+            }
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            if (msg.includes("VISUAL_TIMEOUT")) {
+              updateDraftPayload(draftId, { ...draft.payload, visualStatus: "error", visualError: "Časový limit vyhodnocení.", visualUpdatedAt: new Date().toISOString() }).catch(() => {});
+              return NextResponse.json(
+                { ok: false, error: "VISUAL_TIMEOUT", detail: "Vyhodnocení vizuálu překročilo časový limit.", hint: "Zkuste znovu nebo vypněte Brand Lock." },
+                { status: 408 }
+              );
+            }
+            lastError = e instanceof Error ? e : new Error(String(e));
+            lastStage = "critic_scoring";
+            candidates.push({ b64, critic: defaultCritic });
           }
-        } catch (e) {
-          lastError = e instanceof Error ? e : new Error(String(e));
-          lastStage = "critic_scoring";
-          candidates.push({
-            b64,
-            critic: {
-              score: 5,
-              hasTextArtifacts: false,
-              brandColorMatch: 5,
-              brandStyleMatch: 5,
-              note: "Critic selhal",
-            },
-          });
         }
       }
 
@@ -450,30 +490,44 @@ export async function POST(request: Request) {
     const criticScore = bestCritic?.score ?? 0;
     const criticNote = bestCritic?.note ?? "";
 
-    const ctaColor = brandLock && brandSpec.colors.length > 0 ? brandSpec.colors[0] : undefined;
-    const logoUrl = brandLock ? brandSpec.logoUrl : undefined;
+    const skipOverlayDueToTime = elapsed() > HARD_GUARD_ELAPSED_MS;
+    const ctaColor = !FAST_MODE && brandLock && brandSpec.colors.length > 0 ? brandSpec.colors[0] : undefined;
+    const logoUrl = FAST_MODE ? undefined : (brandLock ? brandSpec.logoUrl : undefined);
+    const logoAbort = new AbortController();
+    const logoTimeoutId = setTimeout(() => logoAbort.abort(), STAGE_LOGO_MS);
 
     let finalBuffer: Buffer;
     let overlayError: string | undefined;
-    try {
-      finalBuffer = await composeTextOverlay(baseBuffer, {
-        headline: brief.headline,
-        subheadline: brief.subheadline,
-        cta: brief.cta,
-        targetWidth: dims.width,
-        targetHeight: dims.height,
-        ctaColor,
-        logoUrl,
-        brandColors: brandLock ? brandSpec.colors : undefined,
-        brandLock,
-      });
-    } catch (e) {
-      overlayError = e instanceof Error ? e.message : String(e);
+    if (skipOverlayDueToTime) {
       finalBuffer = baseBuffer;
+      overlayError = "Overlay skipped due to time limit";
+      clearTimeout(logoTimeoutId);
+    } else {
+      try {
+        finalBuffer = await composeTextOverlay(baseBuffer, {
+          headline: brief.headline,
+          subheadline: FAST_MODE ? undefined : brief.subheadline,
+          cta: brief.cta,
+          targetWidth: dims.width,
+          targetHeight: dims.height,
+          ctaColor,
+          logoUrl,
+          brandColors: !FAST_MODE && brandLock ? brandSpec.colors : undefined,
+          brandLock: !FAST_MODE && brandLock,
+          logoFetchSignal: logoUrl ? logoAbort.signal : undefined,
+        });
+      } catch (e) {
+        overlayError = e instanceof Error ? e.message : String(e);
+        finalBuffer = baseBuffer;
+        if (e instanceof Error && e.name === "AbortError") {
+          overlayError = "Logo fetch timeout";
+        }
+      }
+      clearTimeout(logoTimeoutId);
     }
 
-    const colorsApplied = brandLock && brandSpec.colors.length > 0;
-    const logoApplied = brandLock && !!logoUrl;
+    const colorsApplied = !FAST_MODE && brandLock && brandSpec.colors.length > 0;
+    const logoApplied = !FAST_MODE && brandLock && !!brandSpec.logoUrl && !overlayError;
     const visualBrandApplied = {
       colors: colorsApplied,
       logo: logoApplied,
@@ -482,7 +536,13 @@ export async function POST(request: Request) {
     };
     const visualBrandWarnings: string[] = [];
     if (brandLock && brandSpec.colors.length === 0) visualBrandWarnings.push("Žádné brand barvy v intake");
-    if (overlayError) visualBrandWarnings.push(`Overlay: ${overlayError}`);
+    if (overlayError) {
+      if (overlayError === "Overlay skipped due to time limit") {
+        visualBrandWarnings.push("Overlay byl vynechán z důvodu časového limitu.");
+      } else {
+        visualBrandWarnings.push(`Overlay: ${overlayError}`);
+      }
+    }
     if (warningMessage) visualBrandWarnings.push(warningMessage);
 
     const timestamp = Date.now();
@@ -490,24 +550,52 @@ export async function POST(request: Request) {
     const basePath = `drafts/${draftId}/${timestamp}_base.png`;
     const finalPath = `drafts/${draftId}/${timestamp}_final.png`;
 
-    const { error: baseUploadError } = await supabase.storage
-      .from(VISUAL_BUCKET)
-      .upload(basePath, baseBuffer, { contentType: "image/png", upsert: true });
-
-    if (baseUploadError) {
-      throw new Error(
-        `[storage_upload] Chyba při ukládání obrázku (bucket: ${VISUAL_BUCKET}): ${baseUploadError.message}|Zkontrolujte, že bucket "${VISUAL_BUCKET}" existuje a je public.`
+    try {
+      const { error: baseUploadError } = await withTimeout(
+        (async () => {
+          const r = await supabase.storage
+            .from(VISUAL_BUCKET)
+            .upload(basePath, baseBuffer, { contentType: "image/png", upsert: true });
+          return r;
+        })(),
+        STAGE_STORAGE_MS,
+        "storage_upload"
       );
-    }
 
-    const { error: finalUploadError } = await supabase.storage
-      .from(VISUAL_BUCKET)
-      .upload(finalPath, finalBuffer, { contentType: "image/png", upsert: true });
+      if (baseUploadError) {
+        throw new Error(
+          `[storage_upload] Chyba při ukládání obrázku (bucket: ${VISUAL_BUCKET}): ${baseUploadError.message}|Zkontrolujte, že bucket "${VISUAL_BUCKET}" existuje a je public.`
+        );
+      }
 
-    if (finalUploadError) {
-      throw new Error(
-        `[storage_upload] Chyba při ukládání finálního obrázku: ${finalUploadError.message}|Zkontrolujte Supabase storage a oprávnění.`
+      const { error: finalUploadError } = await withTimeout(
+        (async () => {
+          const r = await supabase.storage
+            .from(VISUAL_BUCKET)
+            .upload(finalPath, finalBuffer, { contentType: "image/png", upsert: true });
+          return r;
+        })(),
+        STAGE_STORAGE_MS,
+        "storage_upload"
       );
+
+      if (finalUploadError) {
+        throw new Error(
+          `[storage_upload] Chyba při ukládání finálního obrázku: ${finalUploadError.message}|Zkontrolujte Supabase storage a oprávnění.`
+        );
+      }
+    } catch (storageErr) {
+      const msg = storageErr instanceof Error ? storageErr.message : String(storageErr);
+      if (msg.includes("VISUAL_TIMEOUT")) {
+        return visualFail(
+          draftId,
+          draft.payload,
+          "Ukládání vizuálu překročilo časový limit.",
+          "Zkuste znovu nebo vypněte Brand Lock.",
+          "VISUAL_TIMEOUT"
+        );
+      }
+      throw storageErr;
     }
 
     const baseUrl = supabase.storage.from(VISUAL_BUCKET).getPublicUrl(basePath).data.publicUrl;
@@ -561,19 +649,32 @@ export async function POST(request: Request) {
       visualStrategySource,
     });
     } catch (strictErr) {
+      if (elapsed() > HARD_GUARD_ELAPSED_MS) {
+        return visualFail(
+          draftId,
+          draft.payload,
+          "Časový limit překročen před dokončením.",
+          "Zkuste znovu nebo vypněte Brand Lock.",
+          "VISUAL_TIMEOUT"
+        );
+      }
       const msg = strictErr instanceof Error ? strictErr.message : String(strictErr);
       const pipeIdx = msg.indexOf("|");
       const detailPart = pipeIdx >= 0 ? msg.slice(0, pipeIdx).replace(/^\[[\w_]+\]\s*/, "").trim() : msg;
       const hintPart =
-        pipeIdx >= 0 ? msg.slice(pipeIdx + 1).trim() : "Zkuste znovu nebo použijte zjednodušenou generaci.";
+        pipeIdx >= 0 ? msg.slice(pipeIdx + 1).trim() : "Zkuste znovu nebo vypněte Brand Lock.";
 
       try {
-        const resp = await openai.images.generate({
-          model: IMAGE_MODEL,
-          prompt: imagePrompt,
-          n: 1,
-          size,
-        });
+        const resp = await withTimeout(
+          openai.images.generate({
+            model: IMAGE_MODEL,
+            prompt: imagePrompt,
+            n: 1,
+            size,
+          }),
+          Math.min(STAGE_IMAGE_MS, HARD_GUARD_ELAPSED_MS - elapsed()),
+          "fallback_image"
+        );
         const b64 = resp.data?.[0]?.b64_json;
         if (typeof b64 !== "string" || !b64) throw new Error("OpenAI nevrátilo obrázek");
         const fallbackBaseBuffer = Buffer.from(b64, "base64");
@@ -639,7 +740,14 @@ export async function POST(request: Request) {
         });
       } catch (fallbackErr) {
         const fd = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
-        return visualFail(draftId, draft.payload, `${detailPart}. Fallback: ${fd}`, hintPart);
+        const isTimeout = fd.includes("VISUAL_TIMEOUT");
+        return visualFail(
+          draftId,
+          draft.payload,
+          isTimeout ? "Časový limit překročen (i zjednodušená generace)." : `${detailPart}. Fallback: ${fd}`,
+          isTimeout ? "Zkuste znovu nebo vypněte Brand Lock." : hintPart,
+          isTimeout ? "VISUAL_TIMEOUT" : "VISUAL_GENERATION_FAILED"
+        );
       }
     }
   } catch (e) {
