@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { StoredPostDraft } from "@/lib/posts-schema";
 import { STRATEGY_PRESETS } from "@/lib/strategy-library";
+import { getPresetById, normalizeStyleId } from "@/lib/visual-style-presets";
 
 const VISUAL_TIMEOUT_MS = 120_000;
 const SUCCESS_MESSAGE_DURATION_MS = 2000;
@@ -24,11 +25,25 @@ const FORMAT_OPTIONS = [
 ] as const;
 
 const STYLE_OPTIONS = [
-  { value: "generic_saas", label: "SaaS (obecný)" },
-  { value: "minimal_clean", label: "Minimal clean" },
+  { value: "product_hero", label: "Produktový Hero" },
+  { value: "conversion_clean", label: "Conversion clean" },
+  { value: "trust_authority", label: "Trust & Authority" },
+  { value: "community_story", label: "Community story" },
+  { value: "minimal_premium", label: "Minimal premium" },
   { value: "bold_growth", label: "Bold growth" },
-  { value: "simby_product_ad", label: "SIMBY produktový creative" },
 ] as const;
+
+function getDisplayStyleLabel(draft: StoredPostDraft): string | undefined {
+  if (draft.visualStyleLabel) return draft.visualStyleLabel;
+  const id = draft.visualStyleId ?? draft.visualStyle;
+  const preset = getPresetById(id);
+  return preset?.label;
+}
+
+function getResolvedStyleId(draft: StoredPostDraft): string {
+  const raw = draft.visualStyleId ?? draft.visualStyle;
+  return raw ? normalizeStyleId(raw) : "";
+}
 
 function DraftsContent() {
   const searchParams = useSearchParams();
@@ -65,6 +80,14 @@ function DraftsContent() {
         if (cancelled) return;
         if (data.ok && Array.isArray(data.drafts)) {
           setDrafts(data.drafts);
+          setStyleProfilePerDraft((prev) => {
+            const next = { ...prev };
+            for (const d of data.drafts as StoredPostDraft[]) {
+              const id = getResolvedStyleId(d);
+              if (id && !prev[d.id]) next[d.id] = id;
+            }
+            return next;
+          });
         } else {
           setDrafts([]);
         }
@@ -232,6 +255,10 @@ function DraftsContent() {
             visualError: undefined,
             visualCreativeScore: data.visualCreativeScore ?? next[idx].visualCreativeScore,
             visualFormat: data.visualFormat ?? next[idx].visualFormat,
+            visualStyleId: data.visualStyleId ?? next[idx].visualStyleId,
+            visualStyleLabel: data.visualStyleLabel ?? next[idx].visualStyleLabel,
+            visualStyle: data.visualStyleId ?? next[idx].visualStyle,
+            brandContextApplied: data.brandContextApplied ?? next[idx].brandContextApplied,
             visualBrandApplied: data.brandApplied ?? next[idx].visualBrandApplied,
             visualBrandWarnings: data.brandWarnings ?? next[idx].visualBrandWarnings,
             visualStrategyId: data.visualStrategyId ?? next[idx].visualStrategyId,
@@ -240,6 +267,7 @@ function DraftsContent() {
           };
           return next;
         });
+        setStyleProfilePerDraft((p) => (data.visualStyleId ? { ...p, [draftId]: data.visualStyleId } : p));
         setVisualCardState(draftId, "done", "Hotovo. Vizuál je připraven.");
         setTimeout(() => {
           setVisualStatusByDraftId((p) => {
@@ -351,10 +379,15 @@ function DraftsContent() {
               key={draft.id}
               className="max-w-none rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
             >
-              <div className="mb-2 flex items-center justify-between">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
                 <span className="rounded bg-slate-100 px-2 py-0.5 text-sm font-medium text-slate-700">
                   {draft.platform}
                 </span>
+                {getDisplayStyleLabel(draft) ? (
+                  <span className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600" title="Vizuální styl">
+                    {getDisplayStyleLabel(draft)}
+                  </span>
+                ) : null}
                 {draft.angle ? (
                   <span className="text-xs text-slate-500">Úhel: {draft.angle}</span>
                 ) : null}
@@ -466,11 +499,12 @@ function DraftsContent() {
                     ))}
                   </select>
                   <select
-                    value={styleProfilePerDraft[draft.id] ?? ""}
+                    value={styleProfilePerDraft[draft.id] ?? getResolvedStyleId(draft) ?? ""}
                     onChange={(e) =>
                       setStyleProfilePerDraft((p) => ({ ...p, [draft.id]: e.target.value }))
                     }
                     className="rounded border border-slate-300 px-2 py-1 text-sm"
+                    title="Vyberte vizuální styl"
                   >
                     <option value="">Styl (default)</option>
                     {STYLE_OPTIONS.map((o) => (

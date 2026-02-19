@@ -11,7 +11,7 @@ import { composeTextOverlay } from "@/lib/visual-composer";
 import { criticVisualFromB64 } from "@/lib/visual-critic";
 import { getWebStyleFromIntake } from "@/lib/web-style-helper";
 import { resolveVisualStyle } from "@/lib/visual-style-resolver";
-import { VISUAL_STYLE_PRESETS, type VisualStyleId } from "@/lib/visual-style-presets";
+import { CANONICAL_STYLE_IDS, normalizeStyleId, type VisualStyleId } from "@/lib/visual-style-presets";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ const MAX_REGENERATE_ROUNDS = 2;
 const STRICT_SUFFIX =
   " no text, no letters, no typography, no watermark, no logo, clean composition, negative space for overlay.";
 
-const STYLE_PROFILES = Object.keys(VISUAL_STYLE_PRESETS) as string[];
+const STYLE_PROFILES = [...CANONICAL_STYLE_IDS, "simby_product_ad", "brand_product_ad", "generic_saas", "minimal_clean"];
 
 const PLATFORM_TO_FORMAT: Record<string, PlatformFormatKey> = {
   instagram: "instagram-feed",
@@ -48,9 +48,10 @@ type ResolvedStyleForPrompt = {
   palette: string[];
   moodKeywords: string[];
   negativePrompt: string;
-  visualStyle: string;
+  visualStyleId: string;
   visualStyleLabel: string;
   visualStyleSource: string;
+  brandContextApplied: boolean;
 };
 
 function buildCreativeBriefPrompt(
@@ -208,8 +209,9 @@ export async function POST(request: Request) {
     const visualStyleProfile = (intake as Record<string, unknown>).visualStyleProfile as Record<string, unknown> | null | undefined;
     const intakePayload = (intake as { payload?: unknown }).payload ?? (intake as Record<string, unknown>);
     const intakePayloadObj = (typeof intakePayload === "object" && intakePayload !== null ? intakePayload : {}) as Record<string, unknown>;
-    const requestedStyleId = (b.styleProfile as VisualStyleId | undefined) ?? "auto";
-    const { preset, source } = resolveVisualStyle({
+    const rawStyleId = (b.styleProfile as VisualStyleId | undefined) ?? "auto";
+    const requestedStyleId = rawStyleId === "auto" ? "auto" : (normalizeStyleId(rawStyleId) as VisualStyleId);
+    const { preset, source, brandContextApplied } = resolveVisualStyle({
       requestedStyleId,
       brandName: intakePayloadObj?.brandName as string | undefined,
       website: intakePayloadObj?.website as string | undefined,
@@ -218,9 +220,10 @@ export async function POST(request: Request) {
       palette: brandSpec.colors,
       moodKeywords: preset.promptDirectives,
       negativePrompt: preset.negativePrompt.join(", "),
-      visualStyle: preset.id,
+      visualStyleId: preset.id,
       visualStyleLabel: preset.label,
       visualStyleSource: source,
+      brandContextApplied,
     };
 
     const brandAssetsColors = (intakePayloadObj?.brandAssets as { colors?: string | string[] } | undefined)?.colors;
@@ -506,9 +509,11 @@ export async function POST(request: Request) {
       visualCreativeScore: criticScore > 0 ? criticScore : undefined,
       visualCriticNote: criticNote || undefined,
       visualFormat: formatKey,
-      visualStyle: resolvedStyle.visualStyle,
+      visualStyleId: resolvedStyle.visualStyleId,
       visualStyleLabel: resolvedStyle.visualStyleLabel,
       visualStyleSource: resolvedStyle.visualStyleSource,
+      visualStyle: resolvedStyle.visualStyleId,
+      brandContextApplied: resolvedStyle.brandContextApplied,
       strategyId: strategy?.id ?? draft.payload.strategyId,
       visualStrategyId: strategy?.id,
       visualStrategySource,
@@ -526,9 +531,10 @@ export async function POST(request: Request) {
       visualCreativeScore: criticScore > 0 ? criticScore : undefined,
       visualCriticNote: criticNote || undefined,
       visualFormat: formatKey,
-      visualStyle: resolvedStyle.visualStyle,
+      visualStyleId: resolvedStyle.visualStyleId,
       visualStyleLabel: resolvedStyle.visualStyleLabel,
       visualStyleSource: resolvedStyle.visualStyleSource,
+      brandContextApplied: resolvedStyle.brandContextApplied,
       brandApplied: visualBrandApplied,
       brandWarnings: visualBrandWarnings,
       visualStrategyId: strategy?.id,

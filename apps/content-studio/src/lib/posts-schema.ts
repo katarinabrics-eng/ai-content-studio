@@ -34,6 +34,9 @@ export type StoredPostDraft = PostDraft & {
   brandApplied?: { tone?: boolean; forbiddenWords?: boolean; platform?: boolean };
   brandWarnings?: string[];
   visualStyle?: string;
+  visualStyleId?: string;
+  visualStyleLabel?: string;
+  brandContextApplied?: boolean;
   visualVariants?: { url: string; score: number }[];
   visualCriticNote?: string;
   visualBrandApplied?: { colors?: boolean; logo?: boolean; tone?: boolean; layout?: boolean };
