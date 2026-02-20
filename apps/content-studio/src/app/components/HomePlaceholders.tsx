@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 
-const HERO_SRC = "/placeholders/ja-a-mia4.png";
+const HERO_SRC = "/placeholders/ja-a-mia5.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek: ja a mia4.png, fit uvnitř rámu. */
+/** Hero obrázek: ja a mia5.png, fit uvnitř rámu. */
 export function HeroImageFull() {
   return (
     <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
