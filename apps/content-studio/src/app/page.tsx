@@ -1,12 +1,5 @@
 import { HeroImageFull } from "./components/HomePlaceholders";
 
-const processSteps = [
-  { title: "Vyplníte krátký dotazník", text: "Předáte nám brand, cílovku a tón komunikace.", day: "Pondělí", icon: "form" },
-  { title: "Dostanete 3 návrhy", text: "Do 24–48 hodin vám pošleme konkrétní příspěvky připravené ke schválení.", day: "Úterý/Středa", icon: "cards" },
-  { title: "Schválíte nebo připomínkujete", text: "Pokud máte námitky, obratem je zapracujeme.", day: "Čtvrtek", icon: "check" },
-  { title: "Máte hotovo", text: "Do dalšího dne máte finální verzi připravenou k propagaci.", day: "Pátek", icon: "rocket" },
-];
-
 const faqs = [
   { q: "Je potřeba hodně schůzek a callů?", a: "Ne. Náš systém je postavený tak, abyste nemuseli trávit hodiny na meetinzích. Spolupráce je asynchronní a rychlá." },
   { q: "Co když s návrhem nesouhlasíme?", a: "U zaváděcí ceny 800 Kč doručujeme finální návrhy bez revizí. Ladění na míru je dostupné u měsíčních paušálů." },
@@ -25,8 +18,9 @@ export default function HomePage() {
           <nav className="hidden gap-8 text-sm text-stone-600 md:flex">
             <a href="#manifest" className="transition-colors hover:text-zinc-900">Manifest</a>
             <a href="#co-delame" className="transition-colors hover:text-zinc-900">Co děláme</a>
+            <a href="#rozdil" className="transition-colors hover:text-zinc-900">Rozdíl</a>
             <a href="#jak-to-funguje" className="transition-colors hover:text-zinc-900">Jak to funguje</a>
-            <a href="#proc-my" className="transition-colors hover:text-zinc-900">Proč my</a>
+            <a href="#testovaci-nabidka" className="transition-colors hover:text-zinc-900">Nabídka</a>
             <a href="#faq" className="transition-colors hover:text-zinc-900">FAQ</a>
             <a href="#kontakt" className="transition-colors hover:text-zinc-900">Kontakt</a>
           </nav>
@@ -109,42 +103,73 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="jak-to-funguje" className="relative w-full bg-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Od dotazníku k publikaci během jednoho týdne. Žádné zbytečné cally.
-          </h2>
-          <p className="mt-4 max-w-3xl text-stone-600">
-            Spolupráce je navržená tak, aby byla maximálně asynchronní a nezdržovala vás.
-          </p>
-          <div className="mt-14 flex flex-col items-center gap-8 lg:flex-row lg:items-start lg:justify-between">
-            {processSteps.map((step, i) => (
-              <div key={step.title} className="flex flex-1 flex-col items-center lg:max-w-[180px]">
-                <div className="flex w-full items-center justify-center lg:justify-center">
-                  {i > 0 && <div className="hidden h-0.5 flex-1 max-w-[20px] bg-lucifera-lime/40 lg:block" />}
-                  <div className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-lucifera-lime/50 bg-lucifera-lime/10 text-zinc-800">
-                    {step.icon === "form" && <span className="text-lg">✎</span>}
-                    {step.icon === "cards" && <span className="text-lg">☰</span>}
-                    {step.icon === "check" && <span className="text-lg">✓</span>}
-                    {step.icon === "rocket" && <span className="text-lg">↑</span>}
-                  </div>
-                  {i < processSteps.length - 1 && <div className="hidden h-0.5 flex-1 min-w-[8px] max-w-[40px] bg-lucifera-lime/40 lg:block" />}
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="font-semibold text-stone-900">{step.title}</h3>
-                  <p className="mt-1 text-sm text-stone-600">{step.text}</p>
-                  {step.day && (
-                    <span className="mt-2 inline-block rounded-full bg-lucifera-lime/15 px-2 py-0.5 text-xs font-medium text-zinc-800">
-                      {step.day}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+      <section id="rozdil" className="w-full border-t border-stone-200 bg-[#2d2d2d] px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1fr] md:items-center">
+          <div className="aspect-[3/4] max-h-[480px] overflow-hidden rounded bg-zinc-800">
+            <div className="flex h-full w-full items-center justify-center text-zinc-500">
+              <span className="text-sm">Portrét · placeholder</span>
+            </div>
           </div>
-          <p className="mt-10 text-lg font-medium text-stone-800">
-            Výsledek: Vy se mezitím věnujete své profesi. My držíme obsahový rytmus.
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+              Rozhoduje zkušenost.
+            </h2>
+            <p className="mt-8 whitespace-pre-line text-lg leading-relaxed text-zinc-300">
+              {`Technologie navrhuje. Zkušenost vybírá.
+25 let práce s obrazem.
+Reálné projekty. Reálné značky.`}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="jak-to-funguje" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl">
+            Jednoduchý systém.
+          </h2>
+          <div className="mt-12 grid gap-10 sm:grid-cols-3">
+            <div className="relative border-l-2 border-zinc-200 pl-6">
+              <span className="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-[#A3E635]" />
+              <p className="text-lg font-medium text-zinc-900">Vyplníte krátký formulář.</p>
+            </div>
+            <div className="relative border-l-2 border-zinc-200 pl-6">
+              <span className="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-[#A3E635]" />
+              <p className="text-lg font-medium text-zinc-900">Do 48 hodin obdržíte návrhy.</p>
+            </div>
+            <div className="relative border-l-2 border-zinc-200 pl-6">
+              <span className="absolute -left-[5px] top-0 h-2 w-2 rounded-full bg-[#A3E635]" />
+              <p className="text-lg font-medium text-zinc-900">Publikujete.</p>
+            </div>
+          </div>
+          <p className="mt-12 text-zinc-600">
+            Žádné dlouhé procesy. Žádné meetingy.
           </p>
+        </div>
+      </section>
+
+      <section id="testovaci-nabidka" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-md">
+          <div className="rounded-lg border border-stone-200 bg-white p-8 shadow-sm">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-900">
+              Testovací týden.
+            </h2>
+            <ul className="mt-6 space-y-3 text-zinc-700">
+              <li>3 příspěvky</li>
+              <li>Text + vizuál</li>
+              <li>Doručení do 48 hodin</li>
+              <li>800 Kč (zaváděcí cena)</li>
+            </ul>
+            <p className="mt-6 text-sm text-zinc-600">
+              Kapacita je omezená.
+            </p>
+            <a
+              href="/start?plan=test-week"
+              className="mt-8 block w-full rounded bg-[#A3E635] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90"
+            >
+              Chci mít hotovo
+            </a>
+          </div>
         </div>
       </section>
 
@@ -232,7 +257,7 @@ export default function HomePage() {
                       <span className="text-green-600">✓</span> doručení do 48 hodin
                     </li>
                   </ul>
-                  <a href="/start" className="btn-lime-primary mt-6 w-full inline-block text-center text-zinc-900">
+                  <a href="/start?plan=test-week" className="mt-6 block w-full rounded bg-[#A3E635] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
                     Spustit projekt →
                   </a>
                 </div>
