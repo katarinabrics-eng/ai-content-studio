@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * FLOW RESET v1: Simplified middleware
+ * FLOW RESET v1 + FAZE 1: Simplified middleware
  * Protected: /admin, /kurator, /navrhy-postu
- * Public: /, /start, /pricing, /faq, /kontakt, /vstup, /_next/*
+ * Public: /, /start, /client/:projectCode, /pricing, /faq, /kontakt, /vstup, /_next/*
  */
 const PROTECTED_PREFIXES = ["/admin", "/kurator", "/navrhy-postu"] as const;
 

@@ -1,4 +1,12 @@
-export default function StartSuccessPage() {
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function SuccessContent() {
+  const searchParams = useSearchParams();
+  const projectCode = searchParams.get("code");
+
   return (
     <main className="min-h-screen bg-lucifera-dark px-4 py-12">
       <div className="mx-auto max-w-lg text-center">
@@ -16,7 +24,23 @@ export default function StartSuccessPage() {
           Děkujeme za vaši objednávku.
         </p>
 
-        <div className="glass-panel mt-8 p-6 text-left">
+        {projectCode && (
+          <div className="glass-panel mt-8 p-6">
+            <h2 className="font-semibold text-white">Kód vašeho projektu</h2>
+            <p className="mt-2 font-mono text-2xl text-lucifera-lime">{projectCode}</p>
+            <p className="mt-2 text-sm text-white/50">
+              Uložte si tento kód pro sledování stavu projektu.
+            </p>
+            <a 
+              href={`/client/${encodeURIComponent(projectCode)}`}
+              className="btn-lime-primary mt-4 inline-block text-zinc-900"
+            >
+              Sledovat stav projektu
+            </a>
+          </div>
+        )}
+
+        <div className="glass-panel mt-6 p-6 text-left">
           <h2 className="font-semibold text-white">Co bude následovat?</h2>
           <ul className="mt-4 space-y-3 text-white/70">
             <li className="flex items-start gap-3">
@@ -38,10 +62,18 @@ export default function StartSuccessPage() {
           Potvrzení objednávky jsme odeslali na váš e-mail.
         </p>
 
-        <a href="/" className="btn-lime-primary mt-8 inline-block text-zinc-900">
-          Zpět na hlavní stránku
+        <a href="/" className="mt-8 inline-block text-sm text-white/50 hover:text-white/70">
+          ← Zpět na hlavní stránku
         </a>
       </div>
     </main>
+  );
+}
+
+export default function StartSuccessPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-white">Načítám…</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }

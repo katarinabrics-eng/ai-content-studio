@@ -76,7 +76,8 @@ function StartForm() {
         setLoading(false);
         return;
       }
-      router.push("/start/success");
+      const projectCode = json.projectCode as string | undefined;
+      router.push(projectCode ? `/start/success?code=${encodeURIComponent(projectCode)}` : "/start/success");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Chyba odeslání.";
       setError(msg);
