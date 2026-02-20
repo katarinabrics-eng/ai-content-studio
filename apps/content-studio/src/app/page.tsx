@@ -51,28 +51,29 @@ export default function HomePage() {
                 lineHeight: 0.95,
               }}
             >
-              Váš feed je ve tmě. Lucifera ho rozsvítí.
+              Obsah, který má směr.
             </h1>
             <p
               className="mt-6 max-w-xl text-lg text-zinc-700"
               style={{ lineHeight: "1.875rem" }}
             >
-              3 profesionální příspěvky (text + grafika) za 800 Kč. V pondělí zadáte, v pátek publikujete. Žádné cally.
+              Vizuálně silné příspěvky pod odborným dohledem.
+              Technologie generuje. Já rozhoduji.
+            </p>
+            <p className="mt-4 text-sm font-medium text-zinc-600">
+              Doručení do 48 hodin · Zaváděcí cena 800 Kč
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <a href="/start" className="btn-lime-primary text-zinc-900">
-                Chci testovací týden za 800 Kč
+                Chci mít hotovo
               </a>
               <a
                 href="#jak-to-funguje"
                 className="rounded-full border border-lucifera-lime/50 bg-white/50 px-6 py-3 text-sm font-medium text-zinc-900 backdrop-blur-sm transition-colors hover:bg-lucifera-lime/10"
               >
-                Jak probíhá spolupráce
+                Jak to funguje
               </a>
             </div>
-            <p className="mt-6 text-sm font-medium text-zinc-900">
-              V pondělí dodáte data. V pátek publikujete.
-            </p>
           </div>
         </div>
       </section>
