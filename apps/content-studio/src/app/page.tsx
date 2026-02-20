@@ -41,7 +41,7 @@ export default function HomePage() {
         style={{ minHeight: "calc(100vh - 76px)" }}
       >
         <HeroImageFull />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent lg:from-white/90 lg:via-white/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/30 to-transparent lg:from-white/65 lg:via-white/20 lg:to-transparent" />
         <div className="relative mx-auto flex min-h-[calc(100vh-76px)] max-w-[1720px] flex-col justify-center px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
           <div className="animate-fade-in max-w-2xl">
             <h1
