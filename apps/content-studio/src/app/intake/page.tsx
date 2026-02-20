@@ -33,14 +33,14 @@ function SuggestionChips({
   if (!items.length) return null;
   return (
     <div className="mt-2">
-      <span className="text-xs font-medium text-slate-500">{label}:</span>
+      <span className="text-xs font-medium text-zinc-400">{label}:</span>
       <div className="mt-1 flex flex-wrap gap-1.5">
         {items.map((s, i) => (
           <button
             key={`${i}-${s.slice(0, 30)}`}
             type="button"
             onClick={() => onSelect(s)}
-            className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-200"
+            className="rounded-full border border-zinc-600 bg-zinc-800 px-2.5 py-1 text-xs text-zinc-200 hover:bg-zinc-700"
           >
             {s.length > 40 ? `${s.slice(0, 38)}…` : s}
           </button>
@@ -372,21 +372,22 @@ function IntakeContent() {
     error?.details?.[name]?.[0];
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-slate-800">Intake formulář</h1>
-      <p className="mt-1 text-slate-600">
-        Vyplňte údaje o značce a cílech obsahu.
-      </p>
+    <div className="min-h-screen bg-[#070d0b] text-zinc-100">
+      <div className="mx-auto max-w-5xl px-4 md:px-8 py-10 md:py-14">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-100">Intake formulář</h1>
+        <p className="mt-1 text-zinc-300">
+          Vyplňte údaje o značce a cílech obsahu.
+        </p>
 
-      {status === "success" && !pipelineResult && (
+        {status === "success" && !pipelineResult && (
         <div
-          className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
+          className="mt-5 md:mt-6 rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]"
           role="alert"
         >
-          <p>Formulář byl úspěšně odeslán. Data jsou uložena.</p>
+          <p className="text-zinc-100">Formulář byl úspěšně odeslán. Data jsou uložena.</p>
           <a
             href={lastSubmittedIntakeId ? `/drafts?intakeId=${encodeURIComponent(lastSubmittedIntakeId)}` : "/drafts"}
-            className="mt-2 inline-block font-medium underline hover:no-underline"
+            className="mt-2 inline-block font-medium text-lime-400 underline hover:no-underline"
           >
             Přejít na návrhy postů
           </a>
@@ -395,24 +396,24 @@ function IntakeContent() {
 
       {status === "success" && pipelineResult && (
         <div
-          className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
+          className="mt-5 md:mt-6 rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]"
           role="alert"
         >
-          <p className="font-medium">Projekt byl vytvořen.</p>
-          <p className="mt-2 font-mono text-sm">
+          <p className="font-medium text-zinc-100">Projekt byl vytvořen.</p>
+          <p className="mt-2 font-mono text-sm text-zinc-200">
             Kód: {pipelineResult.projectCode}
             {pipelineResult.pin && <> · PIN: {pipelineResult.pin}</>}
           </p>
-          <p className="mt-1 text-sm">Uložte si kód a PIN pro přístup k projektu.</p>
+          <p className="mt-1 text-sm text-zinc-300">Uložte si kód a PIN pro přístup k projektu.</p>
           {pipelineResult.loginUrl && (
             <a
               href={pipelineResult.loginUrl}
-              className="mt-2 inline-block font-medium underline hover:no-underline"
+              className="mt-2 inline-block font-medium text-lime-400 underline hover:no-underline"
             >
               Přihlásit se k projektu
             </a>
           )}
-          <a href="/admin/projects" className="ml-4 mt-2 inline-block text-sm underline hover:no-underline">
+          <a href="/admin/projects" className="ml-4 mt-2 inline-block text-sm text-zinc-400 underline hover:no-underline">
             Admin: přehled projektů
           </a>
         </div>
@@ -420,12 +421,12 @@ function IntakeContent() {
 
       {status === "error" && (
         <div
-          className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800"
+          className="mt-5 md:mt-6 rounded-2xl border border-red-400/30 bg-red-950/40 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]"
           role="alert"
         >
-          <p className="font-medium">{error?.message}</p>
+          <p className="font-medium text-red-200">{error?.message}</p>
           {error?.details && (
-            <ul className="mt-2 list-inside list-disc text-sm">
+            <ul className="mt-2 list-inside list-disc text-sm text-red-200/90">
               {Object.entries(error.details).map(([key, msgs]) =>
                 (msgs as string[]).map((msg, i) => (
                   <li key={`${key}-${i}`}>
@@ -438,16 +439,16 @@ function IntakeContent() {
         </div>
       )}
 
-      <section className="mt-6 rounded-lg border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-800">
+      <section className="mt-5 md:mt-6 rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]">
+        <h2 className="text-xl font-semibold text-zinc-100">
           Auto-vyplnit z webu / PDF
         </h2>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-zinc-300">
           Zadejte URL webu a volitelně nahrajte brand manual (PDF). Formulář se níže předvyplní podle rozpoznaných údajů.
         </p>
         <form onSubmit={handleEnrich} className="mt-4 flex flex-wrap items-end gap-4">
           <div className="min-w-[200px] flex-1">
-            <label htmlFor="enrichWebsite" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="enrichWebsite" className="block text-sm font-medium text-zinc-200">
               URL webu *
             </label>
             <input
@@ -460,11 +461,11 @@ function IntakeContent() {
                 setEnrichWebsite(e.target.value);
                 setEnrichError(null);
               }}
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
             />
           </div>
           <div className="min-w-[180px]">
-            <label htmlFor="enrichPdf" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="enrichPdf" className="block text-sm font-medium text-zinc-200">
               Brand manual (PDF, volitelné)
             </label>
             <input
@@ -476,24 +477,24 @@ function IntakeContent() {
                 setEnrichPdfFile(e.target.files?.[0] ?? null);
                 setEnrichError(null);
               }}
-              className="mt-1 w-full rounded-md border border-slate-300 px-2 py-2 text-sm text-slate-700 file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-slate-700"
+              className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-sm text-zinc-100 file:mr-2 file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-zinc-200"
             />
           </div>
           <button
             type="submit"
             disabled={enrichLoading}
-            className="rounded-md bg-amber-600 px-4 py-2.5 font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-60"
+            className="h-12 rounded-full bg-lime-400 px-6 font-semibold text-zinc-900 hover:bg-lime-300 focus:outline-none focus:ring-2 focus:ring-lime-400/50 disabled:opacity-60"
           >
             {enrichLoading ? "Načítám…" : "Načíst automaticky"}
           </button>
         </form>
         {enrichError && (
-          <p className="mt-3 text-sm text-red-600" role="alert">
+          <p className="mt-3 text-sm text-red-300" role="alert">
             {enrichError}
           </p>
         )}
         {enrichMeta && (
-          <div className="mt-3 rounded border border-amber-200 bg-white p-3 text-sm text-slate-700">
+          <div className="mt-3 rounded-xl border border-amber-400/30 bg-zinc-900 p-4 text-sm text-zinc-200">
             <p>
               <strong>Důvěra:</strong> {Math.round(enrichMeta.confidence * 100)} %
               {enrichMeta.missingFields.length > 0 && (
@@ -503,29 +504,29 @@ function IntakeContent() {
                 </>
               )}
               {enrichMeta.lowConfidence && (
-                <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-amber-800">
+                <span className="ml-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-amber-300">
                   Nízká důvěra – zkontrolujte předvyplněné údaje před odesláním.
                 </span>
               )}
             </p>
             {enrichMeta.warnings?.length ? (
-              <p className="mt-1 text-amber-700">
+              <p className="mt-1 text-amber-300/90">
                 {enrichMeta.warnings.join(" ")}
               </p>
             ) : null}
-            <p className="mt-1 text-slate-500">
+            <p className="mt-1 text-zinc-400">
               Formulář níže byl předvyplněn. Potvrďte hlavní nabídku a témata v sekci níže, poté odešlete.
             </p>
           </div>
         )}
       </section>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Základní údaje</h2>
+      <form onSubmit={handleSubmit} className="mt-5 md:mt-6 space-y-5 md:space-y-6">
+        <section className="rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]">
+          <h2 className="text-xl font-semibold text-zinc-100">Základní údaje</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="brandName" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="brandName" className="block text-sm font-medium text-zinc-200">
                 Název značky *
               </label>
               <input
@@ -534,14 +535,14 @@ function IntakeContent() {
                 required
                 value={form.brandName}
                 onChange={(e) => update({ brandName: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               {fieldError("brandName") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("brandName")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("brandName")}</p>
               )}
             </div>
             <div>
-              <label htmlFor="website" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="website" className="block text-sm font-medium text-zinc-200">
                 Web (URL)
               </label>
               <input
@@ -550,15 +551,15 @@ function IntakeContent() {
                 placeholder="https://…"
                 value={form.website}
                 onChange={(e) => update({ website: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               {fieldError("website") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("website")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("website")}</p>
               )}
             </div>
           </div>
           <div className="mt-4">
-            <label htmlFor="industry" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="industry" className="block text-sm font-medium text-zinc-200">
               Odvětví *
             </label>
             <input
@@ -567,19 +568,19 @@ function IntakeContent() {
               required
               value={form.industry}
               onChange={(e) => update({ industry: e.target.value })}
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
             />
             {fieldError("industry") && (
-              <p className="mt-1 text-sm text-red-600">{fieldError("industry")}</p>
+              <p className="mt-1 text-sm text-red-300">{fieldError("industry")}</p>
             )}
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Cílová skupina a nabídky</h2>
+        <section className="rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]">
+          <h2 className="text-xl font-semibold text-zinc-100">Cílová skupina a nabídky</h2>
           <div className="mt-4 space-y-4">
             <div>
-              <label htmlFor="targetAudience" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="targetAudience" className="block text-sm font-medium text-zinc-200">
                 Cílová skupina *
               </label>
               <textarea
@@ -588,18 +589,18 @@ function IntakeContent() {
                 rows={3}
                 value={form.targetAudience}
                 onChange={(e) => update({ targetAudience: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               <SuggestionChips
                 items={enrichSuggestions?.targetAudience ?? []}
                 onSelect={(s) => update({ targetAudience: s })}
               />
               {fieldError("targetAudience") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("targetAudience")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("targetAudience")}</p>
               )}
             </div>
             <div>
-              <label htmlFor="offers" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="offers" className="block text-sm font-medium text-zinc-200">
                 Nabídky / produkty *
               </label>
               <textarea
@@ -608,24 +609,24 @@ function IntakeContent() {
                 rows={3}
                 value={form.offers}
                 onChange={(e) => update({ offers: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               <SuggestionChips
                 items={enrichSuggestions?.offers ?? []}
                 onSelect={(s) => update({ offers: s })}
               />
               {fieldError("offers") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("offers")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("offers")}</p>
               )}
             </div>
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Styl a cíle</h2>
+        <section className="rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]">
+          <h2 className="text-xl font-semibold text-zinc-100">Styl a cíle</h2>
           <div className="mt-4 space-y-4">
             <div>
-              <label htmlFor="toneOfVoice" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="toneOfVoice" className="block text-sm font-medium text-zinc-200">
                 Tón hlasu *
               </label>
               <input
@@ -634,18 +635,18 @@ function IntakeContent() {
                 required
                 value={form.toneOfVoice}
                 onChange={(e) => update({ toneOfVoice: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               <SuggestionChips
                 items={enrichSuggestions?.toneOfVoice ?? []}
                 onSelect={(s) => update({ toneOfVoice: s })}
               />
               {fieldError("toneOfVoice") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("toneOfVoice")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("toneOfVoice")}</p>
               )}
             </div>
             <div>
-              <label htmlFor="forbiddenWords" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="forbiddenWords" className="block text-sm font-medium text-zinc-200">
                 Zakázaná slova (volitelné)
               </label>
               <textarea
@@ -653,7 +654,7 @@ function IntakeContent() {
                 rows={2}
                 value={form.forbiddenWords}
                 onChange={(e) => update({ forbiddenWords: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 min-h-[120px] w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               <SuggestionChips
                 items={enrichSuggestions?.forbiddenWords ?? []}
@@ -661,7 +662,7 @@ function IntakeContent() {
               />
             </div>
             <div>
-              <span className="block text-sm font-medium text-slate-700">
+              <span className="block text-sm font-medium text-zinc-200">
                 Cíl obsahu *
               </span>
               <div className="mt-2 flex flex-wrap gap-3">
@@ -673,18 +674,18 @@ function IntakeContent() {
                       value={opt}
                       checked={form.contentGoal === opt}
                       onChange={() => update({ contentGoal: opt })}
-                      className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                      className="rounded border-zinc-600 text-lime-400 focus:ring-lime-400/50"
                     />
-                    <span className="text-slate-700">{opt}</span>
+                    <span className="text-zinc-200">{opt}</span>
                   </label>
                 ))}
               </div>
               {fieldError("contentGoal") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("contentGoal")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("contentGoal")}</p>
               )}
             </div>
             <div>
-              <span className="block text-sm font-medium text-slate-700">
+              <span className="block text-sm font-medium text-zinc-200">
                 Platformy *
               </span>
               <div className="mt-2 flex flex-wrap gap-3">
@@ -694,18 +695,18 @@ function IntakeContent() {
                       type="checkbox"
                       checked={form.platforms.includes(opt)}
                       onChange={() => togglePlatform(opt)}
-                      className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                      className="rounded border-zinc-600 text-lime-400 focus:ring-lime-400/50"
                     />
-                    <span className="text-slate-700">{opt}</span>
+                    <span className="text-zinc-200">{opt}</span>
                   </label>
                 ))}
               </div>
               {fieldError("platforms") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("platforms")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("platforms")}</p>
               )}
             </div>
             <div>
-              <span className="block text-sm font-medium text-slate-700">
+              <span className="block text-sm font-medium text-zinc-200">
                 Preferovaný styl *
               </span>
               <div className="mt-2 flex flex-wrap gap-3">
@@ -717,18 +718,18 @@ function IntakeContent() {
                       value={opt}
                       checked={form.stylePreference === opt}
                       onChange={() => update({ stylePreference: opt })}
-                      className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                      className="rounded border-zinc-600 text-lime-400 focus:ring-lime-400/50"
                     />
-                    <span className="text-slate-700">{opt}</span>
+                    <span className="text-zinc-200">{opt}</span>
                   </label>
                 ))}
               </div>
               {fieldError("stylePreference") && (
-                <p className="mt-1 text-sm text-red-600">{fieldError("stylePreference")}</p>
+                <p className="mt-1 text-sm text-red-300">{fieldError("stylePreference")}</p>
               )}
             </div>
             <div>
-              <label htmlFor="ctaPreference" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="ctaPreference" className="block text-sm font-medium text-zinc-200">
                 Preferovaná CTA (volitelné)
               </label>
               <input
@@ -736,7 +737,7 @@ function IntakeContent() {
                 type="text"
                 value={form.ctaPreference}
                 onChange={(e) => update({ ctaPreference: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
               <SuggestionChips
                 items={enrichSuggestions?.ctaPreference ?? []}
@@ -744,7 +745,7 @@ function IntakeContent() {
               />
             </div>
             <div>
-              <span className="block text-sm font-medium text-slate-700">
+              <span className="block text-sm font-medium text-zinc-200">
                 Režim strategie
               </span>
               <div className="mt-2 flex flex-wrap gap-4">
@@ -754,9 +755,9 @@ function IntakeContent() {
                     name="strategyMode"
                     checked={form.strategyMode === "auto"}
                     onChange={() => update({ strategyMode: "auto", strategyId: undefined })}
-                    className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                    className="rounded border-zinc-600 text-lime-400 focus:ring-lime-400/50"
                   />
-                  <span className="text-slate-700">Automatický (doporučeno)</span>
+                  <span className="text-zinc-200">Automatický (doporučeno)</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -764,9 +765,9 @@ function IntakeContent() {
                     name="strategyMode"
                     checked={form.strategyMode === "manual"}
                     onChange={() => update({ strategyMode: "manual" })}
-                    className="rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+                    className="rounded border-zinc-600 text-lime-400 focus:ring-lime-400/50"
                   />
-                  <span className="text-slate-700">Ruční výběr</span>
+                  <span className="text-zinc-200">Ruční výběr</span>
                 </label>
               </div>
               {form.strategyMode === "manual" && (
@@ -774,7 +775,7 @@ function IntakeContent() {
                   <select
                     value={form.strategyId ?? ""}
                     onChange={(e) => update({ strategyId: e.target.value || undefined })}
-                    className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                    className="h-12 rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-sm text-zinc-100 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                   >
                     <option value="">Vyberte strategii</option>
                     {STRATEGY_PRESETS.map((s) => (
@@ -787,14 +788,14 @@ function IntakeContent() {
               )}
             </div>
             <div>
-              <label htmlFor="awarenessLevel" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="awarenessLevel" className="block text-sm font-medium text-zinc-200">
                 Úroveň povědomí publika
               </label>
               <select
                 id="awarenessLevel"
                 value={form.awarenessLevel ?? "problem_aware"}
                 onChange={(e) => update({ awarenessLevel: e.target.value as AwarenessLevel })}
-                className="mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-sm text-zinc-100 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               >
                 <option value="unaware">Nevědomé (ještě neví o problému)</option>
                 <option value="problem_aware">Vědomí problému</option>
@@ -806,14 +807,14 @@ function IntakeContent() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Potvrďte hlavní nabídku značky</h2>
-          <p className="mt-1 text-sm text-slate-500">
+        <section className="rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]">
+          <h2 className="text-xl font-semibold text-zinc-100">Potvrďte hlavní nabídku značky</h2>
+          <p className="mt-1 text-zinc-300">
             Hlavní nabídka a témata slouží jako zdroj pravdy pro generování obsahu. Obsah nesmí jít mimo povolená témata.
           </p>
           <div className="mt-4 space-y-4">
             <div>
-              <label htmlFor="brandCoreOneLiner" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="brandCoreOneLiner" className="block text-sm font-medium text-zinc-200">
                 Hlavní nabídka (1 věta)
               </label>
               <input
@@ -822,16 +823,16 @@ function IntakeContent() {
                 placeholder="Např. Poskytujeme web development a email automaci pro B2B firmy."
                 value={form.brandCoreOneLiner ?? ""}
                 onChange={(e) => update({ brandCoreOneLiner: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Povolená témata</label>
+              <label className="block text-sm font-medium text-zinc-200">Povolená témata</label>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {(form.allowedTopics ?? []).map((t, i) => (
                   <span
                     key={`a-${i}`}
-                    className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"
+                    className="inline-flex items-center rounded-full border border-lime-400/30 bg-lime-500/20 px-2.5 py-0.5 text-xs font-medium text-lime-200"
                   >
                     {t}
                     <button
@@ -841,7 +842,7 @@ function IntakeContent() {
                           allowedTopics: (form.allowedTopics ?? []).filter((_, j) => j !== i),
                         })
                       }
-                      className="ml-1.5 inline-flex rounded-full p-0.5 hover:bg-green-200"
+                      className="ml-1.5 inline-flex rounded-full p-0.5 hover:bg-lime-500/30"
                       aria-label="Odstranit"
                     >
                       ×
@@ -851,7 +852,7 @@ function IntakeContent() {
                 <input
                   type="text"
                   placeholder="Přidat téma (Enter)"
-                  className="min-w-[120px] rounded border border-slate-300 px-2 py-1 text-sm focus:border-slate-500 focus:outline-none"
+                  className="min-w-[120px] rounded-xl border border-zinc-700 bg-zinc-950/60 px-3 py-1.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === ",") {
                       e.preventDefault();
@@ -866,12 +867,12 @@ function IntakeContent() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Zakázaná témata</label>
+              <label className="block text-sm font-medium text-zinc-200">Zakázaná témata</label>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {(form.disallowedTopics ?? []).map((t, i) => (
                   <span
                     key={`d-${i}`}
-                    className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+                    className="inline-flex items-center rounded-full border border-red-400/30 bg-red-500/20 px-2.5 py-0.5 text-xs font-medium text-red-200"
                   >
                     {t}
                     <button
@@ -881,7 +882,7 @@ function IntakeContent() {
                           disallowedTopics: (form.disallowedTopics ?? []).filter((_, j) => j !== i),
                         })
                       }
-                      className="ml-1.5 inline-flex rounded-full p-0.5 hover:bg-red-200"
+                      className="ml-1.5 inline-flex rounded-full p-0.5 hover:bg-red-500/30"
                       aria-label="Odstranit"
                     >
                       ×
@@ -891,7 +892,7 @@ function IntakeContent() {
                 <input
                   type="text"
                   placeholder="Přidat zakázané téma (Enter)"
-                  className="min-w-[120px] rounded border border-slate-300 px-2 py-1 text-sm focus:border-slate-500 focus:outline-none"
+                  className="min-w-[120px] rounded-xl border border-zinc-700 bg-zinc-950/60 px-3 py-1.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === ",") {
                       e.preventDefault();
@@ -908,14 +909,14 @@ function IntakeContent() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Brand assets</h2>
-          <p className="mt-1 text-sm text-slate-500">
+        <section className="rounded-2xl border border-lime-400/20 bg-zinc-900/70 p-5 md:p-7 shadow-[0_10px_40px_rgba(0,0,0,.35)]">
+          <h2 className="text-xl font-semibold text-zinc-100">Brand assets</h2>
+          <p className="mt-1 text-zinc-300">
             Logo (URL nebo PNG upload), barvy, fonty a fotky.
           </p>
           <div className="mt-4 space-y-4">
             <div>
-              <label htmlFor="logoUrl" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="logoUrl" className="block text-sm font-medium text-zinc-200">
                 Logo URL (navržené nebo vlastní)
               </label>
               <input
@@ -928,15 +929,15 @@ function IntakeContent() {
                     brandAssets: { ...form.brandAssets, logoUrl: e.target.value },
                   })
                 }
-                className="mt-1 w-full max-w-md rounded-md border border-slate-300 px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                className="mt-1 h-12 w-full max-w-md rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 text-zinc-100 placeholder-zinc-500 focus:border-lime-400 focus:outline-none focus:ring-2 focus:ring-lime-400/50"
               />
             </div>
             <div>
-              <label htmlFor="logoFile" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="logoFile" className="block text-sm font-medium text-zinc-200">
                 Logo (PNG, max 5 MB) – nebo nahrajte soubor
               </label>
               <div className="mt-1 flex items-center gap-3">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400 text-xs">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-zinc-600 bg-zinc-950/60 text-zinc-500 text-xs">
                   {logoFile ? logoFile.name : "Logo"}
                 </div>
                 <input
@@ -950,11 +951,11 @@ function IntakeContent() {
                     setStatus("idle");
                     setError(null);
                   }}
-                  className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-slate-700"
+                  className="h-12 w-full max-w-xs rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-sm text-zinc-100 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-1.5 file:text-zinc-200"
                 />
               </div>
               {logoFile && (
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-zinc-400">
                   {logoFile.name} ({(logoFile.size / 1024).toFixed(1)} KB)
                 </p>
               )}
