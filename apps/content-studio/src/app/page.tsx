@@ -117,12 +117,12 @@ export default function HomePage() {
 
       <section id="rozdil" className="w-full border-t border-stone-200 bg-stone-100 px-6 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1fr] md:items-center">
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
-            <div className="aspect-[3/4] max-h-[480px] bg-stone-200">
-              <div className="flex h-full w-full items-center justify-center text-stone-500">
-                <span className="text-sm">Portrét · placeholder</span>
-              </div>
-            </div>
+          <div className="relative aspect-[3/4] max-h-[480px] w-full">
+            <img
+              src="/placeholders/KDOJSEM_01.png"
+              alt=""
+              className="h-full w-full object-cover object-center drop-shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
+            />
           </div>
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
