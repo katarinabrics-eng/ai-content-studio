@@ -17,6 +17,13 @@
   body {
     @apply antialiased;
   }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-manrope), var(--font-inter), sans-serif;
+    letter-spacing: -0.02em;
+  }
 }
 
 /* Lucifera Glass panels: frosted glass + inner lime glow, hover intensifies */

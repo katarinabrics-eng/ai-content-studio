@@ -47,7 +47,7 @@ export default function HomePage() {
           {/* Levý sloupec: velký výrazný text, černý/šedo-černý, lime jen na CTA */}
           <div className="animate-fade-in">
             <h1
-              className="font-normal tracking-tight text-zinc-900"
+              className="font-display font-normal tracking-tight text-zinc-900"
               style={{
                 fontSize: "clamp(2.25rem, 5.2vw, 6rem)",
                 lineHeight: 0.95,

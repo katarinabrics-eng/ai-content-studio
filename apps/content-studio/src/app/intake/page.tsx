@@ -374,7 +374,7 @@ function IntakeContent() {
   return (
     <div className="min-h-screen bg-[#070d0b] text-zinc-100">
       <div className="mx-auto max-w-5xl px-4 md:px-8 py-10 md:py-14">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-100">Intake formulář</h1>
+        <h1 className="font-display text-3xl md:text-4xl font-extrabold text-zinc-100">Intake formulář</h1>
         <p className="mt-1 text-zinc-300">
           Vyplňte údaje o značce a cílech obsahu.
         </p>
