@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { href: "#jak-to-funguje", label: "Jak to funguje" },
@@ -12,10 +12,24 @@ const navItems = [
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 h-14 border-b border-stone-200 bg-white">
-      <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header
+      className={`sticky top-0 z-50 h-14 transition-colors duration-200 ${
+        scrolled
+          ? "border-b border-stone-200/60 bg-white/80 backdrop-blur-md"
+          : "border-b border-stone-200 bg-white"
+      }`}
+    >
+      <div className="mx-auto flex h-full max-w-[1360px] items-center justify-between gap-4 px-6 xl:px-10">
         <a
           href="/"
           className="flex shrink-0 items-center focus:outline-none"
