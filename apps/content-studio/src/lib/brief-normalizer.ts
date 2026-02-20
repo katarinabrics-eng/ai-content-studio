@@ -53,7 +53,7 @@ export function normalizeStartForm(input: BriefInput): BriefSchema {
         ? ["instagram", "linkedin", "facebook"]
         : [sit]
       : [];
-  const tone_of_voice = str(input.tone_of_voice ?? input.tonalita ?? input.toneOfVoice);
+  const tone_of_voice = str(input.tone_of_voice ?? input.tonalita ?? input.toneOfVoice ?? input.tone);
   const website_or_profile = str(input.website_or_profile ?? input.web ?? input.website ?? "");
   const emailRaw =
     typeof input.email === "string" ? input.email.trim() : typeof input.client_email === "string" ? (input.client_email as string).trim() : null;

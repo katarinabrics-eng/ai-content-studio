@@ -58,9 +58,24 @@ export async function POST(request: Request) {
       brandPdf: brandPdfFiles[0] ?? null,
     };
 
-    const result = await runStartPipeline(payload, files);
+    // Normalize tone field for robustness (FE may send different key names)
+    const tone =
+      (payload.tone_of_voice ?? payload.tonalita ?? payload.toneOfVoice ?? "") as string;
+    const normalizedPayload = {
+      ...payload,
+      tone_of_voice: String(tone ?? "").trim(),
+    };
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("[intake/pipeline] keys:", Object.keys(payload));
+    }
+
+    const result = await runStartPipeline(normalizedPayload, files);
 
     if (!result.ok) {
+      if (process.env.NODE_ENV === "development" && result.details?.missing) {
+        console.log("[intake/pipeline] missing:", result.details.missing);
+      }
       const status = result.errorCode === "VALIDATION_FAILED" ? 400 : 500;
       return NextResponse.json(
         { ok: false, errorCode: result.errorCode, errorMessage: result.errorMessage, details: result.details },

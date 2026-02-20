@@ -238,6 +238,7 @@ function IntakeContent() {
     }
     const payload = {
       ...form,
+      tone_of_voice: (form.toneOfVoice ?? "").trim(),
       website: form.website?.trim() || undefined,
       forbiddenWords: form.forbiddenWords?.trim() || undefined,
       ctaPreference: form.ctaPreference?.trim() || undefined,
