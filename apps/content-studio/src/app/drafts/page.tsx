@@ -462,7 +462,7 @@ function DraftsContent() {
           </span>
         )}
         <a
-          href="/intake"
+          href="/start"
           className="rounded-md border border-slate-300 bg-white px-4 py-2.5 font-medium text-slate-700 hover:bg-slate-50"
         >
           Zpět na Intake

@@ -32,7 +32,7 @@ export default function HomePage() {
             <a href="#faq" className="transition-colors hover:text-zinc-900">FAQ</a>
             <a href="#kontakt" className="transition-colors hover:text-zinc-900">Kontakt</a>
           </nav>
-          <a href="/intake" className="btn-lime-primary text-zinc-900">
+          <a href="/start" className="btn-lime-primary text-zinc-900">
             Spustit test zdarma
           </a>
         </div>
@@ -272,23 +272,23 @@ export default function HomePage() {
                 Data se zpracovávají. Pokud něco chybí, AI spolu s lidským kurátorem vyberou nejlépe pasující variantu pro váš projekt.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <a href="/intake?plan=basic" className="glass-lime px-6 py-4 text-left">
+                <a href="/start?plan=basic" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Základní</p>
                   <p className="text-sm text-stone-600">3 příspěvky / měsíc</p>
                   <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
                 </a>
-                <a href="/intake?plan=standard" className="glass-lime px-6 py-4 text-left">
+                <a href="/start?plan=standard" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Standard</p>
                   <p className="text-sm text-stone-600">8 příspěvků / měsíc</p>
                   <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
                 </a>
-                <a href="/intake?plan=premium" className="glass-lime px-6 py-4 text-left">
+                <a href="/start?plan=premium" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Premium</p>
                   <p className="text-sm text-stone-600">15 příspěvků / měsíc</p>
                   <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
                 </a>
               </div>
-              <a href="/intake" className="btn-lime-primary mt-10 px-8 py-4 text-base text-zinc-900">
+              <a href="/start" className="btn-lime-primary mt-10 px-8 py-4 text-base text-zinc-900">
                 Spustit test zdarma (zvolit tarif později)
               </a>
             </div>
