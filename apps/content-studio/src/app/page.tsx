@@ -37,11 +37,13 @@ export default function HomePage() {
       </header>
 
       <section
-        className="relative w-full overflow-hidden bg-stone-50"
+        className="relative w-full overflow-hidden"
         style={{ minHeight: "calc(100vh - 76px)" }}
       >
-        <div className="mx-auto flex min-h-[calc(100vh-76px)] max-w-[1720px] flex-col items-center justify-center gap-12 px-4 py-12 sm:px-6 md:px-8 lg:grid lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-14 lg:px-12 xl:px-16 2xl:px-20">
-          <div className="animate-fade-in">
+        <HeroImageFull />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent lg:from-white/90 lg:via-white/60" />
+        <div className="relative mx-auto flex min-h-[calc(100vh-76px)] max-w-[1720px] flex-col justify-center px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
+          <div className="animate-fade-in max-w-2xl">
             <h1
               className="font-sans font-black tracking-[-0.035em] text-zinc-900"
               style={{
@@ -63,7 +65,7 @@ export default function HomePage() {
               </a>
               <a
                 href="#jak-to-funguje"
-                className="rounded-full border border-lucifera-lime/50 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lucifera-lime/10"
+                className="rounded-full border border-lucifera-lime/50 bg-white/50 px-6 py-3 text-sm font-medium text-zinc-900 backdrop-blur-sm transition-colors hover:bg-lucifera-lime/10"
               >
                 Jak probíhá spolupráce
               </a>
@@ -71,18 +73,6 @@ export default function HomePage() {
             <p className="mt-6 text-sm font-medium text-zinc-900">
               V pondělí dodáte data. V pátek publikujete.
             </p>
-          </div>
-          <div className="relative hidden min-h-[70vh] lg:flex lg:items-center lg:justify-end">
-            <div className="animate-float flex w-full justify-end">
-              <div className="relative h-full min-h-[520px] w-full max-w-[900px] overflow-hidden rounded-2xl bg-white">
-                <HeroImageFull />
-              </div>
-            </div>
-          </div>
-          <div className="relative min-h-[40vh] w-full lg:hidden">
-            <div className="animate-fade-in overflow-hidden rounded-2xl bg-white">
-              <HeroImageFull />
-            </div>
           </div>
         </div>
       </section>

@@ -3,19 +3,19 @@
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 
-const HERO_SRC = "/placeholders/hlavnicover_1.png";
+const HERO_SRC = "/placeholders/hlavnycover_02.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek: ja a mia5.png, fit uvnitř rámu. */
+/** Hero obrázek na pozadí – pokrývá celou sekci. */
 export function HeroImageFull() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
+    <div className="absolute inset-0 animate-fade-in">
       <Image
         src={HERO_SRC}
         alt=""
         fill
-        className="object-contain"
-        sizes="(max-width: 1024px) 100vw, 800px"
+        className="object-cover object-center"
+        sizes="100vw"
         priority
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";
