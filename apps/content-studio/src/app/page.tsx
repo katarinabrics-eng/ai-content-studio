@@ -1,9 +1,9 @@
 import { HeroImageFull } from "./components/HomePlaceholders";
 
 const faqs = [
-  { q: "Je potřeba hodně schůzek a callů?", a: "Ne. Náš systém je postavený tak, abyste nemuseli trávit hodiny na meetinzích. Spolupráce je asynchronní a rychlá." },
-  { q: "Co když s návrhem nesouhlasíme?", a: "U zaváděcí ceny 800 Kč doručujeme finální návrhy bez revizí. Ladění na míru je dostupné u měsíčních paušálů." },
-  { q: "Jak rychle uvidíme první výstupy?", a: "První 3 návrhy od nás standardně dostanete do 24–48 hodin od dodání podkladů." },
+  { q: "Je to automatické?", a: "Ne. Každý výstup prochází dohledem." },
+  { q: "Jsou v ceně revize?", a: "U testovací nabídky 800 Kč doručujeme finální návrhy bez revizí." },
+  { q: "Co když budu chtít dlouhodobou spolupráci?", a: "Navazující paušální model je k dispozici." },
 ];
 
 export default function HomePage() {
@@ -21,8 +21,9 @@ export default function HomePage() {
             <a href="#rozdil" className="transition-colors hover:text-zinc-900">Rozdíl</a>
             <a href="#jak-to-funguje" className="transition-colors hover:text-zinc-900">Jak to funguje</a>
             <a href="#testovaci-nabidka" className="transition-colors hover:text-zinc-900">Nabídka</a>
+            <a href="#kocka" className="transition-colors hover:text-zinc-900">Studio</a>
             <a href="#faq" className="transition-colors hover:text-zinc-900">FAQ</a>
-            <a href="#kontakt" className="transition-colors hover:text-zinc-900">Kontakt</a>
+            <a href="#zaver" className="transition-colors hover:text-zinc-900">Závěr</a>
           </nav>
           <a href="/start?plan=test-week" className="rounded bg-[#A3E635] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
             Spustit projekt
@@ -173,97 +174,64 @@ Reálné projekty. Reálné značky.`}
         </div>
       </section>
 
-      <section id="proc-my" className="relative w-full bg-stone-50 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Rychlost AI. Zodpovědnost člověka.
-          </h2>
-          <div className="mt-12 flex flex-col items-center justify-center gap-8 lg:flex-row">
-            <div className="glass-lime flex flex-col items-center px-8 py-6">
-              <div className="h-16 w-16 rounded-full border border-lucifera-lime/40 bg-lucifera-lime/10" />
-              <p className="mt-3 text-sm font-medium text-stone-900">AI</p>
-              <p className="text-center text-xs text-stone-500">Neuronová síť, generace</p>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lucifera-lime/30 text-zinc-700">
-              <span className="text-xl">✦</span>
-            </div>
-            <div className="glass-lime flex flex-col items-center px-8 py-6">
-              <div
-                className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-lucifera-lime/50 bg-lucifera-lime/20 text-xs text-stone-500"
-                style={{ backgroundImage: "url(/placeholders/lucifera-maskot.png)", backgroundSize: "cover", backgroundPosition: "center" }}
-                title="Maskot Lucifera"
-              >
-                <span className="sr-only">Maskot Lucifera – placeholder</span>
-              </div>
-              <p className="mt-3 text-sm font-medium text-stone-900">Kurátor</p>
-              <p className="text-center text-xs text-stone-500">Kontrola, tón, kvalita</p>
-            </div>
+      <section id="kocka" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[minmax(0,280px)_1fr] md:items-center">
+          <div className="relative aspect-square w-full max-w-[200px] overflow-hidden rounded-lg border border-stone-200 bg-stone-100 grayscale opacity-80 md:max-w-[240px]">
+            <img
+              src="/placeholders/mia-mozek.png"
+              alt=""
+              className="h-full w-full object-cover object-center"
+            />
           </div>
-          <div className="glass-lime mt-10 p-8">
-            <p className="text-center text-stone-700">
-              AI dramaticky urychluje produkci a eliminuje prázdnou stránku. Ale na konci vždy stojí náš Kreativní kurátor.
-              Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen rychlý, ale především prvotřídní a přesný.
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl">
+              Pozorujeme. Reagujeme.
+            </h2>
+            <p className="mt-8 whitespace-pre-line text-lg leading-relaxed text-zinc-700">
+              {`Adaptace je součást procesu.
+Sledujeme změny.
+Reagujeme rychle.
+Rozhodujeme lidsky.`}
             </p>
           </div>
         </div>
       </section>
 
-      <section id="faq" className="relative w-full bg-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Často kladené otázky</h2>
-          <div className="mt-8 space-y-3">
+      <section id="faq" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl">Často kladené otázky</h2>
+          <div className="mt-10 space-y-2">
             {faqs.map((faq) => (
               <details
                 key={faq.q}
-                className="group glass-lime overflow-hidden [&[open]]:border-lucifera-lime/35 [&[open]]:shadow-md"
+                className="group overflow-hidden rounded-lg border border-stone-200 bg-white [&[open]]:border-[#A3E635]/50"
               >
-                <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
+                <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-zinc-900 [&::-webkit-details-marker]:hidden">
                   {faq.q}
                 </summary>
-                <p className="border-t border-stone-200 px-6 py-4 text-stone-600">{faq.a}</p>
+                <p className="border-t border-stone-100 px-6 py-4 text-zinc-600">{faq.a}</p>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="kontakt" className="relative w-full bg-stone-50 px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="glass-lime p-10 md:p-14">
-            <div className="flex flex-col items-center text-center">
-              <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-stone-900 md:text-4xl lg:text-5xl">
-                Chcete mít v pondělí zadáno a v pátek publikováno?
-              </h2>
-              <p className="mt-4 max-w-xl text-lg text-stone-600">
-                Vyplňte krátký dotazník a sledujte, jak váš obsah vzniká – včas, kvalitně a naprosto bez chaosu.
-              </p>
-              
-              <div className="mt-8 flex justify-center">
-                <div className="relative glass-lime px-8 py-6 text-left ring-2 ring-[#A3E635] shadow-lg max-w-sm">
-                  <span className="absolute -top-3 left-4 rounded-full bg-[#A3E635] px-3 py-0.5 text-xs font-bold text-zinc-900">JEDINÁ NABÍDKA</span>
-                  <p className="font-semibold text-stone-900 text-lg">TESTOVACÍ TÝDEN</p>
-                  <p className="text-xl font-bold text-stone-800 mt-1">800 Kč / jednorázově</p>
-                  <ul className="mt-4 space-y-2 text-sm text-stone-600">
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> 3 profesionální příspěvky
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> grafika v Glass stylu
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> texty s tónem vaší značky
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> doručení do 48 hodin
-                    </li>
-                  </ul>
-                  <a href="/start?plan=test-week" className="mt-6 block w-full rounded bg-[#A3E635] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-                    Spustit projekt →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+      <section id="zaver" className="w-full border-t border-stone-200 bg-white px-6 py-24 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl lg:text-5xl">
+            Chcete mít hotovo?
+          </h2>
+          <p className="mt-8 whitespace-pre-line text-lg leading-relaxed text-zinc-700">
+            {`Pokud chcete publikovat pravidelně
+bez produkčního chaosu,
+začněte testovacím týdnem.`}
+          </p>
+          <a
+            href="/start?plan=test-week"
+            className="mt-12 inline-block rounded bg-[#A3E635] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A3E635]/90"
+          >
+            Chci mít hotovo
+          </a>
         </div>
       </section>
 
