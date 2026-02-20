@@ -1098,6 +1098,7 @@ function IntakeContent() {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }
