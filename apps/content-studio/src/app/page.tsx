@@ -10,7 +10,7 @@ const processSteps = [
 
 const faqs = [
   { q: "Je potřeba hodně schůzek a callů?", a: "Ne. Náš systém je postavený tak, abyste nemuseli trávit hodiny na meetinzích. Spolupráce je asynchronní a rychlá." },
-  { q: "Co když s návrhem nesouhlasíme?", a: "To se může stát. Jednoduše nám pošlete své námitky, my je upravíme a do dalšího dne vám dodáme finální, vyladěnou verzi." },
+  { q: "Co když s návrhem nesouhlasíme?", a: "U zaváděcí ceny 800 Kč doručujeme finální návrhy bez revizí. Ladění na míru je dostupné u měsíčních paušálů." },
   { q: "Jak rychle uvidíme první výstupy?", a: "První 3 návrhy od nás standardně dostanete do 24–48 hodin od dodání podkladů." },
 ];
 
@@ -32,8 +32,8 @@ export default function HomePage() {
             <a href="#faq" className="transition-colors hover:text-zinc-900">FAQ</a>
             <a href="#kontakt" className="transition-colors hover:text-zinc-900">Kontakt</a>
           </nav>
-          <a href="/start" className="btn-lime-primary text-zinc-900">
-            Spustit test zdarma
+          <a href="/start?plan=test-week" className="btn-lime-primary text-zinc-900">
+            Chci testovací týden za 800 Kč
           </a>
         </div>
       </header>
@@ -53,20 +53,20 @@ export default function HomePage() {
                 lineHeight: 0.95,
               }}
             >
-              Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
+              Váš feed je ve tmě. Lucifera ho rozsvítí.
             </h1>
             <p
               className="mt-6 max-w-xl text-lg text-zinc-700"
               style={{ lineHeight: "1.875rem" }}
             >
-              Vyberete tarif, vyplníte krátký formulář a my spustíme tvorbu. Do 24–48 hodin dostanete první 3 příspěvky ke schválení.
+              3 profesionální příspěvky (text + grafika) za 800 Kč. V pondělí zadáte, v pátek publikujete. Žádné cally.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start" className="btn-lime-primary text-zinc-900">
-                Chci si odlehčit tvorbu
+              <a href="/start?plan=test-week" className="btn-lime-primary text-zinc-900">
+                Chci testovací týden za 800 Kč
               </a>
               <a
-                href="#jak-to-funguje"
+                href="/start?plan=test-week"
                 className="rounded-full border border-lucifera-lime/50 px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-lucifera-lime/10"
               >
                 Jak probíhá spolupráce
@@ -223,7 +223,14 @@ export default function HomePage() {
               <span className="text-xl">✦</span>
             </div>
             <div className="glass-lime flex flex-col items-center px-8 py-6">
-              <div className="h-16 w-16 rounded-full border border-lucifera-lime/50 bg-lucifera-lime/20" />
+              {/* Maskot Lucifera placeholder */}
+              <div
+                className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-lucifera-lime/50 bg-lucifera-lime/20 text-xs text-stone-500"
+                style={{ backgroundImage: "url(/placeholders/lucifera-maskot.png)", backgroundSize: "cover", backgroundPosition: "center" }}
+                title="Maskot Lucifera"
+              >
+                <span className="sr-only">Maskot Lucifera – placeholder</span>
+              </div>
               <p className="mt-3 text-sm font-medium text-stone-900">Kurátor</p>
               <p className="text-center text-xs text-stone-500">Kontrola, tón, kvalita</p>
             </div>
@@ -272,24 +279,36 @@ export default function HomePage() {
                 Data se zpracovávají. Pokud něco chybí, AI spolu s lidským kurátorem vyberou nejlépe pasující variantu pro váš projekt.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <a href="/start?plan=basic" className="glass-lime px-6 py-4 text-left">
+                <a href="/start?plan=test-week" className="relative glass-lime px-6 py-4 text-left ring-2 ring-[#A3E635] shadow-lg">
+                  <span className="absolute -top-3 left-4 rounded-full bg-[#A3E635] px-3 py-0.5 text-xs font-bold text-zinc-900">DOPORUČUJEME</span>
+                  <p className="font-semibold text-stone-900">TESTOVACÍ TÝDEN</p>
+                  <p className="text-sm font-bold text-stone-800">800 Kč / jednorázově</p>
+                  <ul className="mt-2 space-y-1 text-xs text-stone-600">
+                    <li>• 3 příspěvky</li>
+                    <li>• grafika v Glass stylu</li>
+                    <li>• texty s tónem značky</li>
+                    <li>• doručení do 48h</li>
+                  </ul>
+                  <span className="mt-3 inline-block text-sm font-medium text-zinc-900">Objednat testovací týden →</span>
+                </a>
+                <a href="/start?plan=test-week" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Základní</p>
                   <p className="text-sm text-stone-600">3 příspěvky / měsíc</p>
-                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
+                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Objednat →</span>
                 </a>
-                <a href="/start?plan=standard" className="glass-lime px-6 py-4 text-left">
+                <a href="/start?plan=test-week" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Standard</p>
                   <p className="text-sm text-stone-600">8 příspěvků / měsíc</p>
-                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
+                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Objednat →</span>
                 </a>
-                <a href="/start?plan=premium" className="glass-lime px-6 py-4 text-left">
+                <a href="/start?plan=test-week" className="glass-lime px-6 py-4 text-left">
                   <p className="font-semibold text-stone-900">Premium</p>
                   <p className="text-sm text-stone-600">15 příspěvků / měsíc</p>
-                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Spustit test zdarma →</span>
+                  <span className="mt-2 inline-block text-sm font-medium text-zinc-900">Objednat →</span>
                 </a>
               </div>
-              <a href="/start" className="btn-lime-primary mt-10 px-8 py-4 text-base text-zinc-900">
-                Spustit test zdarma (zvolit tarif později)
+              <a href="/start?plan=test-week" className="btn-lime-primary mt-10 px-8 py-4 text-base text-zinc-900">
+                Chci testovací týden za 800 Kč
               </a>
             </div>
           </div>
