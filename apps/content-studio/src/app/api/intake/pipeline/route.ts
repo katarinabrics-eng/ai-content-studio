@@ -96,6 +96,7 @@ export async function POST(request: Request) {
       projectCode: result.projectCode,
       status: "PROCESSING_DATA",
       storagePrefix: result.storagePrefix,
+      accessMode: result.accessMode,
       access: {
         code: result.projectCode,
         pinMaskedOrToken: result.pin ? `****${result.pin.slice(-2)}` : result.magicToken ?? null,
@@ -103,7 +104,7 @@ export async function POST(request: Request) {
       next: { clientPath: result.pin ? "/vstup" : "/project?token=..." },
       pin: result.pin ?? null,
       loginUrl: result.pin ? `${base}/vstup` : undefined,
-      accessLink: accessLink ?? undefined,
+      accessLink: result.accessMode === "token" ? accessLink : undefined,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

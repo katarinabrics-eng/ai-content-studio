@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useState } from "react";
 
-const TEST_MODE_DIRECT_ACCESS = process.env.NEXT_PUBLIC_TEST_MODE_DIRECT_ACCESS === "true";
+const TEST_MODE_DIRECT_ACCESS = process.env.NEXT_PUBLIC_TEST_MODE_DIRECT_ACCESS === "false";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -11,9 +11,11 @@ function SuccessContent() {
   const accessLink = searchParams.get("accessLink");
   const projectCode = searchParams.get("projectCode");
   const pin = searchParams.get("pin");
+  const accessMode = searchParams.get("accessMode") ?? "code_pin";
   const [copied, setCopied] = useState(false);
 
-  const showDirectAccessPrimary = TEST_MODE_DIRECT_ACCESS && accessLink;
+  // When accessMode is code_pin, don't show direct access even if accessLink exists
+  const showDirectAccessPrimary = TEST_MODE_DIRECT_ACCESS && accessLink && accessMode !== "code_pin";
 
   const copyCodePin = useCallback(() => {
     if (projectCode && pin) {

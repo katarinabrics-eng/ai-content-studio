@@ -56,11 +56,13 @@ function briefToJsonPayload(brief: BriefSchema, projectId: string, projectCode: 
   };
 }
 
+export type AccessMode = "code_pin" | "token" | "magic_link";
+
 export async function runStartPipeline(
   input: StartPipelineInput,
   files?: StartPipelineFiles
 ): Promise<
-  | { ok: true; projectId: string; projectCode: string; pin?: string; magicToken?: string; accessToken?: string; storagePrefix: string }
+  | { ok: true; projectId: string; projectCode: string; pin?: string; magicToken?: string; accessToken?: string; storagePrefix: string; accessMode: AccessMode }
   | { ok: false; errorCode: string; errorMessage: string; details?: Record<string, unknown> }
 > {
   const brief = normalizeStartForm(input);
@@ -136,16 +138,26 @@ export async function runStartPipeline(
   let pin: string | undefined;
   let magicToken: string | undefined;
   let accessToken: string | undefined;
+  let accessMode: AccessMode = "code_pin";
 
   try {
     const result = await createProject(createParams);
     projectId = result.project.id;
     pin = result.pin;
     magicToken = result.magicToken;
-    accessToken = await createProjectAccessToken(projectId);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return { ok: false, errorCode: "PROJECT_CREATE_FAILED", errorMessage: msg };
+  }
+
+  // Access token generation is NON-BLOCKING - if table doesn't exist, fall back to code+pin
+  try {
+    accessToken = await createProjectAccessToken(projectId);
+    accessMode = "token";
+  } catch (tokenError) {
+    console.warn("[start-pipeline] Access token creation failed (non-blocking):", tokenError instanceof Error ? tokenError.message : tokenError);
+    accessToken = undefined;
+    accessMode = magicToken ? "magic_link" : "code_pin";
   }
 
   const supabase = getSupabaseClient();
@@ -239,5 +251,6 @@ export async function runStartPipeline(
     magicToken,
     accessToken,
     storagePrefix,
+    accessMode,
   };
 }

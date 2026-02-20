@@ -78,6 +78,7 @@ function StartForm() {
       if (json.magicLinkUrl) {
         const params = new URLSearchParams({ magicLinkUrl: json.magicLinkUrl });
         if (json.accessLink) params.set("accessLink", json.accessLink);
+        if (json.accessMode) params.set("accessMode", json.accessMode);
         router.push("/start/success?" + params.toString());
         return;
       }
@@ -86,6 +87,7 @@ function StartForm() {
         pin: json.pin ?? "",
       });
       if (json.accessLink) params.set("accessLink", json.accessLink);
+      if (json.accessMode) params.set("accessMode", json.accessMode);
       router.push("/start/success?" + params.toString());
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Chyba odeslání.";

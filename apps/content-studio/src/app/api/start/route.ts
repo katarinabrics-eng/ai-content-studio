@@ -75,7 +75,9 @@ export async function POST(request: Request) {
       : `/vstup`;
     const magicLinkUrl = result.magicToken ? `${base}/project?token=${encodeURIComponent(result.magicToken)}` : undefined;
 
-    const accessLink = result.accessToken ? `${base}/project/access?token=${encodeURIComponent(result.accessToken)}` : undefined;
+    const accessLink = result.accessMode === "token" && result.accessToken
+      ? `${base}/project/access?token=${encodeURIComponent(result.accessToken)}`
+      : undefined;
 
     return NextResponse.json({
       ok: true,
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
       projectCode: result.projectCode,
       status: "PROCESSING_DATA",
       storagePrefix: result.storagePrefix,
+      accessMode: result.accessMode,
       access: {
         code: result.projectCode,
         pinMaskedOrToken: result.pin ? `****${result.pin.slice(-2)}` : result.magicToken ?? null,
