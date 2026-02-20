@@ -31,9 +31,13 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section className="relative w-full min-h-[86vh] overflow-hidden bg-white">
-        <div className="mx-auto grid min-h-[86vh] w-full max-w-[1360px] grid-cols-1 items-center gap-8 px-6 xl:grid-cols-[0.45fr_0.55fr] xl:gap-10 xl:px-10">
-          <div className="flex max-w-[560px] flex-col justify-center py-16">
+      <section className="relative w-full min-h-[86vh] overflow-hidden">
+        <div className="absolute inset-0">
+          <HeroImageFull />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent" />
+        <div className="relative mx-auto flex min-h-[86vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
+          <div className="max-w-[560px]">
             <h1 className="font-sans font-black text-[clamp(56px,5.2vw,96px)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
               Obsah pod kontrolou studia.
             </h1>
@@ -49,14 +53,11 @@ export default function HomePage() {
               </a>
               <a
                 href="#jak-to-funguje"
-                className="rounded border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-100"
+                className="rounded border border-zinc-300 bg-white/60 px-6 py-3 text-sm font-medium text-zinc-900 backdrop-blur-sm hover:bg-white/80"
               >
                 Jak to funguje
               </a>
             </div>
-          </div>
-          <div className="relative w-full max-w-[760px] justify-self-end">
-            <HeroImageFull />
           </div>
         </div>
       </section>
