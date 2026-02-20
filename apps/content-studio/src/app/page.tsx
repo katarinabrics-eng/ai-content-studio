@@ -47,13 +47,13 @@ export default function HomePage() {
           {/* Levý sloupec: velký výrazný text, černý/šedo-černý, lime jen na CTA */}
           <div className="animate-fade-in">
             <h1
-              className="font-display font-normal tracking-tight text-zinc-900"
+              className="font-sans font-black tracking-[-0.035em] text-zinc-900"
               style={{
                 fontSize: "clamp(2.25rem, 5.2vw, 6rem)",
                 lineHeight: 0.95,
               }}
             >
-              Tvorba sítí nemá být <span className="font-bold">každodenní boj</span>. Věnujte se <span className="font-bold">své profesi</span>, <span className="font-bold">obsah nechte na nás</span>.
+              Tvorba sítí nemá být každodenní boj. Věnujte se své profesi, obsah nechte na nás.
             </h1>
             <p
               className="mt-6 max-w-xl text-lg text-zinc-700"
