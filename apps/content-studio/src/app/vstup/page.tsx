@@ -9,11 +9,13 @@ export default function VstupPage() {
   const [code, setCode] = useState("");
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setReason("");
     setLoading(true);
     const normCode = normalizeProjectCode(code);
     const normPin = normalizePin(pin);
@@ -26,6 +28,7 @@ export default function VstupPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error ?? "Neplatný kód nebo PIN.");
+        setReason((data.reason as string) ?? "");
         setLoading(false);
         return;
       }
@@ -50,7 +53,14 @@ export default function VstupPage() {
             <label className="block text-sm font-medium text-white/90">PIN</label>
             <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 font-mono text-white placeholder:text-white/40" placeholder="••••••" maxLength={16} required />
           </div>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <div>
+              <p className="text-sm text-red-400">{error}</p>
+              {reason && process.env.NODE_ENV !== "production" && (
+                <p className="mt-1 text-xs text-white/50 font-mono">reason: {reason}</p>
+              )}
+            </div>
+          )}
           <button type="submit" disabled={loading} className="btn-lime-primary w-full">
             {loading ? "Přihlašuji…" : "Přihlásit"}
           </button>

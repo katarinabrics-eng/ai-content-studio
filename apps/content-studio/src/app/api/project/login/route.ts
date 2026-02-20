@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     const result = await verifyProjectByCodeAndPin(code, pin);
     if (!result.ok) {
-      const reason = result.error; // code_not_found | pin_mismatch | pin_expired
+      const reason = result.error; // code_not_found | pin_mismatch | pin_expired | pin_hash_missing
       console.warn("[project/login] failed:", { reason, codePrefix: code.slice(0, 4) });
       const payload: Record<string, unknown> = { ok: false, error: "Neplatný kód nebo PIN." };
       if (process.env.NODE_ENV !== "production") payload.reason = reason;

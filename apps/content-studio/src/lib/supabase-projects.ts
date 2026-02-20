@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "crypto";
+import bcrypt from "bcryptjs";
 import { getSupabaseClient } from "./supabase-server";
 import type { ProjectStatus } from "./project-status-engine";
 
@@ -302,14 +303,24 @@ export async function getProjectByIdForClient(id: string): Promise<(ProjectRow &
 
 export type VerifyCodePinResult =
   | { ok: true; project: ProjectRow & { brief: ProjectBriefRow | null } }
-  | { ok: false; error: "code_not_found" | "pin_mismatch" | "pin_expired" };
+  | { ok: false; error: "code_not_found" | "pin_mismatch" | "pin_expired" | "pin_hash_missing" };
 
-/** Normalizuje project code pro lookup. */
+/** Normalizuje project code pro lookup: trim, uppercase, pomlčky (– — ‑) -> "-". */
 function normalizeCodeForLookup(raw: string): string {
   let s = raw.trim().toUpperCase();
-  s = s.replace(/[\u2013\u2014\u2011]/g, "-");
+  s = s.replace(/[–—‑]/g, "-");
   s = s.replace(/[^A-Z0-9-]/g, "");
   return s;
+}
+
+async function verifyPinAgainstHash(pinNorm: string, storedHash: string): Promise<boolean> {
+  if (storedHash.startsWith("$2")) {
+    return bcrypt.compare(pinNorm, storedHash);
+  }
+  const shaHash = hashToken(pinNorm);
+  if (storedHash === shaHash) return true;
+  if (storedHash === pinNorm) return true; // legacy plain
+  return false;
 }
 
 export async function verifyProjectByCodeAndPin(
@@ -319,7 +330,6 @@ export async function verifyProjectByCodeAndPin(
   const supabase = getSupabaseClient();
   const codeNorm = normalizeCodeForLookup(code);
   const pinNorm = pin.trim().replace(/\D/g, "");
-  const pinHash = hashToken(pinNorm);
 
   const { data: proj, error } = await supabase
     .from("projects")
@@ -333,7 +343,13 @@ export async function verifyProjectByCodeAndPin(
 
   const row = proj as ProjectRow & { access_pin_hash?: string | null; project_pin_expires_at?: string | null; access_pin_expires_at?: string | null };
   const storedHash = row.project_pin_hash ?? row.access_pin_hash ?? null;
-  if (!storedHash || storedHash !== pinHash) {
+
+  if (!storedHash || storedHash === "") {
+    return { ok: false, error: "pin_hash_missing" };
+  }
+
+  const pinMatch = await verifyPinAgainstHash(pinNorm, storedHash);
+  if (!pinMatch) {
     return { ok: false, error: "pin_mismatch" };
   }
 
