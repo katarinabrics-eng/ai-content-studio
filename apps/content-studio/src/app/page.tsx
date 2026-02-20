@@ -79,14 +79,14 @@ export default function HomePage() {
           {/* Pravý sloupec: velký obrázek vyvážený k levé straně */}
           <div className="relative hidden min-h-[70vh] lg:flex lg:items-center lg:justify-end">
             <div className="animate-float flex w-full justify-end">
-              <div className="relative h-full min-h-[520px] w-full max-w-[900px] overflow-hidden rounded-2xl bg-[#f0f0ef]">
+              <div className="relative h-full min-h-[520px] w-full max-w-[900px] overflow-hidden rounded-2xl bg-white">
                 <HeroImageFull />
               </div>
             </div>
           </div>
           {/* Mobile: obrázek pod textem */}
           <div className="relative min-h-[40vh] w-full lg:hidden">
-            <div className="animate-fade-in overflow-hidden rounded-2xl bg-[#f0f0ef]">
+            <div className="animate-fade-in overflow-hidden rounded-2xl bg-white">
               <HeroImageFull />
             </div>
           </div>
