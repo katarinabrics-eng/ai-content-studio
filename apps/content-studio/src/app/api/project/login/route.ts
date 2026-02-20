@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getProjectByCodeAndPin, createProjectSession } from "@/lib/supabase-projects";
+import { normalizeProjectCode, normalizePin } from "@/lib/project-code-normalize";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,14 +11,17 @@ const COOKIE_DAYS = 30;
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const code = typeof body.code === "string" ? body.code.trim().toUpperCase() : "";
-    const pin = typeof body.pin === "string" ? body.pin.trim() : "";
+    const rawCode = typeof body.code === "string" ? body.code : "";
+    const rawPin = typeof body.pin === "string" ? body.pin : "";
+    const code = normalizeProjectCode(rawCode);
+    const pin = normalizePin(rawPin);
     if (!code || !pin) {
       return NextResponse.json({ ok: false, error: "Zadejte kód a PIN." }, { status: 400 });
     }
 
     const project = await getProjectByCodeAndPin(code, pin);
     if (!project) {
+      console.warn("[project/login] failed: codeLen=" + code.length + " pinLen=" + pin.length + " codePrefix=" + code.slice(0, 4) + "...");
       return NextResponse.json({ ok: false, error: "Neplatný kód nebo PIN." }, { status: 401 });
     }
 

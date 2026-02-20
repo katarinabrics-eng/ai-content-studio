@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { normalizeProjectCode, normalizePin } from "@/lib/project-code-normalize";
 
 export default function VstupPage() {
   const router = useRouter();
@@ -14,11 +15,13 @@ export default function VstupPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    const normCode = normalizeProjectCode(code);
+    const normPin = normalizePin(pin);
     try {
       const res = await fetch("/api/project/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: code.trim().toUpperCase(), pin }),
+        body: JSON.stringify({ code: normCode, pin: normPin }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -41,11 +44,11 @@ export default function VstupPage() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-white/90">Kód projektu</label>
-            <input value={code} onChange={(e) => setCode(e.target.value)} className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 font-mono text-white uppercase placeholder:text-white/40" placeholder="XXXXXXXX" maxLength={8} required />
+            <input value={code} onChange={(e) => setCode(e.target.value)} className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 font-mono text-white uppercase placeholder:text-white/40" placeholder="LCF-20260220-PPVQ" maxLength={32} required />
           </div>
           <div>
             <label className="block text-sm font-medium text-white/90">PIN</label>
-            <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 font-mono text-white placeholder:text-white/40" placeholder="••••••" maxLength={6} required />
+            <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 font-mono text-white placeholder:text-white/40" placeholder="••••••" maxLength={16} required />
           </div>
           {error && <p className="text-sm text-red-400">{error}</p>}
           <button type="submit" disabled={loading} className="btn-lime-primary w-full">
