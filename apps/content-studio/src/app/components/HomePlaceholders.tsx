@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 
-const HERO_SRC = "/placeholders/ja-a-mia5.png";
+const HERO_SRC = "/placeholders/cover1.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
 /** Hero obrázek: ja a mia5.png, fit uvnitř rámu. */
