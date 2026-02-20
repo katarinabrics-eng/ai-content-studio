@@ -68,10 +68,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const baseUrl =
+    const base = (
       request.headers.get("x-forwarded-proto") && request.headers.get("x-forwarded-host")
         ? `${request.headers.get("x-forwarded-proto")}://${request.headers.get("x-forwarded-host")}`
-        : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+        : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+    ).replace(/\/$/, "");
+    const accessLink = result.accessToken ? `${base}/project/access?token=${encodeURIComponent(result.accessToken)}` : undefined;
 
     return NextResponse.json({
       ok: true,
@@ -85,7 +87,8 @@ export async function POST(request: Request) {
       },
       next: { clientPath: result.pin ? "/vstup" : "/project?token=..." },
       pin: result.pin ?? null,
-      loginUrl: result.pin ? `${baseUrl.replace(/\/$/, "")}/vstup` : undefined,
+      loginUrl: result.pin ? `${base}/vstup` : undefined,
+      accessLink: accessLink ?? undefined,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

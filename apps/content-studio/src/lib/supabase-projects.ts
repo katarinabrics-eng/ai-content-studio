@@ -154,6 +154,52 @@ export function generateMagicToken(): string {
   return randomBytes(TOKEN_BYTES).toString("hex");
 }
 
+const ACCESS_TOKEN_BYTES = 32;
+const ACCESS_TOKEN_DAYS = 7;
+
+/** Generuje one-time access token (uuid-like). */
+export function generateAccessToken(): string {
+  return randomBytes(ACCESS_TOKEN_BYTES).toString("hex");
+}
+
+/**
+ * Vytvoří one-time access token pro projekt, uloží hash do project_access_tokens.
+ * Vrací raw token (pouze jednou - zobrazit klientovi).
+ */
+export async function createProjectAccessToken(projectId: string): Promise<string> {
+  const supabase = getSupabaseClient();
+  const rawToken = generateAccessToken();
+  const tokenHash = hashToken(rawToken);
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + ACCESS_TOKEN_DAYS);
+  const { error } = await supabase.from("project_access_tokens").insert({
+    project_id: projectId,
+    token_hash: tokenHash,
+    expires_at: expiresAt.toISOString(),
+  });
+  if (error) throw new Error(`Chyba při vytváření access tokenu: ${error.message}`);
+  return rawToken;
+}
+
+/**
+ * Ověří access token, vrátí projectId pokud platný. Token se označí jako použitý (used_at).
+ */
+export async function verifyAndConsumeAccessToken(rawToken: string): Promise<string | null> {
+  const supabase = getSupabaseClient();
+  const tokenHash = hashToken(rawToken.trim());
+  const { data: row, error } = await supabase
+    .from("project_access_tokens")
+    .select("id, project_id, expires_at, used_at")
+    .eq("token_hash", tokenHash)
+    .maybeSingle();
+  if (error || !row) return null;
+  const r = row as { id: string; project_id: string; expires_at: string; used_at: string | null };
+  if (r.used_at) return null;
+  if (new Date(r.expires_at) < new Date()) return null;
+  await supabase.from("project_access_tokens").update({ used_at: new Date().toISOString() }).eq("id", r.id);
+  return r.project_id;
+}
+
 /** Parametry pro vytvoření projektu (mapování z formuláře). */
 export type CreateProjectParams = {
   plan_id: string;

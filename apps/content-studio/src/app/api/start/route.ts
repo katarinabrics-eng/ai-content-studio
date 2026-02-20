@@ -75,6 +75,8 @@ export async function POST(request: Request) {
       : `/vstup`;
     const magicLinkUrl = result.magicToken ? `${base}/project?token=${encodeURIComponent(result.magicToken)}` : undefined;
 
+    const accessLink = result.accessToken ? `${base}/project/access?token=${encodeURIComponent(result.accessToken)}` : undefined;
+
     return NextResponse.json({
       ok: true,
       projectId: result.projectId,
@@ -89,6 +91,7 @@ export async function POST(request: Request) {
       },
       next: { clientPath },
       magicLinkUrl: magicLinkUrl ?? undefined,
+      accessLink: accessLink ?? undefined,
       pin: result.pin ?? undefined,
       message: result.pin
         ? "Projekt vytvořen. Uložte si kód a PIN pro přístup."

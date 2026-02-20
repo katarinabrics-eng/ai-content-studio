@@ -76,10 +76,17 @@ function StartForm() {
         return;
       }
       if (json.magicLinkUrl) {
-        router.push("/start/success?magicLinkUrl=" + encodeURIComponent(json.magicLinkUrl));
+        const params = new URLSearchParams({ magicLinkUrl: json.magicLinkUrl });
+        if (json.accessLink) params.set("accessLink", json.accessLink);
+        router.push("/start/success?" + params.toString());
         return;
       }
-      router.push("/start/success?projectCode=" + encodeURIComponent(json.projectCode ?? "") + "&pin=" + encodeURIComponent(json.pin ?? ""));
+      const params = new URLSearchParams({
+        projectCode: json.projectCode ?? "",
+        pin: json.pin ?? "",
+      });
+      if (json.accessLink) params.set("accessLink", json.accessLink);
+      router.push("/start/success?" + params.toString());
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Chyba odeslání.";
       setError(msg);

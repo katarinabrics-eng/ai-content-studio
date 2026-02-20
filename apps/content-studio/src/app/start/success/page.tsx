@@ -3,12 +3,17 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useState } from "react";
 
+const TEST_MODE_DIRECT_ACCESS = process.env.NEXT_PUBLIC_TEST_MODE_DIRECT_ACCESS === "true";
+
 function SuccessContent() {
   const searchParams = useSearchParams();
   const magicLinkUrl = searchParams.get("magicLinkUrl");
+  const accessLink = searchParams.get("accessLink");
   const projectCode = searchParams.get("projectCode");
   const pin = searchParams.get("pin");
   const [copied, setCopied] = useState(false);
+
+  const showDirectAccessPrimary = TEST_MODE_DIRECT_ACCESS && accessLink;
 
   const copyCodePin = useCallback(() => {
     if (projectCode && pin) {
@@ -28,7 +33,19 @@ function SuccessContent() {
           Data se zpracovávají. Pokud něco chybí, AI spolu s lidským kurátorem vyberou nejlépe pasující variantu pro váš projekt.
         </p>
 
-        {magicLinkUrl ? (
+        {showDirectAccessPrimary && accessLink ? (
+          <div className="glass-panel mt-8 p-6">
+            <p className="text-sm text-white/80">Vstoupit do projektu:</p>
+            <a href={accessLink} className="btn-lime-primary mt-4 inline-block">
+              Vstoupit do projektu
+            </a>
+            {projectCode && pin ? (
+              <p className="mt-4 text-xs text-white/50">
+                Kód: {projectCode} | PIN: ****{pin.slice(-2)}
+              </p>
+            ) : null}
+          </div>
+        ) : magicLinkUrl ? (
           <div className="glass-panel mt-8 p-6">
             <p className="text-sm text-white/80">Odkaz na váš projekt (odeslali jsme ho i na e-mail):</p>
             <a
@@ -37,13 +54,29 @@ function SuccessContent() {
             >
               {magicLinkUrl}
             </a>
-            <a href={magicLinkUrl} className="btn-lime-primary mt-4 inline-block">
-              Otevřít projekt
-            </a>
+            {accessLink && (
+              <a href={accessLink} className="btn-lime-primary mt-4 inline-block">
+                Vstoupit do projektu
+              </a>
+            )}
+            {!accessLink && (
+              <a href={magicLinkUrl} className="btn-lime-primary mt-4 inline-block">
+                Otevřít projekt
+              </a>
+            )}
           </div>
         ) : projectCode && pin ? (
           <div className="glass-panel mt-8 p-6">
-            <p className="text-sm text-white/80">Uložte si kód a PIN pro přístup k projektu:</p>
+            {accessLink && (
+              <>
+                <p className="text-sm text-white/80">Vstoupit do projektu:</p>
+                <a href={accessLink} className="btn-lime-primary mt-4 inline-block">
+                  Vstoupit do projektu
+                </a>
+                <p className="mt-4 text-sm text-white/80">Uložte si kód a PIN pro pozdější přístup:</p>
+              </>
+            )}
+            {!accessLink && <p className="text-sm text-white/80">Uložte si kód a PIN pro přístup k projektu:</p>}
             <div className="mt-3 rounded-lg bg-white/5 p-4 font-mono text-white">
               <p><span className="text-white/60">Kód:</span> {projectCode}</p>
               <p className="mt-1"><span className="text-white/60">PIN:</span> {pin}</p>

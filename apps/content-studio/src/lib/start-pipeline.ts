@@ -6,6 +6,7 @@
 import { getSupabaseClient } from "./supabase-server";
 import {
   createProject,
+  createProjectAccessToken,
   generatePipelineProjectCode,
   insertProjectFile,
 } from "./supabase-projects";
@@ -59,7 +60,7 @@ export async function runStartPipeline(
   input: StartPipelineInput,
   files?: StartPipelineFiles
 ): Promise<
-  | { ok: true; projectId: string; projectCode: string; pin?: string; magicToken?: string; storagePrefix: string }
+  | { ok: true; projectId: string; projectCode: string; pin?: string; magicToken?: string; accessToken?: string; storagePrefix: string }
   | { ok: false; errorCode: string; errorMessage: string; details?: Record<string, unknown> }
 > {
   const brief = normalizeStartForm(input);
@@ -134,12 +135,14 @@ export async function runStartPipeline(
   let projectId: string;
   let pin: string | undefined;
   let magicToken: string | undefined;
+  let accessToken: string | undefined;
 
   try {
     const result = await createProject(createParams);
     projectId = result.project.id;
     pin = result.pin;
     magicToken = result.magicToken;
+    accessToken = await createProjectAccessToken(projectId);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return { ok: false, errorCode: "PROJECT_CREATE_FAILED", errorMessage: msg };
@@ -234,6 +237,7 @@ export async function runStartPipeline(
     projectCode,
     pin,
     magicToken,
+    accessToken,
     storagePrefix,
   };
 }
