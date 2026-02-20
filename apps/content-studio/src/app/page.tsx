@@ -67,42 +67,53 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="manifest" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-4xl">
+      <section id="manifest" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-5xl">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Obraz rozhoduje.
+            Nejste líní. Jste jen přehlcení.
           </h2>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-stone-600">
-            Značka je vidět dřív, než je čtena. Proto každý výstup prochází výběrem. Ne publikací. Výběrem.
+          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-stone-600">
+            Většina podnikatelů a specialistů nechce nepostovat. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
+          </p>
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            <div className="rounded-xl border border-stone-200 bg-white p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#A3E635]/10 text-[#A3E635]">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+              </div>
+              <p className="mt-4 text-stone-700">
+                Znáte své téma perfektně, ale nevíte, jak ho prodat na sítích.
+              </p>
+            </div>
+            <div className="rounded-xl border border-stone-200 bg-white p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#A3E635]/10 text-[#A3E635]">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="mt-4 text-stone-700">
+                Když už si sednete k obsahu, ztratíte hodiny přepisováním jedné věty.
+              </p>
+            </div>
+            <div className="rounded-xl border border-stone-200 bg-white p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#A3E635]/10 text-[#A3E635]">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
+              </div>
+              <p className="mt-4 text-stone-700">
+                Každý příspěvek je mentální start od nuly. Prázdný rám čeká.
+              </p>
+            </div>
+          </div>
+          <p className="mt-10 text-lg text-stone-600">
+            Místo toho, abyste se věnovali tomu, co vás živí, řešíte co dnes dát na Instagram nebo LinkedIn.
           </p>
         </div>
       </section>
 
-      <section id="co-delame" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1fr] md:items-center">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-              Produkční model pro značky.
-            </h2>
-            <p className="mt-6 text-lg leading-relaxed text-stone-600">
-              Dodáváme hotové příspěvky. Ne brainstorming. Ne generovaný chaos. Vyplníte brief. Do 48 hodin máte výstupy připravené k publikaci.
-            </p>
-            <a href="/start?plan=test-week" className="mt-8 inline-block rounded-lg bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-              Chci mít hotovo
-            </a>
-          </div>
-          <div className="aspect-[4/3] overflow-hidden rounded-xl border border-stone-200 bg-stone-100">
-            <div className="flex h-full w-full items-center justify-center grayscale">
-              <div className="text-center text-stone-500">
-                <svg className="mx-auto h-16 w-16 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                </svg>
-                <p className="mt-2 text-sm">B/W detail · ruka s tištěným návrhem</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section id="co-delame" className="hidden" aria-hidden="true" />
 
       <section id="rozdil" className="w-full border-t border-stone-200 bg-stone-100 px-6 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1fr] md:items-center">
