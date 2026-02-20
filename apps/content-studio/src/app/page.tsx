@@ -179,6 +179,9 @@ Reálné projekty. Reálné značky.`}
 
       <section id="testovaci-nabidka" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-md">
+          <p className="mb-6 text-center text-lg font-medium text-stone-700">
+            Konkurence postuje, zatímco vy přemýšlíte, co napsat. Lucifera to vyřeší dřív, než dopijete kávu.
+          </p>
           <div className="overflow-hidden rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
             <h2 className="text-2xl font-bold tracking-tight text-stone-900">
               Testovací týden.
@@ -195,6 +198,20 @@ Reálné projekty. Reálné značky.`}
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-[#A3E635]">✓</span> 800 Kč (zaváděcí cena)
+              </li>
+            </ul>
+            <ul className="mt-6 space-y-3 border-t border-stone-100 pt-6 text-sm text-stone-600">
+              <li className="flex gap-2">
+                <span className="mt-0.5 shrink-0 text-[#A3E635]">•</span>
+                <span>3 příspěvky za 800 Kč. To je cena jednoho lepšího byznys oběda. Ten vás ale na sítě neprotlačí.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 shrink-0 text-[#A3E635]">•</span>
+                <span>Dopřejte si týden klidu za cenu, kterou byste jinde dali za 15 minut konzultace.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 shrink-0 text-[#A3E635]">•</span>
+                <span>Zkuste si to na týden. Riziko je nula, zisk je váš volný čas zpět.</span>
               </li>
             </ul>
             <p className="mt-6 text-sm text-stone-500">
@@ -240,6 +257,24 @@ Reálné projekty. Reálné značky.`}
               Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen rychlý, ale především prvotřídní a přesný.
             </p>
           </div>
+          <ul className="mt-10 space-y-4 text-stone-700">
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span>Váš mozek má omezenou kapacitu na kreativitu. Vyčerpáte si ji ráno na Instagramu, nebo ji necháte pro své platící klienty?</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span>Každá minuta, kdy řešíte fonty a hashtagy, je minuta, kdy neřídíte svůj byznys.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span>Lucifera neřeší jen texty. Řeší vaši rozhodovací únavu. My tvoříme, vy rozhodujete. To je vše.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span>Kolik klientů jste mohl obsloužit, zatímco jste bojoval s prázdnou stránkou v Canvě?</span>
+            </li>
+          </ul>
         </div>
       </section>
 
