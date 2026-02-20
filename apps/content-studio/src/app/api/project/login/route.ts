@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getProjectByCodeAndPin, createProjectSession } from "@/lib/supabase-projects";
+import { verifyProjectByCodeAndPin, createProjectSession } from "@/lib/supabase-projects";
 import { normalizeProjectCode, normalizePin } from "@/lib/project-code-normalize";
 
 export const runtime = "nodejs";
@@ -19,11 +19,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Zadejte kód a PIN." }, { status: 400 });
     }
 
-    const project = await getProjectByCodeAndPin(code, pin);
-    if (!project) {
-      console.warn("[project/login] failed: codeLen=" + code.length + " pinLen=" + pin.length + " codePrefix=" + code.slice(0, 4) + "...");
-      return NextResponse.json({ ok: false, error: "Neplatný kód nebo PIN." }, { status: 401 });
+    const result = await verifyProjectByCodeAndPin(code, pin);
+    if (!result.ok) {
+      const reason = result.error; // code_not_found | pin_mismatch | pin_expired
+      console.warn("[project/login] failed:", { reason, codePrefix: code.slice(0, 4) });
+      const payload: Record<string, unknown> = { ok: false, error: "Neplatný kód nebo PIN." };
+      if (process.env.NODE_ENV !== "production") payload.reason = reason;
+      return NextResponse.json(payload, { status: 401 });
     }
+
+    const project = result.project;
 
     const token = await createProjectSession(project.id);
     const res = NextResponse.json({ ok: true, redirect: "/project" });

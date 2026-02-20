@@ -56,6 +56,9 @@ export type ProjectRow = {
   plan_id: string;
   project_code: string | null;
   project_pin_hash: string | null;
+  access_pin_hash: string | null;
+  project_pin_expires_at: string | null;
+  access_pin_expires_at: string | null;
   magic_token_hash: string | null;
   status: string;
   client_email: string | null;
@@ -205,10 +208,14 @@ export async function createProject(params: CreateProjectParams): Promise<{
     pinHash = hashToken(pin);
   }
 
+  const pinExpiresAt = pinHash ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null;
   const insertRow: Record<string, unknown> = {
     plan_id: params.plan_id || "basic",
     project_code: projectCode ?? null,
     project_pin_hash: pinHash,
+    access_pin_hash: pinHash,
+    project_pin_expires_at: pinExpiresAt,
+    access_pin_expires_at: pinExpiresAt,
     magic_token_hash: magicTokenHash,
     status: "PROCESSING_DATA",
     client_email: email,
@@ -293,22 +300,62 @@ export async function getProjectByIdForClient(id: string): Promise<(ProjectRow &
   };
 }
 
-export async function getProjectByCodeAndPin(code: string, pin: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
+export type VerifyCodePinResult =
+  | { ok: true; project: ProjectRow & { brief: ProjectBriefRow | null } }
+  | { ok: false; error: "code_not_found" | "pin_mismatch" | "pin_expired" };
+
+/** Normalizuje project code pro lookup. */
+function normalizeCodeForLookup(raw: string): string {
+  let s = raw.trim().toUpperCase();
+  s = s.replace(/[\u2013\u2014\u2011]/g, "-");
+  s = s.replace(/[^A-Z0-9-]/g, "");
+  return s;
+}
+
+export async function verifyProjectByCodeAndPin(
+  code: string,
+  pin: string
+): Promise<VerifyCodePinResult> {
   const supabase = getSupabaseClient();
-  const pinHash = hashToken(pin.trim());
-  const codeTrim = code.trim().toUpperCase();
+  const codeNorm = normalizeCodeForLookup(code);
+  const pinNorm = pin.trim().replace(/\D/g, "");
+  const pinHash = hashToken(pinNorm);
+
   const { data: proj, error } = await supabase
     .from("projects")
     .select("*")
-    .eq("project_code", codeTrim)
-    .eq("project_pin_hash", pinHash)
-    .single();
-  if (error || !proj) return null;
+    .eq("project_code", codeNorm)
+    .maybeSingle();
+
+  if (error || !proj) {
+    return { ok: false, error: "code_not_found" };
+  }
+
+  const row = proj as ProjectRow & { access_pin_hash?: string | null; project_pin_expires_at?: string | null; access_pin_expires_at?: string | null };
+  const storedHash = row.project_pin_hash ?? row.access_pin_hash ?? null;
+  if (!storedHash || storedHash !== pinHash) {
+    return { ok: false, error: "pin_mismatch" };
+  }
+
+  const expiry = row.project_pin_expires_at ?? row.access_pin_expires_at ?? null;
+  if (expiry && new Date(expiry) < new Date()) {
+    return { ok: false, error: "pin_expired" };
+  }
+
   const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", proj.id).single();
   return {
-    ...(proj as ProjectRow),
-    brief: (brief as ProjectBriefRow) ?? null,
+    ok: true,
+    project: {
+      ...(proj as ProjectRow),
+      brief: (brief as ProjectBriefRow) ?? null,
+    },
   };
+}
+
+/** @deprecated Použij verifyProjectByCodeAndPin. */
+export async function getProjectByCodeAndPin(code: string, pin: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
+  const r = await verifyProjectByCodeAndPin(code, pin);
+  return r.ok ? r.project : null;
 }
 
 export async function getProjectByMagicToken(token: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
