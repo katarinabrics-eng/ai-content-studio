@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = ["/intake", "/navrhy-postu", "/kurator", "/drafts", "/curator", "/admin"] as const;
+/** Paths that require admin auth. Homepage, /_next/*, static assets are never matched by config.matcher. */
+const PROTECTED_PREFIXES = ["/admin", "/intake", "/kurator", "/navrhy-postu"] as const;
 
 function isProtectedPath(pathname: string): boolean {
   if (pathname === "/admin/login" || pathname.startsWith("/admin/login")) return false;
@@ -39,12 +40,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/intake", "/intake/:path*",
-    "/navrhy-postu", "/navrhy-postu/:path*",
-    "/kurator", "/kurator/:path*",
-    "/drafts", "/drafts/:path*",
-    "/curator", "/curator/:path*",
-    "/admin", "/admin/:path*",
-  ],
+  // Exclude _next, favicon, robots – middleware never runs for these (avoids 401 on /_next/image)
+  matcher: ["/((?!_next|favicon.ico|robots.txt).*)"],
 };
