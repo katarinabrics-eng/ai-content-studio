@@ -79,10 +79,10 @@ function ProjectContent() {
         <div className="glass-panel max-w-md p-6">
           <p className="font-medium text-white">{error ?? "Projekt nenalezen"}</p>
           <p className="mt-2 text-sm text-white/70">
-            Použijte odkaz z e-mailu nebo se přihlaste na <a href="/vstup" className="text-lucifera-lime underline">/vstup</a> (kód + PIN).
+            Použijte odkaz z e-mailu pro přístup k projektu.
           </p>
-          <a href="/vstup" className="btn-lime-primary mt-4 inline-block">
-            Přihlásit se
+          <a href="/" className="btn-lime-primary mt-4 inline-block">
+            Zpět na hlavní stránku
           </a>
         </div>
       </main>

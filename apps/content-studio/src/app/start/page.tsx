@@ -6,7 +6,8 @@ import { Suspense, useRef, useState } from "react";
 function StartForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const planFromUrl = searchParams.get("plan") || "basic";
+  const planFromUrl = searchParams.get("plan") || "test-week";
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -20,7 +21,7 @@ function StartForm() {
     setLoading(true);
     const form = e.currentTarget;
     const data = {
-      plan_id: (form.querySelector("[name=plan_id]") as HTMLInputElement)?.value || planFromUrl,
+      plan_id: planFromUrl,
       brand: (form.querySelector("[name=brand]") as HTMLInputElement)?.value ?? "",
       obor: (form.querySelector("[name=obor]") as HTMLInputElement)?.value ?? "",
       cil: (form.querySelector("[name=cil]") as HTMLInputElement)?.value ?? "",
@@ -75,20 +76,7 @@ function StartForm() {
         setLoading(false);
         return;
       }
-      if (json.magicLinkUrl) {
-        const params = new URLSearchParams({ magicLinkUrl: json.magicLinkUrl });
-        if (json.accessLink) params.set("accessLink", json.accessLink);
-        if (json.accessMode) params.set("accessMode", json.accessMode);
-        router.push("/start/success?" + params.toString());
-        return;
-      }
-      const params = new URLSearchParams({
-        projectCode: json.projectCode ?? "",
-        pin: json.pin ?? "",
-      });
-      if (json.accessLink) params.set("accessLink", json.accessLink);
-      if (json.accessMode) params.set("accessMode", json.accessMode);
-      router.push("/start/success?" + params.toString());
+      router.push("/start/success");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Chyba odeslání.";
       setError(msg);
@@ -102,26 +90,37 @@ function StartForm() {
   return (
     <main className="min-h-screen bg-lucifera-dark px-4 py-12">
       <div className="mx-auto max-w-lg">
-        <h1 className="text-2xl font-bold text-white">Spustit test zdarma</h1>
-        <p className="mt-2 text-white/70">Testovací provoz bez platby. Projekt se vytvoří ihned.</p>
+        <h1 className="text-2xl font-bold text-white">Spustit projekt</h1>
+        <p className="mt-2 text-white/70">
+          Vyplňte údaje o vaší značce. Do 48 hodin dostanete první 3 návrhy příspěvků.
+        </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <input type="hidden" name="plan_id" value={planFromUrl} />
-
           <section>
-            <h2 className="text-lg font-semibold text-white">Rychlý start</h2>
+            <h2 className="text-lg font-semibold text-white">Základní informace</h2>
             <div className="mt-4 space-y-4">
               <div>
                 <label className={labelClass}>Značka / název *</label>
                 <input name="brand" required className={inputClass} placeholder="Např. Moje firma" />
               </div>
               <div>
-                <label className={labelClass}>Obor</label>
-                <input name="obor" className={inputClass} placeholder="Např. poradenství" />
+                <label className={labelClass}>E-mail *</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  required 
+                  className={inputClass} 
+                  placeholder="vas@email.cz" 
+                />
+                <p className="mt-1 text-xs text-white/50">Na tento e-mail vám zašleme hotové návrhy.</p>
+              </div>
+              <div>
+                <label className={labelClass}>Obor *</label>
+                <input name="obor" required className={inputClass} placeholder="Např. poradenství, e-shop, služby" />
               </div>
               <div>
                 <label className={labelClass}>Cíl komunikace</label>
-                <input name="cil" className={inputClass} placeholder="Např. získat klienty" />
+                <input name="cil" className={inputClass} placeholder="Např. získat klienty, budovat důvěru" />
               </div>
               <div>
                 <label className={labelClass}>Síť</label>
@@ -133,28 +132,19 @@ function StartForm() {
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Web / profil (volitelně)</label>
+                <label className={labelClass}>Web / profil</label>
                 <input name="website_or_profile" type="url" className={inputClass} placeholder="https://…" />
               </div>
               <div>
-                <label className={labelClass}>Tonalita</label>
-                <input name="tonalita" className={inputClass} placeholder="Např. profesionální" />
+                <label className={labelClass}>Tonalita / tón komunikace</label>
+                <input name="tonalita" className={inputClass} placeholder="Např. profesionální, přátelský, hravý" />
               </div>
               <div>
                 <label className={labelClass}>Poznámka</label>
-                <textarea name="poznamka" rows={2} className={inputClass} placeholder="Volitelně" />
-              </div>
-              <div>
-                <label className={labelClass}>E-mail (volitelný)</label>
-                <input type="email" name="email" className={inputClass} placeholder="napr@email.cz" />
-                <p className="mt-1 text-xs text-white/50">Bez e-mailu dostanete kód a PIN pro přístup.</p>
+                <textarea name="poznamka" rows={2} className={inputClass} placeholder="Další informace pro nás" />
               </div>
             </div>
           </section>
-
-          <p className="text-sm text-white/80">
-            Čím víc informací doplníte, tím přesnější budou první návrhy.
-          </p>
 
           <details
             open={advancedOpen}
@@ -162,7 +152,7 @@ function StartForm() {
             className="rounded-lg border border-white/20 bg-white/5"
           >
             <summary className="cursor-pointer list-none px-4 py-3 font-medium text-white [&::-webkit-details-marker]:hidden">
-              Pokročilé upřesnění (doporučeno pro přesnější návrhy)
+              Pokročilé upřesnění (volitelné)
             </summary>
             <div className="space-y-4 border-t border-white/10 px-4 py-4">
               <div>
@@ -195,19 +185,19 @@ function StartForm() {
                 </div>
               </div>
               <div>
-                <label className={labelClass}>URL / PDF auto-fill</label>
-                <input name="url_pdf_autofill" type="url" className={inputClass} placeholder="Odkaz na web nebo PDF k rozboru" />
+                <label className={labelClass}>URL webu k analýze</label>
+                <input name="url_pdf_autofill" type="url" className={inputClass} placeholder="Odkaz na web k rozboru" />
               </div>
               <div>
-                <label className={labelClass}>Logo (PNG, volitelně)</label>
+                <label className={labelClass}>Logo (PNG)</label>
                 <input ref={logoRef} name="logo" type="file" accept=".png,image/png" className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Fotky (JPEG/PNG, volitelně)</label>
+                <label className={labelClass}>Fotky (JPEG/PNG)</label>
                 <input ref={photosRef} name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className={inputClass} />
               </div>
               <div>
-                <label className={labelClass}>Brand manuál PDF (volitelně)</label>
+                <label className={labelClass}>Brand manuál (PDF)</label>
                 <input ref={brandPdfRef} name="brandPdf" type="file" accept=".pdf,application/pdf" className={inputClass} />
               </div>
             </div>
@@ -215,9 +205,13 @@ function StartForm() {
 
           {error && <p className="text-sm text-red-400">{error}</p>}
           <button type="submit" disabled={loading} className="btn-lime-primary w-full text-zinc-900">
-            {loading ? "Vytvářím projekt…" : "Vytvořit test projekt"}
+            {loading ? "Odesílám..." : "Odeslat a spustit projekt"}
           </button>
         </form>
+
+        <p className="mt-6 text-center text-xs text-white/40">
+          Po odeslání vás budeme kontaktovat na uvedený e-mail.
+        </p>
       </div>
     </main>
   );

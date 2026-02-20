@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
     const clientPath = result.magicToken
       ? `/project?token=${encodeURIComponent(result.magicToken)}`
-      : `/vstup`;
+      : `/start/success`;
     const magicLinkUrl = result.magicToken ? `${base}/project?token=${encodeURIComponent(result.magicToken)}` : undefined;
 
     const accessLink = result.accessMode === "token" && result.accessToken

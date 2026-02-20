@@ -101,9 +101,9 @@ export async function POST(request: Request) {
         code: result.projectCode,
         pinMaskedOrToken: result.pin ? `****${result.pin.slice(-2)}` : result.magicToken ?? null,
       },
-      next: { clientPath: result.pin ? "/vstup" : "/project?token=..." },
+      next: { clientPath: "/start/success" },
       pin: result.pin ?? null,
-      loginUrl: result.pin ? `${base}/vstup` : undefined,
+      loginUrl: undefined,
       accessLink: result.accessMode === "token" ? accessLink : undefined,
     });
   } catch (e) {

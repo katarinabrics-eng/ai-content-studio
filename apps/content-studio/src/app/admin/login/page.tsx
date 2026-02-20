@@ -6,7 +6,7 @@ import { useState, useTransition, Suspense } from "react";
 function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next") ?? "/admin/dashboard";
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();

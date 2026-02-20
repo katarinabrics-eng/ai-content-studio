@@ -12,12 +12,12 @@ export async function GET(request: Request) {
   const token = searchParams.get("token");
 
   if (!token || typeof token !== "string") {
-    return NextResponse.redirect(new URL("/vstup?error=missing_token", request.url));
+    return NextResponse.redirect(new URL("/?error=missing_token", request.url));
   }
 
   const projectId = await verifyAndConsumeAccessToken(token);
   if (!projectId) {
-    return NextResponse.redirect(new URL("/vstup?error=invalid_token", request.url));
+    return NextResponse.redirect(new URL("/?error=invalid_token", request.url));
   }
 
   const sessionToken = await createProjectSession(projectId);

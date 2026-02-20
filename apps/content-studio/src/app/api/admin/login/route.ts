@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const password = typeof (body as { password?: string }).password === "string" ? (body as { password: string }).password : "";
-    const nextUrl = typeof (body as { next?: string }).next === "string" ? (body as { next: string }).next : "/";
+    const nextUrl = typeof (body as { next?: string }).next === "string" ? (body as { next: string }).next : "/admin/dashboard";
 
     const ok = await verifyPasswordAsync(password);
 
