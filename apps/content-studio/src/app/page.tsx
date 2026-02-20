@@ -1,4 +1,5 @@
 import { HeroImageFull } from "./components/HomePlaceholders";
+import { Header } from "./components/Header";
 
 const faqs = [
   { q: "Je to automatické?", a: "Ne. Každý výstup prochází dohledem." },
@@ -9,27 +10,7 @@ const faqs = [
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-stone-50">
-      <header className="sticky top-0 z-50 h-14 border-b border-stone-200 bg-white">
-        <div className="mx-auto flex h-full max-w-6xl items-center px-4 sm:px-6 lg:px-8">
-          <a href="/" className="flex shrink-0 items-baseline gap-2 whitespace-nowrap focus:outline-none">
-            <span className="text-sm font-semibold tracking-wide text-stone-900">AI CONTENT STUDIO LUCIFERA</span>
-            <span className="text-xs text-stone-500">AI + kreativní kurátor</span>
-          </a>
-          <nav className="hidden flex-1 items-center justify-center gap-8 px-8 text-sm text-stone-600 md:flex">
-            <a href="#manifest" className="shrink-0 transition-colors hover:text-stone-900">Manifest</a>
-            <a href="#co-delame" className="shrink-0 transition-colors hover:text-stone-900">Co děláme</a>
-            <a href="#rozdil" className="shrink-0 transition-colors hover:text-stone-900">Rozdíl</a>
-            <a href="#jak-to-funguje" className="shrink-0 transition-colors hover:text-stone-900">Jak to funguje</a>
-            <a href="#testovaci-nabidka" className="shrink-0 transition-colors hover:text-stone-900">Nabídka</a>
-            <a href="#proc-my" className="shrink-0 transition-colors hover:text-stone-900">Proč my</a>
-            <a href="#faq" className="shrink-0 transition-colors hover:text-stone-900">FAQ</a>
-            <a href="#zaver" className="shrink-0 transition-colors hover:text-stone-900">Kontakt</a>
-          </nav>
-          <a href="/start?plan=test-week" className="ml-4 shrink-0 rounded-lg bg-[#A3E635] px-5 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-            Spustit projekt
-          </a>
-        </div>
-      </header>
+      <Header />
 
       <section className="relative w-full min-h-[86vh] overflow-hidden">
         <div className="absolute inset-0">
