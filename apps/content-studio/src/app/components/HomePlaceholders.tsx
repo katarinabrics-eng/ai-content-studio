@@ -6,16 +6,16 @@ import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 const HERO_SRC = "/placeholders/hlavnycover_02.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek na pozadí – pokrývá celou sekci. */
+/** Hero obrázek – contained proporce, bez přetažení. */
 export function HeroImageFull() {
   return (
-    <div className="absolute inset-0 animate-fade-in">
+    <div className="relative aspect-[4/5] w-full min-h-[360px] xl:aspect-[3/4] xl:min-h-[480px]">
       <Image
         src={HERO_SRC}
         alt=""
         fill
-        className="object-cover object-center"
-        sizes="100vw"
+        className="object-contain object-center"
+        sizes="(max-width: 1280px) 100vw, 760px"
         priority
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";

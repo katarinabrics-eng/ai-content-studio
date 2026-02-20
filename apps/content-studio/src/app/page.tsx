@@ -31,39 +31,33 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section
-        className="relative grid min-h-[calc(100vh-76px)] w-full grid-cols-1 overflow-hidden bg-white lg:grid-cols-[2fr_3fr]"
-      >
-        <div className="flex flex-col justify-center px-6 py-16 lg:px-12 xl:px-16">
-          <h1
-            className="font-sans font-black tracking-[-0.035em] text-zinc-900"
-            style={{
-              fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
-              lineHeight: 0.95,
-            }}
-          >
-            Obsah pod kontrolou studia.
-          </h1>
-          <p className="mt-6 max-w-md text-lg text-zinc-700" style={{ lineHeight: "1.75rem" }}>
-            Vizuálně silné příspěvky pod odborným dohledem. Technologie generuje. My rozhodujeme.
-          </p>
-          <p className="mt-4 text-sm text-zinc-600">
-            3 příspěvky · do 48 hodin · 800 Kč jednorázově
-          </p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <a href="/start?plan=test-week" className="rounded bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-              Chci mít hotovo
-            </a>
-            <a
-              href="#jak-to-funguje"
-              className="rounded border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-100"
-            >
-              Jak to funguje
-            </a>
+      <section className="relative w-full min-h-[86vh] overflow-hidden bg-white">
+        <div className="mx-auto grid min-h-[86vh] w-full max-w-[1360px] grid-cols-1 items-center gap-8 px-6 xl:grid-cols-[0.45fr_0.55fr] xl:gap-10 xl:px-10">
+          <div className="flex max-w-[560px] flex-col justify-center py-16">
+            <h1 className="font-sans font-black text-[clamp(56px,5.2vw,96px)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
+              Obsah pod kontrolou studia.
+            </h1>
+            <p className="mt-6 max-w-md text-lg text-zinc-700" style={{ lineHeight: "1.75rem" }}>
+              Vizuálně silné příspěvky pod odborným dohledem. Technologie generuje. My rozhodujeme.
+            </p>
+            <p className="mt-4 text-sm text-zinc-600">
+              3 příspěvky · do 48 hodin · 800 Kč jednorázově
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <a href="/start?plan=test-week" className="rounded bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
+                Chci mít hotovo
+              </a>
+              <a
+                href="#jak-to-funguje"
+                className="rounded border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-100"
+              >
+                Jak to funguje
+              </a>
+            </div>
           </div>
-        </div>
-        <div className="relative min-h-[50vh] lg:min-h-full">
-          <HeroImageFull />
+          <div className="relative w-full max-w-[760px] justify-self-end">
+            <HeroImageFull />
+          </div>
         </div>
       </section>
 
