@@ -35,7 +35,12 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <HeroImageFull />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.35) 35%, transparent 55%)",
+          }}
+        />
         <div className="relative mx-auto flex min-h-[86vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
           <div className="max-w-[560px]">
             <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">

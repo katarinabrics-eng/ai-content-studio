@@ -6,7 +6,7 @@ import { PLACEHOLDER_IMAGES } from "@/lib/placeholders";
 const HERO_SRC = "/placeholders/hlavnycover_02.png";
 const SECTION_SRCS = PLACEHOLDER_IMAGES.slice(1, 4);
 
-/** Hero obrázek na pozadí – pokrývá celou sekci. */
+/** Hero obrázek na pozadí – pokrývá celou sekci, kontrastní (SCREEN 1 reference). */
 export function HeroImageFull() {
   return (
     <div className="absolute inset-0">
@@ -17,6 +17,7 @@ export function HeroImageFull() {
         className="object-cover object-center"
         sizes="100vw"
         priority
+        style={{ filter: "contrast(1.08) brightness(0.96)" }}
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";
         }}
