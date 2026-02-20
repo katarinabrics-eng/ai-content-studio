@@ -23,127 +23,87 @@ export default function HomePage() {
             <span className="ml-2 text-xs text-stone-500">AI + kreativní kurátor</span>
           </a>
           <nav className="hidden gap-8 text-sm text-stone-600 md:flex">
+            <a href="#manifest" className="transition-colors hover:text-zinc-900">Manifest</a>
+            <a href="#co-delame" className="transition-colors hover:text-zinc-900">Co děláme</a>
             <a href="#jak-to-funguje" className="transition-colors hover:text-zinc-900">Jak to funguje</a>
-            <a href="#problem" className="transition-colors hover:text-zinc-900">Problém</a>
-            <a href="#reseni" className="transition-colors hover:text-zinc-900">Řešení</a>
             <a href="#proc-my" className="transition-colors hover:text-zinc-900">Proč my</a>
             <a href="#faq" className="transition-colors hover:text-zinc-900">FAQ</a>
             <a href="#kontakt" className="transition-colors hover:text-zinc-900">Kontakt</a>
           </nav>
-          <a href="/start" className="btn-lime-primary text-zinc-900">
+          <a href="/start?plan=test-week" className="rounded bg-[#A3E635] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
             Spustit projekt
           </a>
         </div>
       </header>
 
       <section
-        className="relative w-full overflow-hidden"
-        style={{ minHeight: "calc(100vh - 76px)" }}
+        className="relative grid min-h-[calc(100vh-76px)] w-full grid-cols-1 overflow-hidden bg-white lg:grid-cols-[2fr_3fr]"
       >
-        <HeroImageFull />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/75 via-white/30 to-transparent lg:from-white/65 lg:via-white/20 lg:to-transparent" />
-        <div className="relative mx-auto flex min-h-[calc(100vh-76px)] max-w-[1720px] flex-col justify-center px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
-          <div className="animate-fade-in max-w-2xl">
-            <h1
-              className="font-sans font-black tracking-[-0.035em] text-zinc-900"
-              style={{
-                fontSize: "clamp(2.25rem, 5.2vw, 6rem)",
-                lineHeight: 0.95,
-              }}
+        <div className="flex flex-col justify-center px-6 py-16 lg:px-12 xl:px-16">
+          <h1
+            className="font-sans font-black tracking-[-0.035em] text-zinc-900"
+            style={{
+              fontSize: "clamp(2rem, 4.5vw, 4.5rem)",
+              lineHeight: 0.95,
+            }}
+          >
+            Obsah pod kontrolou studia.
+          </h1>
+          <p className="mt-6 max-w-md text-lg text-zinc-700" style={{ lineHeight: "1.75rem" }}>
+            Vizuálně silné příspěvky pod odborným dohledem. Technologie generuje. My rozhodujeme.
+          </p>
+          <p className="mt-4 text-sm text-zinc-600">
+            3 příspěvky · do 48 hodin · 800 Kč jednorázově
+          </p>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <a href="/start?plan=test-week" className="rounded bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
+              Chci mít hotovo
+            </a>
+            <a
+              href="#jak-to-funguje"
+              className="rounded border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-100"
             >
-              Obsah, který má směr.
-            </h1>
-            <p
-              className="mt-6 max-w-xl text-lg text-zinc-700"
-              style={{ lineHeight: "1.875rem" }}
-            >
-              Vizuálně silné příspěvky pod odborným dohledem.
-              Technologie generuje. Já rozhoduji.
-            </p>
-            <p className="mt-4 text-sm font-medium text-zinc-600">
-              Doručení do 48 hodin · Zaváděcí cena 800 Kč
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start" className="btn-lime-primary text-zinc-900">
-                Chci mít hotovo
-              </a>
-              <a
-                href="#jak-to-funguje"
-                className="rounded-full border border-lucifera-lime/50 bg-white/50 px-6 py-3 text-sm font-medium text-zinc-900 backdrop-blur-sm transition-colors hover:bg-lucifera-lime/10"
-              >
-                Jak to funguje
-              </a>
-            </div>
+              Jak to funguje
+            </a>
           </div>
+        </div>
+        <div className="relative min-h-[50vh] lg:min-h-full">
+          <HeroImageFull />
         </div>
       </section>
 
-      <section id="problem" className="relative w-full bg-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Nejste líní. Jste jen přehlcení.
+      <section id="manifest" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl">
+            Obraz rozhoduje.
           </h2>
-          <p className="mt-4 max-w-3xl text-lg text-stone-600">
-            Většina podnikatelů a specialistů nechce nepostovat. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-700">
+            Značka je vidět dřív, než je čtena. Proto každý výstup prochází výběrem. Ne publikací. Výběrem.
           </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
-            {[
-              { text: "Znáte své téma perfektně, ale nevíte, jak ho prodat na sítích.", icon: "theme" },
-              { text: "Když už si sednete k obsahu, ztrácíte hodiny přepisováním jedné věty.", icon: "hourglass" },
-              { text: "Každý příspěvek je mentální start od nuly. Prázdný rám čeká.", icon: "frame" },
-            ].map((card) => (
-              <div key={card.icon} className="glass-lime flex flex-col p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lucifera-lime/15 text-zinc-700">
-                  {card.icon === "hourglass" && (
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  )}
-                  {card.icon === "theme" && (
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                    </svg>
-                  )}
-                  {card.icon === "frame" && (
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
-                    </svg>
-                  )}
-                </div>
-                <p className="text-stone-700">{card.text}</p>
+        </div>
+      </section>
+
+      <section id="co-delame" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1fr] md:items-center">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 md:text-4xl">
+              Produkční model pro značky.
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-zinc-700">
+              Dodáváme hotové příspěvky. Ne brainstorming. Ne generovaný chaos. Vyplníte brief. Do 48 hodin máte výstupy připravené k publikaci.
+            </p>
+            <a href="/start?plan=test-week" className="mt-8 inline-block rounded bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
+              Chci mít hotovo
+            </a>
+          </div>
+          <div className="aspect-[4/3] overflow-hidden rounded border border-stone-200 bg-stone-200">
+            <div className="flex h-full w-full items-center justify-center grayscale">
+              <div className="text-center text-zinc-500">
+                <svg className="mx-auto h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+                <p className="mt-2 text-sm">B/W detail · ruka s tištěným návrhem</p>
               </div>
-            ))}
-          </div>
-          <p className="mt-6 text-stone-600">
-            Místo toho, abyste se věnovali tomu, co vás živí, řešíte co dnes dát na Instagram nebo LinkedIn.
-          </p>
-        </div>
-      </section>
-
-      <section id="reseni" className="relative w-full bg-stone-50 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Neřešíme jen texty. Řešíme vaši rozhodovací únavu.
-          </h2>
-          <p className="mt-4 max-w-3xl text-lg text-stone-600">
-            Náš cíl není vygenerovat náhodný text. Náš cíl je zařídit, aby vám z hlavy zmizel každodenní tlak na obsah. Vaše značka bude vidět pravidelně, kvalitně a konzistentně – a vy u toho nebudete muset trpět.
-          </p>
-          <div className="mt-12 grid gap-8 md:grid-cols-2">
-            <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-red-500">Dříve</h3>
-              <ul className="mt-4 space-y-3 text-stone-600">
-                <li className="flex items-center gap-2"><span className="text-red-400">✕</span> Co dnes postnout?</li>
-                <li className="flex items-center gap-2"><span className="text-red-400">✕</span> Nemám kapacitu.</li>
-                <li className="flex items-center gap-2"><span className="text-red-400">✕</span> Zase jsem nic nevydal/a.</li>
-              </ul>
-            </div>
-            <div className="glass-lime p-8">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-900">S Luciferou</h3>
-              <ul className="mt-4 space-y-3 text-stone-800">
-                <li className="flex items-center gap-2"><span className="text-zinc-700">✓</span> Mám návrhy včas a bez stresu.</li>
-                <li className="flex items-center gap-2"><span className="text-zinc-700">✓</span> Vím přesně, co a kdy jde ven.</li>
-                <li className="flex items-center gap-2"><span className="text-zinc-700">✓</span> Sítě běží, já řeším svoji práci.</li>
-              </ul>
             </div>
           </div>
         </div>
