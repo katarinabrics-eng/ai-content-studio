@@ -4,8 +4,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   PROJECT_STATUS_LABELS,
-  PROJECT_STATUS_ORDER,
   getStatusOrder,
+  getDisplayStatusForTimeline,
   type ProjectStatus,
 } from "@/lib/project-status-engine";
 
@@ -22,22 +22,23 @@ type ProjectData = {
 };
 
 function TimelineSteps({ currentStatus }: { currentStatus: ProjectStatus }) {
-  const currentOrder = getStatusOrder(currentStatus);
+  const displayStatus = getDisplayStatusForTimeline(currentStatus);
+  const currentOrder = getStatusOrder(displayStatus as ProjectStatus);
   const clientVisibleStatuses: ProjectStatus[] = [
-    "PROCESSING_DATA",
-    "READY_FOR_AI",
-    "IN_PRODUCTION",
-    "DRAFT_READY",
-    "FINAL_READY",
-    "CLOSED",
+    "AWAITING_INPUT",
+    "INPUT_RECEIVED",
+    "AI_PROCESSING",
+    "AWAITING_APPROVAL",
+    "APPROVED_SCHEDULED",
+    "DONE",
   ];
 
   return (
     <div className="mt-6 space-y-3">
-      {clientVisibleStatuses.map((status) => {
+      {clientVisibleStatuses.map((status, index) => {
         const order = getStatusOrder(status);
         const done = order <= currentOrder;
-        const current = status === currentStatus;
+        const current = status === displayStatus;
         return (
           <div
             key={status}
@@ -58,7 +59,7 @@ function TimelineSteps({ currentStatus }: { currentStatus: ProjectStatus }) {
                     : "bg-stone-300 text-stone-600"
               }`}
             >
-              {done ? "✓" : order}
+              {done ? "✓" : index + 1}
             </div>
             <div>
               <p className={`font-medium ${current ? "text-zinc-900" : done ? "text-green-800" : "text-stone-600"}`}>
@@ -77,20 +78,30 @@ function TimelineSteps({ currentStatus }: { currentStatus: ProjectStatus }) {
 
 function getStatusMessage(status: ProjectStatus): string {
   switch (status) {
+    case "AWAITING_INPUT":
     case "PROCESSING_DATA":
-      return "Data se zpracovávají. Náš tým analyzuje váš brief.";
+      return "Čekáme na vaše podklady. Jakmile je obdržíme, začneme pracovat.";
+    case "INPUT_RECEIVED":
     case "READY_FOR_AI":
-      return "Váš brief je připraven. Začínáme pracovat na návrzích.";
+      return "Podklady máme. Připravujeme návrhy příspěvků.";
+    case "AWAITING_MANUAL_PROMPT":
+      return "Čekáme na interní pokyn. Brzy začneme generovat.";
+    case "AI_PROCESSING":
     case "IN_PRODUCTION":
-      return "Tvorba probíhá. AI a kurátor pracují na vašich příspěvcích.";
+      return "AI a kurátor pracují na vašich příspěvcích. Bude to trvat jen chvíli.";
+    case "AWAITING_APPROVAL":
     case "DRAFT_READY":
       return "Návrhy jsou připraveny ke schválení!";
     case "REVISION":
       return "Zapracováváme vaše připomínky.";
+    case "APPROVED_SCHEDULED":
     case "FINAL_READY":
       return "Finální verze je připravena!";
+    case "DONE":
     case "CLOSED":
       return "Zakázka byla uzavřena. Děkujeme za spolupráci!";
+    case "ERROR":
+      return "Došlo k nečekané chybě. Obraťte se prosím na nás.";
     default:
       return "Váš projekt je v procesu.";
   }

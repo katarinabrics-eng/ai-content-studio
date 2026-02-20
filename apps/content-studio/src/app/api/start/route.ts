@@ -83,7 +83,7 @@ export async function POST(request: Request) {
       ok: true,
       projectId: result.projectId,
       projectCode: result.projectCode,
-      status: "PROCESSING_DATA",
+      status: "AWAITING_INPUT",
       storagePrefix: result.storagePrefix,
       accessMode: result.accessMode,
       access: {

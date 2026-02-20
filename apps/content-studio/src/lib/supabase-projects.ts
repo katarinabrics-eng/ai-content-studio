@@ -264,7 +264,7 @@ export async function createProject(params: CreateProjectParams): Promise<{
     project_pin_expires_at: pinExpiresAt,
     access_pin_expires_at: pinExpiresAt,
     magic_token_hash: magicTokenHash,
-    status: "PROCESSING_DATA",
+    status: "AWAITING_INPUT",
     client_email: email,
     storage_prefix: params.storage_prefix ?? null,
   };

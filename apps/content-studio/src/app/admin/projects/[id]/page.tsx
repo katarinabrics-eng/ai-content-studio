@@ -4,8 +4,9 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
   PROJECT_STATUS_LABELS,
-  PROJECT_STATUS_ORDER,
   ALLOWED_TRANSITIONS,
+  getWorkflowStep,
+  getBadgeClasses,
   type ProjectStatus,
 } from "@/lib/project-status-engine";
 import { getBriefCompleteness } from "@/lib/supabase-projects";
@@ -34,6 +35,7 @@ export default function AdminProjectDetailPage() {
   const [generating, setGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationWarning, setGenerationWarning] = useState<string | null>(null);
+  const [aiModeManual, setAiModeManual] = useState(true);
 
   const fetchProject = useCallback(() => {
     fetch(`/api/admin/projects/${id}`)
@@ -60,6 +62,11 @@ export default function AdminProjectDetailPage() {
     fetchProject();
     fetchDrafts();
   }, [fetchProject, fetchDrafts]);
+
+  useEffect(() => {
+    const interval = setInterval(fetchProject, 10_000);
+    return () => clearInterval(interval);
+  }, [fetchProject]);
 
   function setStatus(newStatus: ProjectStatus) {
     if (!project) return;
@@ -123,9 +130,13 @@ export default function AdminProjectDetailPage() {
   if (!project) return <main className="p-6"><p>Projekt nenalezen.</p><a href="/admin/projects" className="text-lucifera-lime underline">Zpět</a></main>;
 
   const current = project.status as ProjectStatus;
-  const nextStatuses = ALLOWED_TRANSITIONS[current] ?? [];
+  const nextStatuses = (ALLOWED_TRANSITIONS[current] ?? []) as string[];
   const brief = project.brief;
   const meta = project.admin_meta;
+  const wf = getWorkflowStep(
+    current,
+    current === "ERROR" ? meta?.internal_notes : null
+  );
   const { percent: completenessPercent, missing: missingFields } = meta
     ? { percent: meta.brief_completeness, missing: meta.missing_fields }
     : getBriefCompleteness(brief);
@@ -133,7 +144,17 @@ export default function AdminProjectDetailPage() {
   return (
     <main className="min-h-screen bg-stone-100 p-6">
       <div className="mx-auto max-w-4xl">
-        <a href="/admin/projects" className="text-sm text-stone-600 hover:underline">← Přehled projektů</a>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <a href="/admin/projects" className="text-sm text-stone-600 hover:underline">← Přehled projektů</a>
+          <button
+            type="button"
+            onClick={() => { fetchProject(); fetchDrafts(); }}
+            disabled={updating}
+            className="rounded border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+          >
+            Obnovit nyní
+          </button>
+        </div>
         <h1 className="mt-4 text-2xl font-bold text-stone-900">{brief?.brand_name || "Projekt"}</h1>
         <p className="text-stone-600">
           ID: {project.id} · Tarif: {project.plan_id}
@@ -202,29 +223,116 @@ export default function AdminProjectDetailPage() {
         )}
 
         <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-          <h2 className="font-semibold text-stone-900">Stav zakázky</h2>
-          <p className="mt-2 text-stone-700">{PROJECT_STATUS_LABELS[current] ?? current}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {PROJECT_STATUS_ORDER.map((s) => (
-              <span key={s} className={`rounded px-2 py-0.5 text-xs ${s === current ? "bg-lucifera-lime/30 text-stone-900" : "bg-stone-100 text-stone-500"}`}>
-                {PROJECT_STATUS_LABELS[s]}
+          <h2 className="font-semibold text-stone-900">Workflow</h2>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className={`rounded-md px-2.5 py-1 text-sm font-medium ${getBadgeClasses(wf.badge)}`}>
+              {wf.label}
+            </span>
+            {wf.step > 0 && (
+              <span className="text-sm text-stone-500">Krok {wf.step}/{wf.total}</span>
+            )}
+            {wf.who && (
+              <span className="rounded bg-stone-100 px-2 py-0.5 text-sm text-stone-600">
+                Na tahu: {wf.who}
               </span>
-            ))}
+            )}
           </div>
-          <h3 className="mt-4 font-medium text-stone-800">Změnit stav</h3>
+          <p className="mt-3 text-stone-700">
+            Právě teď: {wf.currentAction}
+          </p>
+          {(current === "AI_PROCESSING" || current === "IN_PRODUCTION") && (
+            <p className="mt-1 text-sm text-stone-500">ETA: cca 2–5 min</p>
+          )}
+
+          {current === "ERROR" && (
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+              <p className="font-medium text-red-800">Důvod chyby:</p>
+              <p className="mt-1 text-sm text-red-700">
+                {meta?.internal_notes || "Neurčeno. Zkuste znovu nebo doplňte internal_notes."}
+              </p>
+              <button
+                type="button"
+                onClick={() => setStatus("AWAITING_MANUAL_PROMPT")}
+                disabled={updating}
+                className="mt-3 rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                Zkusit znovu
+              </button>
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <span className="text-stone-600">AI režim:</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={aiModeManual}
+                onClick={() => setAiModeManual(!aiModeManual)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  aiModeManual ? "bg-amber-500" : "bg-stone-300"
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                    aiModeManual ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+              <span className="font-medium text-stone-700">
+                {aiModeManual ? "Manuální" : "Automatický"}
+              </span>
+            </label>
+          </div>
+
+          {(current === "AWAITING_MANUAL_PROMPT" || current === "READY_FOR_AI" || current === "INPUT_RECEIVED") && aiModeManual && (
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={handleGenerateDrafts}
+                disabled={generating}
+                className="rounded bg-[#A3E635] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 disabled:opacity-50"
+              >
+                {generating ? "Pokyn přijat, zpracováváme…" : "Odeslat nový pokyn AI"}
+              </button>
+              {generating && <p className="mt-1 text-sm text-stone-500">AI zpracovává zadání</p>}
+            </div>
+          )}
+
+          <h3 className="mt-6 font-medium text-stone-800">Změnit stav ručně</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {nextStatuses.map((s) => (
               <button
                 key={s}
-                onClick={() => setStatus(s)}
+                onClick={() => setStatus(s as ProjectStatus)}
                 disabled={updating}
                 className="rounded bg-stone-800 px-3 py-1.5 text-sm text-white hover:bg-stone-700 disabled:opacity-50"
               >
-                → {PROJECT_STATUS_LABELS[s]}
+                → {PROJECT_STATUS_LABELS[s] ?? s}
               </button>
             ))}
             {nextStatuses.length === 0 && <span className="text-sm text-stone-500">Žádné další přechody</span>}
           </div>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
+          <h2 className="font-semibold text-stone-900">Timeline</h2>
+          <ul className="mt-4 space-y-3">
+            <li className="flex items-start gap-3 text-sm">
+              <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-green-500" />
+              <div>
+                <p className="font-medium text-stone-800">Projekt vytvořen</p>
+                <p className="text-stone-500">{new Date(project.created_at).toLocaleString("cs-CZ")}</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3 text-sm">
+              <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
+              <div>
+                <p className="font-medium text-stone-800">Aktuální stav: {wf.label}</p>
+                <p className="text-stone-500">{new Date(project.updated_at).toLocaleString("cs-CZ")}</p>
+              </div>
+            </li>
+          </ul>
         </section>
 
         <section className="mt-6 rounded-lg border-2 border-amber-200 bg-amber-50 p-6">
