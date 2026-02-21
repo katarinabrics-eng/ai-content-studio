@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { getSupabaseClient } from "./supabase-server";
-import type { ProjectStatus } from "./project-status-engine";
+import type { ProjectStatus, ProjectStateForStatus } from "./project-status-engine";
 
 const CODE_LENGTH = 8;
 const PIN_LENGTH = 6;
@@ -455,6 +455,127 @@ export async function listProjects(): Promise<ProjectWithBriefAndMeta[]> {
     });
   }
   return list;
+}
+
+/** Sestaví workflow stav projektu pro výpočet statusu (priorita pravidel). */
+export async function getProjectWorkflowState(projectId: string): Promise<ProjectStateForStatus> {
+  const supabase = getSupabaseClient();
+  const project = await getProjectById(projectId);
+  if (!project) {
+    return { questionnaireSubmittedAt: null };
+  }
+
+  const brief = project.brief as ProjectBriefRow & { updated_at?: string } | null;
+  const questionnaireSubmittedAt =
+    brief != null ? (brief.updated_at ?? (project as ProjectRow & { created_at: string }).created_at) : null;
+
+  let aiOutputReady: boolean | null = null;
+  let aiJobStatus: "queued" | "running" | "completed" | "failed" | null = null;
+
+  try {
+    const { data: drafts } = await supabase
+      .from("project_drafts")
+      .select("status")
+      .eq("project_id", projectId);
+    const draftList = (drafts ?? []) as { status: string }[];
+    aiOutputReady = draftList.length > 0 && draftList.some((d) => d.status === "ready");
+  } catch {
+    // project_drafts může chybět
+  }
+
+  try {
+    const { data: jobs } = await supabase
+      .from("processing_jobs")
+      .select("status")
+      .in("status", ["queued", "processing"])
+      .limit(10);
+    for (const j of jobs ?? []) {
+      const row = j as { status: string; payload?: { project_id?: string } };
+      if (row.payload?.project_id === projectId) {
+        aiJobStatus = row.status as "queued" | "running";
+        break;
+      }
+    }
+  } catch {
+    // processing_jobs může chybět
+  }
+
+  const status = project.status;
+  const error = status === "ERROR";
+
+  return {
+    error: error || undefined,
+    publishedAt: null,
+    scheduledAt: null,
+    aiOutputReady: aiOutputReady ?? undefined,
+    approvedAt: null,
+    aiJobStatus: aiJobStatus ?? undefined,
+    questionnaireSubmittedAt: questionnaireSubmittedAt ?? undefined,
+  };
+}
+
+/** Workflow stav pro více projektů (jedna dávka dotazů). */
+export async function getWorkflowStateForProjects(
+  projects: ProjectWithBriefAndMeta[]
+): Promise<Map<string, ProjectStateForStatus>> {
+  const supabase = getSupabaseClient();
+  const map = new Map<string, ProjectStateForStatus>();
+  const ids = projects.map((p) => p.id);
+
+  for (const p of projects) {
+    const brief = p.brief as (ProjectBriefRow & { updated_at?: string }) | null;
+    const questionnaireSubmittedAt =
+      brief != null ? (brief.updated_at ?? p.created_at) : null;
+    map.set(p.id, {
+      error: p.status === "ERROR",
+      publishedAt: null,
+      scheduledAt: null,
+      aiOutputReady: undefined,
+      approvedAt: null,
+      aiJobStatus: undefined,
+      questionnaireSubmittedAt: questionnaireSubmittedAt ?? undefined,
+    });
+  }
+
+  if (ids.length === 0) return map;
+
+  try {
+    const { data: drafts } = await supabase
+      .from("project_drafts")
+      .select("project_id, status")
+      .in("project_id", ids);
+    const byProject = new Map<string, boolean>();
+    for (const d of drafts ?? []) {
+      const row = d as { project_id: string; status: string };
+      if (row.status === "ready") byProject.set(row.project_id, true);
+      else if (!byProject.has(row.project_id)) byProject.set(row.project_id, false);
+    }
+    for (const [projectId, state] of map) {
+      const ready = byProject.get(projectId);
+      if (ready !== undefined) (state as ProjectStateForStatus).aiOutputReady = ready;
+    }
+  } catch {
+    // ignore
+  }
+
+  try {
+    const { data: jobs } = await supabase
+      .from("processing_jobs")
+      .select("status, payload")
+      .in("status", ["queued", "processing"]);
+    for (const j of jobs ?? []) {
+      const row = j as { status: string; payload?: { project_id?: string } };
+      const pid = row.payload?.project_id;
+      if (pid && ids.includes(pid)) {
+        const state = map.get(pid);
+        if (state) state.aiJobStatus = row.status as "queued" | "running";
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return map;
 }
 
 export async function updateProjectStatus(id: string, status: ProjectStatus): Promise<ProjectRow | null> {

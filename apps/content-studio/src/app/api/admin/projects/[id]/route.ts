@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
-import { getProjectById, getProjectFiles, updateProjectStatus } from "@/lib/supabase-projects";
+import { getProjectById, getProjectFiles, getProjectWorkflowState, updateProjectStatus } from "@/lib/supabase-projects";
 import { isProjectStatus, canTransition } from "@/lib/project-status-engine";
 
 const CLIENT_PROJECTS_BUCKET = "client-projects";
@@ -37,9 +37,10 @@ export async function GET(
     })
   );
 
+  const workflowState = await getProjectWorkflowState(id);
   return NextResponse.json({
     ok: true,
-    project: { ...project, files: filesWithUrls },
+    project: { ...project, files: filesWithUrls, workflowState },
   });
 }
 

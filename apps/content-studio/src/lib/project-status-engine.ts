@@ -244,3 +244,55 @@ export function getDisplayStatusForTimeline(status: string): string {
   };
   return map[status] ?? status;
 }
+
+/** Stav projektu pro výpočet statusu (priorita shora dolů). */
+export type ProjectStateForStatus = {
+  /** Chyba -> „Chyba“. */
+  error?: boolean | string | null;
+  /** publishedAt != null -> „Hotovo“. */
+  publishedAt?: string | null;
+  /** scheduledAt != null -> „Schváleno / naplánováno“. */
+  scheduledAt?: string | null;
+  /** aiOutputReady == true && approvedAt == null -> „Čeká na schválení“ (Na tahu: Vy). */
+  aiOutputReady?: boolean | null;
+  /** approvedAt != null (spolu s aiOutputReady) -> přechod na schváleno/naplánováno nebo hotovo. */
+  approvedAt?: string | null;
+  /** aiJob in (queued, running) -> „AI zpracovává zadání“ (Na tahu: AI). */
+  aiJobStatus?: "queued" | "running" | "completed" | "failed" | null;
+  /** questionnaireSubmittedAt != null -> „Čeká na manuální pokyn“ (Na tahu: Vy). */
+  questionnaireSubmittedAt?: string | null;
+};
+
+/**
+ * Vypočítá status projektu podle pravidel (priorita shora dolů).
+ * 1) chyba -> ERROR
+ * 2) publishedAt != null -> DONE
+ * 3) scheduledAt != null -> APPROVED_SCHEDULED
+ * 4) aiOutputReady == true && approvedAt == null -> AWAITING_APPROVAL
+ * 5) aiJob in (queued, running) -> AI_PROCESSING
+ * 6) questionnaireSubmittedAt != null -> AWAITING_MANUAL_PROMPT
+ * 7) questionnaireSubmittedAt == null -> AWAITING_INPUT
+ */
+export function computeProjectStatus(state: ProjectStateForStatus | null | undefined): ProjectStatus {
+  if (!state) return "AWAITING_INPUT";
+
+  if (state.error) return "ERROR";
+  if (state.publishedAt != null) return "DONE";
+  if (state.scheduledAt != null) return "APPROVED_SCHEDULED";
+  if (state.aiOutputReady === true && state.approvedAt == null) return "AWAITING_APPROVAL";
+  if (state.aiJobStatus === "queued" || state.aiJobStatus === "running") return "AI_PROCESSING";
+  if (state.questionnaireSubmittedAt != null) return "AWAITING_MANUAL_PROMPT";
+  return "AWAITING_INPUT";
+}
+
+/**
+ * Vrací workflow kontext z objektu stavu projektu.
+ * Použije computeProjectStatus(state) a pak getWorkflowStep.
+ */
+export function getWorkflowStepFromState(
+  state: ProjectStateForStatus | null | undefined,
+  errorReason?: string | null
+): WorkflowStep {
+  const status = computeProjectStatus(state);
+  return getWorkflowStep(status, errorReason);
+}

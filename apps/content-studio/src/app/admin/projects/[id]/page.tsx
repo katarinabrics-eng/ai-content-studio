@@ -5,9 +5,12 @@ import { useCallback, useEffect, useState } from "react";
 import {
   PROJECT_STATUS_LABELS,
   ALLOWED_TRANSITIONS,
+  computeProjectStatus,
   getWorkflowStep,
+  getWorkflowStepFromState,
   getBadgeClasses,
   type ProjectStatus,
+  type ProjectStateForStatus,
 } from "@/lib/project-status-engine";
 import { getBriefCompleteness } from "@/lib/supabase-projects";
 import type { ProjectWithBriefAndMeta } from "@/lib/supabase-projects";
@@ -129,14 +132,21 @@ export default function AdminProjectDetailPage() {
   if (loading) return <main className="p-6"><p>Načítám…</p></main>;
   if (!project) return <main className="p-6"><p>Projekt nenalezen.</p><a href="/admin/projects" className="text-lucifera-lime underline">Zpět</a></main>;
 
-  const current = project.status as ProjectStatus;
+  const workflowState = (project as ProjectWithBriefAndMeta & { workflowState?: ProjectStateForStatus | null }).workflowState;
+  const current = (workflowState != null ? computeProjectStatus(workflowState) : project.status) as ProjectStatus;
   const nextStatuses = (ALLOWED_TRANSITIONS[current] ?? []) as string[];
   const brief = project.brief;
   const meta = project.admin_meta;
-  const wf = getWorkflowStep(
-    current,
-    current === "ERROR" ? meta?.internal_notes : null
-  );
+  const wf =
+    workflowState != null
+      ? getWorkflowStepFromState(
+          workflowState,
+          (workflowState.error || current === "ERROR") ? meta?.internal_notes : null
+        )
+      : getWorkflowStep(
+          project.status,
+          project.status === "ERROR" ? meta?.internal_notes : null
+        );
   const { percent: completenessPercent, missing: missingFields } = meta
     ? { percent: meta.brief_completeness, missing: meta.missing_fields }
     : getBriefCompleteness(brief);

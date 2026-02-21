@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  PROJECT_STATUS_LABELS,
   getWorkflowStep,
+  getWorkflowStepFromState,
   getBadgeClasses,
 } from "@/lib/project-status-engine";
+import type { ProjectStateForStatus } from "@/lib/project-status-engine";
 
 type Project = {
   id: string;
@@ -16,6 +17,7 @@ type Project = {
   updated_at: string;
   brief?: { brand_name?: string } | null;
   admin_meta?: { internal_notes?: string | null } | null;
+  workflowState?: ProjectStateForStatus | null;
 };
 
 export default function AdminProjectsPage() {
@@ -73,10 +75,16 @@ export default function AdminProjectsPage() {
         {!loading && projects.length > 0 && (
           <ul className="mt-6 space-y-4">
             {projects.map((p) => {
-              const wf = getWorkflowStep(
-                p.status,
-                p.status === "ERROR" ? p.admin_meta?.internal_notes : null
-              );
+              const wf =
+                p.workflowState != null
+                  ? getWorkflowStepFromState(
+                      p.workflowState,
+                      p.workflowState.error ? p.admin_meta?.internal_notes : null
+                    )
+                  : getWorkflowStep(
+                      p.status,
+                      p.status === "ERROR" ? p.admin_meta?.internal_notes : null
+                    );
               const stepText =
                 wf.step > 0 ? `Krok ${wf.step}/${wf.total}` : "Chyba";
               const updatedAt = new Date(p.updated_at);
