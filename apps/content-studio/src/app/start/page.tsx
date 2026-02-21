@@ -45,16 +45,8 @@ function PaymentSuccessRedirect({ sessionId }: { sessionId: string }) {
   );
 }
 
-function StartForm() {
+function StartForm({ planFromUrl }: { planFromUrl: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
-  const planFromUrl = searchParams.get("plan") || "test-week";
-
-  if (sessionId) {
-    return <PaymentSuccessRedirect sessionId={sessionId} />;
-  }
-  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -265,10 +257,20 @@ function StartForm() {
   );
 }
 
+function StartFormOrRedirect() {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const planFromUrl = searchParams.get("plan") || "test-week";
+  if (sessionId) {
+    return <PaymentSuccessRedirect sessionId={sessionId} />;
+  }
+  return <StartForm planFromUrl={planFromUrl} />;
+}
+
 export default function StartPage() {
   return (
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-white">Načítám…</div>}>
-      <StartForm />
+      <StartFormOrRedirect />
     </Suspense>
   );
 }
