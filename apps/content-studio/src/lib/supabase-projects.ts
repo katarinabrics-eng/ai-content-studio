@@ -550,10 +550,10 @@ export async function getWorkflowStateForProjects(
       if (row.status === "ready") byProject.set(row.project_id, true);
       else if (!byProject.has(row.project_id)) byProject.set(row.project_id, false);
     }
-    for (const [projectId, state] of map) {
+    map.forEach((state, projectId) => {
       const ready = byProject.get(projectId);
       if (ready !== undefined) (state as ProjectStateForStatus).aiOutputReady = ready;
-    }
+    });
   } catch {
     // ignore
   }

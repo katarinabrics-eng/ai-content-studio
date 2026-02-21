@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: process.env.VERCEL === "1",
     remotePatterns: [
       {
         protocol: "https",

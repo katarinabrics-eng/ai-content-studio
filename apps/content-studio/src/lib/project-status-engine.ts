@@ -167,6 +167,9 @@ const WHO_BY_STATUS: Record<string, WhoIsOnMove> = {
 
 /** Vrací workflow kontext pro daný status. */
 export function getWorkflowStep(status: string, errorReason?: string | null): WorkflowStep {
+  if (status == null || typeof status !== "string") {
+    return { step: 1, total: TOTAL_STEPS, label: "—", who: null, currentAction: "Projekt je v procesu.", badge: "gray" };
+  }
   const step = STATUS_TO_STEP[status] ?? 1;
   const label = PROJECT_STATUS_LABELS[status] ?? status;
   const who = WHO_BY_STATUS[status] ?? null;
@@ -230,6 +233,7 @@ const LEGACY_STATUS_ORDER: Record<string, number> = {
 };
 
 export function getStatusOrder(status: ProjectStatus): number {
+  if (status == null || typeof status !== "string") return 0;
   const i = PROJECT_STATUS_ORDER.indexOf(status);
   if (i !== -1) return i;
   const legacy = LEGACY_STATUS_ORDER[status];
@@ -265,12 +269,14 @@ export const ALLOWED_TRANSITIONS: Partial<Record<string, string[]>> = {
 };
 
 export function canTransition(from: string, to: string): boolean {
+  if (from == null || to == null || typeof from !== "string" || typeof to !== "string") return false;
   const allowed = ALLOWED_TRANSITIONS[from];
   return Array.isArray(allowed) && allowed.includes(to);
 }
 
 /** Pro zobrazení timeline: mapuje legacy status na ekvivalentní nový. */
 export function getDisplayStatusForTimeline(status: string): string {
+  if (status == null || typeof status !== "string") return "WAITING_PAYMENT";
   const map: Record<string, string> = {
     PROCESSING_DATA: "WAITING_BRIEF",
     READY_FOR_AI: "WAITING_MANUAL_AI_COMMAND",
