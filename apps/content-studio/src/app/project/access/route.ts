@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createProjectSession, verifyAndConsumeAccessToken } from "@/lib/supabase-projects";
+import { createProjectSession, getProjectById, verifyAndConsumeAccessToken } from "@/lib/supabase-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,7 +21,13 @@ export async function GET(request: Request) {
   }
 
   const sessionToken = await createProjectSession(projectId);
-  const redirectUrl = new URL("/project", request.url);
+
+  // Prefer redirect to client dashboard (card layout) when we have project_code
+  const project = await getProjectById(projectId);
+  const projectCode = (project as { project_code?: string | null } | null)?.project_code;
+  const redirectPath = projectCode ? `/client/${encodeURIComponent(projectCode)}` : "/project";
+
+  const redirectUrl = new URL(redirectPath, request.url);
   const res = NextResponse.redirect(redirectUrl);
   const expires = new Date();
   expires.setDate(expires.getDate() + COOKIE_DAYS);

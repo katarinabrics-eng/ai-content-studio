@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   PROJECT_STATUS_LABELS,
+  PROJECT_STATUS_ORDER,
   getStatusOrder,
   getDisplayStatusForTimeline,
   type ProjectStatus,
@@ -18,58 +19,39 @@ type ProjectData = {
   updated_at: string;
   brief?: {
     brand_name?: string;
+    industry?: string;
+    communication_goal?: string;
+    platforms?: string[];
   } | null;
 };
+
+const CLIENT_VISIBLE_STATUSES = PROJECT_STATUS_ORDER.filter(
+  (s) => s !== "WAITING_PAYMENT" && s !== "ERROR"
+);
 
 function TimelineSteps({ currentStatus }: { currentStatus: ProjectStatus }) {
   const displayStatus = getDisplayStatusForTimeline(currentStatus);
   const currentOrder = getStatusOrder(displayStatus as ProjectStatus);
-  const clientVisibleStatuses: ProjectStatus[] = [
-    "AWAITING_INPUT",
-    "INPUT_RECEIVED",
-    "AI_PROCESSING",
-    "AWAITING_APPROVAL",
-    "APPROVED_SCHEDULED",
-    "DONE",
-  ];
 
   return (
-    <div className="mt-6 space-y-3">
-      {clientVisibleStatuses.map((status, index) => {
+    <div className="mt-4 flex flex-wrap gap-2">
+      {CLIENT_VISIBLE_STATUSES.map((status) => {
         const order = getStatusOrder(status);
         const done = order <= currentOrder;
         const current = status === displayStatus;
         return (
-          <div
+          <span
             key={status}
-            className={`flex items-center gap-3 rounded-lg border p-4 ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
               current
-                ? "border-lucifera-lime bg-lucifera-lime/10"
+                ? "bg-lucifera-lime/25 text-lucifera-lime border border-lucifera-lime/30"
                 : done
-                  ? "border-green-200 bg-green-50"
-                  : "border-stone-200 bg-stone-50"
+                  ? "bg-white/10 text-white/70"
+                  : "bg-white/5 text-white/40"
             }`}
           >
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
-                current
-                  ? "bg-lucifera-lime text-zinc-900"
-                  : done
-                    ? "bg-green-500 text-white"
-                    : "bg-stone-300 text-stone-600"
-              }`}
-            >
-              {done ? "✓" : index + 1}
-            </div>
-            <div>
-              <p className={`font-medium ${current ? "text-zinc-900" : done ? "text-green-800" : "text-stone-600"}`}>
-                {PROJECT_STATUS_LABELS[status]}
-              </p>
-              {current && (
-                <p className="text-sm text-stone-600">Právě probíhá</p>
-              )}
-            </div>
-          </div>
+            {PROJECT_STATUS_LABELS[status]}
+          </span>
         );
       })}
     </div>
@@ -78,6 +60,13 @@ function TimelineSteps({ currentStatus }: { currentStatus: ProjectStatus }) {
 
 function getStatusMessage(status: ProjectStatus): string {
   switch (status) {
+    case "WAITING_PAYMENT":
+      return "Čekáme na platbu.";
+    case "PAID":
+    case "WAITING_BRIEF":
+      return "Platba potvrzena. Vyplňte prosím dotazník s podklady pro váš projekt.";
+    case "WAITING_MANUAL_AI_COMMAND":
+      return "Dotazník je vyplněn. Čekáme na interní pokyn – brzy začneme generovat návrhy.";
     case "AWAITING_INPUT":
     case "PROCESSING_DATA":
       return "Čekáme na vaše podklady. Jakmile je obdržíme, začneme pracovat.";
@@ -86,6 +75,7 @@ function getStatusMessage(status: ProjectStatus): string {
       return "Podklady máme. Připravujeme návrhy příspěvků.";
     case "AWAITING_MANUAL_PROMPT":
       return "Čekáme na interní pokyn. Brzy začneme generovat.";
+    case "AI_IN_PROGRESS":
     case "AI_PROCESSING":
     case "IN_PRODUCTION":
       return "AI a kurátor pracují na vašich příspěvcích. Bude to trvat jen chvíli.";
@@ -106,6 +96,16 @@ function getStatusMessage(status: ProjectStatus): string {
       return "Váš projekt je v procesu.";
   }
 }
+
+const COMING_SOON_CARDS = [
+  { id: "canva", label: "Canva šablony", icon: "🖼️" },
+  { id: "reels", label: "Video Reels", icon: "▶️" },
+  { id: "brand-video", label: "Brand video", icon: "🎬" },
+  { id: "maskot", label: "Maskot", icon: "🎭" },
+  { id: "avatar", label: "Avatar", icon: "👤" },
+  { id: "foto-set", label: "Foto set", icon: "📸" },
+  { id: "ilustrace", label: "Ilustrace", icon: "✏️" },
+];
 
 export default function ClientProjectPage() {
   const params = useParams();
@@ -137,7 +137,7 @@ export default function ClientProjectPage() {
     return (
       <main className="min-h-screen bg-lucifera-dark flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-lucifera-lime border-t-transparent rounded-full mx-auto"></div>
+          <div className="animate-spin h-8 w-8 border-2 border-lucifera-lime border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-white/70">Načítám projekt...</p>
         </div>
       </main>
@@ -159,30 +159,105 @@ export default function ClientProjectPage() {
   }
 
   const status = project.status as ProjectStatus;
+  const brief = project.brief;
 
   return (
     <main className="min-h-screen bg-lucifera-dark px-4 py-12">
-      <div className="mx-auto max-w-lg">
-        <div className="text-center">
+      <div className="mx-auto max-w-2xl">
+        <div className="text-center mb-10">
           <h1 className="text-2xl font-bold text-white">
-            {project.brief?.brand_name ?? "Váš projekt"}
+            {brief?.brand_name && brief.brand_name !== "—"
+              ? brief.brand_name
+              : "Váš projekt"}
           </h1>
           <p className="mt-2 text-white/50 font-mono text-sm">{project.project_code}</p>
         </div>
 
-        <div className="glass-panel mt-8 p-6">
-          <h2 className="font-semibold text-white">Aktuální stav</h2>
-          <p className="mt-2 text-lucifera-lime text-lg font-medium">
-            {PROJECT_STATUS_LABELS[status] ?? status}
-          </p>
-          <p className="mt-2 text-white/70 text-sm">
-            {getStatusMessage(status)}
-          </p>
-        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Aktivní karta: Stav zakázky */}
+          <div className="glass-panel p-6 sm:col-span-2">
+            <h2 className="font-semibold text-white flex items-center gap-2">
+              <span className="text-lucifera-lime">📋</span> Stav zakázky
+            </h2>
+            <p className="mt-2 text-lucifera-lime text-lg font-medium">
+              {PROJECT_STATUS_LABELS[status] ?? status}
+            </p>
+            <p className="mt-2 text-white/70 text-sm">{getStatusMessage(status)}</p>
+            <TimelineSteps currentStatus={status} />
+          </div>
 
-        <div className="glass-panel mt-6 p-6">
-          <h2 className="font-semibold text-white">Průběh projektu</h2>
-          <TimelineSteps currentStatus={status} />
+          {/* CTA: Vyplnit dotazník - pouze když PAID nebo WAITING_BRIEF */}
+          {(status === "PAID" || status === "WAITING_BRIEF") && (
+            <div className="glass-panel p-6 sm:col-span-2 border-lucifera-lime/30 bg-lucifera-lime/5">
+              <h2 className="font-semibold text-white flex items-center gap-2">
+                <span className="text-lucifera-lime">📝</span> Vyplňte dotazník
+              </h2>
+              <p className="mt-2 text-white/70 text-sm">
+                Pro pokračování projektu prosím vyplňte údaje o vaší značce.
+              </p>
+              <a
+                href={`/client/${encodeURIComponent(projectCode)}/brief`}
+                className="btn-lime-primary mt-4 inline-block"
+              >
+                Vyplnit dotazník
+              </a>
+            </div>
+          )}
+
+          {/* Aktivní karta: Nahraná data */}
+          <div className="glass-panel p-6">
+            <h2 className="font-semibold text-white flex items-center gap-2">
+              <span className="text-lucifera-lime">📁</span> Nahraná data
+            </h2>
+            {brief && (brief.brand_name !== "—" || brief.industry !== "—") ? (
+              <dl className="mt-4 space-y-2 text-sm">
+                {brief.brand_name && brief.brand_name !== "—" && (
+                  <>
+                    <dt className="text-white/50">Značka</dt>
+                    <dd className="text-white">{brief.brand_name}</dd>
+                  </>
+                )}
+                {brief.industry && brief.industry !== "—" && (
+                  <>
+                    <dt className="text-white/50">Obor</dt>
+                    <dd className="text-white">{brief.industry}</dd>
+                  </>
+                )}
+                {brief.communication_goal && brief.communication_goal !== "—" && (
+                  <>
+                    <dt className="text-white/50">Cíl</dt>
+                    <dd className="text-white">{brief.communication_goal}</dd>
+                  </>
+                )}
+                {brief.platforms?.length && (
+                  <>
+                    <dt className="text-white/50">Platformy</dt>
+                    <dd className="text-white">{brief.platforms.join(", ")}</dd>
+                  </>
+                )}
+              </dl>
+            ) : (
+              <p className="mt-4 text-white/50 text-sm">
+                Zatím žádná data. Vyplňte dotazník v dalším kroku.
+              </p>
+            )}
+          </div>
+
+          {/* Neaktivní karty – Brzy dostupné */}
+          {COMING_SOON_CARDS.map((card) => (
+            <div
+              key={card.id}
+              className="glass-panel p-6 opacity-60 pointer-events-none"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{card.icon}</span>
+                <div>
+                  <h2 className="font-semibold text-white/90">{card.label}</h2>
+                  <p className="mt-1 text-xs text-lucifera-lime/80">Brzy dostupné</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <p className="mt-8 text-center text-xs text-white/40">

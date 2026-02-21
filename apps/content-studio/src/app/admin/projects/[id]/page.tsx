@@ -111,6 +111,35 @@ export default function AdminProjectDetailPage() {
     }
   }
 
+  async function handleTriggerAI() {
+    setGenerating(true);
+    setGenerationError(null);
+    setGenerationWarning(null);
+    try {
+      const instructionEl = document.getElementById("ai-instruction") as HTMLInputElement | null;
+      const instruction = instructionEl?.value?.trim() ?? undefined;
+      const res = await fetch(`/api/admin/projects/${id}/trigger-ai`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instruction }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        if (Array.isArray(data.drafts)) {
+          setDrafts(data.drafts);
+        }
+        fetchProject();
+        fetchDrafts();
+      } else {
+        setGenerationError(data.error ?? "Spuštění AI selhalo");
+      }
+    } catch (e) {
+      setGenerationError(e instanceof Error ? e.message : "Chyba při spuštění AI");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   async function handleMarkReady() {
     setUpdating(true);
     try {
@@ -295,16 +324,32 @@ export default function AdminProjectDetailPage() {
             </label>
           </div>
 
-          {(current === "AWAITING_MANUAL_PROMPT" || current === "READY_FOR_AI" || current === "INPUT_RECEIVED") && aiModeManual && (
-            <div className="mt-4">
-              <button
-                type="button"
-                onClick={handleGenerateDrafts}
-                disabled={generating}
-                className="rounded bg-[#A3E635] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 disabled:opacity-50"
-              >
-                {generating ? "Pokyn přijat, zpracováváme…" : "Odeslat nový pokyn AI"}
-              </button>
+          {(current === "WAITING_MANUAL_AI_COMMAND" || current === "AWAITING_MANUAL_PROMPT" || current === "READY_FOR_AI" || current === "INPUT_RECEIVED") && aiModeManual && (
+            <div className="mt-4 space-y-3">
+              {current === "WAITING_MANUAL_AI_COMMAND" && (
+                <p className="text-sm text-amber-700 font-medium">
+                  ⚡ AI se spustí pouze po manuálním pokynu. Bez tohoto kroku se AI job nevytvoří.
+                </p>
+              )}
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-xs text-stone-500 mb-1">Volitelný pokyn pro AI</label>
+                  <input
+                    type="text"
+                    id="ai-instruction"
+                    placeholder="Např. Zaměř se na B2B, použij formálnější tón…"
+                    className="w-full rounded border border-stone-300 px-3 py-2 text-sm"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={current === "WAITING_MANUAL_AI_COMMAND" ? handleTriggerAI : handleGenerateDrafts}
+                  disabled={generating}
+                  className="rounded bg-[#A3E635] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 disabled:opacity-50"
+                >
+                  {generating ? "Pokyn přijat, zpracováváme…" : current === "WAITING_MANUAL_AI_COMMAND" ? "Spustit AI podle pokynu" : "Odeslat nový pokyn AI"}
+                </button>
+              </div>
               {generating && <p className="mt-1 text-sm text-stone-500">AI zpracovává zadání</p>}
             </div>
           )}

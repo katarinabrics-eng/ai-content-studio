@@ -1,12 +1,59 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+
+function PaymentSuccessRedirect({ sessionId }: { sessionId: string }) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function processPayment() {
+      try {
+        const res = await fetch(`/api/checkout/success?session_id=${encodeURIComponent(sessionId)}`);
+        const data = await res.json();
+        if (data.ok && data.accessToken) {
+          router.replace(`/project/access?token=${encodeURIComponent(data.accessToken)}`);
+          return;
+        }
+        if (data.ok && data.projectCode) {
+          router.replace(`/start/success?code=${encodeURIComponent(data.projectCode)}`);
+          return;
+        }
+        setError(data.error ?? "Nepodařilo se zpracovat platbu.");
+      } catch {
+        setError("Chyba při ověřování platby.");
+      }
+    }
+    processPayment();
+  }, [sessionId, router]);
+
+  return (
+    <main className="min-h-screen bg-lucifera-dark flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin h-10 w-10 border-2 border-lucifera-lime border-t-transparent rounded-full mx-auto" />
+        <p className="mt-4 text-white/80">
+          {error ?? "Zpracováváme platbu a připravujeme váš projekt…"}
+        </p>
+        {error && (
+          <a href="/" className="mt-4 inline-block text-lucifera-lime hover:underline">
+            Zpět na hlavní stránku
+          </a>
+        )}
+      </div>
+    </main>
+  );
+}
 
 function StartForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
   const planFromUrl = searchParams.get("plan") || "test-week";
+
+  if (sessionId) {
+    return <PaymentSuccessRedirect sessionId={sessionId} />;
+  }
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

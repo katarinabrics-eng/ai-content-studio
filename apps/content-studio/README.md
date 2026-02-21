@@ -99,6 +99,10 @@ Všechna perzistentní data jsou v **Supabase** (bez lokálních souborů `data/
 - `NEXT_PUBLIC_SUPABASE_URL` – URL projektu
 - `SUPABASE_SERVICE_ROLE_KEY` – service role klíč (pro server-side operace)
 
+**Stripe (platba před dotazníkem):**
+- `STRIPE_SECRET_KEY` – API klíč Stripe
+- `STRIPE_WEBHOOK_SECRET` – webhook signing secret (`whsec_...`) pro ověření podpisu na `/api/webhooks/stripe`
+
 **Tabulky:**
 - `public.intake_submissions` – `id` (uuid), `created_at` (timestamptz), `payload` (jsonb)
 - `public.post_drafts` – `id` (uuid), `intake_id` (uuid), `created_at` (timestamptz), `payload` (jsonb)
