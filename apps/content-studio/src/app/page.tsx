@@ -25,7 +25,7 @@ export default function HomePage() {
         <div className="relative mx-auto flex min-h-[86vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
           <div className="max-w-[560px]">
             <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
-              Obsah pod kontrolou studia.
+              Prémiová vizuální identita pro osobní značky
             </h1>
             <p className="mt-6 max-w-md text-lg text-zinc-700" style={{ lineHeight: "1.75rem" }}>
               Vizuálně silné příspěvky pod odborným dohledem. Technologie generuje. My rozhodujeme.
