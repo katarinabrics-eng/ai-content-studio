@@ -28,14 +28,11 @@ export default function HomePage() {
               Prémiová vizuální identita pro osobní značky
             </h1>
             <p className="mt-6 max-w-md text-lg text-zinc-700" style={{ lineHeight: "1.75rem" }}>
-              Vizuálně silné příspěvky pod odborným dohledem. Technologie generuje. My rozhodujeme.
-            </p>
-            <p className="mt-4 text-sm text-zinc-600">
-              3 příspěvky · do 48 hodin · 800 Kč jednorázově
+              Sladím obraz vaší značky s úrovní vašeho podnikání.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <a href="/start?plan=test-week" className="rounded-lg bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-                Chci mít hotovo
+                Zahájit spolupráci
               </a>
               <a
                 href="#jak-to-funguje"
