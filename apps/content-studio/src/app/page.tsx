@@ -118,6 +118,47 @@ Reálné projekty. Reálné značky.`}
         </div>
       </section>
 
+      <section id="ukazky" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
+            Ukázky naší práce
+          </h2>
+          <p className="mt-4 max-w-2xl text-lg text-stone-600">
+            Příklady příspěvků a vizuálů, které pro klienty připravujeme.
+          </p>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+              <img
+                src="/placeholders/01_ukazky.png"
+                alt="Ukázka vizuálů obsahu"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+              <img
+                src="/placeholders/01_ukazky_1.png"
+                alt="Ukázka vizuálů obsahu"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+              <img
+                src="/placeholders/01_ukazky_2.png"
+                alt="Ukázka vizuálů obsahu"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+              <img
+                src="/placeholders/01_ukazky_3.png"
+                alt="Ukázka vizuálů obsahu"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="jak-to-funguje" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
