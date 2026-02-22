@@ -23,16 +23,20 @@ export default function HomePage() {
           }}
         />
         <div className="relative mx-auto flex min-h-[86vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
-          <div className="max-w-[560px]">
+          <div className="max-w-[600px]">
             <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
               Prémiová vizuální identita pro osobní značky
             </h1>
-            <p className="mt-6 max-w-md text-lg text-zinc-700" style={{ lineHeight: "1.75rem" }}>
-              Sladím obraz vaší značky s úrovní vašeho podnikání.
+            <p className="mt-6 text-xl text-zinc-700" style={{ lineHeight: "1.6" }}>
+              Váš obraz by měl odpovídat úrovni, na které dnes podnikáte.
+            </p>
+            <p className="mt-4 text-lg text-zinc-600" style={{ lineHeight: "1.7" }}>
+              Strategická spolupráce pro lídry, podnikatele a veřejně vystupující osobnosti,
+              kteří chtějí kultivovat svou vizuální prezentaci dlouhodobě.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <a href="/start?plan=test-week" className="rounded-lg bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-                Zahájit spolupráci
+                Mám zájem o spolupráci
               </a>
               <a
                 href="#jak-to-funguje"
