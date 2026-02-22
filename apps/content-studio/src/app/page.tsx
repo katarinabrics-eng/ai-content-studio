@@ -385,6 +385,20 @@ Rozhodujeme lidsky.`}
         </div>
       </section>
 
+      <section className="w-full border-t border-stone-200 bg-stone-50 px-6 py-24 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-3xl font-bold leading-tight tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-[1.15]">
+            Silná značka není hlasitá.
+          </p>
+          <p className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[#A3E635] sm:text-4xl md:text-5xl md:leading-[1.15]">
+            Je čitelná.
+          </p>
+          <p className="mt-10 text-xl font-medium text-stone-600 sm:text-2xl">
+            A čitelnost je otázka rozhodnutí.
+          </p>
+        </div>
+      </section>
+
       <footer className="border-t border-stone-200 bg-white py-8 text-center text-sm text-stone-500">
         © {new Date().getFullYear()} AI Content Studio Lucifera
       </footer>
