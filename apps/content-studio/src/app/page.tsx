@@ -49,54 +49,86 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="manifest" className="relative w-full overflow-hidden border-t-4 border-[#A3E635] bg-gradient-to-b from-stone-50 to-stone-100 px-6 py-24 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-5xl">
-          <div className="relative rounded-2xl border-l-4 border-[#A3E635] bg-white/80 p-8 shadow-sm sm:p-10 md:p-12">
-            <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-tight">
-              Nejste líní.{" "}
-              <span className="text-[#A3E635]">Jste jen přehlcení.</span>
-            </h2>
-            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-stone-600">
-              Většina podnikatelů a specialistů nechce nepostovat. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
+      <section id="manifest" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-24 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-tight">
+            Když značka vyroste rychleji než její obraz
+          </h2>
+
+          <p className="mt-8 text-xl font-medium leading-relaxed text-stone-800">
+            Vaše podnikání se vyvíjí.
+          </p>
+          <p className="mt-2 text-xl font-medium leading-relaxed text-stone-800">
+            Vaše odpovědnost roste.
+          </p>
+          <p className="mt-2 text-xl font-medium leading-relaxed text-stone-800">
+            Vaše publikum také.
+          </p>
+
+          <p className="mt-10 text-lg leading-relaxed text-stone-600">
+            Ale vizuální prezentace často zůstává tam, kde byla před lety.
+          </p>
+
+          <div className="mt-10 rounded-xl border border-stone-200 bg-white/60 p-6 sm:p-8">
+            <p className="text-lg leading-relaxed text-stone-700">
+              Fotografie vznikaly postupně.
+            </p>
+            <p className="mt-2 text-lg leading-relaxed text-stone-700">
+              Feed se skládal intuitivně.
+            </p>
+            <p className="mt-2 text-lg leading-relaxed text-stone-700">
+              Grafika řešila konkrétní situace, ne celek.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            <div className="group rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E635]/15 text-[#A3E635] transition-colors group-hover:bg-[#A3E635]/25">
-                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-              </div>
-              <p className="mt-5 text-stone-700">
-                Znáte své téma perfektně, ale nevíte, jak ho prodat na sítích.
-              </p>
-            </div>
-            <div className="group rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E635]/15 text-[#A3E635] transition-colors group-hover:bg-[#A3E635]/25">
-                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p className="mt-5 text-stone-700">
-                Když už si sednete k obsahu, ztratíte hodiny přepisováním jedné věty.
-              </p>
-            </div>
-            <div className="group rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E635]/15 text-[#A3E635] transition-colors group-hover:bg-[#A3E635]/25">
-                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
-              </div>
-              <p className="mt-5 text-stone-700">
-                Každý příspěvek je mentální start od nuly. Prázdný rám čeká.
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-12 text-center text-lg text-stone-600">
-            Místo toho, abyste se věnovali tomu, co vás živí, řešíte co dnes dát na Instagram nebo LinkedIn.
+          <p className="mt-10 text-lg leading-relaxed text-stone-600">
+            To funguje, dokud vás znají osobně.
           </p>
+
+          <p className="mt-10 text-lg leading-relaxed text-stone-600">
+            Jakmile ale vstupujete do většího prostoru, váš obraz musí unést víc než jen sympatie.
+          </p>
+          <p className="mt-4 text-xl font-semibold leading-relaxed text-stone-900">
+            Musí unést vaši úroveň.
+          </p>
+
+          <p className="mt-12 text-lg font-medium text-stone-800">
+            Co tím myslím konkrétně?
+          </p>
+          <ul className="mt-6 space-y-3 text-lg leading-relaxed text-stone-600">
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-stone-400">–</span>
+              <span>vizuál, který působí jednotně</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-stone-400">–</span>
+              <span>obraz, který odpovídá vaší ceně</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-stone-400">–</span>
+              <span>prezentace, která nepůsobí nahodile</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-stone-400">–</span>
+              <span>fotografie, které nejsou jen „hezké“, ale použitelné</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1 shrink-0 text-stone-400">–</span>
+              <span>jasný vizuální směr místo improvizace</span>
+            </li>
+          </ul>
+
+          <div className="mt-16 rounded-2xl bg-white p-8 shadow-sm sm:p-10">
+            <p className="text-2xl font-bold leading-tight tracking-tight text-stone-900 sm:text-3xl">
+              Silná značka není hlasitá.
+            </p>
+            <p className="mt-4 text-2xl font-bold leading-tight tracking-tight text-stone-900 sm:text-3xl">
+              Je čitelná.
+            </p>
+            <p className="mt-8 text-xl font-medium text-stone-600">
+              A čitelnost je otázka rozhodnutí.
+            </p>
+          </div>
         </div>
       </section>
 
