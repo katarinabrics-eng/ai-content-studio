@@ -49,47 +49,52 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="manifest" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
+      <section id="manifest" className="relative w-full overflow-hidden border-t-4 border-[#A3E635] bg-gradient-to-b from-stone-50 to-stone-100 px-6 py-24 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Nejste líní. Jste jen přehlcení.
-          </h2>
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-stone-600">
-            Většina podnikatelů a specialistů nechce nepostovat. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
-          </p>
+          <div className="relative rounded-2xl border-l-4 border-[#A3E635] bg-white/80 p-8 shadow-sm sm:p-10 md:p-12">
+            <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-tight">
+              Nejste líní.{" "}
+              <span className="text-[#A3E635]">Jste jen přehlcení.</span>
+            </h2>
+            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-stone-600">
+              Většina podnikatelů a specialistů nechce nepostovat. Jen na to po celém dni plném klientské práce a řízení byznysu už zkrátka nezbývá kapacita.
+            </p>
+          </div>
+
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-xl border border-stone-200 bg-white p-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#A3E635]/10 text-[#A3E635]">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="group rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E635]/15 text-[#A3E635] transition-colors group-hover:bg-[#A3E635]/25">
+                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                 </svg>
               </div>
-              <p className="mt-4 text-stone-700">
+              <p className="mt-5 text-stone-700">
                 Znáte své téma perfektně, ale nevíte, jak ho prodat na sítích.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-200 bg-white p-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#A3E635]/10 text-[#A3E635]">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="group rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E635]/15 text-[#A3E635] transition-colors group-hover:bg-[#A3E635]/25">
+                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="mt-4 text-stone-700">
+              <p className="mt-5 text-stone-700">
                 Když už si sednete k obsahu, ztratíte hodiny přepisováním jedné věty.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-200 bg-white p-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#A3E635]/10 text-[#A3E635]">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="group rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E635]/15 text-[#A3E635] transition-colors group-hover:bg-[#A3E635]/25">
+                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
                 </svg>
               </div>
-              <p className="mt-4 text-stone-700">
+              <p className="mt-5 text-stone-700">
                 Každý příspěvek je mentální start od nuly. Prázdný rám čeká.
               </p>
             </div>
           </div>
-          <p className="mt-10 text-lg text-stone-600">
+
+          <p className="mt-12 text-center text-lg text-stone-600">
             Místo toho, abyste se věnovali tomu, co vás živí, řešíte co dnes dát na Instagram nebo LinkedIn.
           </p>
         </div>
