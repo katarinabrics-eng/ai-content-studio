@@ -49,85 +49,120 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="manifest" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-24 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-tight">
-            Když značka vyroste rychleji než její obraz
-          </h2>
-
-          <p className="mt-8 text-xl font-medium leading-relaxed text-stone-800">
-            Vaše podnikání se vyvíjí.
-          </p>
-          <p className="mt-2 text-xl font-medium leading-relaxed text-stone-800">
-            Vaše odpovědnost roste.
-          </p>
-          <p className="mt-2 text-xl font-medium leading-relaxed text-stone-800">
-            Vaše publikum také.
-          </p>
-
-          <p className="mt-10 text-lg leading-relaxed text-stone-600">
-            Ale vizuální prezentace často zůstává tam, kde byla před lety.
-          </p>
-
-          <div className="mt-10 rounded-xl border border-stone-200 bg-white/60 p-6 sm:p-8">
-            <p className="text-lg leading-relaxed text-stone-700">
-              Fotografie vznikaly postupně.
-            </p>
-            <p className="mt-2 text-lg leading-relaxed text-stone-700">
-              Feed se skládal intuitivně.
-            </p>
-            <p className="mt-2 text-lg leading-relaxed text-stone-700">
-              Grafika řešila konkrétní situace, ne celek.
-            </p>
+      {/* SECTION: Manifest – 3 sub-sections (problem, transition, statement) */}
+      <section id="manifest" className="w-full border-t border-stone-200 bg-[#FAFAF9]">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          {/* SECTION 1 – Problem statement (2-column) */}
+          <div className="flex flex-col gap-12 py-32 lg:flex-row lg:items-center lg:gap-16">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-4xl font-bold tracking-tight text-stone-900 md:text-5xl md:leading-[1.1]">
+                Když značka vyroste rychleji než její obraz
+              </h2>
+              <p className="mt-10 text-lg leading-relaxed text-stone-900">
+                Vaše podnikání se vyvíjí.
+              </p>
+              <p className="mt-3 text-lg leading-relaxed text-stone-900">
+                Vaše odpovědnost roste.
+              </p>
+              <p className="mt-3 text-lg leading-relaxed text-stone-900">
+                Vaše publikum také.
+              </p>
+              <p className="mt-10 text-base text-stone-500">
+                Ale vizuální prezentace často zůstává tam, kde byla před lety.
+              </p>
+            </div>
+            <div className="relative flex-1 lg:max-w-[420px]">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-stone-200 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)]">
+                {/* Placeholder: grayscale portrait – replace with real img */}
+                <div className="absolute inset-0 bg-stone-300 grayscale" aria-hidden />
+                {/* Lime brush stroke overlay */}
+                <div
+                  className="absolute inset-0 opacity-90 mix-blend-multiply"
+                  style={{
+                    background: "linear-gradient(135deg, transparent 25%, rgba(180, 240, 0, 0.55) 45%, rgba(180, 240, 0, 0.4) 55%, transparent 75%)",
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
-          <p className="mt-10 text-lg leading-relaxed text-stone-600">
-            To funguje, dokud vás znají osobně.
-          </p>
-
-          <p className="mt-10 text-lg leading-relaxed text-stone-600">
-            Jakmile ale vstupujete do většího prostoru, váš obraz musí unést víc než jen sympatie.
-          </p>
-          <p className="mt-4 text-xl font-semibold leading-relaxed text-stone-900">
-            Musí unést vaši úroveň.
-          </p>
-
-          <p className="mt-12 text-lg font-medium text-stone-800">
-            Co tím myslím konkrétně?
-          </p>
-          <ul className="mt-6 space-y-3 text-lg leading-relaxed text-stone-600">
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-stone-400">–</span>
-              <span>vizuál, který působí jednotně</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-stone-400">–</span>
-              <span>obraz, který odpovídá vaší ceně</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-stone-400">–</span>
-              <span>prezentace, která nepůsobí nahodile</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-stone-400">–</span>
-              <span>fotografie, které nejsou jen „hezké“, ale použitelné</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-stone-400">–</span>
-              <span>jasný vizuální směr místo improvizace</span>
-            </li>
-          </ul>
-
-          <div className="mt-16 rounded-2xl bg-white p-8 shadow-sm sm:p-10">
-            <p className="text-2xl font-bold leading-tight tracking-tight text-stone-900 sm:text-3xl">
-              Silná značka není hlasitá.
+          {/* SECTION 2 – Transition block */}
+          <div className="py-16 lg:py-24">
+            <p className="text-center text-xl font-semibold text-stone-900 md:text-2xl">
+              To funguje, dokud vás znají osobně.
             </p>
-            <p className="mt-4 text-2xl font-bold leading-tight tracking-tight text-stone-900 sm:text-3xl">
-              Je čitelná.
+            <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-stone-500">
+              Jakmile ale vstupujete do většího prostoru, váš obraz musí unést víc než jen sympatie.
+              <br />
+              Musí unést vaši úroveň.
             </p>
-            <p className="mt-8 text-xl font-medium text-stone-600">
-              A čitelnost je otázka rozhodnutí.
-            </p>
+
+            <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-16">
+              {/* Left: 5 cards */}
+              <div className="space-y-4">
+                {[
+                  { title: "vizuál, který působí jednotně", sub: "Jednotný jazyk napříč kanály." },
+                  { title: "obraz, který odpovídá vaší ceně", sub: "Prezentace na úrovni vašeho byznysu." },
+                  { title: "prezentace, která nepůsobí nahodile", sub: "Záměr místo náhody." },
+                  { title: "fotografie, které nejsou jen „hezké“", sub: "Použitelné v reálné komunikaci." },
+                  { title: "jasný vizuální směr místo improvizace", sub: "Strategie, ne jednorázové řešení." },
+                ].map((item) => (
+                  <div
+                    key={item.title}
+                    className="flex gap-4 rounded-xl bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] transition-shadow hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)]"
+                  >
+                    <div className="h-10 w-10 shrink-0 rounded bg-[#B4F000]" aria-hidden />
+                    <div>
+                      <p className="font-semibold text-stone-900">{item.title}</p>
+                      <p className="mt-1 text-sm text-stone-500">{item.sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right: 2 image placeholders */}
+              <div className="flex flex-col gap-6">
+                <div className="relative ml-0 aspect-square max-w-sm overflow-hidden rounded-xl bg-stone-200 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] lg:ml-8">
+                  <div className="absolute inset-0 bg-stone-300 grayscale" aria-hidden />
+                  <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ background: "linear-gradient(180deg, transparent 40%, rgba(180, 240, 0, 0.2) 100%)" }} aria-hidden />
+                </div>
+                <div className="relative ml-12 aspect-square max-w-sm overflow-hidden rounded-xl bg-stone-200 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] lg:ml-20">
+                  <div className="absolute inset-0 bg-stone-300 grayscale" aria-hidden />
+                  <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ background: "linear-gradient(0deg, transparent 40%, rgba(180, 240, 0, 0.15) 100%)" }} aria-hidden />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 3 – Statement block */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-stone-900 via-stone-800 to-stone-800 py-20 px-8 md:py-28 md:px-12 lg:flex lg:items-center lg:justify-between lg:gap-16 lg:px-16">
+            {/* Lime glow right */}
+            <div className="pointer-events-none absolute -right-40 -top-40 h-80 w-80 rounded-full bg-[#B4F000] opacity-20 blur-[100px]" aria-hidden />
+            {/* Faint "25" in background */}
+            <span className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2 text-[min(20vw,280px)] font-bold leading-none text-white opacity-[0.05]" aria-hidden>
+              25
+            </span>
+
+            <div className="relative max-w-2xl">
+              <p className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+                Silná značka není hlasitá.
+              </p>
+              <p className="mt-4 text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
+                Je čitelná.
+              </p>
+              <p className="mt-8 text-xl text-stone-400">
+                A čitelnost je otázka rozhodnutí.
+              </p>
+            </div>
+
+            <div className="relative mt-12 flex justify-center lg:mt-0 lg:shrink-0">
+              <div className="relative h-[280px] w-[280px] md:h-[320px] md:w-[320px]">
+                <div className="absolute -inset-4 rounded-full bg-[#B4F000]/40 blur-2xl" aria-hidden />
+                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-stone-700 shadow-2xl">
+                  <div className="absolute inset-0 bg-stone-400 grayscale" aria-hidden />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
