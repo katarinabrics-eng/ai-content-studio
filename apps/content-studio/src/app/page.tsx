@@ -95,67 +95,81 @@ export default function HomePage() {
 
       <VibeSection />
 
-      {/* BLOK 4 – Definice služby (A). Pozice, ne balíček. Stejný container, levé zarovnání. */}
-      <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
+      {/* SEKCE 1 – Vizuální manifest. Plynulé navázání na vibe blok. Žádné odstavce, jen rytmus. */}
+      <section id="definice-sluzby" className="w-full bg-[#FAFAFA] py-[160px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="max-w-[760px]">
+          <div className="max-w-[800px]">
             <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
+              className="font-bold leading-[1.08] tracking-tight text-[#111111]"
+              style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", marginBottom: "48px" }}
             >
-              Prémiová vizuální identita není kosmetická úprava.
+              Prémiová vizuální identita
+              <br />
+              není kosmetická úprava.
             </h2>
             <p
-              className="text-[20px] leading-[1.8] text-[#3A3A3A]"
-              style={{ marginBottom: "60px" }}
+              className="text-[22px] font-semibold leading-[1.5] text-[#1a1a1a]"
+              style={{ marginBottom: "56px" }}
             >
-              Je to strategické rozhodnutí.
-              <br />
-              Vstupujete do něj ve chvíli, kdy víte, že vaše značka má vyšší ambici.
-              <br />
-              A jste připraveni ji nést.
+              Je to rozhodnutí.
             </p>
-            <div className="space-y-12">
-              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
-                Vizuální identita nastavuje jasný standard.
-                <br />
-                Ukazuje, kdo jste — bez vysvětlování.
-              </p>
-              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
-                Není o větší viditelnosti.
-                <br />
-                Je o přesnějším dojmu.
-              </p>
-              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
-                Neřeší jen obsah.
-                <br />
-                Nastavuje směr.
-              </p>
-            </div>
+            <p
+              className="text-[20px] leading-[1.75] text-[#2a2a2a]"
+              style={{ marginBottom: "40px" }}
+            >
+              Vizuální identita nastavuje standard.
+              <br />
+              Ukazuje, kdo jste.
+            </p>
+            <p
+              className="text-[20px] font-normal leading-[1.75] text-[#555555]"
+              style={{ marginBottom: "56px" }}
+            >
+              Není o větší viditelnosti.
+              <br />
+              Je o přesnějším dojmu.
+            </p>
+            <p
+              className="text-[24px] font-semibold leading-[1.3] text-[#111111]"
+              style={{ marginTop: "48px", marginBottom: "48px" }}
+            >
+              Nastavuje směr.
+            </p>
           </div>
         </div>
       </section>
 
       <section id="co-delame" className="hidden" aria-hidden="true" />
 
-      <section id="rozdil" className="w-full border-t border-stone-200 bg-stone-100 px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1fr] md:items-center">
-          <div className="relative aspect-[3/4] max-h-[480px] w-full">
-            <img
-              src="/placeholders/KDOJSEM_01.png"
-              alt=""
-              className="h-full w-full object-cover object-center drop-shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
-            />
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-              Rozhoduje zkušenost.
-            </h2>
-            <p className="mt-8 whitespace-pre-line text-lg leading-relaxed text-stone-600">
-              {`Technologie navrhuje. Zkušenost vybírá.
-25 let práce s obrazem.
-Reálné projekty. Reálné značky.`}
-            </p>
+      {/* SEKCE 2 – Obraz + zkušenost. Obraz 60–70 %, text posunutý níž = diagonální tok oka. */}
+      <section id="rozdil" className="w-full bg-white py-[160px]">
+        <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
+            <div className="relative lg:col-span-8">
+              <img
+                src="/placeholders/KDOJSEM_01.png"
+                alt=""
+                className="w-full object-cover object-center"
+                style={{ aspectRatio: "3/4", maxHeight: "600px" }}
+              />
+            </div>
+            <div className="flex flex-col justify-center lg:col-span-5 lg:col-start-8 lg:mt-24">
+              <h2
+                className="font-bold leading-[1.1] tracking-tight text-[#111111]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", marginBottom: "40px" }}
+              >
+                Rozhoduje zkušenost.
+              </h2>
+              <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "20px" }}>
+                Technologie navrhuje. Zkušenost vybírá.
+              </p>
+              <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "20px" }}>
+                25 let práce s obrazem.
+              </p>
+              <p className="text-[19px] leading-[1.75] text-[#333333]">
+                Reálné projekty. Reálné značky.
+              </p>
+            </div>
           </div>
         </div>
       </section>
