@@ -49,12 +49,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION: Manifest – 3 sub-sections (problem, transition, statement) */}
-      <section id="manifest" className="w-full border-t border-stone-200 bg-[#FAFAF9]">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          {/* SECTION 1 – Problem statement (2-column) */}
-          <div className="flex flex-col gap-12 py-32 lg:flex-row lg:items-center lg:gap-16">
-            <div className="min-w-0 flex-1">
+      {/* BLOK 2 – PROBLÉM: bílé pozadí, text vlevo, vpravo gradient čtverec (limetka → šedá), bez fotky */}
+      <section id="manifest" className="w-full border-t border-stone-200 bg-white">
+        <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
+          <div className="flex flex-col gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
+            {/* Text vlevo */}
+            <div className="min-w-0 flex-1 text-left">
               <h2 className="text-4xl font-bold tracking-tight text-stone-900 md:text-5xl md:leading-[1.1]">
                 Když značka vyroste rychleji než její obraz
               </h2>
@@ -67,25 +67,27 @@ export default function HomePage() {
               <p className="mt-3 text-lg leading-relaxed text-stone-900">
                 Vaše publikum také.
               </p>
-              <p className="mt-10 text-base text-stone-500">
+              <p className="mt-10 text-lg leading-relaxed text-stone-600">
                 Ale vizuální prezentace často zůstává tam, kde byla před lety.
               </p>
             </div>
-            <div className="relative flex-1 lg:max-w-[420px]">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-stone-200 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)]">
-                {/* Placeholder: grayscale portrait – replace with real img */}
-                <div className="absolute inset-0 bg-stone-300 grayscale" aria-hidden />
-                {/* Lime brush stroke overlay */}
-                <div
-                  className="absolute inset-0 opacity-90 mix-blend-multiply"
-                  style={{
-                    background: "linear-gradient(135deg, transparent 25%, rgba(180, 240, 0, 0.55) 45%, rgba(180, 240, 0, 0.4) 55%, transparent 75%)",
-                  }}
-                />
-              </div>
+            {/* Vpravo: minimalistický gradient čtverec (limetka → šedá), abstraktní roh */}
+            <div className="flex shrink-0 justify-end lg:justify-center">
+              <div
+                className="aspect-square w-full max-w-[280px] rounded-2xl sm:max-w-[320px] lg:max-w-[360px]"
+                style={{
+                  background: "linear-gradient(135deg, #A3E635 0%, #B4F000 25%, #d4d4d4 70%, #a8a29e 100%)",
+                }}
+                aria-hidden
+              />
             </div>
           </div>
+        </div>
+      </section>
 
+      {/* SECTION: Manifest – transition + statement (zachováno) */}
+      <section className="w-full border-t border-stone-200 bg-[#FAFAF9]">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
           {/* SECTION 2 – Transition block */}
           <div className="py-16 lg:py-24">
             <p className="text-center text-xl font-semibold text-stone-900 md:text-2xl">
