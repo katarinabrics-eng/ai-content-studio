@@ -49,38 +49,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BLOK 2 – ATMOSFÉRICKÁ VERZE: světlo, vzduch, přechod od hero. */}
+      {/* BLOK 2 – Atmosféra + pointa ve skleněném okně */}
       <section
         id="manifest"
         className="relative w-full overflow-hidden pt-[180px] pb-[180px]"
         style={{
-          backgroundColor: "#F8F9F7",
-          backgroundImage: "radial-gradient(circle at 85% 30%, rgba(163, 255, 0, 0.07), transparent 55%)",
+          backgroundColor: "#F7F9F5",
+          backgroundImage: "radial-gradient(circle at 85% 30%, rgba(163, 255, 0, 0.06), transparent 55%)",
         }}
       >
-        <div className="relative mx-auto max-w-[760px] px-6 pl-8 text-left sm:pl-12 md:pl-16 lg:pl-20">
-          <h2
-            className="font-bold leading-[1.1] text-[#111111]"
-            style={{ fontSize: "clamp(2.25rem, 6vw, 64px)" }}
-          >
-            Když značka roste
-            <br />
-            rychleji než její obraz
-          </h2>
-          <div
-            className="mt-8 space-y-4"
-            style={{ fontSize: "20px", lineHeight: "160%", color: "#2A2A2A", fontWeight: 400 }}
-          >
-            <p>Vaše podnikání se vyvíjí.</p>
-            <p className="pl-5">Vaše odpovědnost roste.</p>
-            <p className="pl-8">Vaše publikum také.</p>
+        <div className="relative mx-auto max-w-[1280px] px-6 sm:px-8 md:px-12 lg:px-16">
+          {/* Text vlevo, cca 55 % šířky */}
+          <div className="min-w-0 max-w-full pl-0 pr-4 md:max-w-[55%] md:pr-8">
+            <h2
+              className="font-bold leading-[1.1] text-[#111111]"
+              style={{ fontSize: "clamp(2.25rem, 6vw, 64px)" }}
+            >
+              Když značka roste
+              <br />
+              rychleji než její obraz
+            </h2>
+            <div
+              className="mt-8 space-y-4"
+              style={{ fontSize: "20px", lineHeight: "160%", color: "#2A2A2A", fontWeight: 400 }}
+            >
+              <p>Vaše podnikání se vyvíjí.</p>
+              <p className="pl-5">Vaše odpovědnost roste.</p>
+              <p className="pl-8">Vaše publikum také.</p>
+            </div>
           </div>
-          <p
-            className="mt-12 max-w-[32rem] text-[18px] leading-relaxed"
-            style={{ color: "#6E6E6E" }}
+
+          {/* Skleněné okno – poslední věta jako dramaturgický bod, lehce doprava */}
+          <div
+            className="mt-16 w-full max-w-[520px] rounded-2xl px-8 py-10 md:ml-20 md:mt-20"
+            style={{
+              background: "rgba(163, 255, 0, 0.08)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              border: "1px solid rgba(163, 255, 0, 0.18)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
+            }}
           >
-            Vizuální prezentace ale často zůstává tam, kde byla před lety.
-          </p>
+            <p
+              className="text-left text-[22px] leading-[1.5] text-[#1a1a1a] md:text-[24px]"
+              style={{ fontWeight: 400 }}
+            >
+              Vizuální prezentace často{" "}
+              <span
+                className="font-semibold text-[#111111]"
+                style={{ borderBottom: "2px solid rgba(163, 255, 0, 0.5)" }}
+              >
+                zůstává
+              </span>{" "}
+              tam, kde byla před lety.
+            </p>
+          </div>
         </div>
       </section>
 
