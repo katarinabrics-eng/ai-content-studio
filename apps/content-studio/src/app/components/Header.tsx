@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { href: "#definice", label: "Definice" },
-  { href: "#proces", label: "Proces" },
-  { href: "#ukazky", label: "Ukázky" },
-  { href: "#cta", label: "Kontakt" },
+  { href: "#jak-to-funguje", label: "Jak to funguje" },
+  { href: "#testovaci-nabidka", label: "Nabídka" },
+  { href: "#proc-my", label: "Proč my" },
+  { href: "#faq", label: "FAQ" },
+  { href: "#zaver", label: "Kontakt" },
 ];
 
 export function Header() {
@@ -24,11 +25,11 @@ export function Header() {
     <header
       className={`sticky top-0 z-50 h-14 transition-colors duration-200 ${
         scrolled
-          ? "border-b border-stone-200/60 bg-white/90 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent"
+          ? "border-b border-stone-200/60 bg-white/80 backdrop-blur-md"
+          : "border-b border-stone-200 bg-white"
       }`}
     >
-      <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between gap-4 px-6 xl:px-10">
+      <div className="mx-auto flex h-full max-w-[1360px] items-center justify-between gap-4 px-6 xl:px-10">
         <a
           href="/"
           className="flex shrink-0 items-center focus:outline-none"
@@ -37,16 +38,16 @@ export function Header() {
           <img
             src="/placeholders/LUCIFERA-Logo-Left.png"
             alt="Lucifera"
-            className={`h-7 w-auto shrink-0 object-contain sm:h-9 lg:h-10 ${!scrolled ? "brightness-0 invert opacity-95" : ""}`}
+            className="h-7 w-auto shrink-0 object-contain sm:h-9 lg:h-10"
           />
         </a>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-6 lg:flex">
           {navItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className={`shrink-0 whitespace-nowrap text-sm transition-colors ${scrolled ? "text-stone-600 hover:text-stone-900" : "text-white/90 hover:text-white"}`}
+              className="shrink-0 whitespace-nowrap text-sm text-stone-600 transition-colors hover:text-stone-900"
             >
               {item.label}
             </a>
@@ -57,7 +58,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`flex h-10 w-10 items-center justify-center rounded-lg lg:hidden ${scrolled ? "text-stone-600 hover:bg-stone-100" : "text-white/90 hover:bg-white/10"}`}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-100 lg:hidden"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Zavřít menu" : "Otevřít menu"}
           >
@@ -72,8 +73,8 @@ export function Header() {
             )}
           </button>
           <a
-            href="/start"
-            className="rounded-lg bg-[#A3E635] px-4 py-2.5 text-sm font-semibold text-stone-900 hover:bg-[#A3E635]/90 sm:px-5"
+            href="/start?plan=test-week"
+            className="rounded-lg bg-[#A3E635] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 sm:px-5"
           >
             Spustit projekt
           </a>
@@ -94,11 +95,6 @@ export function Header() {
                 </a>
               </li>
             ))}
-            <li>
-              <a href="/start" onClick={() => setMenuOpen(false)} className="mt-2 block rounded-lg bg-[#A3E635] px-3 py-2.5 text-sm font-semibold text-stone-900">
-                Spustit projekt
-              </a>
-            </li>
           </ul>
         </nav>
       )}
