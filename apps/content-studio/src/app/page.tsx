@@ -92,86 +92,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION: Manifest – transition + statement (zachováno) */}
-      <section className="w-full border-t border-stone-200 bg-[#FAFAF9]">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          {/* SECTION 2 – Transition block */}
-          <div className="py-16 lg:py-24">
-            <p className="text-center text-xl font-semibold text-stone-900 md:text-2xl">
-              To funguje, dokud vás znají osobně.
-            </p>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-stone-500">
-              Jakmile ale vstupujete do většího prostoru, váš obraz musí unést víc než jen sympatie.
-              <br />
-              Musí unést vaši úroveň.
-            </p>
-
-            <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-16">
-              {/* Left: 5 cards */}
-              <div className="space-y-4">
-                {[
-                  { title: "vizuál, který působí jednotně", sub: "Jednotný jazyk napříč kanály." },
-                  { title: "obraz, který odpovídá vaší ceně", sub: "Prezentace na úrovni vašeho byznysu." },
-                  { title: "prezentace, která nepůsobí nahodile", sub: "Záměr místo náhody." },
-                  { title: "fotografie, které nejsou jen „hezké“", sub: "Použitelné v reálné komunikaci." },
-                  { title: "jasný vizuální směr místo improvizace", sub: "Strategie, ne jednorázové řešení." },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="flex gap-4 rounded-xl bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] transition-shadow hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)]"
-                  >
-                    <div className="h-10 w-10 shrink-0 rounded bg-[#B4F000]" aria-hidden />
-                    <div>
-                      <p className="font-semibold text-stone-900">{item.title}</p>
-                      <p className="mt-1 text-sm text-stone-500">{item.sub}</p>
-                    </div>
-                  </div>
-                ))}
+      {/* BLOK 3 – Racionální pilíře. Stejný container jako Hero a Blok 2. Čistá bílá, žádné boxy. */}
+      <section id="pilire" className="w-full bg-[#FFFFFF] py-[120px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <h2
+            className="max-w-[720px] font-bold leading-[1.15] text-[#111111]"
+            style={{
+              fontSize: "clamp(2rem, 4vw, 56px)",
+              marginBottom: "32px",
+            }}
+          >
+            To funguje, dokud vás znají osobně.
+          </h2>
+          <p
+            className="max-w-[680px] text-[20px] leading-[1.8] text-[#3A3A3A]"
+            style={{ marginBottom: "72px" }}
+          >
+            Jakmile vstupujete do většího prostoru,
+            <br />
+            váš obraz musí unést víc než jen sympatie.
+            <br />
+            Musí unést vaši úroveň.
+          </p>
+          <div className="grid max-w-[900px] grid-cols-1 gap-x-20 gap-y-10 sm:grid-cols-2 lg:gap-y-[60px]">
+            {[
+              "vizuál, který působí jednotně",
+              "obraz, který odpovídá vaší ceně",
+              "prezentace, která nepůsobí nahodile",
+              "jasný vizuální směr místo improvizace",
+            ].map((label) => (
+              <div key={label} className="max-w-[420px]">
+                <div
+                  className="mb-4 h-[3px] w-12 rounded-full bg-[#A3FF00]"
+                  aria-hidden
+                />
+                <p className="text-[20px] font-medium leading-[1.5] text-[#1A1A1A]">
+                  {label}
+                </p>
               </div>
-
-              {/* Right: 2 image placeholders */}
-              <div className="flex flex-col gap-6">
-                <div className="relative ml-0 aspect-square max-w-sm overflow-hidden rounded-xl bg-stone-200 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] lg:ml-8">
-                  <div className="absolute inset-0 bg-stone-300 grayscale" aria-hidden />
-                  <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ background: "linear-gradient(180deg, transparent 40%, rgba(180, 240, 0, 0.2) 100%)" }} aria-hidden />
-                </div>
-                <div className="relative ml-12 aspect-square max-w-sm overflow-hidden rounded-xl bg-stone-200 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] lg:ml-20">
-                  <div className="absolute inset-0 bg-stone-300 grayscale" aria-hidden />
-                  <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ background: "linear-gradient(0deg, transparent 40%, rgba(180, 240, 0, 0.15) 100%)" }} aria-hidden />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION 3 – Statement block */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-stone-900 via-stone-800 to-stone-800 py-20 px-8 md:py-28 md:px-12 lg:flex lg:items-center lg:justify-between lg:gap-16 lg:px-16">
-            {/* Lime glow right */}
-            <div className="pointer-events-none absolute -right-40 -top-40 h-80 w-80 rounded-full bg-[#B4F000] opacity-20 blur-[100px]" aria-hidden />
-            {/* Faint "25" in background */}
-            <span className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2 text-[min(20vw,280px)] font-bold leading-none text-white opacity-[0.05]" aria-hidden>
-              25
-            </span>
-
-            <div className="relative max-w-2xl">
-              <p className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl">
-                Silná značka není hlasitá.
-              </p>
-              <p className="mt-4 text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
-                Je čitelná.
-              </p>
-              <p className="mt-8 text-xl text-stone-400">
-                A čitelnost je otázka rozhodnutí.
-              </p>
-            </div>
-
-            <div className="relative mt-12 flex justify-center lg:mt-0 lg:shrink-0">
-              <div className="relative h-[280px] w-[280px] md:h-[320px] md:w-[320px]">
-                <div className="absolute -inset-4 rounded-full bg-[#B4F000]/40 blur-2xl" aria-hidden />
-                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-stone-700 shadow-2xl">
-                  <div className="absolute inset-0 bg-stone-400 grayscale" aria-hidden />
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
