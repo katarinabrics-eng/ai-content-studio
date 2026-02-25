@@ -135,6 +135,47 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* BLOK 4 – Definice služby (A). Pozice, ne balíček. Stejný container, levé zarovnání. */}
+      <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[760px]">
+            <h2
+              className="font-bold leading-[1.1] text-[#111111]"
+              style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
+            >
+              Prémiová vizuální identita není kosmetická úprava.
+            </h2>
+            <p
+              className="text-[20px] leading-[1.8] text-[#3A3A3A]"
+              style={{ marginBottom: "60px" }}
+            >
+              Je to strategické rozhodnutí.
+              <br />
+              Vstupujete do něj ve chvíli, kdy víte, že vaše značka má vyšší ambici.
+              <br />
+              A jste připraveni ji nést.
+            </p>
+            <div className="space-y-12">
+              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
+                Vizuální identita nastavuje jasný standard.
+                <br />
+                Ukazuje, kdo jste — bez vysvětlování.
+              </p>
+              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
+                Není o větší viditelnosti.
+                <br />
+                Je o přesnějším dojmu.
+              </p>
+              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
+                Neřeší jen obsah.
+                <br />
+                Nastavuje směr.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="co-delame" className="hidden" aria-hidden="true" />
 
       <section id="rozdil" className="w-full border-t border-stone-200 bg-stone-100 px-6 py-20 sm:px-8 lg:px-12">
