@@ -49,65 +49,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BLOK 2 – Asymetrická kompozice: textový pilíř + světelná hmota. Žádné boxy, žádné schody. */}
+      {/* BLOK 2 – Klidná autorita. Stejný grid jako Hero. Žádné boxy, gradienty ani dekorace. */}
       <section
         id="manifest"
-        className="relative min-h-[560px] overflow-hidden py-[120px]"
-        style={{ backgroundColor: "#F7F8F5" }}
+        className="relative overflow-hidden py-20 md:py-[100px]"
+        style={{ backgroundColor: "#F7F8F5", minHeight: "520px" }}
       >
-        {/* Pravá strana: vertikální světelná hmota (absolute, 100 % výšky sekce) — desktop */}
-        <div
-          className="pointer-events-none absolute right-0 top-0 hidden h-full w-[520px] lg:block"
-          style={{
-            background: "radial-gradient(circle at 70% 30%, rgba(163, 255, 0, 0.18), transparent 65%)",
-            filter: "blur(50px)",
-            opacity: 0.5,
-          }}
-          aria-hidden
-        />
-        {/* Mobil: snížený světelný gradient (200px) pod obsahem */}
-        <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0 h-[200px] lg:hidden"
-          style={{
-            background: "radial-gradient(circle at 80% 50%, rgba(163, 255, 0, 0.12), transparent 70%)",
-            filter: "blur(40px)",
-            opacity: 0.5,
-          }}
-          aria-hidden
-        />
-
-        {/* Stejný container jako Hero — levý okraj nadpisu = stejný jako v Hero */}
+        {/* Stejný container jako Hero — levé zarovnání na stejné gridové ose */}
         <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]">
-          <h2
-            className="font-bold text-[#111111]"
-            style={{
-              fontSize: "clamp(2rem, 5vw, 64px)",
-              lineHeight: 1.08,
-              marginBottom: "40px",
-            }}
-          >
-            Když značka roste
-            <br />
-            rychleji než její obraz
-          </h2>
-          <div
-            className="space-y-1"
-            style={{ marginBottom: "48px" }}
-          >
-            <p className="text-[20px] leading-[1.8] text-[#3A3A3A]">Vaše podnikání se vyvíjí.</p>
-            <p className="text-[20px] leading-[1.8] text-[#3A3A3A]">Vaše odpovědnost roste.</p>
-            <p className="text-[20px] leading-[1.8] text-[#3A3A3A]">Vaše publikum také.</p>
-          </div>
-          {/* Problémová věta + limetkový pruh — uzavření sekce, ne box */}
-          <p className="text-[20px] leading-[1.6] text-[#2A2A2A]">
-            Vizuální prezentace často zůstává tam, kde byla před lety.
-          </p>
-          <div
-            className="mt-4 h-2 w-40 rounded"
-            style={{ backgroundColor: "#A3FF00", opacity: 0.7 }}
-            aria-hidden
-          />
+            <h2
+              className="font-bold leading-[1.08] text-[#111111]"
+              style={{
+                fontSize: "clamp(2.25rem, 5vw, 64px)",
+                marginBottom: "40px",
+              }}
+            >
+              Když značka roste
+              <br />
+              rychleji než její obraz
+            </h2>
+            <div
+              className="text-[20px] leading-[1.8] text-[#3A3A3A]"
+              style={{ marginBottom: "48px" }}
+            >
+              <p>Vaše podnikání se vyvíjí.</p>
+              <p>Vaše odpovědnost roste.</p>
+              <p>Vaše publikum také.</p>
+            </div>
+            <p
+              className="text-[20px] font-medium leading-[1.6] text-[#1A1A1A]"
+              style={{ marginTop: "32px" }}
+            >
+              Vizuální prezentace často zůstává tam, kde byla před lety.
+            </p>
+            <div
+              className="h-1.5 w-[100px] rounded-[3px] bg-[#A3FF00] md:w-[140px]"
+              style={{ marginTop: "16px" }}
+              aria-hidden
+            />
           </div>
         </div>
       </section>
