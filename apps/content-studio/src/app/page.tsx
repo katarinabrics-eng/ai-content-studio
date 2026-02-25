@@ -16,13 +16,8 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <HeroImageFull />
         </div>
-        {/* Velký limetkový kruh vpravo (jako na screenu) – přes okraj sekce */}
         <div
-          className="pointer-events-none absolute -right-[25%] -top-[30%] z-10 h-[90vmax] w-[90vmax] rounded-full bg-[#A3E635]"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 z-[2]"
+          className="absolute inset-0"
           style={{
             background: "linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.35) 35%, transparent 55%)",
           }}
