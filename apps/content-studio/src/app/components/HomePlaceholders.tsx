@@ -12,12 +12,12 @@ export function HeroImageFull() {
     <div className="absolute inset-0">
       <Image
         src={HERO_SRC}
-        alt="Prémiová vizuální identita pro osobní značky – hero vizuál"
+        alt=""
         fill
         className="object-cover object-center"
         sizes="100vw"
         priority
-        style={{ filter: "contrast(1.12) brightness(1.02)" }}
+        style={{ filter: "contrast(1.08) brightness(0.96)" }}
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";
         }}

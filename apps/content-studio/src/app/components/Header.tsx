@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { href: "#realita", label: "Realita" },
-  { href: "#co-zahrnuje", label: "Co zahrnuje" },
-  { href: "#proces", label: "Proces" },
-  { href: "#pro-koho", label: "Pro koho" },
+  { href: "#jak-to-funguje", label: "Jak to funguje" },
+  { href: "#testovaci-nabidka", label: "Nabídka" },
+  { href: "#proc-my", label: "Proč my" },
   { href: "#faq", label: "FAQ" },
+  { href: "#zaver", label: "Kontakt" },
 ];
 
 export function Header() {
@@ -47,7 +47,7 @@ export function Header() {
             <a
               key={item.href}
               href={item.href}
-              className="shrink-0 whitespace-nowrap text-sm text-stone-600 transition-colors hover:text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#A3E635] focus:ring-offset-2 rounded"
+              className="shrink-0 whitespace-nowrap text-sm text-stone-600 transition-colors hover:text-stone-900"
             >
               {item.label}
             </a>
@@ -73,10 +73,10 @@ export function Header() {
             )}
           </button>
           <a
-            href="/start"
-            className="rounded-lg bg-[#A3E635] px-4 py-2.5 text-sm font-semibold text-stone-900 hover:bg-[#A3E635]/90 sm:px-5 focus:outline-none focus:ring-2 focus:ring-[#A3E635] focus:ring-offset-2"
+            href="/start?plan=test-week"
+            className="rounded-lg bg-[#A3E635] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 sm:px-5"
           >
-            Rezervovat konzultaci
+            Spustit projekt
           </a>
         </div>
       </div>
@@ -89,7 +89,7 @@ export function Header() {
                 <a
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-sm text-stone-700 hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#A3E635] focus:ring-inset"
+                  className="block rounded-lg px-3 py-2 text-sm text-stone-700 hover:bg-stone-50"
                 >
                   {item.label}
                 </a>
