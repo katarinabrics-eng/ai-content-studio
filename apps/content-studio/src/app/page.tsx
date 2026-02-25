@@ -76,8 +76,9 @@ export default function HomePage() {
           aria-hidden
         />
 
-        {/* Textový pilíř: max-width 720px, margin-left 140px na desktopu */}
-        <div className="relative max-w-[720px] px-6 lg:ml-[140px] lg:px-0">
+        {/* Stejný container jako Hero — levý okraj nadpisu = stejný jako v Hero */}
+        <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[720px]">
           <h2
             className="font-bold text-[#111111]"
             style={{
@@ -107,6 +108,7 @@ export default function HomePage() {
             style={{ backgroundColor: "#A3FF00", opacity: 0.7 }}
             aria-hidden
           />
+          </div>
         </div>
       </section>
 
