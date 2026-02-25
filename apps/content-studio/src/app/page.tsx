@@ -49,39 +49,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BLOK 2 – PROBLÉM: bílé pozadí, text vlevo, vpravo gradient čtverec (limetka → šedá), bez fotky */}
-      <section id="manifest" className="w-full border-t border-stone-200 bg-white">
-        <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
-          <div className="flex flex-col gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
-            {/* Text vlevo */}
-            <div className="min-w-0 flex-1 text-left">
-              <h2 className="text-4xl font-bold tracking-tight text-stone-900 md:text-5xl md:leading-[1.1]">
-                Když značka vyroste rychleji než její obraz
-              </h2>
-              <p className="mt-10 text-lg leading-relaxed text-stone-900">
-                Vaše podnikání se vyvíjí.
-              </p>
-              <p className="mt-3 text-lg leading-relaxed text-stone-900">
-                Vaše odpovědnost roste.
-              </p>
-              <p className="mt-3 text-lg leading-relaxed text-stone-900">
-                Vaše publikum také.
-              </p>
-              <p className="mt-10 text-lg leading-relaxed text-stone-600">
-                Ale vizuální prezentace často zůstává tam, kde byla před lety.
-              </p>
-            </div>
-            {/* Vpravo: minimalistický gradient čtverec (limetka → šedá), abstraktní roh */}
-            <div className="flex shrink-0 justify-end lg:justify-center">
-              <div
-                className="aspect-square w-full max-w-[280px] rounded-2xl sm:max-w-[320px] lg:max-w-[360px]"
-                style={{
-                  background: "linear-gradient(135deg, #A3E635 0%, #B4F000 25%, #d4d4d4 70%, #a8a29e 100%)",
-                }}
-                aria-hidden
-              />
-            </div>
+      {/* BLOK 2 – MINIMALISTICKÁ VERZE: zastavení, uvědomění, váha. Žádné obrázky ani efekty. */}
+      <section id="manifest" className="w-full bg-[#FFFFFF] pt-[180px] pb-[180px]">
+        <div className="mx-auto max-w-[760px] px-6 pl-8 sm:pl-12 md:pl-16 lg:pl-20 text-left">
+          <h2
+            className="font-bold leading-[1.1] text-[#111111]"
+            style={{ fontSize: "clamp(2.25rem, 4vw, 3.75rem)" }}
+          >
+            Když značka roste rychleji než její obraz
+          </h2>
+          <div className="mt-8 space-y-5" style={{ fontSize: "20px", lineHeight: "160%", color: "#2A2A2A", fontWeight: 400 }}>
+            <p>Vaše podnikání se vyvíjí.</p>
+            <p>Vaše odpovědnost roste.</p>
+            <p>Vaše publikum také.</p>
           </div>
+          <p
+            className="mt-12 text-[18px] leading-relaxed"
+            style={{ color: "#6F6F6F" }}
+          >
+            Vizuální prezentace ale často zůstává tam, kde byla před lety.
+          </p>
+          <div
+            className="mt-[60px] h-px w-[60px] bg-[#DADADA]"
+            aria-hidden
+          />
         </div>
       </section>
 
