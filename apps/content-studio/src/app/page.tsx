@@ -1,5 +1,6 @@
 import { HeroImageFull } from "./components/HomePlaceholders";
 import { Header } from "./components/Header";
+import { VibeSection } from "./components/VibeSection";
 
 const faqs = [
   { q: "Je to automatické?", a: "Ne. Každý výstup prochází dohledem." },
@@ -134,6 +135,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <VibeSection />
 
       {/* BLOK 4 – Definice služby (A). Pozice, ne balíček. Stejný container, levé zarovnání. */}
       <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
