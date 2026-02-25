@@ -93,49 +93,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BLOK 3 – Racionální pilíře. Stejný container jako Hero a Blok 2. Čistá bílá, žádné boxy. */}
-      <section id="pilire" className="w-full bg-[#FFFFFF] py-[120px]">
-        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <h2
-            className="max-w-[720px] font-bold leading-[1.15] text-[#111111]"
-            style={{
-              fontSize: "clamp(2rem, 4vw, 56px)",
-              marginBottom: "32px",
-            }}
-          >
-            To funguje, dokud vás znají osobně.
-          </h2>
-          <p
-            className="max-w-[680px] text-[20px] leading-[1.8] text-[#3A3A3A]"
-            style={{ marginBottom: "72px" }}
-          >
-            Jakmile vstupujete do většího prostoru,
-            <br />
-            váš obraz musí unést víc než jen sympatie.
-            <br />
-            Musí unést vaši úroveň.
-          </p>
-          <div className="grid max-w-[900px] grid-cols-1 gap-x-20 gap-y-10 sm:grid-cols-2 lg:gap-y-[60px]">
-            {[
-              "vizuál, který působí jednotně",
-              "obraz, který odpovídá vaší ceně",
-              "prezentace, která nepůsobí nahodile",
-              "jasný vizuální směr místo improvizace",
-            ].map((label) => (
-              <div key={label} className="max-w-[420px]">
-                <div
-                  className="mb-4 h-[3px] w-12 rounded-full bg-[#A3FF00]"
-                  aria-hidden
-                />
-                <p className="text-[20px] font-medium leading-[1.5] text-[#1A1A1A]">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <VibeSection />
 
       {/* BLOK 4 – Definice služby (A). Pozice, ne balíček. Stejný container, levé zarovnání. */}
