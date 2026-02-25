@@ -49,61 +49,62 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BLOK 2 – Atmosféra + pointa ve skleněném okně */}
+      {/* BLOK 2 – Růst (text) → Stagnace (box) → Možnost (světlo). Dramaturgie. */}
       <section
         id="manifest"
-        className="relative w-full overflow-hidden pt-[180px] pb-[180px]"
+        className="relative overflow-hidden py-[140px] min-h-[720px] lg:min-h-[780px]"
         style={{
-          backgroundColor: "#F7F9F5",
-          backgroundImage: "radial-gradient(circle at 85% 30%, rgba(163, 255, 0, 0.06), transparent 55%)",
+          backgroundColor: "#F8F9F7",
+          backgroundImage: "radial-gradient(circle at 92% 40%, rgba(163, 255, 0, 0.07), transparent 50%)",
         }}
       >
-        <div className="relative mx-auto max-w-[1280px] px-6 sm:px-8 md:px-12 lg:px-16">
-          {/* Text vlevo, cca 55 % šířky */}
-          <div className="min-w-0 max-w-full pl-0 pr-4 md:max-w-[55%] md:pr-8">
-            <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "clamp(2.25rem, 6vw, 64px)" }}
-            >
-              Když značka roste
-              <br />
-              rychleji než její obraz
-            </h2>
-            <div
-              className="mt-8 space-y-4"
-              style={{ fontSize: "20px", lineHeight: "160%", color: "#2A2A2A", fontWeight: 400 }}
-            >
-              <p>Vaše podnikání se vyvíjí.</p>
-              <p className="pl-5">Vaše odpovědnost roste.</p>
-              <p className="pl-8">Vaše publikum také.</p>
-            </div>
-          </div>
-
-          {/* Skleněné okno – poslední věta jako dramaturgický bod, lehce doprava */}
+        <div className="mx-auto grid max-w-[1200px] grid-cols-1 grid-rows-auto gap-x-12 gap-y-10 px-6 sm:px-8 lg:grid-cols-2 lg:items-start">
+          {/* Levá strana: nadpis → schody → skleněné okno */}
+          <h2
+            className="order-1 max-w-[520px] font-bold leading-[1.1] text-[#111111] lg:col-start-1 lg:row-start-1"
+            style={{ fontSize: "clamp(2rem, 5vw, 64px)", marginBottom: "40px" }}
+          >
+            Když značka roste
+            <br />
+            rychleji než její obraz
+          </h2>
           <div
-            className="mt-16 w-full max-w-[520px] rounded-2xl px-8 py-10 md:ml-20 md:mt-20"
+            className="order-2 lg:col-start-1 lg:row-start-2"
+            style={{ marginBottom: "60px" }}
+          >
+            <p className="pl-0 text-[20px] leading-relaxed text-[#3A3A3A]">Vaše podnikání se vyvíjí.</p>
+            <p className="mt-2 pl-4 text-[20px] leading-relaxed text-[#3A3A3A] lg:pl-6">Vaše odpovědnost roste.</p>
+            <p className="mt-2 pl-8 text-[20px] leading-relaxed text-[#3A3A3A] lg:pl-12">Vaše publikum také.</p>
+          </div>
+          {/* Skleněné okno – těžítko kompozice */}
+          <div
+            className="order-4 w-full max-w-[420px] rounded-[20px] px-7 py-7 lg:order-3 lg:col-start-1 lg:row-start-3"
             style={{
               background: "rgba(163, 255, 0, 0.08)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              border: "1px solid rgba(163, 255, 0, 0.18)",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              border: "1px solid rgba(163, 255, 0, 0.2)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.06)",
+              minHeight: "140px",
             }}
           >
-            <p
-              className="text-left text-[22px] leading-[1.5] text-[#1a1a1a] md:text-[24px]"
-              style={{ fontWeight: 400 }}
-            >
-              Vizuální prezentace často{" "}
-              <span
-                className="font-semibold text-[#111111]"
-                style={{ borderBottom: "2px solid rgba(163, 255, 0, 0.5)" }}
-              >
-                zůstává
-              </span>{" "}
-              tam, kde byla před lety.
+            <p className="text-[18px] leading-[1.5] text-[#1a1a1a]">
+              Vizuální prezentace často zůstává tam,
+              <br />
+              kde byla před lety.
             </p>
           </div>
+          {/* Pravá strana: vertikální světelný panel – „prostor budoucnosti“ */}
+          <div
+            className="order-3 mt-6 ml-auto h-[280px] w-full max-w-[360px] lg:order-4 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-10 lg:h-[560px] lg:max-h-[560px] lg:w-[420px]"
+            style={{
+              background: "radial-gradient(circle at 70% 20%, rgba(163, 255, 0, 0.18), transparent 60%)",
+              filter: "blur(40px)",
+              opacity: 0.5,
+              borderRadius: "0",
+            }}
+            aria-hidden
+          />
         </div>
       </section>
 
