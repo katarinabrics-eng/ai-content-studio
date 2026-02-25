@@ -17,7 +17,7 @@ export function HeroImageFull() {
         className="object-cover object-center"
         sizes="100vw"
         priority
-        style={{ filter: "contrast(1.08) brightness(0.96)" }}
+        style={{ filter: "contrast(1.12) brightness(1.02)" }}
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = "none";
         }}
