@@ -49,30 +49,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* BLOK 2 – MINIMALISTICKÁ VERZE: zastavení, uvědomění, váha. Žádné obrázky ani efekty. */}
-      <section id="manifest" className="w-full bg-[#FFFFFF] pt-[180px] pb-[180px]">
-        <div className="mx-auto max-w-[760px] px-6 pl-8 sm:pl-12 md:pl-16 lg:pl-20 text-left">
+      {/* BLOK 2 – ATMOSFÉRICKÁ VERZE: světlo, vzduch, přechod od hero. */}
+      <section
+        id="manifest"
+        className="relative w-full overflow-hidden pt-[180px] pb-[180px]"
+        style={{
+          backgroundColor: "#F8F9F7",
+          backgroundImage: "radial-gradient(circle at 85% 30%, rgba(163, 255, 0, 0.07), transparent 55%)",
+        }}
+      >
+        <div className="relative mx-auto max-w-[760px] px-6 pl-8 text-left sm:pl-12 md:pl-16 lg:pl-20">
           <h2
             className="font-bold leading-[1.1] text-[#111111]"
-            style={{ fontSize: "clamp(2.25rem, 4vw, 3.75rem)" }}
+            style={{ fontSize: "clamp(2.25rem, 6vw, 64px)" }}
           >
-            Když značka roste rychleji než její obraz
+            Když značka roste
+            <br />
+            rychleji než její obraz
           </h2>
-          <div className="mt-8 space-y-5" style={{ fontSize: "20px", lineHeight: "160%", color: "#2A2A2A", fontWeight: 400 }}>
+          <div
+            className="mt-8 space-y-4"
+            style={{ fontSize: "20px", lineHeight: "160%", color: "#2A2A2A", fontWeight: 400 }}
+          >
             <p>Vaše podnikání se vyvíjí.</p>
-            <p>Vaše odpovědnost roste.</p>
-            <p>Vaše publikum také.</p>
+            <p className="pl-5">Vaše odpovědnost roste.</p>
+            <p className="pl-8">Vaše publikum také.</p>
           </div>
           <p
-            className="mt-12 text-[18px] leading-relaxed"
-            style={{ color: "#6F6F6F" }}
+            className="mt-12 max-w-[32rem] text-[18px] leading-relaxed"
+            style={{ color: "#6E6E6E" }}
           >
             Vizuální prezentace ale často zůstává tam, kde byla před lety.
           </p>
-          <div
-            className="mt-[60px] h-px w-[60px] bg-[#DADADA]"
-            aria-hidden
-          />
         </div>
       </section>
 
