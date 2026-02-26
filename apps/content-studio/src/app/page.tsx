@@ -400,6 +400,10 @@ export default function HomePage() {
       </section>
 
       <footer className="border-t border-stone-200 bg-white py-8 text-center text-sm text-stone-500">
+        <a href="/obchodni-podminky" className="underline underline-offset-2 hover:text-stone-700">
+          Obchodní podmínky
+        </a>
+        <span className="mx-2">·</span>
         © {new Date().getFullYear()} AI Content Studio Lucifera
       </footer>
     </main>
