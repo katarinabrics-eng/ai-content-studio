@@ -256,6 +256,87 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* BLOK 8 – Struktura spolupráce. Framework, ne ceník. */}
+      <section id="struktura-spoluprace" className="w-full bg-[#F7F8F5] py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[720px]">
+            <h2
+              className="font-bold leading-[1.1] text-[#111111]"
+              style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "16px" }}
+            >
+              Struktura spolupráce
+            </h2>
+            <p
+              className="text-[20px] leading-[1.6] text-[#3A3A3A]"
+              style={{ marginBottom: "56px" }}
+            >
+              Tři fáze od strategie po dlouhodobou implementaci.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+            <div className="relative">
+              <span
+                className="pointer-events-none absolute -top-2 left-0 select-none font-bold text-[#111111] opacity-[0.15]"
+                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", lineHeight: 1 }}
+                aria-hidden
+              >
+                01
+              </span>
+              <div className="h-[3px] w-6 rounded-full bg-[#A8EB12]" style={{ marginBottom: "20px" }} aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
+                Strategie a vizuální směr
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.65] text-[#3A3A3A]">
+                Analýza vaší současné pozice a návrh standardu, který odpovídá vaší reálné hodnotě. Definujeme, jak má vaše značka působit, dřív než stiskneme spoušť.
+              </p>
+            </div>
+            <div className="relative">
+              <span
+                className="pointer-events-none absolute -top-2 left-0 select-none font-bold text-[#111111] opacity-[0.15]"
+                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", lineHeight: 1 }}
+                aria-hidden
+              >
+                02
+              </span>
+              <div className="h-[3px] w-6 rounded-full bg-[#A8EB12]" style={{ marginBottom: "20px" }} aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
+                Realizace obsahu
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.65] text-[#3A3A3A]">
+                Portrétní a obsahová tvorba. Neřešíme počet snímků, ale jejich dopad. Vytvoříme vizuální banku, která za vás odpracuje první fázi prodeje.
+              </p>
+            </div>
+            <div className="relative">
+              <span
+                className="pointer-events-none absolute -top-2 left-0 select-none font-bold text-[#111111] opacity-[0.15]"
+                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", lineHeight: 1 }}
+                aria-hidden
+              >
+                03
+              </span>
+              <div className="h-[3px] w-6 rounded-full bg-[#A8EB12]" style={{ marginBottom: "20px" }} aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
+                Implementace a kontinuita
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.65] text-[#3A3A3A]">
+                Nastavení systému pro dlouhodobou čitelnost. Propojení reality s technologiemi (AI, digitální dvojníci), aby vaše značka zůstala konzistentní i bez vaší neustálé přítomnosti.
+              </p>
+            </div>
+          </div>
+          <p
+            className="mt-10 max-w-[720px] text-[16px] italic leading-[1.6] text-[#6E6E6E]"
+          >
+            Investice do prémiové identity začíná na [doplň částku] a je vždy přizpůsobena rozsahu vašeho byznysu a vašim cílům.
+          </p>
+          <a
+            href="/start"
+            className="mt-8 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+          >
+            Domluvit strategickou konzultaci
+          </a>
+        </div>
+      </section>
+
       <section id="testovaci-nabidka" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-md">
           <p className="mb-6 text-center text-lg font-medium text-stone-700">
