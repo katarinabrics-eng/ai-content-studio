@@ -21,7 +21,7 @@ export function intakeToCreateProjectParams(
     industry: (data.industry ?? "").trim(),
     communication_goal: contentGoal,
     platforms: platforms.length ? platforms : ["instagram"],
-    tone_of_voice: (data.toneOfVoice ?? data.tone_of_voice ?? "").trim(),
+    tone_of_voice: (data.toneOfVoice ?? "").trim(),
     website_or_profile: (data.website ?? "").trim(),
     client_email: overrides.client_email ?? null,
     note: (data.forbiddenWords ?? "").trim() || undefined,

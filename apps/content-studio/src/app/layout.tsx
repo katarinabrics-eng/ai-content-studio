@@ -17,6 +17,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "AI Content Studio Lucifera",
   description: "Dáte nám přístup k brandu. My vám dodáme příspěvky, které prodávají. AI + kreativní kurátor.",
+  icons: { icon: "/favicon.png" },
 };
 
 export default function RootLayout({
