@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "../components/Header";
 import { StandardCarousel } from "../components/StandardCarousel";
+import { OfferCarousel } from "../components/OfferCarousel";
 
 export const metadata: Metadata = {
   title: "Portréty | Studio Lucifera",
@@ -180,11 +181,7 @@ export default function PortretyPage() {
               </p>
             </div>
             <div className="lg:col-span-6 lg:col-start-7 flex justify-center lg:justify-end">
-              <img
-                src="/placeholders/headshot.png"
-                alt=""
-                className="max-w-[420px] w-full object-contain object-center"
-              />
+              <OfferCarousel />
             </div>
           </div>
         </div>
