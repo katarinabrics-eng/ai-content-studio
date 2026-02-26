@@ -13,7 +13,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-stone-50">
       <Header />
 
-      <section className="relative w-full min-h-[86vh] overflow-hidden bg-white">
+      <section className="relative w-full min-h-[85vh] overflow-hidden bg-white">
         <div className="absolute inset-0">
           <HeroImageFull />
         </div>
@@ -23,7 +23,7 @@ export default function HomePage() {
             background: "linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.35) 35%, transparent 55%)",
           }}
         />
-        <div className="relative mx-auto flex min-h-[86vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
+        <div className="relative mx-auto flex min-h-[85vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
           <div className="max-w-[600px]">
             <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
               Prémiová vizuální identita pro osobní značky
@@ -49,6 +49,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <VibeSection />
 
       {/* BLOK 2 – Klidná autorita. Stejný grid jako Hero. Žádné boxy, gradienty ani dekorace. */}
       <section
@@ -92,8 +94,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <VibeSection />
 
       {/* SEKCE 1 – Vizuální manifest. Plynulé navázání na vibe blok. Žádné odstavce, jen rytmus. */}
       <section id="definice-sluzby" className="w-full bg-[#FAFAFA] py-[160px]">
