@@ -66,7 +66,7 @@ export default function HomePage() {
             </p>
             <p className="mt-10 text-[17px] text-[#3A3A3A]">
               Nejčastější volba nových klientů: <span className="font-medium text-[#111111]">→ Profesní portrét jako první krok.</span>{" "}
-              <a href="#sluzby" className="underline underline-offset-2 hover:no-underline">
+              <a href="/portrety" className="underline underline-offset-2 hover:no-underline">
                 Zobrazit portréty
               </a>
             </p>
@@ -96,7 +96,7 @@ export default function HomePage() {
               <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
                 Obraz pozice pro podnikatele, experty a herce. Jistota a čitelnost v jednom záběru. Nejde o hezkou fotku. Jde o to, <strong className="text-[#111111]">jak vás trh čte během prvních sekund</strong>.
               </p>
-              <a href="#sluzby" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+              <a href="/portrety" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
                 Zjistit více
               </a>
               <p className="mt-4 text-[14px] italic text-stone-500">Ideální jako první spolupráce se studiem.</p>
@@ -108,7 +108,7 @@ export default function HomePage() {
               <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
                 Kreativní radost a přirozenost v ateliérovém standardu. Obraz vašeho skutečného já. I osobní fotografie může mít úroveň, světlo a klid profesionální práce – bez ztráty lehkosti.
               </p>
-              <a href="#sluzby" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+              <a href="/portrety" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
                 Zobrazit detaily
               </a>
               <p className="mt-4 text-[14px] italic text-stone-500">Termíny vypisujeme průběžně. Doporučujeme rezervaci s předstihem.</p>
