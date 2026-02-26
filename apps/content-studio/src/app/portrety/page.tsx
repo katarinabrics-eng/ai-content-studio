@@ -39,7 +39,7 @@ export default function PortretyPage() {
             </div>
             <div className="relative lg:col-span-6 lg:col-start-7 overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
               <img
-                src="/placeholders/PORTFOLIO PORTRET/1.JPG"
+                src="/placeholders/PORTFOLIO PORTRET/vyber/7.JPG"
                 alt=""
                 className="w-full object-cover object-center"
                 style={{ aspectRatio: "4/5", maxHeight: "75vh" }}
@@ -66,7 +66,7 @@ export default function PortretyPage() {
             </div>
             <div className="lg:col-span-5 lg:col-start-8 overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
               <img
-                src="/placeholders/PORTFOLIO PORTRET/13.JPG"
+                src="/placeholders/PORTFOLIO PORTRET/vyber/25.JPG"
                 alt=""
                 className="w-full object-cover object-center"
                 style={{ aspectRatio: "3/4", maxHeight: "560px" }}

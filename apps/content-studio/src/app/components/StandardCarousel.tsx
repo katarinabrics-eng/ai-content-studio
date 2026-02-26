@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 
 const SLIDES = [
-  { src: "/placeholders/PORTFOLIO PORTRET/2.JPG", alt: "Portrét – ateliérový standard" },
-  { src: "/placeholders/PORTFOLIO PORTRET/11.JPG", alt: "Portrét – ateliérový standard" },
-  { src: "/placeholders/PORTFOLIO PORTRET/22.JPG", alt: "Portrét – ateliérový standard" },
-  { src: "/placeholders/PORTFOLIO PORTRET/33.JPG", alt: "Portrét – ateliérový standard" },
-  { src: "/placeholders/PORTFOLIO PORTRET/1.JPG", alt: "Portrét – ateliérový standard" },
-  { src: "/placeholders/PORTFOLIO PORTRET/13.JPG", alt: "Portrét – ateliérový standard" },
+  { src: "/placeholders/PORTFOLIO PORTRET/vyber/7.JPG", alt: "Portrét – ateliérový standard" },
+  { src: "/placeholders/PORTFOLIO PORTRET/vyber/8.JPG", alt: "Portrét – ateliérový standard" },
+  { src: "/placeholders/PORTFOLIO PORTRET/vyber/10.JPG", alt: "Portrét – ateliérový standard" },
+  { src: "/placeholders/PORTFOLIO PORTRET/vyber/11.JPG", alt: "Portrét – ateliérový standard" },
+  { src: "/placeholders/PORTFOLIO PORTRET/vyber/18.JPG", alt: "Portrét – ateliérový standard" },
+  { src: "/placeholders/PORTFOLIO PORTRET/vyber/20.JPG", alt: "Portrét – ateliérový standard" },
 ];
 
 const FRAME_CLASS = "overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]";
