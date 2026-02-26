@@ -36,8 +36,8 @@ export default function HomePage() {
               kteří chtějí kultivovat svou vizuální prezentaci dlouhodobě.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start?plan=test-week" className="rounded-lg bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-                Mám zájem o spolupráci
+              <a href="/start" className="rounded-lg bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
+                Posunout značku výš
               </a>
               <a
                 href="#jak-to-funguje"
@@ -47,6 +47,15 @@ export default function HomePage() {
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Mezi hero a černý blok: To funguje, dokud vás znají osobně. */}
+      <section className="w-full bg-white py-16 md:py-20">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <p className="max-w-[720px] text-[clamp(1.75rem,4vw,2.5rem)] font-bold leading-[1.15] text-[#111111]">
+            To funguje, dokud vás znají osobně.
+          </p>
         </div>
       </section>
 
@@ -95,45 +104,56 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SEKCE 1 – Vizuální manifest. Plynulé navázání na vibe blok. Žádné odstavce, jen rytmus. */}
-      <section id="definice-sluzby" className="w-full bg-[#FAFAFA] py-[160px]">
+      {/* BLOK 3 – Struktura a standard (Racionální pilíře). Grid 2×2, jemná limetková linka. */}
+      <section id="pilire" className="w-full bg-white py-[120px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="max-w-[800px]">
+          <h2
+            className="max-w-[720px] font-bold leading-[1.15] text-[#111111]"
+            style={{ fontSize: "clamp(2rem, 4vw, 56px)", marginBottom: "32px" }}
+          >
+            To funguje, dokud vás znají osobně.
+          </h2>
+          <p
+            className="max-w-[680px] text-[20px] leading-[1.8] text-[#3A3A3A]"
+            style={{ marginBottom: "72px" }}
+          >
+            Jakmile vstupujete do většího prostoru,
+            <br />
+            váš obraz musí unést víc než jen sympatie.
+            <br />
+            Musí unést vaši úroveň.
+          </p>
+          <div className="grid max-w-[900px] grid-cols-1 gap-x-20 gap-y-10 sm:grid-cols-2 lg:gap-y-[60px]">
+            {[
+              { title: "Vizuál, který působí jednotně.", sub: "Jednotný jazyk napříč všemi kanály." },
+              { title: "Obraz, který odpovídá vaší ceně.", sub: "Prezentace na úrovni vašeho reálného byznysu." },
+              { title: "Prezentace, která nepůsobí nahodile.", sub: "Záměr místo neustálé improvizace." },
+              { title: "Jasný vizuální směr místo improvizace.", sub: "Strategie, ne jen jednorázové řešení." },
+            ].map((item) => (
+              <div key={item.title} className="max-w-[420px]">
+                <div className="mb-4 h-[3px] w-12 rounded-full bg-[#A3FF00]" aria-hidden />
+                <p className="text-[20px] font-medium leading-[1.5] text-[#1A1A1A]">{item.title}</p>
+                <p className="mt-1 text-[17px] leading-[1.5] text-[#555555]">{item.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BLOK 4 – Definice služby. Strategické rozhodnutí, bez vysvětlování. */}
+      <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[760px]">
             <h2
-              className="font-bold leading-[1.08] tracking-tight text-[#111111]"
-              style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", marginBottom: "48px" }}
+              className="font-bold leading-[1.1] text-[#111111]"
+              style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
             >
-              Prémiová vizuální identita
-              <br />
-              není kosmetická úprava.
+              Prémiová vizuální identita není kosmetická úprava.
             </h2>
-            <p
-              className="text-[22px] font-semibold leading-[1.5] text-[#1a1a1a]"
-              style={{ marginBottom: "56px" }}
-            >
-              Je to rozhodnutí.
-            </p>
-            <p
-              className="text-[20px] leading-[1.75] text-[#2a2a2a]"
-              style={{ marginBottom: "40px" }}
-            >
-              Vizuální identita nastavuje standard.
+            <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
+              Je to strategické rozhodnutí.
               <br />
-              Ukazuje, kdo jste.
-            </p>
-            <p
-              className="text-[20px] font-normal leading-[1.75] text-[#555555]"
-              style={{ marginBottom: "56px" }}
-            >
-              Není o větší viditelnosti.
-              <br />
-              Je o přesnějším dojmu.
-            </p>
-            <p
-              className="text-[24px] font-semibold leading-[1.3] text-[#111111]"
-              style={{ marginTop: "48px", marginBottom: "48px" }}
-            >
-              Nastavuje směr.
+              Ukazuje, kdo jste – bez vysvětlování.
             </p>
           </div>
         </div>
@@ -156,9 +176,11 @@ export default function HomePage() {
             <div className="flex flex-col justify-center lg:col-span-5 lg:col-start-8 lg:mt-24">
               <h2
                 className="font-bold leading-[1.1] tracking-tight text-[#111111]"
-                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", marginBottom: "40px" }}
+                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", marginBottom: "24px" }}
               >
                 Rozhoduje zkušenost.
+                <br />
+                A schopnost vidět souvislosti.
               </h2>
               <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "20px" }}>
                 Technologie navrhuje. Zkušenost vybírá.
@@ -166,9 +188,18 @@ export default function HomePage() {
               <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "20px" }}>
                 25 let práce s obrazem.
               </p>
-              <p className="text-[19px] leading-[1.75] text-[#333333]">
+              <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "28px" }}>
                 Reálné projekty. Reálné značky.
               </p>
+              <p className="text-[18px] font-medium leading-[1.6] text-[#1A1A1A]">
+                Pracuji s těmi, kteří vědí, že jejich značka už dávno vyrostla.
+              </p>
+              <a
+                href="/start"
+                className="mt-8 inline-block text-[17px] font-medium text-[#111111] underline underline-offset-4 hover:no-underline"
+              >
+                Domluvit strategickou konzultaci
+              </a>
             </div>
           </div>
         </div>
@@ -404,34 +435,35 @@ Rozhodujeme lidsky.`}
         </div>
       </section>
 
+      {/* Pro koho to není – filtrování, vyšší liga. */}
+      <section id="pro-koho" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[720px]">
+          <h2 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+            Pro koho to není
+          </h2>
+          <p className="mt-6 text-[18px] leading-[1.75] text-stone-600">
+            Tato spolupráce není pro každého. Je pro ty, kteří vědí, že jejich značka už dávno vyrostla – a jsou připraveni ji nést.
+          </p>
+          <p className="mt-4 text-[18px] leading-[1.75] text-stone-600">
+            Pokud hledáte jen jednotlivé fotografie nebo rychlá, provizorní řešení, pravděpodobně to nebude správná cesta.
+          </p>
+          <p className="mt-4 text-[18px] font-medium leading-[1.75] text-stone-800">
+            Pokud chcete svou značku posunout do vyšší vizuální kategorie, pak dává smysl pokračovat.
+          </p>
+        </div>
+      </section>
+
       <section id="zaver" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-24 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-2xl">
-          <div className="rounded-2xl border border-stone-200 bg-white p-10 shadow-sm md:p-14">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl lg:text-5xl">
-                Chcete mít v pondělí zadáno a v pátek publikováno?
-              </h2>
-              <p className="mt-6 max-w-xl mx-auto text-lg text-stone-600">
-                Vyplňte krátký dotazník a sledujte, jak váš obsah vzniká – včas, kvalitně a naprosto bez chaosu.
-              </p>
-              <div className="mt-10 flex justify-center">
-                <div className="relative w-full max-w-sm rounded-xl border-2 border-[#A3E635] bg-white px-8 py-6 text-left">
-                  <span className="absolute -top-3 left-6 rounded bg-[#A3E635] px-3 py-0.5 text-xs font-bold text-zinc-900">JEDINÁ NABÍDKA</span>
-                  <p className="text-lg font-semibold text-stone-900">TESTOVACÍ TÝDEN</p>
-                  <p className="mt-1 text-xl font-bold text-stone-800">800 Kč / jednorázově</p>
-                  <ul className="mt-4 space-y-2 text-sm text-stone-600">
-                    <li className="flex items-center gap-2"><span className="text-[#A3E635]">✓</span> 3 profesionální příspěvky</li>
-                    <li className="flex items-center gap-2"><span className="text-[#A3E635]">✓</span> grafika v Glass stylu</li>
-                    <li className="flex items-center gap-2"><span className="text-[#A3E635]">✓</span> texty s tónem vaší značky</li>
-                    <li className="flex items-center gap-2"><span className="text-[#A3E635]">✓</span> doručení do 48 hodin</li>
-                  </ul>
-                  <a href="/start?plan=test-week" className="mt-6 block w-full rounded-lg bg-[#A3E635] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
-                    Spustit projekt →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
+            Pokud vaše značka roste, obraz musí růst s ní.
+          </h2>
+          <a
+            href="/start"
+            className="mt-10 inline-block rounded-lg border-2 border-stone-900 bg-stone-900 px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-stone-800"
+          >
+            Domluvit strategickou konzultaci
+          </a>
         </div>
       </section>
 
