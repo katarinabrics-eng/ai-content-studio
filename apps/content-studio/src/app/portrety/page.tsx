@@ -38,7 +38,7 @@ export default function PortretyPage() {
             </div>
             <div className="relative lg:col-span-6 lg:col-start-7">
               <img
-                src="/placeholders/KDOJSEM_01.png"
+                src="/placeholders/PORTFOLIO PORTRET/1.JPG"
                 alt=""
                 className="w-full object-cover object-center"
                 style={{ aspectRatio: "4/5", maxHeight: "75vh" }}
@@ -65,7 +65,7 @@ export default function PortretyPage() {
             </div>
             <div className="lg:col-span-5 lg:col-start-8">
               <img
-                src="/placeholders/KDOJSEM_03.png"
+                src="/placeholders/PORTFOLIO PORTRET/13.JPG"
                 alt=""
                 className="w-full object-cover object-center"
                 style={{ aspectRatio: "3/4", maxHeight: "560px" }}
@@ -91,10 +91,10 @@ export default function PortretyPage() {
           </div>
           <div className="grid grid-cols-2 gap-6 md:gap-8 lg:grid-cols-4">
             {[
-              { src: "/placeholders/KDOJSEM_01.png", alt: "Podnikatel" },
-              { src: "/placeholders/KDOJSEM_02.png", alt: "Herec" },
-              { src: "/placeholders/KDOJSEM_03.png", alt: "Portrét" },
-              { src: "/placeholders/01_ukazky.png", alt: "Ateliérový standard" },
+              { src: "/placeholders/PORTFOLIO PORTRET/2.JPG", alt: "Portrét – ateliérový standard" },
+              { src: "/placeholders/PORTFOLIO PORTRET/11.JPG", alt: "Portrét – ateliérový standard" },
+              { src: "/placeholders/PORTFOLIO PORTRET/22.JPG", alt: "Portrét – ateliérový standard" },
+              { src: "/placeholders/PORTFOLIO PORTRET/33.JPG", alt: "Portrét – ateliérový standard" },
             ].map(({ src, alt }) => (
               <div key={src} className="overflow-hidden rounded-[12px] border border-stone-100">
                 <img src={src} alt={alt} className="aspect-[3/4] w-full object-cover object-center" />
