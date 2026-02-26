@@ -224,7 +224,11 @@ export default function PremioveVizualniIdentitaPage() {
 
       <section id="zaver" className="w-full bg-[#111111] px-6 py-24 sm:px-8 lg:py-32">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl md:leading-[1.15]">Silná značka není hlasitá. Je čitelná.</h2>
+          <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl md:leading-[1.15]">
+            Silná značka není hlasitá.
+            <br />
+            Je čitelná.
+          </h2>
           <p className="mt-6 text-xl font-medium text-[#A8EB12] sm:text-2xl">A čitelnost je otázka rozhodnutí.</p>
           <a href="/start" className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
             DOMLUVIT STRATEGICKOU KONZULTACI
