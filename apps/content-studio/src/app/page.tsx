@@ -204,52 +204,54 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="jak-to-funguje" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Co vám to přinese.
+      {/* BLOK 7 – Vliv na vaši pozici. Tři pilíře + závěrečný statement. */}
+      <section id="jak-to-funguje" className="w-full bg-[#FFFFFF] py-[140px]">
+        <div className="mx-auto max-w-[1000px] px-6 text-center">
+          <h2
+            className="font-bold leading-[1.1] text-[#111111]"
+            style={{ fontSize: "52px", marginBottom: "32px" }}
+          >
+            Co vám to přinese
           </h2>
-          <p className="mt-4 text-stone-600">
-            Obsah, který pracuje za vás — bez chaosu, bez ztráty energie.
+          <p
+            className="text-[20px] leading-[1.6] text-[#3A3A3A]"
+            style={{ marginBottom: "56px" }}
+          >
+            Nezvyšujeme hlas. Zvyšujeme vaši úroveň.
           </p>
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
-                <svg className="h-6 w-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p className="mt-4 font-medium text-stone-900">Více času na klienty</p>
-              <p className="mt-2 text-sm text-stone-600">
-                Hodiny strávené tvorbou obsahu vrátíte zpět do práce, která vám skutečně vydělává.
+          <div className="grid grid-cols-1 gap-14 sm:grid-cols-3 lg:gap-[60px]">
+            <div className="text-left">
+              <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
+                Navýšení vnímané hodnoty
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.6] text-[#3A3A3A]">
+                Váš obraz přímo ovlivňuje vaši cenu. Správně nastavená identita stírá rozdíl mezi „šikovným profesionálem“ a nezpochybnitelnou autoritou v oboru.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
-                <svg className="h-6 w-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <p className="mt-4 font-medium text-stone-900">Pravidelná viditelnost značky</p>
-              <p className="mt-2 text-sm text-stone-600">
-                Budete na sítích konzistentně vidět, i když máte plný kalendář.
+            <div className="text-left">
+              <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
+                Zrychlení důvěry a čitelnosti
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.6] text-[#3A3A3A]">
+                Trh si o vás vytvoří názor během několika sekund. Prémiový vizuál za vás odpracuje první fázi prodeje – klient už nemusí zjišťovat, jestli jste dobří, on to vidí.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
-                <svg className="h-6 w-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-              </div>
-              <p className="mt-4 font-medium text-stone-900">Klid v hlavě</p>
-              <p className="mt-2 text-sm text-stone-600">
-                Neřešíte, co dnes publikovat. Jen schválíte výstup a pokračujete ve svém byznysu.
+            <div className="text-left">
+              <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
+                Klid a vizuální kontinuita
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.6] text-[#3A3A3A]">
+                Konec vizuálního chaosu a neustálého řešení „co a jak“ publikovat. Získáte jasný systém a banku výstupů, které pracují pro vás, i když vy zrovna nejste online.
               </p>
             </div>
           </div>
-          <p className="mt-12 text-stone-600">
-            Méně mentálního hluku. Více prostoru na růst.
+          <p
+            className="mt-20 text-center text-[24px] font-bold leading-snug text-[#111111]"
+          >
+            Váš obraz rozhoduje dřív, než začnete mluvit.
           </p>
         </div>
       </section>
