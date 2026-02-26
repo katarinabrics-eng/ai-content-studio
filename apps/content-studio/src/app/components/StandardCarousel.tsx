@@ -11,7 +11,8 @@ const SLIDES = [
   { src: "/placeholders/PORTFOLIO PORTRET/vyber/20.JPG", alt: "Portrét – ateliérový standard" },
 ];
 
-const FRAME_CLASS = "overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]";
+const FRAME_BASE = "overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] transition-all duration-500 ease-out";
+const FRAME_CENTER = "overflow-hidden rounded-2xl shadow-[0_28px_60px_-12px_rgba(0,0,0,0.28)] transition-all duration-500 ease-out scale-[1.06] z-10";
 
 export function StandardCarousel() {
   const [index, setIndex] = useState(0);
@@ -20,17 +21,21 @@ export function StandardCarousel() {
   useEffect(() => {
     const t = setInterval(() => {
       setIndex((i) => (i + 1) % n);
-    }, 4000);
+    }, 4500);
     return () => clearInterval(t);
   }, [n]);
 
-  const visible = [index, (index + 1) % n, (index + 2) % n].map((i) => SLIDES[i]);
+  const visible = [index, (index + 1) % n, (index + 2) % n, (index + 3) % n].map((i) => SLIDES[i]);
+  const centerIndex = 2;
 
   return (
-    <div className="relative">
-      <div className="grid grid-cols-3 gap-4 md:gap-6">
-        {visible.map((slide) => (
-          <div key={slide.src} className={FRAME_CLASS}>
+    <div className="relative w-full">
+      <div className="grid grid-cols-4 gap-4 md:gap-6">
+        {visible.map((slide, pos) => (
+          <div
+            key={`${pos}-${slide.src}`}
+            className={pos === centerIndex ? FRAME_CENTER : FRAME_BASE}
+          >
             <img
               src={slide.src}
               alt={slide.alt}
@@ -39,13 +44,13 @@ export function StandardCarousel() {
           </div>
         ))}
       </div>
-      <div className="mt-6 flex justify-center gap-2">
+      <div className="mt-6 flex justify-start gap-2">
         {SLIDES.map((_, i) => (
           <button
             key={i}
             type="button"
             onClick={() => setIndex(i)}
-            className={`h-2 rounded-full transition-all ${
+            className={`h-2 rounded-full transition-all duration-300 ${
               i === index ? "w-8 bg-[#A8EB12]" : "w-2 bg-stone-300 hover:bg-stone-400"
             }`}
             aria-label={`Slide ${i + 1}`}

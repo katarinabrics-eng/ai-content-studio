@@ -88,7 +88,7 @@ export default function PortretyPage() {
               Každý portrét vzniká ve stejném ateliérovém standardu. Neřešíme trendy. Řešíme čitelnost.
             </p>
           </div>
-          <div className="max-w-[900px] mx-auto">
+          <div className="w-full max-w-[1200px]">
             <StandardCarousel />
           </div>
         </div>
