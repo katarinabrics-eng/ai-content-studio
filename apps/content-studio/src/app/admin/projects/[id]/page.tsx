@@ -345,7 +345,7 @@ export default function AdminProjectDetailPage() {
                   type="button"
                   onClick={current === "WAITING_MANUAL_AI_COMMAND" ? handleTriggerAI : handleGenerateDrafts}
                   disabled={generating}
-                  className="rounded bg-[#A3E635] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 disabled:opacity-50"
+                  className="rounded bg-[#A8EB12] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
                 >
                   {generating ? "Pokyn přijat, zpracováváme…" : current === "WAITING_MANUAL_AI_COMMAND" ? "Spustit AI podle pokynu" : "Odeslat nový pokyn AI"}
                 </button>

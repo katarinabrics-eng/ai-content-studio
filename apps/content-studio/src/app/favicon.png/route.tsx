@@ -16,7 +16,7 @@ export function GET() {
           borderRadius: 8,
           fontSize: 22,
           fontWeight: 700,
-          color: "#b8f56a",
+          color: "#A8EB12",
         }}
       >
         L

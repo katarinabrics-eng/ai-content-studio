@@ -36,7 +36,7 @@ export default function HomePage() {
               kteří chtějí kultivovat svou vizuální prezentaci dlouhodobě.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start" className="rounded-lg bg-[#A3E635] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90">
+              <a href="/start" className="rounded-lg bg-[#A8EB12] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
                 Posunout značku výš
               </a>
               <a
@@ -83,7 +83,7 @@ export default function HomePage() {
               Vizuální prezentace často zůstává tam, kde byla před lety.
             </p>
             <div
-              className="h-1.5 w-[100px] rounded-[3px] bg-[#A3FF00] md:w-[140px]"
+              className="h-1.5 w-[100px] rounded-[3px] bg-[#A8EB12] md:w-[140px]"
               style={{ marginTop: "16px" }}
               aria-hidden
             />
@@ -93,21 +93,31 @@ export default function HomePage() {
 
       <VibeSection />
 
-      {/* BLOK 4 – Definice služby. Strategické rozhodnutí, bez vysvětlování. */}
+      {/* BLOK 4 – Definice služby. Text a fotka vedle sebe. */}
       <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="max-w-[760px]">
-            <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
-            >
-              Prémiová vizuální identita není kosmetická úprava.
-            </h2>
-            <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
-              Je to strategické rozhodnutí.
-              <br />
-              Ukazuje, kdo jste – bez vysvětlování.
-            </p>
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-6">
+              <h2
+                className="font-bold leading-[1.1] text-[#111111]"
+                style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
+              >
+                Prémiová vizuální identita není kosmetická úprava.
+              </h2>
+              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
+                Je to strategické rozhodnutí.
+                <br />
+                Ukazuje, kdo jste – bez vysvětlování.
+              </p>
+            </div>
+            <div className="relative lg:col-span-6">
+              <img
+                src="/placeholders/KDOJSEM_03.png"
+                alt=""
+                className="w-full object-cover object-center"
+                style={{ aspectRatio: "3/4", maxHeight: "560px" }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -209,7 +219,7 @@ export default function HomePage() {
           </p>
           <div className="mt-12 grid gap-8 sm:grid-cols-3">
             <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A3E635]/50 bg-[#A3E635]/10">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
                 <svg className="h-6 w-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -220,7 +230,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A3E635]/50 bg-[#A3E635]/10">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
                 <svg className="h-6 w-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -232,7 +242,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A3E635]/50 bg-[#A3E635]/10">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
                 <svg className="h-6 w-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                 </svg>
@@ -260,29 +270,29 @@ export default function HomePage() {
             </h2>
             <ul className="mt-6 space-y-3 text-stone-600">
               <li className="flex items-center gap-2">
-                <span className="text-[#A3E635]">✓</span> 3 příspěvky
+                <span className="text-[#A8EB12]">✓</span> 3 příspěvky
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-[#A3E635]">✓</span> Text + vizuál
+                <span className="text-[#A8EB12]">✓</span> Text + vizuál
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-[#A3E635]">✓</span> Doručení do 48 hodin
+                <span className="text-[#A8EB12]">✓</span> Doručení do 48 hodin
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-[#A3E635]">✓</span> 800 Kč (zaváděcí cena)
+                <span className="text-[#A8EB12]">✓</span> 800 Kč (zaváděcí cena)
               </li>
             </ul>
             <ul className="mt-6 space-y-3 border-t border-stone-100 pt-6 text-sm text-stone-600">
               <li className="flex gap-2">
-                <span className="mt-0.5 shrink-0 text-[#A3E635]">•</span>
+                <span className="mt-0.5 shrink-0 text-[#A8EB12]">•</span>
                 <span>3 příspěvky za 800 Kč. To je cena jednoho lepšího byznys oběda. Ten vás ale na sítě neprotlačí.</span>
               </li>
               <li className="flex gap-2">
-                <span className="mt-0.5 shrink-0 text-[#A3E635]">•</span>
+                <span className="mt-0.5 shrink-0 text-[#A8EB12]">•</span>
                 <span>Dopřejte si týden klidu za cenu, kterou byste jinde dali za 15 minut konzultace.</span>
               </li>
               <li className="flex gap-2">
-                <span className="mt-0.5 shrink-0 text-[#A3E635]">•</span>
+                <span className="mt-0.5 shrink-0 text-[#A8EB12]">•</span>
                 <span>Zkuste si to na týden. Riziko je nula, zisk je váš volný čas zpět.</span>
               </li>
             </ul>
@@ -291,7 +301,7 @@ export default function HomePage() {
             </p>
             <a
               href="/start?plan=test-week"
-              className="mt-8 block w-full rounded-lg bg-[#A3E635] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90"
+              className="mt-8 block w-full rounded-lg bg-[#A8EB12] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
             >
               Chci mít hotovo
             </a>
@@ -305,25 +315,25 @@ export default function HomePage() {
             Rychlost AI. Zodpovědnost člověka.
           </h2>
           <div className="mt-12 flex flex-col items-center justify-center gap-8 sm:flex-row">
-            <div className="rounded-xl border border-[#A3E635]/30 bg-[#A3E635]/5 px-8 py-6 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#A3E635]/50 bg-[#A3E635]/10">
+            <div className="rounded-xl border border-[#A8EB12]/30 bg-[#A8EB12]/5 px-8 py-6 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
                 <span className="text-lg font-bold text-stone-700">AI</span>
               </div>
               <p className="mt-3 text-sm font-medium text-stone-900">AI</p>
               <p className="text-xs text-stone-500">Neuronová síť, generace</p>
             </div>
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#A3E635]/30 text-stone-700">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#A8EB12]/30 text-stone-700">
               <span className="text-xl">✦</span>
             </div>
-            <div className="rounded-xl border border-[#A3E635]/30 bg-[#A3E635]/5 px-8 py-6 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-[#A3E635]/50 bg-[#A3E635]/10">
+            <div className="rounded-xl border border-[#A8EB12]/30 bg-[#A8EB12]/5 px-8 py-6 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
                 <img src="/placeholders/mia-mozek.png" alt="" className="h-full w-full object-cover opacity-60" />
               </div>
               <p className="mt-3 text-sm font-medium text-stone-900">Kurátor</p>
               <p className="text-xs text-stone-500">Kontrola, tón, kvalita</p>
             </div>
           </div>
-          <div className="mt-10 rounded-xl border border-[#A3E635]/20 bg-[#A3E635]/5 p-8">
+          <div className="mt-10 rounded-xl border border-[#A8EB12]/20 bg-[#A8EB12]/5 p-8">
             <p className="text-center text-stone-700">
               AI dramaticky urychluje produkci a eliminuje prázdnou stránku. Ale na konci vždy stojí náš Kreativní kurátor.
               Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen rychlý, ale především prvotřídní a přesný.
@@ -331,19 +341,19 @@ export default function HomePage() {
           </div>
           <ul className="mt-10 space-y-4 text-stone-700">
             <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
               <span>Váš mozek má omezenou kapacitu na kreativitu. Vyčerpáte si ji ráno na Instagramu, nebo ji necháte pro své platící klienty?</span>
             </li>
             <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
               <span>Každá minuta, kdy řešíte fonty a hashtagy, je minuta, kdy neřídíte svůj byznys.</span>
             </li>
             <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
               <span>Lucifera neřeší jen texty. Řeší vaši rozhodovací únavu. My tvoříme, vy rozhodujete. To je vše.</span>
             </li>
             <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A3E635]">•</span>
+              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
               <span>Kolik klientů jste mohl obsloužit, zatímco jste bojoval s prázdnou stránkou v Canvě?</span>
             </li>
           </ul>
@@ -376,7 +386,7 @@ Rozhodujeme lidsky.`}
             {faqs.map((faq) => (
               <details
                 key={faq.q}
-                className="overflow-hidden rounded-xl border border-stone-200 bg-[#FBFBF6] [&[open]]:border-[#A3E635]/40"
+                className="overflow-hidden rounded-xl border border-stone-200 bg-[#FBFBF6] [&[open]]:border-[#A8EB12]/40"
               >
                 <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
                   {faq.q}
@@ -425,7 +435,7 @@ Rozhodujeme lidsky.`}
           <p className="text-3xl font-bold leading-tight tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-[1.15]">
             Silná značka není hlasitá.
           </p>
-          <p className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[#A3E635] sm:text-4xl md:text-5xl md:leading-[1.15]">
+          <p className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[#A8EB12] sm:text-4xl md:text-5xl md:leading-[1.15]">
             Je čitelná.
           </p>
           <p className="mt-10 text-xl font-medium text-stone-600 sm:text-2xl">

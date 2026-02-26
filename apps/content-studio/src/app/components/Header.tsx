@@ -74,7 +74,7 @@ export function Header() {
           </button>
           <a
             href="/start?plan=test-week"
-            className="rounded-lg bg-[#A3E635] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A3E635]/90 sm:px-5"
+            className="rounded-lg bg-[#A8EB12] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 sm:px-5"
           >
             Spustit projekt
           </a>
