@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "../components/Header";
+import { StandardCarousel } from "../components/StandardCarousel";
 
 export const metadata: Metadata = {
   title: "Portréty | Studio Lucifera",
@@ -89,17 +90,8 @@ export default function PortretyPage() {
               Každý portrét vzniká ve stejném ateliérovém standardu. Neřešíme trendy. Řešíme čitelnost.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-6 md:gap-8 lg:grid-cols-4">
-            {[
-              { src: "/placeholders/PORTFOLIO PORTRET/2.JPG", alt: "Portrét – ateliérový standard" },
-              { src: "/placeholders/PORTFOLIO PORTRET/11.JPG", alt: "Portrét – ateliérový standard" },
-              { src: "/placeholders/PORTFOLIO PORTRET/22.JPG", alt: "Portrét – ateliérový standard" },
-              { src: "/placeholders/PORTFOLIO PORTRET/33.JPG", alt: "Portrét – ateliérový standard" },
-            ].map(({ src, alt }) => (
-              <div key={src} className="overflow-hidden rounded-[12px] border border-stone-100">
-                <img src={src} alt={alt} className="aspect-[3/4] w-full object-cover object-center" />
-              </div>
-            ))}
+          <div className="max-w-[480px] mx-auto">
+            <StandardCarousel />
           </div>
         </div>
       </section>
@@ -141,50 +133,60 @@ export default function PortretyPage() {
         </div>
       </section>
 
-      {/* BLOK 5: NABÍDKA – Autorský portrét */}
+      {/* BLOK 5: NABÍDKA – Autorský portrét + headshot vpravo */}
       <section className="w-full bg-white py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div
-            className="max-w-[640px] rounded-2xl px-8 py-12 md:px-12 md:py-16"
-            style={{ backgroundColor: "#F7F8F5" }}
-          >
-            <div className="mb-6 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
-            <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.25rem)", marginBottom: "16px" }}
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+            <div
+              className="rounded-2xl px-8 py-12 md:px-12 md:py-16 lg:col-span-5"
+              style={{ backgroundColor: "#F7F8F5" }}
             >
-              Autorský portrét – Řízená práce s pozicí.
-            </h2>
-            <p className="text-[28px] font-bold text-[#111111]">4 500 Kč</p>
-            <p className="mt-1 text-[15px] text-stone-500">Jednorázová investice</p>
-            <ul className="mt-10 space-y-4 text-[18px] leading-[1.7] text-[#3A3A3A]">
-              {[
-                "45 minut práce v ateliéru",
-                "3 finálně retušované fotografie",
-                "Výběr z cca 100 záběrů",
-                "Stylingová konzultace na místě",
-                "Náhledy k výběru do 24–48 hodin",
-                "Licence pro profesní i osobní použití",
-                "Vedení během focení",
-              ].map((item) => (
-                <li key={item} className="flex gap-3">
-                  <span className="mt-1.5 h-5 w-5 shrink-0 rounded-full bg-[#A8EB12]/30 flex items-center justify-center text-[#111111] text-xs font-bold" aria-hidden>✓</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-8 text-[17px] leading-[1.7] text-[#3A3A3A]">
-              Pokud potřebujete více variant nebo delší práci, další hodina ateliérové práce je 3 600 Kč.
-            </p>
-            <Link
-              href="/start"
-              className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
-            >
-              Rezervovat termín
-            </Link>
-            <p className="mt-6 text-[14px] text-stone-500">
-              Nejste si jistí, zda je to správný krok? Domluvte si krátkou konzultaci.
-            </p>
+              <div className="mb-6 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
+              <h2
+                className="font-bold leading-[1.1] text-[#111111]"
+                style={{ fontSize: "clamp(1.75rem, 4vw, 2.25rem)", marginBottom: "16px" }}
+              >
+                Autorský portrét – Řízená práce s pozicí.
+              </h2>
+              <p className="text-[28px] font-bold text-[#111111]">4 500 Kč</p>
+              <p className="mt-1 text-[15px] text-stone-500">Jednorázová investice</p>
+              <ul className="mt-10 space-y-4 text-[18px] leading-[1.7] text-[#3A3A3A]">
+                {[
+                  "45 minut práce v ateliéru",
+                  "3 finálně retušované fotografie",
+                  "Výběr z cca 100 záběrů",
+                  "Stylingová konzultace na místě",
+                  "Náhledy k výběru do 24–48 hodin",
+                  "Licence pro profesní i osobní použití",
+                  "Vedení během focení",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="mt-1.5 h-5 w-5 shrink-0 rounded-full bg-[#A8EB12]/30 flex items-center justify-center text-[#111111] text-xs font-bold" aria-hidden>✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-8 text-[17px] leading-[1.7] text-[#3A3A3A]">
+                Pokud potřebujete více variant nebo delší práci, další hodina ateliérové práce je 3 600 Kč.
+              </p>
+              <Link
+                href="/start"
+                className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+              >
+                Rezervovat termín
+              </Link>
+              <p className="mt-6 text-[14px] text-stone-500">
+                Nejste si jistí, zda je to správný krok? Domluvte si krátkou konzultaci.
+              </p>
+            </div>
+            <div className="lg:col-span-6 lg:col-start-7 flex justify-center lg:justify-end">
+              <img
+                src="/placeholders/headshot.png"
+                alt=""
+                className="w-full max-w-[420px] object-cover object-center rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]"
+                style={{ aspectRatio: "3/4" }}
+              />
+            </div>
           </div>
         </div>
       </section>
