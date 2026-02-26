@@ -81,6 +81,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
             <div className="flex flex-col border-t border-stone-200 pt-8">
+              <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] mb-6">
+                <img src="/placeholders/PORTFOLIO PORTRET/vyber/7.JPG" alt="" className="aspect-[3/4] w-full object-cover object-center" />
+              </div>
               <div className="h-[3px] w-10 rounded-full bg-[#A8EB12]" style={{ marginBottom: "24px" }} aria-hidden />
               <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Prémiová vizuální identita</h3>
               <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
@@ -93,6 +96,9 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col border-t border-stone-200 pt-8">
+              <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] mb-6">
+                <img src="/placeholders/PORTFOLIO PORTRET/vyber/23.JPG" alt="" className="aspect-[3/4] w-full object-cover object-center" />
+              </div>
               <div className="h-[3px] w-10 rounded-full bg-[#A8EB12]" style={{ marginBottom: "24px" }} aria-hidden />
               <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Profesní portrét</h3>
               <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
@@ -105,6 +111,9 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col border-t border-stone-200 pt-8">
+              <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] mb-6">
+                <img src="/placeholders/PORTFOLIO PORTRET/vyber/35.JPG" alt="" className="aspect-[3/4] w-full object-cover object-center" />
+              </div>
               <div className="h-[3px] w-10 rounded-full bg-[#A8EB12]" style={{ marginBottom: "24px" }} aria-hidden />
               <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Osobní a rodinný portrét</h3>
               <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
