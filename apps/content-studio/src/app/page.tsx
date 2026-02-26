@@ -3,9 +3,18 @@ import { Header } from "./components/Header";
 import { VibeSection } from "./components/VibeSection";
 
 const faqs = [
-  { q: "Je to automatické?", a: "Ne. Každý výstup prochází dohledem." },
-  { q: "Jsou v ceně revize?", a: "U testovací nabídky 800 Kč doručujeme finální návrhy bez revizí." },
-  { q: "Co když budu chtít dlouhodobou spolupráci?", a: "Navazující paušální model je k dispozici." },
+  {
+    q: "Je to automatické?",
+    a: "Ne. Každý krok je řízené strategické rozhodnutí. Kombinujeme lidskou zkušenost s moderními technologiemi (AI), ale směr určuje vždy vize a strategie.",
+  },
+  {
+    q: "Jsou v ceně revize?",
+    a: "Ano. Spolupráce je proces. Naším cílem není odevzdat soubory, ale vytvořit vizuální standard, za kterým si budete stoprocentně stát.",
+  },
+  {
+    q: "Co když budu chtít dlouhodobou spolupráci?",
+    a: "To je ideální cesta. Značka není jednorázový počin, ale živý systém. Většina našich klientů přechází do formátu kurátorského dohledu, kdy se staráme o jejich vizuální kontinuitu dlouhodobě.",
+  },
 ];
 
 export default function HomePage() {
@@ -457,68 +466,56 @@ Rozhodujeme lidsky.`}
         </div>
       </section>
 
+      {/* BLOK 9 – Filtrace (Vyšší liga). Vizuálně čistý, textově nekompromisní. */}
+      <section id="pro-koho" className="w-full bg-[#F7F8F5] py-20 lg:py-24">
+        <div className="mx-auto max-w-[720px] px-6 text-center">
+          <h2 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+            Tato spolupráce není pro každého.
+          </h2>
+          <p className="mt-6 text-[18px] leading-[1.75] text-stone-600">
+            Je pro ty, kteří vědí, že jejich značka už dávno vyrostla – a jsou připraveni ji nést. Pokud hledáte jen jednotlivé fotografie nebo rychlá, provizorní řešení, pravděpodobně to nebude správná cesta.
+          </p>
+          <p className="mt-6 text-[20px] font-bold leading-[1.5] text-stone-900">
+            Pokud vaše značka roste, obraz musí růst s ní.
+          </p>
+        </div>
+      </section>
+
+      {/* BLOK 10 – Často kladené otázky. Minimalistický akordeon, limetkové oddělovače. */}
       <section id="faq" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-2xl">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Často kladené otázky</h2>
-          <div className="mt-10 space-y-3">
-            {faqs.map((faq) => (
-              <details
-                key={faq.q}
-                className="overflow-hidden rounded-xl border border-stone-200 bg-[#FBFBF6] [&[open]]:border-[#A8EB12]/40"
-              >
-                <summary className="cursor-pointer list-none px-6 py-4 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
-                  {faq.q}
-                </summary>
-                <p className="border-t border-stone-100 px-6 py-4 text-stone-600">{faq.a}</p>
-              </details>
+          <div className="mt-10">
+            {faqs.map((faq, index) => (
+              <div key={faq.q}>
+                {index > 0 && <div className="h-[2px] w-full bg-[#A8EB12]/50" aria-hidden />}
+                <details className="overflow-hidden bg-[#FBFBF6] [&[open]]:ring-1 [&[open]]:ring-[#A8EB12]/40">
+                  <summary className="cursor-pointer list-none px-0 py-5 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
+                    {faq.q}
+                  </summary>
+                  <p className="border-t border-stone-100 pb-5 pt-2 text-[17px] leading-[1.65] text-stone-600">{faq.a}</p>
+                </details>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pro koho to není – filtrování, vyšší liga. */}
-      <section id="pro-koho" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-[720px]">
-          <h2 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
-            Pro koho to není
-          </h2>
-          <p className="mt-6 text-[18px] leading-[1.75] text-stone-600">
-            Tato spolupráce není pro každého. Je pro ty, kteří vědí, že jejich značka už dávno vyrostla – a jsou připraveni ji nést.
-          </p>
-          <p className="mt-4 text-[18px] leading-[1.75] text-stone-600">
-            Pokud hledáte jen jednotlivé fotografie nebo rychlá, provizorní řešení, pravděpodobně to nebude správná cesta.
-          </p>
-          <p className="mt-4 text-[18px] font-medium leading-[1.75] text-stone-800">
-            Pokud chcete svou značku posunout do vyšší vizuální kategorie, pak dává smysl pokračovat.
-          </p>
-        </div>
-      </section>
-
-      <section id="zaver" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-24 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Pokud vaše značka roste, obraz musí růst s ní.
-          </h2>
-          <a
-            href="/start"
-            className="mt-10 inline-block rounded-lg border-2 border-stone-900 bg-stone-900 px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-stone-800"
-          >
-            Domluvit strategickou konzultaci
-          </a>
-        </div>
-      </section>
-
-      <section className="w-full border-t border-stone-200 bg-stone-50 px-6 py-24 sm:px-8 lg:px-12">
+      {/* BLOK 11 – Závěrečné CTA. Černé pozadí, hlavní poselství o čitelnosti. */}
+      <section id="zaver" className="w-full bg-[#111111] px-6 py-24 sm:px-8 lg:py-32">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-3xl font-bold leading-tight tracking-tight text-stone-900 sm:text-4xl md:text-5xl md:leading-[1.15]">
-            Silná značka není hlasitá.
-          </p>
-          <p className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[#A8EB12] sm:text-4xl md:text-5xl md:leading-[1.15]">
-            Je čitelná.
-          </p>
-          <p className="mt-10 text-xl font-medium text-stone-600 sm:text-2xl">
+          <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl md:leading-[1.15]">
+            Silná značka není hlasitá. Je čitelná.
+          </h2>
+          <p className="mt-6 text-xl font-medium text-[#A8EB12] sm:text-2xl">
             A čitelnost je otázka rozhodnutí.
           </p>
+          <a
+            href="/start"
+            className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+          >
+            DOMLUVIT STRATEGICKOU KONZULTACI
+          </a>
         </div>
       </section>
 
