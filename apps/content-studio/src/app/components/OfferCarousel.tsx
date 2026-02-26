@@ -23,7 +23,7 @@ export function OfferCarousel() {
   }, [n]);
 
   return (
-    <div className="relative max-w-[420px] w-full">
+    <div className="relative max-w-[560px] w-full">
       <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
         {SLIDES.map((s, i) => (
           <div

@@ -201,7 +201,7 @@ export default function PortretyPage() {
       {/* BLOK 5: NABÍDKA – Autorský portrét + karusel vpravo */}
       <section className="w-full bg-white py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
             <div
               className="rounded-2xl px-8 py-12 md:px-12 md:py-16 lg:col-span-5"
               style={{ backgroundColor: "#F7F8F5" }}
@@ -244,7 +244,7 @@ export default function PortretyPage() {
                 Nejste si jistí, zda je to správný krok? Domluvte si krátkou konzultaci.
               </p>
             </div>
-            <div className="lg:col-span-6 lg:col-start-7 flex justify-center lg:justify-end">
+            <div className="lg:col-span-6 lg:col-start-7 flex justify-center lg:justify-start">
               <OfferCarousel />
             </div>
           </div>
