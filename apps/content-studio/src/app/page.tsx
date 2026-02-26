@@ -1,401 +1,174 @@
-import { HeroImageFull } from "./components/HomePlaceholders";
 import { Header } from "./components/Header";
-import { VibeSection } from "./components/VibeSection";
-
-const faqs = [
-  {
-    q: "Je to automatické?",
-    a: "Ne. Každý krok je řízené strategické rozhodnutí. Kombinujeme lidskou zkušenost s moderními technologiemi (AI), ale směr určuje vždy vize a strategie.",
-  },
-  {
-    q: "Jsou v ceně revize?",
-    a: "Ano. Spolupráce je proces. Naším cílem není odevzdat soubory, ale vytvořit vizuální standard, za kterým si budete stoprocentně stát.",
-  },
-  {
-    q: "Co když budu chtít dlouhodobou spolupráci?",
-    a: "To je ideální cesta. Značka není jednorázový počin, ale živý systém. Většina našich klientů přechází do formátu kurátorského dohledu, kdy se staráme o jejich vizuální kontinuitu dlouhodobě.",
-  },
-];
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-stone-50">
+    <main className="min-h-screen bg-white">
       <Header />
 
-      <section className="relative w-full min-h-[85vh] overflow-hidden bg-white">
-        <div className="absolute inset-0">
-          <HeroImageFull />
+      {/* BLOK 1: HERO – Vstupní brána. Tichá autorita. */}
+      <section className="relative min-h-[90vh] w-full overflow-hidden bg-white">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.4)_45%,transparent_60%)]" aria-hidden />
+        <div className="absolute right-0 top-0 bottom-0 w-[45%] min-w-[320px] max-w-[720px]">
+          <img
+            src="/placeholders/KDOJSEM_01.png"
+            alt=""
+            className="h-full w-full object-cover object-left"
+          />
         </div>
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.35) 35%, transparent 55%)",
-          }}
-        />
-        <div className="relative mx-auto flex min-h-[85vh] max-w-[1360px] flex-col justify-center px-6 py-16 xl:px-10">
+        <div className="relative mx-auto flex min-h-[90vh] max-w-[1360px] flex-col justify-center px-6 py-24 xl:px-10">
           <div className="max-w-[600px]">
-            <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
-              Prémiová vizuální identita pro osobní značky
+            <h1 className="font-bold leading-[0.95] tracking-[-0.03em] text-[#111111]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.25rem)" }}>
+              Řídíme váš vizuální obraz.
             </h1>
-            <p className="mt-6 text-xl text-zinc-700" style={{ lineHeight: "1.6" }}>
-              Váš obraz by měl odpovídat úrovni, na které dnes podnikáte.
+            <p className="mt-8 text-[20px] leading-[1.6] text-[#3A3A3A]">
+              Studio Lucifera je prostor, kde se podnikatelé, experti i osobnosti přestávají vizuálně podceňovat.{" "}
+              <strong className="text-[#111111]">Neprodukujeme obsah. Nastavujeme pozici.</strong>
             </p>
-            <p className="mt-4 text-lg text-zinc-600" style={{ lineHeight: "1.7" }}>
-              Strategická spolupráce pro lídry, podnikatele a veřejně vystupující osobnosti,
-              kteří chtějí kultivovat svou vizuální prezentaci dlouhodobě.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start" className="rounded-lg bg-[#A8EB12] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
-                Posunout značku výš
-              </a>
+            <div className="mt-12 flex flex-col gap-4">
               <a
-                href="#jak-to-funguje"
-                className="rounded-lg border border-stone-300 bg-white/80 px-6 py-3 text-sm font-medium text-stone-900 hover:bg-stone-50"
+                href="#sluzby"
+                className="inline-block w-fit rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
               >
-                Jak to funguje
+                Prozkoumat služby
               </a>
+              <p className="text-[15px] text-stone-500">
+                Nejste si jistí, kde začít?{" "}
+                <a href="/start" className="underline underline-offset-2 hover:text-stone-700">
+                  Doporučit mi vhodnou službu
+                </a>
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mezi hero a černý blok: Když značka roste… (světlý blok podle screenu). */}
-      <section
-        className="relative overflow-hidden py-20 md:py-[100px]"
-        style={{ backgroundColor: "#F7F8F5", minHeight: "320px" }}
-      >
-        <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="max-w-[720px]">
-            <h2
-              className="font-bold leading-[1.08] text-[#111111]"
-              style={{
-                fontSize: "clamp(2.25rem, 5vw, 64px)",
-                marginBottom: "40px",
-              }}
-            >
-              Když značka roste
-              <br />
-              rychleji než její obraz
-            </h2>
-            <div
-              className="text-[20px] leading-[1.8] text-[#3A3A3A]"
-              style={{ marginBottom: "48px" }}
-            >
-              <p>Vaše podnikání se vyvíjí.</p>
-              <p>Vaše odpovědnost roste.</p>
-              <p>Vaše publikum také.</p>
-            </div>
-            <p
-              className="text-[20px] font-medium leading-[1.6] text-[#1A1A1A]"
-              style={{ marginTop: "32px" }}
-            >
-              Vizuální prezentace často zůstává tam, kde byla před lety.
-            </p>
-            <div
-              className="h-1.5 w-[100px] rounded-[3px] bg-[#A8EB12] md:w-[140px]"
-              style={{ marginTop: "16px" }}
-              aria-hidden
-            />
-          </div>
-        </div>
-      </section>
-
-      <VibeSection />
-
-      {/* BLOK 4 – Definice služby. Jen text, stejný layout jako na screenu. */}
-      <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
-        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="max-w-[760px]">
-            <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
-            >
-              Prémiová vizuální identita není kosmetická úprava.
-            </h2>
-            <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
-              Je to strategické rozhodnutí.
-              <br />
-              Ukazuje, kdo jste – bez vysvětlování.
+            <p className="mt-8 text-[14px] text-stone-400">
+              Odpovídáme osobně. Nečeká vás automat ani prodejní nátlak.
             </p>
           </div>
         </div>
       </section>
 
-      <section id="co-delame" className="hidden" aria-hidden="true" />
-
-      {/* SEKCE 2 – Obraz + text vedle sebe. Celý obrázek KDOJSEM_01 bez ořezu. */}
-      <section id="rozdil" className="w-full bg-white py-[80px] md:py-[100px]">
-        <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
-            <div className="relative flex justify-center lg:col-span-7">
-              <img
-                src="/placeholders/KDOJSEM_01.png"
-                alt=""
-                className="max-h-[75vh] w-full object-contain object-center"
-              />
-            </div>
-            <div className="flex flex-col justify-center lg:col-span-5">
-              <h2
-                className="font-bold leading-[1.1] tracking-tight text-[#111111]"
-                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", marginBottom: "24px" }}
-              >
-                Rozhoduje zkušenost.
-                <br />
-                A schopnost vidět souvislosti.
-              </h2>
-              <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "20px" }}>
-                Technologie navrhuje. Zkušenost vybírá.
-              </p>
-              <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "20px" }}>
-                25 let práce s obrazem.
-              </p>
-              <p className="text-[19px] leading-[1.75] text-[#333333]" style={{ marginBottom: "28px" }}>
-                Reálné projekty. Reálné značky.
-              </p>
-              <p className="text-[18px] font-medium leading-[1.6] text-[#1A1A1A]">
-                Pracuji s těmi, kteří vědí, že jejich značka už dávno vyrostla.
-              </p>
-              <a
-                href="/start"
-                className="mt-8 inline-block text-[17px] font-medium text-[#111111] underline underline-offset-4 hover:no-underline"
-              >
-                Domluvit strategickou konzultaci
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BLOK 6 – Ukázky práce v kontextu značky. Grid 2×2, limetkový hover. */}
-      <section id="ukazky" className="w-full bg-[#F7F8F5] py-[80px] md:py-[100px]">
-        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="mx-auto max-w-[720px] text-center" style={{ marginBottom: "48px" }}>
-            <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "52px", marginBottom: "16px" }}
-            >
-              Ukázky práce v kontextu značky
-            </h2>
-            <p className="text-[20px] leading-[1.6] text-[#3A3A3A]">
-              Ne jednotlivé snímky. Ale vizuální jazyk, který funguje v praxi.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-10">
-            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
-              <img
-                src="/placeholders/01_ukazky.png"
-                alt="Pohled na web – mockup webové stránky klienta"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
-              <img
-                src="/placeholders/01_ukazky_1.png"
-                alt="Moodboard a strategie – koláž textur a vizuálů"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
-              <img
-                src="/placeholders/01_ukazky_2.png"
-                alt="Sociální sítě – kurátorský feed, konzistence"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
-              <img
-                src="/placeholders/01_ukazky_3.png"
-                alt="Portrétní série – různé polohy jedné osobnosti"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BLOK 7 – Vliv na vaši pozici. Tři pilíře + závěrečný statement. */}
-      <section id="jak-to-funguje" className="w-full bg-[#FFFFFF] py-[140px]">
-        <div className="mx-auto max-w-[1000px] px-6 text-center">
-          <h2
-            className="font-bold leading-[1.1] text-[#111111]"
-            style={{ fontSize: "52px", marginBottom: "32px" }}
-          >
-            Co vám to přinese
-          </h2>
-          <p
-            className="text-[20px] leading-[1.6] text-[#3A3A3A]"
-            style={{ marginBottom: "56px" }}
-          >
-            Nezvyšujeme hlas. Zvyšujeme vaši úroveň.
-          </p>
-          <div className="grid grid-cols-1 gap-14 sm:grid-cols-3 lg:gap-[60px]">
-            <div className="text-left">
-              <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
-              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
-                Navýšení vnímané hodnoty
-              </h3>
-              <p className="mt-3 text-[18px] leading-[1.6] text-[#3A3A3A]">
-                Váš obraz přímo ovlivňuje vaši cenu. Správně nastavená identita stírá rozdíl mezi „šikovným profesionálem“ a nezpochybnitelnou autoritou v oboru.
-              </p>
-            </div>
-            <div className="text-left">
-              <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
-              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
-                Zrychlení důvěry a čitelnosti
-              </h3>
-              <p className="mt-3 text-[18px] leading-[1.6] text-[#3A3A3A]">
-                Trh si o vás vytvoří názor během několika sekund. Prémiový vizuál za vás odpracuje první fázi prodeje – klient už nemusí zjišťovat, jestli jste dobří, on to vidí.
-              </p>
-            </div>
-            <div className="text-left">
-              <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
-              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
-                Klid a vizuální kontinuita
-              </h3>
-              <p className="mt-3 text-[18px] leading-[1.6] text-[#3A3A3A]">
-                Konec vizuálního chaosu a neustálého řešení „co a jak“ publikovat. Získáte jasný systém a banku výstupů, které pracují pro vás, i když vy zrovna nejste online.
-              </p>
-            </div>
-          </div>
-          <p
-            className="mt-20 text-center text-[24px] font-bold leading-snug text-[#111111]"
-          >
-            Váš obraz rozhoduje dřív, než začnete mluvit.
-          </p>
-        </div>
-      </section>
-
-      {/* BLOK 8 – Struktura spolupráce. Framework, ne ceník. */}
-      <section id="struktura-spoluprace" className="w-full bg-[#F7F8F5] py-[140px]">
+      {/* BLOK 2: Koncept Kreativního dvora */}
+      <section className="w-full py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]">
-            <h2
-              className="font-bold leading-[1.1] text-[#111111]"
-              style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "16px" }}
-            >
-              Struktura spolupráce
+            <h2 className="font-bold leading-[1.08] text-[#111111]" style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "32px" }}>
+              Jeden prostor. Jeden styl. Jedna energie.
             </h2>
-            <p
-              className="text-[20px] leading-[1.6] text-[#3A3A3A]"
-              style={{ marginBottom: "56px" }}
-            >
-              Tři fáze od strategie po dlouhodobou implementaci.
+            <p className="text-[19px] leading-[1.75] text-[#3A3A3A]">
+              Lucifera není jen fotoateliér. Je to kreativní dvůr, kde má každá služba své místo – ale všechny mluví stejným jazykem.
+            </p>
+            <p className="mt-6 text-[19px] leading-[1.75] text-[#3A3A3A]">
+              Fotografie. Video. AI avatar. Strategická vizuální práce. Každá z těchto částí stojí samostatně, ale dohromady tvoří <strong className="text-[#111111]">jednotný systém</strong>. V Lucifeře nevzniká chaos služeb, ale <strong className="text-[#111111]">kontrolovaná vizuální identita</strong>. Klient nepřechází mezi styly. Vstupuje do jednoho světa.
+            </p>
+            <p className="mt-10 text-[17px] text-[#3A3A3A]">
+              Nejčastější volba nových klientů: <span className="font-medium text-[#111111]">→ Profesní portrét jako první krok.</span>{" "}
+              <a href="#sluzby" className="underline underline-offset-2 hover:no-underline">
+                Zobrazit portréty
+              </a>
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-            <div className="relative">
-              <span
-                className="pointer-events-none absolute -top-2 left-0 select-none font-bold text-[#111111] opacity-[0.15]"
-                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", lineHeight: 1 }}
-                aria-hidden
-              >
-                01
-              </span>
-              <div className="h-[3px] w-6 rounded-full bg-[#A8EB12]" style={{ marginBottom: "20px" }} aria-hidden />
-              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
-                Strategie a vizuální směr
-              </h3>
-              <p className="mt-3 text-[18px] leading-[1.65] text-[#3A3A3A]">
-                Analýza vaší současné pozice a návrh standardu, který odpovídá vaší reálné hodnotě. Definujeme, jak má vaše značka působit, dřív než stiskneme spoušť.
+        </div>
+      </section>
+
+      {/* BLOK 3: Rozcestí služeb – 3 pilíře */}
+      <section id="sluzby" className="w-full bg-white py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
+            <div className="flex flex-col border-t border-stone-200 pt-8">
+              <div className="h-[3px] w-10 rounded-full bg-[#A8EB12]" style={{ marginBottom: "24px" }} aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Prémiová vizuální identita</h3>
+              <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
+                Strategický upgrade vaší přítomnosti. Pro ty, kteří svou současnou vizuální úroveň již přerostli. Tato služba propojuje portrét, pohyb a digitální nástroje do <strong className="text-[#111111]">jednotného vizuálního systému</strong>. Výsledkem je obraz, který odpovídá vaší skutečné hodnotě.
               </p>
+              <a href="/premiova-vizualni-identita" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+                Přejít k službě
+              </a>
+              <p className="mt-4 text-[14px] italic text-stone-500">Vhodné pro podnikatele ve fázi růstu, rebrandu nebo cenového posunu.</p>
             </div>
-            <div className="relative">
-              <span
-                className="pointer-events-none absolute -top-2 left-0 select-none font-bold text-[#111111] opacity-[0.15]"
-                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", lineHeight: 1 }}
-                aria-hidden
-              >
-                02
-              </span>
-              <div className="h-[3px] w-6 rounded-full bg-[#A8EB12]" style={{ marginBottom: "20px" }} aria-hidden />
-              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
-                Realizace obsahu
-              </h3>
-              <p className="mt-3 text-[18px] leading-[1.65] text-[#3A3A3A]">
-                Portrétní a obsahová tvorba. Neřešíme počet snímků, ale jejich dopad. Vytvoříme vizuální banku, která za vás odpracuje první fázi prodeje.
+
+            <div className="flex flex-col border-t border-stone-200 pt-8">
+              <div className="h-[3px] w-10 rounded-full bg-[#A8EB12]" style={{ marginBottom: "24px" }} aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Profesní portrét</h3>
+              <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
+                Obraz pozice pro podnikatele, experty a herce. Jistota a čitelnost v jednom záběru. Nejde o hezkou fotku. Jde o to, <strong className="text-[#111111]">jak vás trh čte během prvních sekund</strong>.
               </p>
+              <a href="#sluzby" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+                Zjistit více
+              </a>
+              <p className="mt-4 text-[14px] italic text-stone-500">Ideální jako první spolupráce se studiem.</p>
             </div>
-            <div className="relative">
-              <span
-                className="pointer-events-none absolute -top-2 left-0 select-none font-bold text-[#111111] opacity-[0.15]"
-                style={{ fontSize: "clamp(3rem, 8vw, 5rem)", lineHeight: 1 }}
-                aria-hidden
-              >
-                03
-              </span>
-              <div className="h-[3px] w-6 rounded-full bg-[#A8EB12]" style={{ marginBottom: "20px" }} aria-hidden />
-              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">
-                Implementace a kontinuita
-              </h3>
-              <p className="mt-3 text-[18px] leading-[1.65] text-[#3A3A3A]">
-                Nastavení systému pro dlouhodobou čitelnost. Propojení reality s technologiemi (AI, digitální dvojníci), aby vaše značka zůstala konzistentní i bez vaší neustálé přítomnosti.
+
+            <div className="flex flex-col border-t border-stone-200 pt-8">
+              <div className="h-[3px] w-10 rounded-full bg-[#A8EB12]" style={{ marginBottom: "24px" }} aria-hidden />
+              <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Osobní a rodinný portrét</h3>
+              <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
+                Kreativní radost a přirozenost v ateliérovém standardu. Obraz vašeho skutečného já. I osobní fotografie může mít úroveň, světlo a klid profesionální práce – bez ztráty lehkosti.
               </p>
+              <a href="#sluzby" className="mt-6 inline-block text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+                Zobrazit detaily
+              </a>
+              <p className="mt-4 text-[14px] italic text-stone-500">Termíny vypisujeme průběžně. Doporučujeme rezervaci s předstihem.</p>
             </div>
           </div>
-          <p
-            className="mt-10 max-w-[720px] text-[16px] italic leading-[1.6] text-[#6E6E6E]"
-          >
-            Investice do prémiové identity začíná na 49 000 Kč a je vždy přizpůsobena rozsahu vašeho byznysu a vašim cílům.
-          </p>
-          <a
-            href="/start"
-            className="mt-8 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
-          >
-            Domluvit strategickou konzultaci
-          </a>
         </div>
       </section>
 
-      {/* BLOK 9 – Filtrace (Vyšší liga). Vizuálně čistý, textově nekompromisní. */}
-      <section id="pro-koho" className="w-full bg-[#F7F8F5] py-20 lg:py-24">
-        <div className="mx-auto max-w-[720px] px-6 text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
-            Tato spolupráce není pro každého.
-          </h2>
-          <p className="mt-6 text-[18px] leading-[1.75] text-stone-600">
-            Je pro ty, kteří vědí, že jejich značka už dávno vyrostla – a jsou připraveni ji nést. Pokud hledáte jen jednotlivé fotografie nebo rychlá, provizorní řešení, pravděpodobně to nebude správná cesta.
-          </p>
-          <p className="mt-6 text-[20px] font-bold leading-[1.5] text-stone-900">
-            Pokud vaše značka roste, obraz musí růst s ní.
-          </p>
-        </div>
-      </section>
-
-      {/* BLOK 10 – Často kladené otázky. Minimalistický akordeon, limetkové oddělovače. */}
-      <section id="faq" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-2xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">Často kladené otázky</h2>
-          <div className="mt-10">
-            {faqs.map((faq, index) => (
-              <div key={faq.q}>
-                {index > 0 && <div className="h-[2px] w-full bg-[#A8EB12]/50" aria-hidden />}
-                <details className="overflow-hidden bg-[#FBFBF6] [&[open]]:ring-1 [&[open]]:ring-[#A8EB12]/40">
-                  <summary className="cursor-pointer list-none px-0 py-5 font-semibold text-stone-900 [&::-webkit-details-marker]:hidden">
-                    {faq.q}
-                  </summary>
-                  <p className="border-t border-stone-100 pb-5 pt-2 text-[17px] leading-[1.65] text-stone-600">{faq.a}</p>
-                </details>
-              </div>
-            ))}
+      {/* BLOK 4: O nás – Zkušenost a kontext */}
+      <section className="w-full py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[720px]">
+            <h2 className="font-bold leading-[1.08] text-[#111111]" style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "28px" }}>
+              Rozhoduje zkušenost. A cit pro kontext.
+            </h2>
+            <p className="text-[19px] leading-[1.75] text-[#3A3A3A]">
+              Nevytváříme efektní momenty. Tvoříme obrazy, které <strong className="text-[#111111]">obstojí v čase</strong>. Vaše značka potřebuje víc než jen sympatie – potřebuje <strong className="text-[#111111]">vizuální váhu</strong>, kterou jí dodá 25 let naší praxe s obrazem.
+            </p>
+            <p className="mt-8 text-[17px] text-[#3A3A3A]">
+              Chcete vědět, jak spolupráce probíhá krok za krokem?{" "}
+              <a href="/premiova-vizualni-identita#struktura-spoluprace" className="font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+                Zobrazit průběh spolupráce
+              </a>
+            </p>
           </div>
         </div>
       </section>
 
-      {/* BLOK 11 – Závěrečné CTA. Černé pozadí, hlavní poselství o čitelnosti. */}
+      {/* BLOK 5: Inovace a Akademie */}
+      <section className="w-full bg-white py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[720px]">
+            <p className="text-[22px] font-bold leading-[1.35] text-[#111111]">
+              Protože technologie je nástroj. Identita je rozhodnutí.
+            </p>
+            <p className="mt-4 text-[17px] leading-[1.65] text-[#3A3A3A]">
+              Pro klienty, kteří chtějí pracovat s digitální prezentací a budoucností obsahu.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-6">
+              <a href="#" className="text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+                Lucifera Akademie
+              </a>
+              <span className="text-stone-300">|</span>
+              <a href="#" className="text-[16px] font-medium text-[#111111] underline underline-offset-2 hover:no-underline">
+                AI Avataři
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BLOK 6: Závěrečné CTA */}
       <section id="zaver" className="w-full bg-[#111111] px-6 py-24 sm:px-8 lg:py-32">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-[640px] text-center">
           <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl md:leading-[1.15]">
-            Silná značka není hlasitá. Je čitelná.
+            Čitelnost je otázka rozhodnutí.
           </h2>
-          <p className="mt-6 text-xl font-medium text-[#A8EB12] sm:text-2xl">
-            A čitelnost je otázka rozhodnutí.
-          </p>
           <a
             href="/start"
             className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
           >
-            DOMLUVIT STRATEGICKOU KONZULTACI
+            Domluvit strategickou konzultaci
           </a>
+          <p className="mt-6 text-[15px] text-stone-400">
+            Konzultace trvá 20–30 minut. Pomůže vám ujasnit, zda je Lucifera správný krok právě teď.
+          </p>
         </div>
       </section>
 

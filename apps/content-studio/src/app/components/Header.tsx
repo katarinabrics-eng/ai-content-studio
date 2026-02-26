@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { href: "#jak-to-funguje", label: "Jak to funguje" },
-  { href: "#testovaci-nabidka", label: "Nabídka" },
-  { href: "#proc-my", label: "Proč my" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#zaver", label: "Kontakt" },
+  { href: "/#sluzby", label: "Služby" },
+  { href: "/premiova-vizualni-identita", label: "Prémiová identita" },
+  { href: "/premiova-vizualni-identita#faq", label: "FAQ" },
+  { href: "/#zaver", label: "Kontakt" },
 ];
 
 export function Header() {
@@ -73,10 +72,10 @@ export function Header() {
             )}
           </button>
           <a
-            href="/start?plan=test-week"
+            href="/start"
             className="rounded-lg bg-[#A8EB12] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 sm:px-5"
           >
-            Spustit projekt
+            Domluvit konzultaci
           </a>
         </div>
       </div>
