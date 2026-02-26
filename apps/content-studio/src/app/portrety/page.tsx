@@ -19,13 +19,10 @@ export default function PortretyPage() {
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
-              <h1
-                className="font-bold leading-[1.05] tracking-[-0.03em] text-[#111111]"
-                style={{ fontSize: "clamp(2.5rem, 5.5vw, 64px)" }}
-              >
+              <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
                 Portrét, který nese vaši pozici.
               </h1>
-              <p className="mt-8 text-[20px] leading-[1.8] text-[#3A3A3A]">
+              <p className="mt-6 text-xl text-zinc-700" style={{ lineHeight: "1.6" }}>
                 Vaše tvář je vaše značka. Postarejme se, aby odpovídala vaší skutečné úrovni.
               </p>
               <Link

@@ -24,12 +24,12 @@ export default function HomePage() {
           }}
         />
         <div className="hero-content relative z-[2] max-w-[600px]">
-          <h1 className="font-bold leading-[0.95] tracking-[-0.03em] text-[#111111]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.25rem)" }}>
+          <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
             Řídíme váš vizuální obraz.
           </h1>
-          <p className="mt-8 text-[20px] leading-[1.6] text-[#3A3A3A]">
+          <p className="mt-6 text-xl text-zinc-700" style={{ lineHeight: "1.6" }}>
             Studio Lucifera je prostor, kde se podnikatelé, experti i osobnosti přestávají vizuálně podceňovat.{" "}
-            <strong className="text-[#111111]">Neprodukujeme obsah. Nastavujeme pozici.</strong>
+            <strong className="text-zinc-900">Neprodukujeme obsah. Nastavujeme pozici.</strong>
           </p>
           <div className="mt-12 flex flex-col gap-4">
             <a
