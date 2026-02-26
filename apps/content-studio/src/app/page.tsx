@@ -157,40 +157,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="ukazky" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Ukázky naší práce
+      {/* BLOK 6 – Ukázky práce v kontextu značky. Grid 2×2, limetkový hover. */}
+      <section id="ukazky" className="w-full bg-[#FFFFFF] py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <h2
+            className="font-bold leading-[1.1] text-[#111111]"
+            style={{ fontSize: "52px", marginBottom: "16px" }}
+          >
+            Ukázky práce v kontextu značky
           </h2>
-          <p className="mt-4 max-w-2xl text-lg text-stone-600">
-            Příklady příspěvků a vizuálů, které pro klienty připravujeme.
+          <p
+            className="text-[20px] leading-[1.6] text-[#3A3A3A]"
+            style={{ marginBottom: "48px" }}
+          >
+            Ne jednotlivé snímky. Ale vizuální jazyk, který funguje v praxi.
           </p>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-10">
+            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
               <img
                 src="/placeholders/01_ukazky.png"
-                alt="Ukázka vizuálů obsahu"
+                alt="Pohled na web – mockup webové stránky klienta"
                 className="h-full w-full object-cover"
               />
             </div>
-            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
               <img
                 src="/placeholders/01_ukazky_1.png"
-                alt="Ukázka vizuálů obsahu"
+                alt="Moodboard a strategie – koláž textur a vizuálů"
                 className="h-full w-full object-cover"
               />
             </div>
-            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
               <img
                 src="/placeholders/01_ukazky_2.png"
-                alt="Ukázka vizuálů obsahu"
+                alt="Sociální sítě – kurátorský feed, konzistence"
                 className="h-full w-full object-cover"
               />
             </div>
-            <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+            <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
               <img
                 src="/placeholders/01_ukazky_3.png"
-                alt="Ukázka vizuálů obsahu"
+                alt="Portrétní série – různé polohy jedné osobnosti"
                 className="h-full w-full object-cover"
               />
             </div>
