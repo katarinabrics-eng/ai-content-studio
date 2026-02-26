@@ -335,7 +335,7 @@ export default function HomePage() {
           <p
             className="mt-10 max-w-[720px] text-[16px] italic leading-[1.6] text-[#6E6E6E]"
           >
-            Investice do prémiové identity začíná na [doplň částku] a je vždy přizpůsobena rozsahu vašeho byznysu a vašim cílům.
+            Investice do prémiové identity začíná na 49 000 Kč a je vždy přizpůsobena rozsahu vašeho byznysu a vašim cílům.
           </p>
           <a
             href="/start"
@@ -343,126 +343,6 @@ export default function HomePage() {
           >
             Domluvit strategickou konzultaci
           </a>
-        </div>
-      </section>
-
-      <section id="testovaci-nabidka" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-md">
-          <p className="mb-6 text-center text-lg font-medium text-stone-700">
-            Konkurence postuje, zatímco vy přemýšlíte, co napsat. Lucifera to vyřeší dřív, než dopijete kávu.
-          </p>
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold tracking-tight text-stone-900">
-              Testovací týden.
-            </h2>
-            <ul className="mt-6 space-y-3 text-stone-600">
-              <li className="flex items-center gap-2">
-                <span className="text-[#A8EB12]">✓</span> 3 příspěvky
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-[#A8EB12]">✓</span> Text + vizuál
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-[#A8EB12]">✓</span> Doručení do 48 hodin
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-[#A8EB12]">✓</span> 800 Kč (zaváděcí cena)
-              </li>
-            </ul>
-            <ul className="mt-6 space-y-3 border-t border-stone-100 pt-6 text-sm text-stone-600">
-              <li className="flex gap-2">
-                <span className="mt-0.5 shrink-0 text-[#A8EB12]">•</span>
-                <span>3 příspěvky za 800 Kč. To je cena jednoho lepšího byznys oběda. Ten vás ale na sítě neprotlačí.</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-0.5 shrink-0 text-[#A8EB12]">•</span>
-                <span>Dopřejte si týden klidu za cenu, kterou byste jinde dali za 15 minut konzultace.</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-0.5 shrink-0 text-[#A8EB12]">•</span>
-                <span>Zkuste si to na týden. Riziko je nula, zisk je váš volný čas zpět.</span>
-              </li>
-            </ul>
-            <p className="mt-6 text-sm text-stone-500">
-              Kapacita je omezená.
-            </p>
-            <a
-              href="/start?plan=test-week"
-              className="mt-8 block w-full rounded-lg bg-[#A8EB12] py-3 text-center text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
-            >
-              Chci mít hotovo
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section id="proc-my" className="w-full border-t border-stone-200 bg-stone-50 px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Rychlost AI. Zodpovědnost člověka.
-          </h2>
-          <div className="mt-12 flex flex-col items-center justify-center gap-8 sm:flex-row">
-            <div className="rounded-xl border border-[#A8EB12]/30 bg-[#A8EB12]/5 px-8 py-6 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
-                <span className="text-lg font-bold text-stone-700">AI</span>
-              </div>
-              <p className="mt-3 text-sm font-medium text-stone-900">AI</p>
-              <p className="text-xs text-stone-500">Neuronová síť, generace</p>
-            </div>
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#A8EB12]/30 text-stone-700">
-              <span className="text-xl">✦</span>
-            </div>
-            <div className="rounded-xl border border-[#A8EB12]/30 bg-[#A8EB12]/5 px-8 py-6 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-[#A8EB12]/50 bg-[#A8EB12]/10">
-                <img src="/placeholders/mia-mozek.png" alt="" className="h-full w-full object-cover opacity-60" />
-              </div>
-              <p className="mt-3 text-sm font-medium text-stone-900">Kurátor</p>
-              <p className="text-xs text-stone-500">Kontrola, tón, kvalita</p>
-            </div>
-          </div>
-          <div className="mt-10 rounded-xl border border-[#A8EB12]/20 bg-[#A8EB12]/5 p-8">
-            <p className="text-center text-stone-700">
-              AI dramaticky urychluje produkci a eliminuje prázdnou stránku. Ale na konci vždy stojí náš Kreativní kurátor.
-              Každý výstup pečlivě kontroluje. Hlídá kvalitu, tón vaší značky a funkčnost sdělení. Když je potřeba, zasáhne ručně, aby výstup nebyl jen rychlý, ale především prvotřídní a přesný.
-            </p>
-          </div>
-          <ul className="mt-10 space-y-4 text-stone-700">
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
-              <span>Váš mozek má omezenou kapacitu na kreativitu. Vyčerpáte si ji ráno na Instagramu, nebo ji necháte pro své platící klienty?</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
-              <span>Každá minuta, kdy řešíte fonty a hashtagy, je minuta, kdy neřídíte svůj byznys.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
-              <span>Lucifera neřeší jen texty. Řeší vaši rozhodovací únavu. My tvoříme, vy rozhodujete. To je vše.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 shrink-0 text-[#A8EB12]">•</span>
-              <span>Kolik klientů jste mohl obsloužit, zatímco jste bojoval s prázdnou stránkou v Canvě?</span>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="kocka" className="w-full border-t border-stone-200 bg-white px-6 py-20 sm:px-8 lg:px-12">
-        <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[minmax(0,240px)_1fr] md:items-center">
-          <div className="relative aspect-square w-full max-w-[200px] overflow-hidden rounded-xl border border-stone-200 bg-stone-100 grayscale opacity-80">
-            <img src="/placeholders/mia-mozek.png" alt="" className="h-full w-full object-cover object-center" />
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-              Pozorujeme. Reagujeme.
-            </h2>
-            <p className="mt-8 whitespace-pre-line text-lg leading-relaxed text-stone-600">
-              {`Adaptace je součást procesu.
-Sledujeme změny.
-Reagujeme rychle.
-Rozhodujeme lidsky.`}
-            </p>
-          </div>
         </div>
       </section>
 
