@@ -122,7 +122,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]">
             <h2 className="font-bold leading-[1.08] text-[#111111]" style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "28px" }}>
-              Rozhoduje zkušenost. A cit pro kontext.
+              Rozhoduje zkušenost.
+              <br />
+              A cit pro kontext.
             </h2>
             <p className="text-[19px] leading-[1.75] text-[#3A3A3A]">
               Nevytváříme efektní momenty. Tvoříme obrazy, které <strong className="text-[#111111]">obstojí v čase</strong>. Vaše značka potřebuje víc než jen sympatie – potřebuje <strong className="text-[#111111]">vizuální váhu</strong>, kterou jí dodá 25 let naší praxe s obrazem.
@@ -187,7 +189,7 @@ export default function HomePage() {
           Ochrana osobních údajů
         </a>
         <span className="mx-2">·</span>
-        © {new Date().getFullYear()} AI Content Studio Lucifera
+        © {new Date().getFullYear()} Studio Lucifera
       </footer>
     </main>
   );

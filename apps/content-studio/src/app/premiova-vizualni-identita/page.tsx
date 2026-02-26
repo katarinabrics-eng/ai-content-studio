@@ -241,7 +241,7 @@ export default function PremioveVizualniIdentitaPage() {
         <span className="mx-2">·</span>
         <a href="/gdpr" className="underline underline-offset-2 hover:text-stone-700">Ochrana osobních údajů</a>
         <span className="mx-2">·</span>
-        © {new Date().getFullYear()} AI Content Studio Lucifera
+        © {new Date().getFullYear()} Studio Lucifera
       </footer>
     </main>
   );
