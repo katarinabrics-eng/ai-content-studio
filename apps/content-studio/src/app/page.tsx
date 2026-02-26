@@ -5,9 +5,9 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       <Header />
 
-      {/* BLOK 1: HERO – Background image, overlay, text vlevo. Obraz 70% = víc ve středu. */}
+      {/* BLOK 1: HERO – Background image, overlay, text vlevo. Zarovnáno s logem (jako prémiová). */}
       <section
-        className="relative flex min-h-[90vh] w-full items-center overflow-hidden px-[8%]"
+        className="relative flex min-h-[90vh] w-full items-center overflow-hidden"
         style={{
           backgroundImage: "url('/placeholders/home.png')",
           backgroundSize: "cover",
@@ -23,7 +23,8 @@ export default function HomePage() {
             background: "linear-gradient(to right, rgba(245,245,245,0.95) 0%, rgba(245,245,245,0.85) 35%, rgba(245,245,245,0.3) 60%, rgba(245,245,245,0) 80%)",
           }}
         />
-        <div className="hero-content relative z-[2] max-w-[600px]">
+        <div className="relative z-[2] mx-auto flex min-h-[90vh] w-full max-w-[1360px] flex-col justify-center px-6 xl:px-10">
+          <div className="max-w-[600px]">
           <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
             Řídíme váš vizuální obraz.
           </h1>
@@ -48,6 +49,7 @@ export default function HomePage() {
           <p className="mt-8 text-[14px] text-stone-400">
             Odpovídáme osobně. Nečeká vás automat ani prodejní nátlak.
           </p>
+          </div>
         </div>
       </section>
 
