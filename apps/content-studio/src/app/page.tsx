@@ -5,43 +5,49 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       <Header />
 
-      {/* BLOK 1: HERO – Vstupní brána. Tichá autorita. */}
-      <section className="relative min-h-[90vh] w-full overflow-hidden bg-white">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.4)_45%,transparent_60%)]" aria-hidden />
-        <div className="absolute right-0 top-0 bottom-0 w-[45%] min-w-[320px] max-w-[720px]">
-          <img
-            src="/placeholders/KDOJSEM_01.png"
-            alt=""
-            className="h-full w-full object-cover object-left"
-          />
-        </div>
-        <div className="relative mx-auto flex min-h-[90vh] max-w-[1360px] flex-col justify-center px-6 py-24 xl:px-10">
-          <div className="max-w-[600px]">
-            <h1 className="font-bold leading-[0.95] tracking-[-0.03em] text-[#111111]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.25rem)" }}>
-              Řídíme váš vizuální obraz.
-            </h1>
-            <p className="mt-8 text-[20px] leading-[1.6] text-[#3A3A3A]">
-              Studio Lucifera je prostor, kde se podnikatelé, experti i osobnosti přestávají vizuálně podceňovat.{" "}
-              <strong className="text-[#111111]">Neprodukujeme obsah. Nastavujeme pozici.</strong>
-            </p>
-            <div className="mt-12 flex flex-col gap-4">
-              <a
-                href="#sluzby"
-                className="inline-block w-fit rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
-              >
-                Prozkoumat služby
+      {/* BLOK 1: HERO – Background image, overlay, text vlevo. Obraz 70% = víc ve středu. */}
+      <section
+        className="relative flex min-h-[90vh] w-full items-center overflow-hidden px-[8%]"
+        style={{
+          backgroundImage: "url('/placeholders/home.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "70% center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Overlay pro čitelnost textu */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden
+          style={{
+            background: "linear-gradient(to right, rgba(245,245,245,0.95) 0%, rgba(245,245,245,0.85) 35%, rgba(245,245,245,0.3) 60%, rgba(245,245,245,0) 80%)",
+          }}
+        />
+        <div className="hero-content relative z-[2] max-w-[600px]">
+          <h1 className="font-bold leading-[0.95] tracking-[-0.03em] text-[#111111]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.25rem)" }}>
+            Řídíme váš vizuální obraz.
+          </h1>
+          <p className="mt-8 text-[20px] leading-[1.6] text-[#3A3A3A]">
+            Studio Lucifera je prostor, kde se podnikatelé, experti i osobnosti přestávají vizuálně podceňovat.{" "}
+            <strong className="text-[#111111]">Neprodukujeme obsah. Nastavujeme pozici.</strong>
+          </p>
+          <div className="mt-12 flex flex-col gap-4">
+            <a
+              href="#sluzby"
+              className="inline-block w-fit rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+            >
+              Prozkoumat služby
+            </a>
+            <p className="text-[15px] text-stone-500">
+              Nejste si jistí, kde začít?{" "}
+              <a href="/start" className="underline underline-offset-2 hover:text-stone-700">
+                Doporučit mi vhodnou službu
               </a>
-              <p className="text-[15px] text-stone-500">
-                Nejste si jistí, kde začít?{" "}
-                <a href="/start" className="underline underline-offset-2 hover:text-stone-700">
-                  Doporučit mi vhodnou službu
-                </a>
-              </p>
-            </div>
-            <p className="mt-8 text-[14px] text-stone-400">
-              Odpovídáme osobně. Nečeká vás automat ani prodejní nátlak.
             </p>
           </div>
+          <p className="mt-8 text-[14px] text-stone-400">
+            Odpovídáme osobně. Nečeká vás automat ani prodejní nátlak.
+          </p>
         </div>
       </section>
 
