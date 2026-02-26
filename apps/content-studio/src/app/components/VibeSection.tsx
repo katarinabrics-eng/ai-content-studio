@@ -61,9 +61,9 @@ export function VibeSection() {
         </p>
         <a
           href="/start"
-          className="mt-12 inline-block border-b border-[#f2f2f2]/40 pb-1 text-[15px] font-medium text-[#f2f2f2] transition-colors hover:border-[#f2f2f2] md:mt-14"
+          className="mt-12 inline-block rounded border-2 border-white px-6 py-3 text-[15px] font-medium text-white transition-colors hover:bg-white/10 md:mt-14"
         >
-          Posunout značku výš
+          Spustit projekt
         </a>
       </div>
     </section>

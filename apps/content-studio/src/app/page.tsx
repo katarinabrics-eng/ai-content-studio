@@ -50,12 +50,44 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Mezi hero a černý blok: To funguje, dokud vás znají osobně. */}
-      <section className="w-full bg-white py-16 md:py-20">
-        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <p className="max-w-[720px] text-[clamp(1.75rem,4vw,2.5rem)] font-bold leading-[1.15] text-[#111111]">
-            To funguje, dokud vás znají osobně.
-          </p>
+      {/* Mezi hero a černý blok: Když značka roste… (světlý blok podle screenu). */}
+      <section
+        className="relative overflow-hidden py-20 md:py-[100px]"
+        style={{ backgroundColor: "#F7F8F5", minHeight: "320px" }}
+      >
+        <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="max-w-[720px]">
+            <h2
+              className="font-bold leading-[1.08] text-[#111111]"
+              style={{
+                fontSize: "clamp(2.25rem, 5vw, 64px)",
+                marginBottom: "40px",
+              }}
+            >
+              Když značka roste
+              <br />
+              rychleji než její obraz
+            </h2>
+            <div
+              className="text-[20px] leading-[1.8] text-[#3A3A3A]"
+              style={{ marginBottom: "48px" }}
+            >
+              <p>Vaše podnikání se vyvíjí.</p>
+              <p>Vaše odpovědnost roste.</p>
+              <p>Vaše publikum také.</p>
+            </div>
+            <p
+              className="text-[20px] font-medium leading-[1.6] text-[#1A1A1A]"
+              style={{ marginTop: "32px" }}
+            >
+              Vizuální prezentace často zůstává tam, kde byla před lety.
+            </p>
+            <div
+              className="h-1.5 w-[100px] rounded-[3px] bg-[#A3FF00] md:w-[140px]"
+              style={{ marginTop: "16px" }}
+              aria-hidden
+            />
+          </div>
         </div>
       </section>
 
