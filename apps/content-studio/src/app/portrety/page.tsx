@@ -134,7 +134,70 @@ export default function PortretyPage() {
         </div>
       </section>
 
-      {/* BLOK 5: NABÍDKA – Autorský portrét + headshot vpravo */}
+      {/* BLOK 4b: PORTRÉT V PROSTŘEDÍ – Vizuál vlevo, text a nabídka vpravo */}
+      <section className="w-full bg-white py-[140px]">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-6 order-2 lg:order-1">
+              <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
+                <img
+                  src="/placeholders/home.png"
+                  alt=""
+                  className="w-full object-cover object-center"
+                  style={{ aspectRatio: "4/3", maxHeight: "560px" }}
+                />
+              </div>
+            </div>
+            <div className="lg:col-span-6 order-1 lg:order-2 lg:pl-4">
+              <div className="mb-5 h-[2px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
+              <h2
+                className="font-bold leading-[1.08] text-[#111111]"
+                style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "24px" }}
+              >
+                Váš svět jako součást vaší pozice.
+              </h2>
+              <p className="text-[19px] leading-[1.8] text-[#3A3A3A] mb-8">
+                Někdy ateliér nestačí. Vaše prostředí – dílna, kancelář nebo oblíbené místo v exteriéru – dodává vašemu obrazu další vrstvu autenticity a kontextu.
+              </p>
+              <p className="text-[18px] leading-[1.8] text-[#3A3A3A] mb-10">
+                Přinášíme Lucifera standard i k vám: vědomá práce se světlem a kompozicí v prostředí, které vás vystihuje. Ne náhodný moment – ale obraz, který drží vaši pozici.
+              </p>
+              <div
+                className="rounded-2xl px-8 py-10 md:px-10 md:py-12 max-w-[520px]"
+                style={{ backgroundColor: "#F7F8F5" }}
+              >
+                <div className="mb-4 h-[3px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
+                <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Portrét v prostředí</h3>
+                <p className="text-[28px] font-bold text-[#111111] mt-2">8 800 Kč</p>
+                <ul className="mt-8 space-y-3 text-[17px] leading-[1.7] text-[#3A3A3A]">
+                  {[
+                    "3 hodiny soustředěného focení na místě",
+                    "15 finálně retušovaných fotografií (výběr z cca 250+ záběrů)",
+                    "3 proměnné: práce se 3 outfity, různými částmi lokace a scénami",
+                    "Vedení a stylingová konzultace v rámci procesu",
+                  ].map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <span className="mt-1 h-5 w-5 shrink-0 rounded-full bg-[#A8EB12]/30 flex items-center justify-center text-[#111111] text-xs font-bold" aria-hidden>✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-6 text-[14px] text-stone-500">
+                  K ceně se připočítává 1 hodina přípravy na místě a cestovné.
+                </p>
+                <Link
+                  href="/start"
+                  className="mt-8 inline-block rounded-lg border-2 border-[#111111] px-8 py-3.5 text-base font-semibold text-[#111111] hover:bg-[#111111] hover:text-white transition-colors"
+                >
+                  Rezervovat focení v prostředí
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BLOK 5: NABÍDKA – Autorský portrét + karusel vpravo */}
       <section className="w-full bg-white py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
