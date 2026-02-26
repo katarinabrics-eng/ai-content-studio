@@ -115,7 +115,7 @@ export default function HomePage() {
       <section id="co-delame" className="hidden" aria-hidden="true" />
 
       {/* SEKCE 2 – Obraz + text vedle sebe. Celý obrázek KDOJSEM_01 bez ořezu. */}
-      <section id="rozdil" className="w-full bg-white py-[160px]">
+      <section id="rozdil" className="w-full bg-white py-[80px] md:py-[100px]">
         <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
             <div className="relative flex justify-center lg:col-span-7">
@@ -158,20 +158,19 @@ export default function HomePage() {
       </section>
 
       {/* BLOK 6 – Ukázky práce v kontextu značky. Grid 2×2, limetkový hover. */}
-      <section id="ukazky" className="w-full bg-[#FFFFFF] py-[140px]">
+      <section id="ukazky" className="w-full bg-[#F7F8F5] py-[80px] md:py-[100px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <h2
-            className="font-bold leading-[1.1] text-[#111111]"
-            style={{ fontSize: "52px", marginBottom: "16px" }}
-          >
-            Ukázky práce v kontextu značky
-          </h2>
-          <p
-            className="text-[20px] leading-[1.6] text-[#3A3A3A]"
-            style={{ marginBottom: "48px" }}
-          >
-            Ne jednotlivé snímky. Ale vizuální jazyk, který funguje v praxi.
-          </p>
+          <div className="mx-auto max-w-[720px] text-center" style={{ marginBottom: "48px" }}>
+            <h2
+              className="font-bold leading-[1.1] text-[#111111]"
+              style={{ fontSize: "52px", marginBottom: "16px" }}
+            >
+              Ukázky práce v kontextu značky
+            </h2>
+            <p className="text-[20px] leading-[1.6] text-[#3A3A3A]">
+              Ne jednotlivé snímky. Ale vizuální jazyk, který funguje v praxi.
+            </p>
+          </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-10">
             <div className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
               <img
