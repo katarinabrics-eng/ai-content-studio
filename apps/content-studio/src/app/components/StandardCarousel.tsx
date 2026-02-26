@@ -11,27 +11,26 @@ const SLIDES = [
   { src: "/placeholders/PORTFOLIO PORTRET/13.JPG", alt: "Portrét – ateliérový standard" },
 ];
 
+const FRAME_CLASS = "overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]";
+
 export function StandardCarousel() {
   const [index, setIndex] = useState(0);
+  const n = SLIDES.length;
 
   useEffect(() => {
     const t = setInterval(() => {
-      setIndex((i) => (i + 1) % SLIDES.length);
+      setIndex((i) => (i + 1) % n);
     }, 4000);
     return () => clearInterval(t);
-  }, []);
+  }, [n]);
+
+  const visible = [index, (index + 1) % n, (index + 2) % n].map((i) => SLIDES[i]);
 
   return (
     <div className="relative">
-      <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
-        {SLIDES.map((slide, i) => (
-          <div
-            key={slide.src}
-            className="transition-opacity duration-500 ease-out"
-            style={{
-              display: i === index ? "block" : "none",
-            }}
-          >
+      <div className="grid grid-cols-3 gap-4 md:gap-6">
+        {visible.map((slide) => (
+          <div key={slide.src} className={FRAME_CLASS}>
             <img
               src={slide.src}
               alt={slide.alt}

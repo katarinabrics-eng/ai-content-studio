@@ -37,7 +37,7 @@ export default function PortretyPage() {
                 Odpovídáme osobně do 48 hodin.
               </p>
             </div>
-            <div className="relative lg:col-span-6 lg:col-start-7">
+            <div className="relative lg:col-span-6 lg:col-start-7 overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
               <img
                 src="/placeholders/PORTFOLIO PORTRET/1.JPG"
                 alt=""
@@ -64,7 +64,7 @@ export default function PortretyPage() {
                 Vaše zkušenosti rostou. Vaše odpovědnost roste. Vaše prezentace by měla také. Fotografie, která vás zmenšuje, není neutrální. Oslabuje vaši pozici. Portrét v Lucifeře není dekorace. Je to vědomá práce s tím, jak vás svět čte.
               </p>
             </div>
-            <div className="lg:col-span-5 lg:col-start-8">
+            <div className="lg:col-span-5 lg:col-start-8 overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
               <img
                 src="/placeholders/PORTFOLIO PORTRET/13.JPG"
                 alt=""
@@ -90,7 +90,7 @@ export default function PortretyPage() {
               Každý portrét vzniká ve stejném ateliérovém standardu. Neřešíme trendy. Řešíme čitelnost.
             </p>
           </div>
-          <div className="max-w-[480px] mx-auto">
+          <div className="max-w-[900px] mx-auto">
             <StandardCarousel />
           </div>
         </div>
@@ -183,8 +183,7 @@ export default function PortretyPage() {
               <img
                 src="/placeholders/headshot.png"
                 alt=""
-                className="w-full max-w-[420px] object-cover object-center rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]"
-                style={{ aspectRatio: "3/4" }}
+                className="max-w-[420px] w-full object-contain object-center"
               />
             </div>
           </div>
@@ -216,7 +215,7 @@ export default function PortretyPage() {
       <section className="w-full bg-white py-[140px]">
         <div className="mx-auto max-w-[640px] text-center px-6">
           <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#111111] sm:text-4xl md:text-5xl md:leading-[1.15]">
-            Silná pozice začíná u obrazu.
+            Silná pozice začíná<br />u obrazu.
           </h2>
           <Link
             href="/start"
