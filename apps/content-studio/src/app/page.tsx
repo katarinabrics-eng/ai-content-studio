@@ -93,50 +93,39 @@ export default function HomePage() {
 
       <VibeSection />
 
-      {/* BLOK 4 – Definice služby. Text a fotka vedle sebe. */}
+      {/* BLOK 4 – Definice služby. Jen text, stejný layout jako na screenu. */}
       <section id="definice-sluzby" className="w-full bg-[#F7F8F5] py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-6">
-              <h2
-                className="font-bold leading-[1.1] text-[#111111]"
-                style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
-              >
-                Prémiová vizuální identita není kosmetická úprava.
-              </h2>
-              <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
-                Je to strategické rozhodnutí.
-                <br />
-                Ukazuje, kdo jste – bez vysvětlování.
-              </p>
-            </div>
-            <div className="relative lg:col-span-6">
-              <img
-                src="/placeholders/KDOJSEM_03.png"
-                alt=""
-                className="w-full object-cover object-center"
-                style={{ aspectRatio: "3/4", maxHeight: "560px" }}
-              />
-            </div>
+          <div className="max-w-[760px]">
+            <h2
+              className="font-bold leading-[1.1] text-[#111111]"
+              style={{ fontSize: "clamp(2rem, 4.5vw, 56px)", marginBottom: "32px" }}
+            >
+              Prémiová vizuální identita není kosmetická úprava.
+            </h2>
+            <p className="text-[20px] leading-[1.8] text-[#2A2A2A]">
+              Je to strategické rozhodnutí.
+              <br />
+              Ukazuje, kdo jste – bez vysvětlování.
+            </p>
           </div>
         </div>
       </section>
 
       <section id="co-delame" className="hidden" aria-hidden="true" />
 
-      {/* SEKCE 2 – Obraz + zkušenost. Obraz 60–70 %, text posunutý níž = diagonální tok oka. */}
+      {/* SEKCE 2 – Obraz + text vedle sebe. Celý obrázek KDOJSEM_01 bez ořezu. */}
       <section id="rozdil" className="w-full bg-white py-[160px]">
         <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
-            <div className="relative lg:col-span-8">
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
+            <div className="relative flex justify-center lg:col-span-7">
               <img
                 src="/placeholders/KDOJSEM_01.png"
                 alt=""
-                className="w-full object-cover object-center"
-                style={{ aspectRatio: "3/4", maxHeight: "600px" }}
+                className="max-h-[75vh] w-full object-contain object-center"
               />
             </div>
-            <div className="flex flex-col justify-center lg:col-span-5 lg:col-start-8 lg:mt-24">
+            <div className="flex flex-col justify-center lg:col-span-5">
               <h2
                 className="font-bold leading-[1.1] tracking-tight text-[#111111]"
                 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", marginBottom: "24px" }}
