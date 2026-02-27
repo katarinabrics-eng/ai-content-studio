@@ -44,6 +44,7 @@ V projektu na Vercelu: **Settings** → **Environment Variables**. Přidej pro *
 | `STRIPE_SECRET_KEY` | ano, pokud používáš platby | Stripe Dashboard → API Keys |
 | `STRIPE_WEBHOOK_SECRET` | ano, u Stripe | Vytvoř webhook až po deployi (viz níže) |
 | `OPENAI_API_KEY` | ano | OpenAI / platforma kde máš API klíč |
+| `ANTHROPIC_API_KEY` | ano | [console.anthropic.com](https://console.anthropic.com) – pro analýzu značky (Claude) |
 | `FIRECRAWL_API_KEY` | ano | [firecrawl.dev](https://firecrawl.dev) |
 | `ADMIN_PASSWORD` | ano | Heslo do admin rozhraní |
 
