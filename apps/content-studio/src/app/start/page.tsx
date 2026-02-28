@@ -56,9 +56,31 @@ function StartPageContent() {
   return <BookingGate />;
 }
 
+const PageFallback = () => (
+  <div
+    className="min-h-screen flex items-center justify-center"
+    style={{ background: "#F7F7F5" }}
+  >
+    <div style={{ textAlign: "center" }}>
+      <div
+        className="animate-spin"
+        style={{
+          width: 40,
+          height: 40,
+          margin: "0 auto 16px",
+          borderRadius: "50%",
+          border: "2px solid #EAEAE7",
+          borderTopColor: "#B7E300",
+        }}
+      />
+      <p style={{ fontSize: 15, color: "#6F6F6F" }}>Načítám…</p>
+    </div>
+  </div>
+);
+
 export default function StartPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-white bg-[#0c0c14]">Načítám…</div>}>
+    <Suspense fallback={<PageFallback />}>
       <StartPageContent />
     </Suspense>
   );
