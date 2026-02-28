@@ -5,7 +5,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       <Header />
 
-      {/* BLOK 1: HERO – Background image, overlay, text vlevo. */}
+      {/* BLOK 1: HERO – Background image, overlay, text vlevo. Zarovnáno s logem (jako prémiová). */}
       <section
         className="relative flex min-h-[90vh] w-full items-center overflow-hidden"
         style={{
@@ -15,12 +15,12 @@ export default function HomePage() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Overlay: vlevo plná světlá plocha, doprava plynulý přechod – text nikdy nepřekrývá obrázek */}
+        {/* Overlay pro čitelnost textu */}
         <div
-          className="absolute inset-0 z-[1] pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           aria-hidden
           style={{
-            background: "linear-gradient(to right, #FCFCFA 0%, #FCFCFA 45%, rgba(252,252,250,0.85) 55%, rgba(252,252,250,0) 72%)",
+            background: "linear-gradient(to right, rgba(245,245,245,0.95) 0%, rgba(245,245,245,0.85) 35%, rgba(245,245,245,0.3) 60%, rgba(245,245,245,0) 80%)",
           }}
         />
         <div className="relative z-[2] mx-auto flex min-h-[90vh] w-full max-w-[1360px] flex-col justify-center px-6 xl:px-10">
