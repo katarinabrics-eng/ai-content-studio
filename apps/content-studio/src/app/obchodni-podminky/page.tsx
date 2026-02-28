@@ -84,6 +84,23 @@ export default function ObchodniPodminkyPage() {
           <p className="mt-4 text-[17px] italic leading-[1.75] text-stone-600">
             Poznámka: Telefonické domluvy jsou informativní a stávají se závaznými až po písemném potvrzení studia.
           </p>
+
+          <h3 className="mt-8 font-bold text-stone-900" style={{ fontSize: "1.15rem" }}>
+            3a. Konzultace a záloha za rezervaci termínu
+          </h3>
+          <p className="mt-3 text-[17px] leading-[1.75] text-stone-700">
+            Konzultace je sice zdarma, studio si však vyhrazuje právo vystavit zálohu za závazné rezervování termínu.
+          </p>
+          <ul className="mt-4 space-y-2 text-[17px] leading-[1.75] text-stone-700">
+            <li className="flex gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A8EB12]" aria-hidden />
+              <span><strong>Záloha za závazné rezervování termínu: 500 Kč.</strong> Pokud se dostavíte, tato částka vám bude vrácena nebo odečtena z další služby, pokud se rozhodnete se studiem spolupracovat.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A8EB12]" aria-hidden />
+              <span><strong>Prémiová vizuální identita a Brand focení:</strong> Pokud si zvolíte variantu „Konzultace + vizuální board“, hradíte 1 850 Kč. Pokud zvolíte pouze konzultaci, platí postup s vratnou zálohou 500 Kč za termín (konzultace je zdarma, záloha se vrací při dostavení nebo odečte z další spolupráce).</span>
+            </li>
+          </ul>
         </section>
 
         <section className="mt-10">

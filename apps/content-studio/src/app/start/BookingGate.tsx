@@ -83,15 +83,19 @@ export function BookingGate() {
           <p style={{ fontSize: 17, color: "#6F6F6F", lineHeight: 1.6, maxWidth: 520, margin: "0 auto 24px" }}>
             Každá služba má jiný proces. Provedeme vás krok za krokem.
           </p>
+          <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 16 }}>
+            Před rezervací si prosím přečtěte naše{" "}
+            <Link href="/obchodni-podminky" className="text-[#1A1A1A] underline underline-offset-2 hover:no-underline font-medium">obchodní podmínky</Link>.
+          </p>
           {!showCalendar && (
           <div style={{ maxWidth: 560, margin: "0 auto", padding: "20px 24px", background: "#FFFFFF", borderRadius: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.04)", border: "1px solid #EAEAE7", textAlign: "left" }}>
             <p style={{ fontSize: 13, color: "#6F6F6F", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>Co se zde odehrává</p>
             <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 12 }}>
-              Na této stránce zvolíte typ spolupráce, vyplníte základní údaje a podle typu služby buď domluvíte konzultaci zdarma, nebo (u prémiové vizuální identity a brand focení s placeným boardem) nejdříve analyzujeme váš web a připravíme vizuální směr. Po dokončení kroku vás provedeme k výběru termínu a zahájení spolupráce.
+              Na této stránce zvolíte typ spolupráce, vyplníte základní údaje a podle typu služby buď domluvíte konzultaci (zdarma s vratnou zálohou 500 Kč za termín), nebo (u prémiové identity a brand focení s vizuálním boardem za 1 850 Kč) nejdříve analyzujeme váš web. Po dokončení kroku vás provedeme k výběru termínu a úhradě.
             </p>
             <p style={{ fontSize: 13, color: "#6F6F6F", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Co potřebujete k zahájení</p>
             <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6 }}>
-              U prémiové identity a brand focení (varianta s vizuálním boardem za 1 850 Kč) URL vašeho webu. U ostatních služeb stačí vyplnit krátký formulář a zvolit termín. Platbu řešíme až po domluvě.
+              U prémiové identity a brand focení: varianta s vizuálním boardem 1 850 Kč, nebo jen konzultace se zálohou 500 Kč za rezervaci termínu (záloha se vrací při dostavení nebo odečte z další služby). U ostatních služeb vyplňte formulář a zvolte termín.
             </p>
           </div>
           )}
@@ -106,7 +110,7 @@ export function BookingGate() {
               padding: 40,
             }}
           >
-            <CalendarStep from={from} />
+            <CalendarStep from={from} variant={searchParams.get("variant") === "paid" ? "paid" : searchParams.get("variant") === "free" ? "free" : null} />
           </div>
         ) : (
           <>
@@ -162,7 +166,7 @@ export function BookingGate() {
 const TIME_SLOTS = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
 const MONTHS = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
 
-function CalendarStep({ from }: { from: TabId }) {
+function CalendarStep({ from, variant }: { from: TabId; variant: "free" | "paid" | null }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -184,7 +188,15 @@ function CalendarStep({ from }: { from: TabId }) {
       <Link href={backHref} style={{ fontSize: 14, color: "#6F6F6F", textDecoration: "none", marginBottom: 16, display: "inline-block" }}>← Zpět na výběr služby</Link>
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 8 }}>Krok 2 / 3</p>
       <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1A1A1A", marginBottom: 8 }}>Výběr termínu</h2>
-      <p style={{ fontSize: 15, color: "#6F6F6F", marginBottom: 24 }}>{STEP_LABELS[from]} · {(from === "portret" || from === "rodinne") ? "Výběr termínu focení" : "30minut vstupní konzultace"}</p>
+      <p style={{ fontSize: 15, color: "#6F6F6F", marginBottom: 8 }}>{STEP_LABELS[from]} · {(from === "portret" || from === "rodinne") ? "Výběr termínu focení" : "30minut vstupní konzultace"}</p>
+      {variant === "free" && (from === "premiova" || from === "brandfoceni") && (
+        <p style={{ fontSize: 14, color: "#1A1A1A", lineHeight: 1.5, marginBottom: 24, padding: "12px 14px", background: "rgba(183,227,0,0.12)", borderRadius: 10 }}>
+          Rezervace termínu je závazná po uhrazení vratné zálohy 500 Kč. Záloha se vrací při dostavení nebo odečte z další služby. <Link href="/obchodni-podminky" className="underline font-medium">Obchodní podmínky</Link>.
+        </p>
+      )}
+      {(!variant || variant !== "free") && (from === "premiova" || from === "brandfoceni") && (
+        <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 24 }}>Po potvrzení termínu vás vyzveme k úhradě.</p>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: 32, marginBottom: 24 }}>
         <div>
@@ -278,6 +290,7 @@ function CalendarStep({ from }: { from: TabId }) {
       {modalOpen && (
         <ConfirmModal
           from={from}
+          variant={variant}
           date={selectedDate!}
           time={selectedTime!}
           onClose={() => setModalOpen(false)}
@@ -287,8 +300,10 @@ function CalendarStep({ from }: { from: TabId }) {
   );
 }
 
-function ConfirmModal({ from, date, time, onClose }: { from: TabId; date: Date; time: string; onClose: () => void }) {
+function ConfirmModal({ from, variant, date, time, onClose }: { from: TabId; variant: "free" | "paid" | null; date: Date; time: string; onClose: () => void }) {
   const dateStr = `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()} v ${time}`;
+  const isConsultationWithDeposit = (from === "premiova" || from === "brandfoceni") && variant === "free";
+  const isPaidBoard = (from === "premiova" || from === "brandfoceni") && variant === "paid";
   return (
     <div
       style={{
@@ -320,23 +335,69 @@ function ConfirmModal({ from, date, time, onClose }: { from: TabId; date: Date; 
         <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 8 }}>
           {(from === "portret" || from === "rodinne") ? "Termín focení" : "30minut vstupní konzultace"} · {STEP_LABELS[from]}
         </p>
+        {isConsultationWithDeposit && (
+          <p style={{ fontSize: 14, color: "#1A1A1A", lineHeight: 1.5, marginBottom: 12, padding: "12px 14px", background: "rgba(183,227,0,0.12)", borderRadius: 10 }}>
+            Konzultace je zdarma s vratnou zálohou za termín. Záloha 500 Kč vám bude vrácena při dostavení se nebo odečtena z další služby.
+          </p>
+        )}
+        {isPaidBoard && (
+          <p style={{ fontSize: 14, color: "#1A1A1A", lineHeight: 1.5, marginBottom: 12 }}>
+            Úhrada za konzultaci + vizuální board: 1 850 Kč.
+          </p>
+        )}
         <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 24 }}>Termín: {dateStr}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <button
-            type="button"
-            style={{
-              padding: "14px 20px",
-              background: "#B7E300",
-              color: "#1A1A1A",
-              fontWeight: 600,
-              fontSize: 16,
-              border: "none",
-              borderRadius: 12,
-              cursor: "pointer",
-            }}
-          >
-            Uhradit službu
-          </button>
+          {isConsultationWithDeposit && (
+            <button
+              type="button"
+              style={{
+                padding: "14px 20px",
+                background: "#B7E300",
+                color: "#1A1A1A",
+                fontWeight: 600,
+                fontSize: 16,
+                border: "none",
+                borderRadius: 12,
+                cursor: "pointer",
+              }}
+            >
+              Uhradit zálohu 500 Kč
+            </button>
+          )}
+          {isPaidBoard && (
+            <button
+              type="button"
+              style={{
+                padding: "14px 20px",
+                background: "#B7E300",
+                color: "#1A1A1A",
+                fontWeight: 600,
+                fontSize: 16,
+                border: "none",
+                borderRadius: 12,
+                cursor: "pointer",
+              }}
+            >
+              Uhradit službu 1 850 Kč
+            </button>
+          )}
+          {!(isConsultationWithDeposit || isPaidBoard) && (
+            <button
+              type="button"
+              style={{
+                padding: "14px 20px",
+                background: "#B7E300",
+                color: "#1A1A1A",
+                fontWeight: 600,
+                fontSize: 16,
+                border: "none",
+                borderRadius: 12,
+                cursor: "pointer",
+              }}
+            >
+              Uhradit službu
+            </button>
+          )}
           <button
             type="button"
             style={{
@@ -463,7 +524,7 @@ function PremiovaFlow() {
             {analysisText}
           </div>
         </div>
-        <Link href="/start?from=premiova&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+        <Link href="/start?from=premiova&step=calendar&variant=paid" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
           Pokračovat k výběru termínu
         </Link>
       </div>
@@ -477,6 +538,7 @@ function PremiovaFlow() {
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
         <button type="button" onClick={() => setVariant("free")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "free" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "free" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
           <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace zdarma</span>
+          <span style={{ fontSize: 14, color: "#6F6F6F", display: "block", marginTop: 4 }}>vratná záloha 500 Kč za termín</span>
         </button>
         <button type="button" onClick={() => setVariant("paid")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "paid" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "paid" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
           <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace + vizuální board</span>
@@ -501,10 +563,10 @@ function PremiovaFlow() {
       </div>
       {variant === "free" ? (
         <>
-          <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 32 }}>
-            Domluvte si termín konzultace bez závazků. Probereme vaše cíle a doporučíme další postup.
+          <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 16 }}>
+            Konzultace je zdarma s vratnou zálohou 500 Kč za termín. Záloha vám bude vrácena při dostavení se nebo odečtena z další služby. Probereme vaše cíle a doporučíme další postup.
           </p>
-          <Link href="/start?from=premiova&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+          <Link href="/start?from=premiova&step=calendar&variant=free" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
             Pokračovat k výběru termínu
           </Link>
         </>
@@ -633,7 +695,7 @@ function BrandFoceniFlow() {
             {analysisText}
           </div>
         </div>
-        <Link href="/start?from=brandfoceni&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+        <Link href="/start?from=brandfoceni&step=calendar&variant=paid" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
           Pokračovat k výběru termínu
         </Link>
       </div>
@@ -647,6 +709,7 @@ function BrandFoceniFlow() {
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
         <button type="button" onClick={() => setVariant("free")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "free" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "free" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
           <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace zdarma</span>
+          <span style={{ fontSize: 14, color: "#6F6F6F", display: "block", marginTop: 4 }}>vratná záloha 500 Kč za termín</span>
         </button>
         <button type="button" onClick={() => setVariant("paid")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "paid" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "paid" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
           <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace + vizuální board</span>
@@ -671,10 +734,10 @@ function BrandFoceniFlow() {
       </div>
       {variant === "free" ? (
         <>
-          <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 32 }}>
-            Domluvte si termín konzultace bez závazků. Probereme vaše cíle, styl focení a doporučíme další postup.
+          <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 16 }}>
+            Konzultace je zdarma s vratnou zálohou 500 Kč za termín. Záloha vám bude vrácena při dostavení se nebo odečtena z další služby. Probereme vaše cíle, styl focení a doporučíme další postup.
           </p>
-          <Link href="/start?from=brandfoceni&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+          <Link href="/start?from=brandfoceni&step=calendar&variant=free" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
             Pokračovat k výběru termínu
           </Link>
         </>
