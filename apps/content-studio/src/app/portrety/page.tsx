@@ -26,7 +26,7 @@ export default function PortretyPage() {
                 Vaše tvář je vaše značka. Postarejme se, aby odpovídala vaší skutečné úrovni.
               </p>
               <Link
-                href="/start"
+                href="/start?from=portret"
                 className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
               >
                 Rezervovat termín
@@ -184,7 +184,7 @@ export default function PortretyPage() {
                   K ceně se připočítává 1 hodina přípravy na místě a cestovné.
                 </p>
                 <Link
-                  href="/start"
+                  href="/start?from=portret"
                   className="mt-8 inline-block rounded-lg border-2 border-[#111111] px-8 py-3.5 text-base font-semibold text-[#111111] hover:bg-[#111111] hover:text-white transition-colors"
                 >
                   Rezervovat focení v prostředí
@@ -232,7 +232,7 @@ export default function PortretyPage() {
                 Pokud potřebujete více variant nebo delší práci, další hodina ateliérové práce je 3 600 Kč.
               </p>
               <Link
-                href="/start"
+                href="/start?from=portret"
                 className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
               >
                 Rezervovat termín
@@ -276,7 +276,7 @@ export default function PortretyPage() {
             Silná pozice začíná<br />u obrazu.
           </h2>
           <Link
-            href="/start"
+            href="/start?from=portret"
             className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
           >
             Chci svůj portrét

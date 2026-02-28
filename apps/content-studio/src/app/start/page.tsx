@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { StartAnalyzer } from "./StartAnalyzer";
+import { BookingGate } from "./BookingGate";
 
 function PaymentSuccessRedirect({ sessionId }: { sessionId: string }) {
   const router = useRouter();
@@ -53,7 +53,7 @@ function StartPageContent() {
   if (sessionId) {
     return <PaymentSuccessRedirect sessionId={sessionId} />;
   }
-  return <StartAnalyzer />;
+  return <BookingGate />;
 }
 
 export default function StartPage() {
