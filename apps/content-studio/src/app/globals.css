@@ -17,6 +17,10 @@
   body {
     @apply antialiased;
   }
+  /* Odkazy dědí barvu, aby nepřepisovaly styly stránek */
+  a {
+    @apply text-inherit;
+  }
   h1,
   h2,
   h3,
