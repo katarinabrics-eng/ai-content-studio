@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
-const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
-const RESPONSES_MODEL = "gpt-4.1";
+const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
+const OPENAI_MODEL = "gpt-4.1";
 
 type Scraped = {
   markdown: string;
@@ -75,24 +75,11 @@ Vrať čistý text (ne JSON), oddělené sekce:
 5. Doporučení dalšího kroku – konkrétní návrh, kam směřovat (např. vizuální identita, obsah, CTA).`;
 }
 
-function extractOutputText(data: unknown): string {
+function getTextFromChatResponse(data: unknown): string {
   if (data == null) return "No output received";
-  const d = data as Record<string, unknown>;
-  if (typeof d.output_text === "string") return d.output_text.trim();
-  const output = d.output;
-  if (Array.isArray(output) && output.length > 0) {
-    const first = output[0] as Record<string, unknown>;
-    const content = first?.content;
-    if (Array.isArray(content)) {
-      const textPart = content.find((c: Record<string, unknown>) => c.type === "output_text" || c.type === "text");
-      if (textPart && typeof (textPart as Record<string, unknown>).text === "string") {
-        return ((textPart as Record<string, unknown>).text as string).trim();
-      }
-    }
-    if (typeof first?.text === "string") return first.text.trim();
-  }
-  if (typeof d.text === "string") return d.text.trim();
-  return "No output received";
+  const d = data as { choices?: Array<{ message?: { content?: string } }> };
+  const text = d.choices?.[0]?.message?.content?.trim();
+  return text ?? "No output received";
 }
 
 export async function POST(request: Request) {
@@ -113,17 +100,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
     }
 
-    const input = buildAnalyzeInput(scraped);
+    const prompt = buildAnalyzeInput(scraped);
 
-    const response = await fetch(OPENAI_RESPONSES_URL, {
+    const response = await fetch(OPENAI_CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${openaiKey}`,
       },
       body: JSON.stringify({
-        model: RESPONSES_MODEL,
-        input,
+        model: OPENAI_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 2000,
       }),
     });
 
@@ -134,7 +122,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errMsg }, { status: response.status >= 500 ? 500 : 400 });
     }
 
-    const outputText = extractOutputText(data);
+    const outputText = getTextFromChatResponse(data);
 
     return NextResponse.json({
       result: outputText,
