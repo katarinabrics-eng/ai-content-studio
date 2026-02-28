@@ -96,7 +96,6 @@ export function BookingGate() {
                 padding: "14px 20px",
                 background: activeTab === t.id ? "#FFFFFF" : "transparent",
                 border: "1px solid #EAEAE7",
-                borderBottom: activeTab === t.id ? "none" : "1px solid #EAEAE7",
                 marginBottom: activeTab === t.id ? -1 : 0,
                 fontWeight: activeTab === t.id ? 600 : 400,
                 color: "#1A1A1A",
@@ -105,7 +104,7 @@ export function BookingGate() {
                 boxShadow: activeTab === t.id ? "0 10px 30px rgba(0,0,0,0.04)" : "none",
                 borderRadius: "12px 12px 0 0",
                 transition: "all 0.3s ease",
-                borderBottom: activeTab === t.id ? "3px solid #B7E300" : "3px solid transparent",
+                borderBottom: activeTab === t.id ? "3px solid #B7E300" : "1px solid #EAEAE7",
               }}
             >
               {t.label}
@@ -191,35 +190,6 @@ function PremiovaFlow() {
     setAnswers({});
     setError("");
   };
-
-  if (variant === "free") {
-    return (
-      <div className="gate-fade">
-        <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 2</p>
-        <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Konzultace zdarma</p>
-        <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 32 }}>
-          Domluvte si termín konzultace bez závazků. Probereme vaše cíle a doporučíme další postup.
-        </p>
-        <Link
-          href="/start?from=premiova&step=calendar"
-          style={{
-            display: "inline-block",
-            padding: "14px 28px",
-            background: "#B7E300",
-            color: "#1A1A1A",
-            fontWeight: 600,
-            fontSize: 16,
-            borderRadius: 12,
-            textDecoration: "none",
-            transition: "opacity 0.2s",
-          }}
-          className="hover:opacity-90"
-        >
-          Pokračovat k výběru termínu
-        </Link>
-      </div>
-    );
-  }
 
   if (phase === "loading") {
     return (
@@ -307,7 +277,16 @@ function PremiovaFlow() {
           <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>1 850 Kč</span>
         </button>
       </div>
-      {variant === "paid" && (
+      {variant === "free" ? (
+        <>
+          <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 32 }}>
+            Domluvte si termín konzultace bez závazků. Probereme vaše cíle a doporučíme další postup.
+          </p>
+          <Link href="/start?from=premiova&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+            Pokračovat k výběru termínu
+          </Link>
+        </>
+      ) : (
         <>
           <label style={{ display: "block", fontSize: 13, color: "#6F6F6F", marginBottom: 8 }}>URL vašeho webu</label>
           <input
@@ -388,21 +367,6 @@ function BrandFoceniFlow() {
     setAnswers({});
     setError("");
   };
-
-  if (variant === "free") {
-    return (
-      <div className="gate-fade">
-        <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 2</p>
-        <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Brand focení – konzultace zdarma</p>
-        <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 32 }}>
-          Domluvte si termín konzultace bez závazků. Probereme vaše cíle, styl focení a doporučíme další postup.
-        </p>
-        <Link href="/start?from=brandfoceni&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
-          Pokračovat k výběru termínu
-        </Link>
-      </div>
-    );
-  }
 
   if (phase === "loading") {
     return (
@@ -490,7 +454,16 @@ function BrandFoceniFlow() {
           <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>1 850 Kč</span>
         </button>
       </div>
-      {variant === "paid" && (
+      {variant === "free" ? (
+        <>
+          <p style={{ fontSize: 16, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 32 }}>
+            Domluvte si termín konzultace bez závazků. Probereme vaše cíle, styl focení a doporučíme další postup.
+          </p>
+          <Link href="/start?from=brandfoceni&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+            Pokračovat k výběru termínu
+          </Link>
+        </>
+      ) : (
         <>
           <label style={{ display: "block", fontSize: 13, color: "#6F6F6F", marginBottom: 8 }}>URL vašeho webu</label>
           <input
