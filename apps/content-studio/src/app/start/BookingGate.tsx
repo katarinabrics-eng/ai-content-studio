@@ -133,61 +133,42 @@ export function BookingGate() {
 
 function PremiovaFlow() {
   const [variant, setVariant] = useState<"free" | "paid">("free");
-  const [step, setStep] = useState(1);
   const [url, setUrl] = useState("");
-  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result">("input");
+  const [phase, setPhase] = useState<"input" | "loading" | "result">("input");
   const [msg, setMsg] = useState("");
   const [scraped, setScraped] = useState<Scraped | null>(null);
-  const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [analysisText, setAnalysisText] = useState<string | null>(null);
   const [error, setError] = useState("");
-
-  const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
-  const score = result?.brandScore?.total ?? 0;
+  const [isLoading, setIsLoading] = useState(false);
 
   const analyze = async () => {
-    if (!url.trim()) return;
+    if (!url.trim() || isLoading) return;
     setError("");
-    setResult(null);
+    setAnalysisText(null);
     setScraped(null);
-    setAnswers({});
+    setIsLoading(true);
+    setPhase("loading");
+    setMsg("Načítám web…");
     try {
-      setPhase("loading");
-      setMsg("Načítám web (text + screenshot)...");
       const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url.trim() }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Chyba analýzy");
       setScraped(data.scraped ?? null);
-      setResult(data.result ?? null);
-      setPhase((data.result?.brandScore?.total ?? 0) < 60 ? "guidance" : "result");
+      setAnalysisText(typeof data.result === "string" ? data.result : data.result ?? "Žádný výstup.");
+      setPhase("result");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nepodařilo se analyzovat.");
       setPhase("input");
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const confirmGuidance = async () => {
-    setPhase("loading");
-    setMsg("Obohacuji Brand DNA o vaše odpovědi...");
-    try {
-      const res = await fetch("/api/analyze/refine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, brandDna: result?.brandDna, answers }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Chyba");
-      if (data.result) setResult(data.result);
-    } catch {}
-    setPhase("result");
   };
 
   const resetAnalysis = () => {
     setPhase("input");
     setUrl("");
-    setResult(null);
+    setAnalysisText(null);
     setScraped(null);
-    setAnswers({});
     setError("");
   };
 
@@ -201,39 +182,7 @@ function PremiovaFlow() {
     );
   }
 
-  if (phase === "guidance" && result) {
-    return (
-      <div className="gate-fade">
-        <button type="button" onClick={resetAnalysis} style={{ background: "none", border: "none", color: "#6F6F6F", fontSize: 14, cursor: "pointer", marginBottom: 20 }}>← Zpět</button>
-        {scraped?.screenshot && (
-          <div style={{ marginBottom: 20, borderRadius: 12, overflow: "hidden", border: "1px solid #EAEAE7" }}>
-            <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="Náhled webu" style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
-          </div>
-        )}
-        <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 24, padding: 20, background: "#F7F7F5", borderRadius: 12 }}>
-          <div style={{ fontSize: 28, fontWeight: 600, color: score >= 70 ? "#22c55e" : score >= 40 ? "#eab308" : "#ef4444" }}>{score}</div>
-          <div>
-            <p style={{ fontSize: 14, color: "#6F6F6F" }}>{url}</p>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#1A1A1A" }}>Web nemá dostatek podkladů</p>
-            <p style={{ fontSize: 14, color: "#6F6F6F" }}>Doplňte výběrem – žádné psaní.</p>
-          </div>
-        </div>
-        {GUIDANCE_QUESTIONS.map((q, i) => (
-          <div key={q.id} style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 15, fontWeight: 500, color: "#1A1A1A", marginBottom: 10 }}>{i + 1}. {q.question}</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {q.options.map((o) => (
-                <button key={o} type="button" onClick={() => setAnswers((p) => ({ ...p, [q.id]: o }))} style={{ textAlign: "left", padding: "12px 16px", borderRadius: 10, border: answers[q.id] === o ? "2px solid #B7E300" : "1px solid #EAEAE7", background: answers[q.id] === o ? "rgba(183,227,0,0.08)" : "#FFF", color: "#1A1A1A", fontSize: 14, cursor: "pointer", transition: "all 0.2s" }}>{o}</button>
-              ))}
-            </div>
-          </div>
-        ))}
-        <button type="button" onClick={confirmGuidance} disabled={!allAnswered} style={{ marginTop: 24, padding: "14px 28px", background: allAnswered ? "#B7E300" : "#EAEAE7", color: "#1A1A1A", fontWeight: 600, fontSize: 16, border: "none", borderRadius: 12, cursor: allAnswered ? "pointer" : "not-allowed", opacity: allAnswered ? 1 : 0.7 }}>Zobrazit Brand DNA</button>
-      </div>
-    );
-  }
-
-  if (phase === "result" && result) {
+  if (phase === "result" && analysisText !== null) {
     return (
       <div className="gate-fade">
         <button type="button" onClick={resetAnalysis} style={{ background: "none", border: "none", color: "#6F6F6F", fontSize: 14, cursor: "pointer", marginBottom: 20 }}>← Analyzovat jiný web</button>
@@ -242,21 +191,24 @@ function PremiovaFlow() {
             <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="Náhled webu" style={{ width: "100%", maxHeight: 240, objectFit: "cover" }} />
           </div>
         )}
-        <div style={{ display: "flex", gap: 20, marginBottom: 24, padding: 20, background: "#F7F7F5", borderRadius: 12 }}>
-          <div style={{ fontSize: 32, fontWeight: 600, color: score >= 70 ? "#22c55e" : score >= 40 ? "#eab308" : "#ef4444" }}>{score}</div>
-          <div>
-            <p style={{ fontSize: 12, color: "#6F6F6F", wordBreak: "break-all" }}>{scraped?.url}</p>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#1A1A1A", marginTop: 4 }}>Brand DNA připravena</p>
+        <div
+          style={{
+            background: "#FFFFFF",
+            borderRadius: 12,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+            border: "1px solid #EAEAE7",
+            borderTop: "3px solid #B7E300",
+            overflow: "hidden",
+            marginBottom: 24,
+          }}
+        >
+          <h3 style={{ margin: 0, padding: "16px 20px", fontSize: 18, fontWeight: 600, color: "#1A1A1A", borderBottom: "1px solid #EAEAE7" }}>
+            Výsledek analýzy
+          </h3>
+          <div style={{ padding: "20px", fontSize: 15, color: "#1A1A1A", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+            {analysisText}
           </div>
         </div>
-        {result.brandDna && (
-          <div style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 13, color: "#6F6F6F", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Brand DNA</p>
-            <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 8 }}><strong>Název:</strong> {result.brandDna.name}</p>
-            <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6 }}><strong>Positioning:</strong> {result.brandDna.positioning}</p>
-            {result.summary && <p style={{ fontSize: 14, color: "#6F6F6F", lineHeight: 1.6, marginTop: 16, fontStyle: "italic" }}>{result.summary}</p>}
-          </div>
-        )}
         <Link href="/start?from=premiova&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
           Pokračovat k výběru termínu
         </Link>
@@ -299,8 +251,8 @@ function PremiovaFlow() {
             style={{ width: "100%", padding: "14px 16px", border: "1px solid #EAEAE7", borderRadius: 12, fontSize: 16, color: "#1A1A1A", background: "#FFF", marginBottom: 12 }}
           />
           <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 20 }}>Analyzujeme váš web a připravíme první vizuální směr.</p>
-          {error && <p style={{ fontSize: 14, color: "#ef4444", marginBottom: 12 }}>⚠ {error}</p>}
-          <button type="button" onClick={analyze} disabled={!url.trim()} style={{ padding: "14px 28px", background: url.trim() ? "#B7E300" : "#EAEAE7", color: "#1A1A1A", fontWeight: 600, fontSize: 16, border: "none", borderRadius: 12, cursor: url.trim() ? "pointer" : "not-allowed", opacity: url.trim() ? 1 : 0.7 }}>
+          {error && <p style={{ fontSize: 14, color: "#b91c1c", marginBottom: 12 }}>⚠ {error}</p>}
+          <button type="button" onClick={analyze} disabled={!url.trim() || isLoading} style={{ padding: "14px 28px", background: url.trim() && !isLoading ? "#B7E300" : "#EAEAE7", color: "#1A1A1A", fontWeight: 600, fontSize: 16, border: "none", borderRadius: 12, cursor: url.trim() && !isLoading ? "pointer" : "not-allowed", opacity: url.trim() && !isLoading ? 1 : 0.7 }}>
             Analyzovat web
           </button>
         </>
@@ -312,59 +264,41 @@ function PremiovaFlow() {
 function BrandFoceniFlow() {
   const [variant, setVariant] = useState<"free" | "paid">("free");
   const [url, setUrl] = useState("");
-  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result">("input");
+  const [phase, setPhase] = useState<"input" | "loading" | "result">("input");
   const [msg, setMsg] = useState("");
   const [scraped, setScraped] = useState<Scraped | null>(null);
-  const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [analysisText, setAnalysisText] = useState<string | null>(null);
   const [error, setError] = useState("");
-
-  const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
-  const score = result?.brandScore?.total ?? 0;
+  const [isLoading, setIsLoading] = useState(false);
 
   const analyze = async () => {
-    if (!url.trim()) return;
+    if (!url.trim() || isLoading) return;
     setError("");
-    setResult(null);
+    setAnalysisText(null);
     setScraped(null);
-    setAnswers({});
+    setIsLoading(true);
+    setPhase("loading");
+    setMsg("Načítám web…");
     try {
-      setPhase("loading");
-      setMsg("Načítám web (text + screenshot)...");
       const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url.trim() }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Chyba analýzy");
       setScraped(data.scraped ?? null);
-      setResult(data.result ?? null);
-      setPhase((data.result?.brandScore?.total ?? 0) < 60 ? "guidance" : "result");
+      setAnalysisText(typeof data.result === "string" ? data.result : data.result ?? "Žádný výstup.");
+      setPhase("result");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nepodařilo se analyzovat.");
       setPhase("input");
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const confirmGuidance = async () => {
-    setPhase("loading");
-    setMsg("Obohacuji Brand DNA o vaše odpovědi...");
-    try {
-      const res = await fetch("/api/analyze/refine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, brandDna: result?.brandDna, answers }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Chyba");
-      if (data.result) setResult(data.result);
-    } catch {}
-    setPhase("result");
   };
 
   const resetAnalysis = () => {
     setPhase("input");
     setUrl("");
-    setResult(null);
+    setAnalysisText(null);
     setScraped(null);
-    setAnswers({});
     setError("");
   };
 
@@ -378,39 +312,7 @@ function BrandFoceniFlow() {
     );
   }
 
-  if (phase === "guidance" && result) {
-    return (
-      <div className="gate-fade">
-        <button type="button" onClick={resetAnalysis} style={{ background: "none", border: "none", color: "#6F6F6F", fontSize: 14, cursor: "pointer", marginBottom: 20 }}>← Zpět</button>
-        {scraped?.screenshot && (
-          <div style={{ marginBottom: 20, borderRadius: 12, overflow: "hidden", border: "1px solid #EAEAE7" }}>
-            <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="Náhled webu" style={{ width: "100%", maxHeight: 200, objectFit: "cover" }} />
-          </div>
-        )}
-        <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 24, padding: 20, background: "#F7F7F5", borderRadius: 12 }}>
-          <div style={{ fontSize: 28, fontWeight: 600, color: score >= 70 ? "#22c55e" : score >= 40 ? "#eab308" : "#ef4444" }}>{score}</div>
-          <div>
-            <p style={{ fontSize: 14, color: "#6F6F6F" }}>{url}</p>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#1A1A1A" }}>Web nemá dostatek podkladů</p>
-            <p style={{ fontSize: 14, color: "#6F6F6F" }}>Doplňte výběrem – žádné psaní.</p>
-          </div>
-        </div>
-        {GUIDANCE_QUESTIONS.map((q, i) => (
-          <div key={q.id} style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 15, fontWeight: 500, color: "#1A1A1A", marginBottom: 10 }}>{i + 1}. {q.question}</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {q.options.map((o) => (
-                <button key={o} type="button" onClick={() => setAnswers((p) => ({ ...p, [q.id]: o }))} style={{ textAlign: "left", padding: "12px 16px", borderRadius: 10, border: answers[q.id] === o ? "2px solid #B7E300" : "1px solid #EAEAE7", background: answers[q.id] === o ? "rgba(183,227,0,0.08)" : "#FFF", color: "#1A1A1A", fontSize: 14, cursor: "pointer", transition: "all 0.2s" }}>{o}</button>
-              ))}
-            </div>
-          </div>
-        ))}
-        <button type="button" onClick={confirmGuidance} disabled={!allAnswered} style={{ marginTop: 24, padding: "14px 28px", background: allAnswered ? "#B7E300" : "#EAEAE7", color: "#1A1A1A", fontWeight: 600, fontSize: 16, border: "none", borderRadius: 12, cursor: allAnswered ? "pointer" : "not-allowed", opacity: allAnswered ? 1 : 0.7 }}>Zobrazit Brand DNA</button>
-      </div>
-    );
-  }
-
-  if (phase === "result" && result) {
+  if (phase === "result" && analysisText !== null) {
     return (
       <div className="gate-fade">
         <button type="button" onClick={resetAnalysis} style={{ background: "none", border: "none", color: "#6F6F6F", fontSize: 14, cursor: "pointer", marginBottom: 20 }}>← Analyzovat jiný web</button>
@@ -419,21 +321,24 @@ function BrandFoceniFlow() {
             <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="Náhled webu" style={{ width: "100%", maxHeight: 240, objectFit: "cover" }} />
           </div>
         )}
-        <div style={{ display: "flex", gap: 20, marginBottom: 24, padding: 20, background: "#F7F7F5", borderRadius: 12 }}>
-          <div style={{ fontSize: 32, fontWeight: 600, color: score >= 70 ? "#22c55e" : score >= 40 ? "#eab308" : "#ef4444" }}>{score}</div>
-          <div>
-            <p style={{ fontSize: 12, color: "#6F6F6F", wordBreak: "break-all" }}>{scraped?.url}</p>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#1A1A1A", marginTop: 4 }}>Brand DNA připravena</p>
+        <div
+          style={{
+            background: "#FFFFFF",
+            borderRadius: 12,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+            border: "1px solid #EAEAE7",
+            borderTop: "3px solid #B7E300",
+            overflow: "hidden",
+            marginBottom: 24,
+          }}
+        >
+          <h3 style={{ margin: 0, padding: "16px 20px", fontSize: 18, fontWeight: 600, color: "#1A1A1A", borderBottom: "1px solid #EAEAE7" }}>
+            Výsledek analýzy
+          </h3>
+          <div style={{ padding: "20px", fontSize: 15, color: "#1A1A1A", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+            {analysisText}
           </div>
         </div>
-        {result.brandDna && (
-          <div style={{ marginBottom: 24 }}>
-            <p style={{ fontSize: 13, color: "#6F6F6F", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Brand DNA</p>
-            <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 8 }}><strong>Název:</strong> {result.brandDna.name}</p>
-            <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6 }}><strong>Positioning:</strong> {result.brandDna.positioning}</p>
-            {result.summary && <p style={{ fontSize: 14, color: "#6F6F6F", lineHeight: 1.6, marginTop: 16, fontStyle: "italic" }}>{result.summary}</p>}
-          </div>
-        )}
         <Link href="/start?from=brandfoceni&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
           Pokračovat k výběru termínu
         </Link>
@@ -476,8 +381,8 @@ function BrandFoceniFlow() {
             style={{ width: "100%", padding: "14px 16px", border: "1px solid #EAEAE7", borderRadius: 12, fontSize: 16, color: "#1A1A1A", background: "#FFF", marginBottom: 12 }}
           />
           <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 20 }}>Analyzujeme váš web a připravíme první vizuální směr pro brand focení.</p>
-          {error && <p style={{ fontSize: 14, color: "#ef4444", marginBottom: 12 }}>⚠ {error}</p>}
-          <button type="button" onClick={analyze} disabled={!url.trim()} style={{ padding: "14px 28px", background: url.trim() ? "#B7E300" : "#EAEAE7", color: "#1A1A1A", fontWeight: 600, fontSize: 16, border: "none", borderRadius: 12, cursor: url.trim() ? "pointer" : "not-allowed", opacity: url.trim() ? 1 : 0.7 }}>
+          {error && <p style={{ fontSize: 14, color: "#b91c1c", marginBottom: 12 }}>⚠ {error}</p>}
+          <button type="button" onClick={analyze} disabled={!url.trim() || isLoading} style={{ padding: "14px 28px", background: url.trim() && !isLoading ? "#B7E300" : "#EAEAE7", color: "#1A1A1A", fontWeight: 600, fontSize: 16, border: "none", borderRadius: 12, cursor: url.trim() && !isLoading ? "pointer" : "not-allowed", opacity: url.trim() && !isLoading ? 1 : 0.7 }}>
             Analyzovat web
           </button>
         </>

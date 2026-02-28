@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
-const VISION_MODEL = "gpt-4o";
+const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
+const RESPONSES_MODEL = "gpt-4.1";
 
 type Scraped = {
   markdown: string;
@@ -53,90 +53,46 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
   };
 }
 
-function buildAnalyzePrompt(scraped: Scraped): string {
+function buildAnalyzeInput(scraped: Scraped): string {
   const textContent = scraped.markdown.slice(0, 7000);
-  return `Jsi expertní brand stratég. Analyzuj web na základě SKUTEČNÉHO obsahu a vizuálu.
+  return `Analyzuj následující web na základě jeho skutečného obsahu.
 
 URL: ${scraped.url}
-Title: ${scraped.title ?? ""}
-Meta description: ${scraped.description ?? ""}
+Název: ${scraped.title ?? ""}
+Meta popis: ${scraped.description ?? ""}
 
 OBSAH WEBU (markdown):
 ---
 ${textContent}
 ---
 
-DŮLEŽITÉ: Vycházej VÝHRADNĚ z tohoto obsahu${scraped.screenshot ? " a screenshotu výše" : ""}. Nevymýšlej nic co tam není.
+Vrať čistý text (ne JSON), oddělené sekce:
 
-${scraped.screenshot ? "Na základě screenshotu urči přesné barvy CI (HEX), typografický styl a celkový vizuální dojem." : ""}
-
-Vrať POUZE validní JSON (bez \`\`\`):
-{
-  "brandScore": {
-    "total": <0-100>,
-    "hasHeadline": <bool>,
-    "hasOffer": <bool>,
-    "hasTargetAudience": <bool>,
-    "hasCTA": <bool>,
-    "hasVisualIdentity": <bool>,
-    "hasSocialProof": <bool>
-  },
-  "brandDna": {
-    "name": "<název z webu>",
-    "positioning": "<jak se skutečně prezentují, 1-2 věty>",
-    "tone": "<skutečný tón komunikace>",
-    "targetAudience": "<komu skutečně cílí>",
-    "communicationStyle": "<educational|sales|storytelling|motivational|mixed>",
-    "contentPillars": ["<téma1>", "<téma2>", "<téma3>"],
-    "uniqueValue": "<co nabízí unikátního>",
-    "missingElements": ["<co chybí pro silný brand>"],
-    "visualStyle": {
-      "primaryColor": "<HEX hlavní barvy>",
-      "secondaryColor": "<HEX sekundární barvy>",
-      "mood": "<popis vizuálního dojmu webu>",
-      "typography": "<popis typografie>"
-    }
-  },
-  "summary": "<2-3 věty hodnocení jako brand stratég, konkrétní a upřímné>"
-}`;
+1. Shrnutí positioning – jak se web/služba prezentuje, hlavní sdělení.
+2. Cílovou skupinu – komu je nabídka určena (pokud je z obsahu zřejmá).
+3. Silné stránky – co web dělá dobře z hlediska brandu a komunikace.
+4. Slabiny – co chybí nebo co by šlo zlepšit.
+5. Doporučení dalšího kroku – konkrétní návrh, kam směřovat (např. vizuální identita, obsah, CTA).`;
 }
 
-async function analyzeWithOpenAI(scraped: Scraped, apiKey: string): Promise<Record<string, unknown>> {
-  const openai = new OpenAI({ apiKey });
-
-  const content: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [];
-
-  if (scraped.screenshot) {
-    let base64 = scraped.screenshot;
-    if (base64.startsWith("data:")) {
-      const idx = base64.indexOf(",");
-      base64 = idx >= 0 ? base64.slice(idx + 1) : base64;
+function extractOutputText(data: unknown): string {
+  if (data == null) return "No output received";
+  const d = data as Record<string, unknown>;
+  if (typeof d.output_text === "string") return d.output_text.trim();
+  const output = d.output;
+  if (Array.isArray(output) && output.length > 0) {
+    const first = output[0] as Record<string, unknown>;
+    const content = first?.content;
+    if (Array.isArray(content)) {
+      const textPart = content.find((c: Record<string, unknown>) => c.type === "output_text" || c.type === "text");
+      if (textPart && typeof (textPart as Record<string, unknown>).text === "string") {
+        return ((textPart as Record<string, unknown>).text as string).trim();
+      }
     }
-    content.push({
-      type: "image_url",
-      image_url: { url: `data:image/png;base64,${base64}` },
-    });
-    content.push({
-      type: "text",
-      text: "Výše vidíš screenshot webu. Analyzuj VIZUÁLNÍ styl: barvy, typografii, layout, celkový dojem.",
-    });
+    if (typeof first?.text === "string") return first.text.trim();
   }
-
-  content.push({
-    type: "text",
-    text: buildAnalyzePrompt(scraped),
-  });
-
-  const completion = await openai.chat.completions.create({
-    model: VISION_MODEL,
-    messages: [{ role: "user", content }],
-    max_tokens: 1800,
-  });
-
-  const raw = completion.choices?.[0]?.message?.content?.trim() ?? "{}";
-  const match = raw.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error("AI vrátila neplatnou odpověď");
-  return JSON.parse(match[0]) as Record<string, unknown>;
+  if (typeof d.text === "string") return d.text.trim();
+  return "No output received";
 }
 
 export async function POST(request: Request) {
@@ -144,7 +100,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const url = typeof body?.url === "string" ? body.url.trim() : "";
     if (!url) {
-      return NextResponse.json({ error: "Chybí URL webu." }, { status: 400 });
+      return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
     const firecrawlKey = process.env.FIRECRAWL_API_KEY;
@@ -157,9 +113,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
     }
 
-    const result = await analyzeWithOpenAI(scraped, openaiKey);
+    const input = buildAnalyzeInput(scraped);
+
+    const response = await fetch(OPENAI_RESPONSES_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiKey}`,
+      },
+      body: JSON.stringify({
+        model: RESPONSES_MODEL,
+        input,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errMsg = (data as { error?: { message?: string } }).error?.message ?? (data as { error?: string }).error ?? `OpenAI error ${response.status}`;
+      return NextResponse.json({ error: errMsg }, { status: response.status >= 500 ? 500 : 400 });
+    }
+
+    const outputText = extractOutputText(data);
 
     return NextResponse.json({
+      result: outputText,
       scraped: {
         markdown: scraped.markdown,
         screenshot: scraped.screenshot,
@@ -167,7 +145,6 @@ export async function POST(request: Request) {
         title: scraped.title,
         description: scraped.description,
       },
-      result,
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Nepodařilo se analyzovat web.";
