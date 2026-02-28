@@ -1,5 +1,15 @@
 # Lokální vývoj (localhost)
 
+## Uvolnění portů 3000, 3001, 3002
+
+Když Next.js píše „Port 3000 is in use, trying 3001 instead“, na těch portech běží staré instance. V terminálu (z `apps/content-studio`) spusťte:
+
+```bash
+./scripts/kill-dev-ports.sh
+```
+
+Nebo ručně: `lsof -ti :3000 | xargs kill -9` (pro 3001, 3002 stejně s jiným číslem). Pak znovu `npm run dev` – měl by naběhnout na **http://localhost:3000**.
+
 ## Spuštění
 
 Vždy spouštějte z této složky (`apps/content-studio`):
