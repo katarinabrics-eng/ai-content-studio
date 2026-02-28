@@ -15,6 +15,17 @@ Počkejte na hlášku **"✔ Ready"** a pak otevřete v prohlížeči:
   nebo  
 - **http://127.0.0.1:3000/start**
 
+## Pokud se objeví 404 na /start (This page could not be found)
+
+1. **Zastavte dev server** (v terminálu Ctrl+C).
+2. **Smažte cache a znovu spusťte:**
+   ```bash
+   cd apps/content-studio
+   rm -rf .next
+   npm run dev
+   ```
+3. Po „✔ Ready“ otevřete **http://localhost:3000/start** v **externím prohlížeči** (Chrome, Safari, Firefox), ne v náhledu v Cursoru.
+
 ## Pokud se objeví "Connection Refused" (ERR_CONNECTION_REFUSED)
 
 1. **Server možná restartoval** (např. po změně `next.config.js`). Počkejte znovu na "✔ Ready" a **obnovte stránku** (F5 nebo Cmd+R).
