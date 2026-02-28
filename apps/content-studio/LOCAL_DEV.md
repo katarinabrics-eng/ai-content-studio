@@ -34,14 +34,23 @@ Počkejte na hlášku **"✔ Ready"** a pak otevřete v prohlížeči:
 
 ## Pokud se objeví 404 na /start (This page could not be found)
 
-1. **Zastavte dev server** (v terminálu Ctrl+C).
-2. **Smažte cache a znovu spusťte:**
-   ```bash
-   cd apps/content-studio
-   rm -rf .next
-   npm run dev
-   ```
-3. Po „✔ Ready“ otevřete **http://localhost:3000/start** v **externím prohlížeči** (Chrome, Safari, Firefox), ne v náhledu v Cursoru.
+Často to způsobuje chyba **EMFILE (too many open files)** – watcher Next.js pak nenačte všechny routy.
+
+**Řešení A – dev s vyšším limitem (doporučeno):**  
+Spusťte úlohu **Run Task → Start dev server (content-studio)** – ta volá `dev:safe` (nastaví `ulimit` a spustí server).  
+Nebo v terminálu: `npm run dev:safe` z `apps/content-studio`.
+
+**Řešení B – production režim (vždy funguje):**  
+V terminálu z `apps/content-studio`:
+```bash
+npm run start:prod
+```
+(Provede build a spustí server na http://localhost:3000. Otevřete **http://localhost:3000/start**.)
+
+**Řešení C – ruční úklid:**  
+1. Zastavte dev server (Ctrl+C).  
+2. `rm -rf .next` a pak `ulimit -n 10240` a v tom samém terminálu `npm run dev`.  
+3. Po „✔ Ready“ otevřete **http://localhost:3000/start** v externím prohlížeči.
 
 ## Pokud se objeví "Connection Refused" (ERR_CONNECTION_REFUSED)
 

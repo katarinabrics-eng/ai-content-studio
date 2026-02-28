@@ -7,6 +7,13 @@ export const maxDuration = 60;
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
 const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 const OPENAI_MODEL = "gpt-4.1";
+const FETCH_TIMEOUT_MS = 55_000;
+
+function fetchWithTimeout(url: string, init: RequestInit, ms: number): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeout));
+}
 
 type Scraped = {
   markdown: string;
@@ -18,7 +25,9 @@ type Scraped = {
 
 async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped> {
   const normalized = url.startsWith("http") ? url : `https://${url}`;
-  const res = await fetch(`${FIRECRAWL_BASE}/scrape`, {
+  const res = await fetchWithTimeout(
+    `${FIRECRAWL_BASE}/scrape`,
+    {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +40,9 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
       waitFor: 2000,
       screenshot: true,
     }),
-  });
+  },
+    FETCH_TIMEOUT_MS
+  );
 
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
@@ -103,18 +114,22 @@ export async function POST(request: Request) {
 
     const prompt = buildAnalyzeInput(scraped);
 
-    const response = await fetch(OPENAI_CHAT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiKey}`,
+    const response = await fetchWithTimeout(
+      OPENAI_CHAT_URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${openaiKey}`,
+        },
+        body: JSON.stringify({
+          model: OPENAI_MODEL,
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 2000,
+        }),
       },
-      body: JSON.stringify({
-        model: OPENAI_MODEL,
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 2000,
-      }),
-    });
+      FETCH_TIMEOUT_MS
+    );
 
     const data = await response.json();
 
@@ -136,7 +151,11 @@ export async function POST(request: Request) {
       },
     });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Nepodařilo se analyzovat web.";
+    const raw = e instanceof Error ? e.message : "Nepodařilo se analyzovat web.";
+    const message =
+      raw.includes("abort") || (e instanceof Error && e.name === "AbortError")
+        ? "Požadavek vypršel (timeout). Zkuste to znovu."
+        : raw;
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

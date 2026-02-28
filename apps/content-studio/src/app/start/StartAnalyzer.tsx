@@ -100,14 +100,36 @@ export function StartAnalyzer() {
     try {
       setPhase("loading");
       setMsg("Načítám web (text + screenshot)...");
-      const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url.trim() }) });
-      const data = await res.json();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90_000);
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url.trim() }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      let data: { result?: Result; scraped?: Scraped; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        setError("Server vrátil neplatnou odpověď. Zkuste to znovu.");
+        setPhase("input");
+        return;
+      }
       if (!res.ok) throw new Error(data.error || "Chyba analýzy");
       setScraped(data.scraped ?? null);
       setResult(data.result ?? null);
       setPhase((data.result?.brandScore?.total ?? 0) < 60 ? "guidance" : "result");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Nepodařilo se analyzovat.");
+      const msg = e instanceof Error ? e.message : "Nepodařilo se analyzovat.";
+      const friendly =
+        msg === "fetch failed" || msg === "Failed to fetch"
+          ? "Spojení se serverem selhalo. Zkontrolujte, že server běží a že v .env.local máte OPENAI_API_KEY a FIRECRAWL_API_KEY."
+          : msg.includes("abort") || (e instanceof Error && e.name === "AbortError")
+            ? "Požadavek vypršel (timeout). Zkuste to znovu."
+            : msg;
+      setError(friendly);
       setPhase("input");
     }
   };
