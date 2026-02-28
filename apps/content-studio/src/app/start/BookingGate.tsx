@@ -88,7 +88,7 @@ export function BookingGate() {
             <Link href="/obchodni-podminky" className="text-[#1A1A1A] underline underline-offset-2 hover:no-underline font-medium">obchodní podmínky</Link>.
           </p>
           {!showCalendar && (
-          <div style={{ maxWidth: 560, margin: "0 auto", padding: "20px 24px", background: "#FFFFFF", borderRadius: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.04)", border: "1px solid #EAEAE7", textAlign: "left" }}>
+          <div style={{ maxWidth: 720, margin: "0 auto", padding: "20px 24px", background: "#FFFFFF", borderRadius: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.04)", border: "1px solid #EAEAE7", textAlign: "left" }}>
             <p style={{ fontSize: 13, color: "#6F6F6F", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>Co se zde odehrává</p>
             <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 12 }}>
               Na této stránce zvolíte typ spolupráce, vyplníte základní údaje a podle typu služby buď domluvíte konzultaci (zdarma s vratnou zálohou 500 Kč za termín), nebo (u prémiové identity a brand focení s vizuálním boardem za 1 850 Kč) nejdříve analyzujeme váš web. Po dokončení kroku vás provedeme k výběru termínu a úhradě.
@@ -536,14 +536,28 @@ function PremiovaFlow() {
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
       <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Vyberte variantu</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
-        <button type="button" onClick={() => setVariant("free")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "free" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "free" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace zdarma</span>
-          <span style={{ fontSize: 14, color: "#6F6F6F", display: "block", marginTop: 4 }}>vratná záloha 500 Kč za termín</span>
-        </button>
-        <button type="button" onClick={() => setVariant("paid")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "paid" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "paid" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace + vizuální board</span>
-          <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>1 850 Kč</span>
-        </button>
+        <div>
+          <button type="button" onClick={() => setVariant("free")} style={{ width: "100%", textAlign: "left", padding: 16, borderRadius: 12, border: variant === "free" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "free" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace zdarma</span>
+            <span style={{ fontSize: 14, color: "#6F6F6F", display: "block", marginTop: 4 }}>vratná záloha 500 Kč za termín</span>
+          </button>
+          {variant === "free" && (
+            <div style={{ marginTop: 8, padding: "14px 16px", background: "#F7F7F5", borderRadius: 10, border: "1px solid #EAEAE7", fontSize: 14, color: "#3A3A3A", lineHeight: 1.6 }}>
+              30minutová úvodní konzultace bez závazku. Probereme vaše cíle, časové možnosti a doporučíme další postup. Rezervace termínu se zálohou 500 Kč (vratná při dostavení nebo odečtená z další služby).
+            </div>
+          )}
+        </div>
+        <div>
+          <button type="button" onClick={() => setVariant("paid")} style={{ width: "100%", textAlign: "left", padding: 16, borderRadius: 12, border: variant === "paid" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "paid" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace + vizuální board</span>
+            <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>1 850 Kč</span>
+          </button>
+          {variant === "paid" && (
+            <div style={{ marginTop: 8, padding: "14px 16px", background: "#F7F7F5", borderRadius: 10, border: "1px solid #EAEAE7", fontSize: 14, color: "#3A3A3A", lineHeight: 1.6 }}>
+              Analýza vašeho webu, příprava vizuálního směru a 30minutová konzultace s konkrétními návrhy. Ideální první krok před prémiovou vizuální identitou.
+            </div>
+          )}
+        </div>
       </div>
       <p style={{ fontSize: 15, color: "#6F6F6F", marginBottom: 10 }}>Jaká je vaše časová představa pro spolupráci?</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
@@ -707,14 +721,28 @@ function BrandFoceniFlow() {
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
       <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Brand focení – vyberte variantu</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
-        <button type="button" onClick={() => setVariant("free")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "free" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "free" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace zdarma</span>
-          <span style={{ fontSize: 14, color: "#6F6F6F", display: "block", marginTop: 4 }}>vratná záloha 500 Kč za termín</span>
-        </button>
-        <button type="button" onClick={() => setVariant("paid")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "paid" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "paid" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace + vizuální board</span>
-          <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>1 850 Kč</span>
-        </button>
+        <div>
+          <button type="button" onClick={() => setVariant("free")} style={{ width: "100%", textAlign: "left", padding: 16, borderRadius: 12, border: variant === "free" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "free" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace zdarma</span>
+            <span style={{ fontSize: 14, color: "#6F6F6F", display: "block", marginTop: 4 }}>vratná záloha 500 Kč za termín</span>
+          </button>
+          {variant === "free" && (
+            <div style={{ marginTop: 8, padding: "14px 16px", background: "#F7F7F5", borderRadius: 10, border: "1px solid #EAEAE7", fontSize: 14, color: "#3A3A3A", lineHeight: 1.6 }}>
+              30minutová úvodní konzultace bez závazku. Probereme vaše cíle, styl focení a doporučíme další postup. Rezervace termínu se zálohou 500 Kč (vratná při dostavení nebo odečtená z další služby).
+            </div>
+          )}
+        </div>
+        <div>
+          <button type="button" onClick={() => setVariant("paid")} style={{ width: "100%", textAlign: "left", padding: 16, borderRadius: 12, border: variant === "paid" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "paid" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", transition: "all 0.2s" }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Konzultace + vizuální board</span>
+            <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>1 850 Kč</span>
+          </button>
+          {variant === "paid" && (
+            <div style={{ marginTop: 8, padding: "14px 16px", background: "#F7F7F5", borderRadius: 10, border: "1px solid #EAEAE7", fontSize: 14, color: "#3A3A3A", lineHeight: 1.6 }}>
+              Analýza vašeho webu a příprava vizuálního směru pro brand focení. 30minutová konzultace včetně doporučení stylu a prostředí. Vhodné před samotným focením.
+            </div>
+          )}
+        </div>
       </div>
       <p style={{ fontSize: 15, color: "#6F6F6F", marginBottom: 10 }}>Pro jaké účely budete fotky nejvíce používat?</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
@@ -764,29 +792,35 @@ function BrandFoceniFlow() {
   );
 }
 
+const PORTRET_STUDIO_CONTENT = "Profesionální portrétní focení v ateliéru (autorský portrét). Zahrnuje přípravu, focení cca 1–2 hodiny a základní retuše. Výstup: vybrané fotografie v rozlišení vhodném pro web a tisk. Možnost přidat vizážistku (+ 3 500 Kč).";
+
 function PortretFlow() {
-  const [variant, setVariant] = useState<"autorsky" | "brand">("autorsky");
-  const [typ, setTyp] = useState<"profesni" | "autorsky_vytvarny" | "rodinny">("profesni");
+  const [typ, setTyp] = useState<"podnikatelsky" | "umelecky" | "herecky_profesni">("podnikatelsky");
   const [vizazistka, setVizazistka] = useState(false);
+  const [studioExpanded, setStudioExpanded] = useState(true);
   return (
     <div className="gate-fade">
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
       <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Vyberte variantu</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
-        <button type="button" onClick={() => setVariant("autorsky")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "autorsky" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "autorsky" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Autorský portrét</span>
-          <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>4 500 Kč</span>
-        </button>
-        <button type="button" onClick={() => setVariant("brand")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: variant === "brand" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: variant === "brand" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Brand portrét v ateliéru Kampa</span>
-          <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>4 500 Kč</span>
-        </button>
+        <div>
+          <button type="button" onClick={() => setStudioExpanded(!studioExpanded)} style={{ width: "100%", textAlign: "left", padding: 16, borderRadius: 12, border: "2px solid #B7E300", background: "rgba(183,227,0,0.08)", cursor: "pointer" }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Portrét – autorský portrét – STUDIO</span>
+            <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>4 500 Kč</span>
+            <span style={{ float: "right", fontSize: 14, color: "#6F6F6F" }}>{studioExpanded ? "▼" : "▶"}</span>
+          </button>
+          {studioExpanded && (
+            <div style={{ marginTop: 8, padding: "14px 16px", background: "#F7F7F5", borderRadius: 10, border: "1px solid #EAEAE7", fontSize: 14, color: "#3A3A3A", lineHeight: 1.6 }}>
+              {PORTRET_STUDIO_CONTENT}
+            </div>
+          )}
+        </div>
       </div>
       <p style={{ fontSize: 15, color: "#6F6F6F", marginBottom: 16 }}>Typ portrétu</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-        {(["profesni", "autorsky_vytvarny", "rodinny"] as const).map((t) => (
+        {(["podnikatelsky", "umelecky", "herecky_profesni"] as const).map((t) => (
           <button key={t} type="button" onClick={() => setTyp(t)} style={{ textAlign: "left", padding: 12, borderRadius: 10, border: typ === t ? "2px solid #B7E300" : "1px solid #EAEAE7", background: typ === t ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer", fontSize: 15, color: "#1A1A1A" }}>
-            {t === "profesni" ? "Profesní portrét" : t === "autorsky_vytvarny" ? "Autorský portrét / výtvarný" : "Rodinný portrét"}
+            {t === "podnikatelsky" ? "Podnikatelský portrét" : t === "umelecky" ? "Umělecký portrét" : "Herecký / profesní portrét"}
           </button>
         ))}
       </div>
@@ -804,8 +838,14 @@ function PortretFlow() {
   );
 }
 
+const RODINNE_OPTS: { id: "reportaz" | "atelier" | "atelierovy"; label: string; price: string; content: string }[] = [
+  { id: "reportaz", label: "Reportážní dokumentární focení", price: "5 800 Kč", content: "Dokumentární zachycení rodiny v přirozeném prostředí (exteriér nebo váš interiér). Cca 2–3 hodiny, digitální nebo analogové snímky dle domluvy. Zahrnuje základní retuše a předání vybraných fotografií." },
+  { id: "atelier", label: "Ateliérové focení stylizace", price: "8 500 Kč", content: "Stylizované rodinné focení v ateliéru s návrhem stylu, rekvizitami a profesionálním světlem. Vhodné pro výraznější, umělecky vedené snímky. Zahrnuje přípravu, focení a postprodukci." },
+  { id: "atelierovy", label: "Atelierový rodinný portrét", price: "4 500 Kč", content: "Klasický rodinný portrét v ateliéru – čisté pozadí nebo jednoduchá stylizace. Cca 1–2 hodiny, vhodné pro portréty i skupinové snímky. Zahrnuje základní retuše a předání fotografií." },
+];
+
 function RodinneFlow() {
-  const [typ, setTyp] = useState<"reportaz" | "atelier">("reportaz");
+  const [typ, setTyp] = useState<"reportaz" | "atelier" | "atelierovy">("reportaz");
   const [kde, setKde] = useState("");
   const [kolik, setKolik] = useState("");
   const [analogDigital, setAnalogDigital] = useState<"analog" | "digital" | "">("");
@@ -815,14 +855,19 @@ function RodinneFlow() {
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
       <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Vyberte typ focení</p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
-        <button type="button" onClick={() => setTyp("reportaz")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: typ === "reportaz" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: typ === "reportaz" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Reportážní dokumentární focení</span>
-          <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>5 800 Kč</span>
-        </button>
-        <button type="button" onClick={() => setTyp("atelier")} style={{ textAlign: "left", padding: 16, borderRadius: 12, border: typ === "atelier" ? "2px solid #B7E300" : "1px solid #EAEAE7", background: typ === "atelier" ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer" }}>
-          <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>Ateliérové focení stylizace</span>
-          <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>8 500 Kč</span>
-        </button>
+        {RODINNE_OPTS.map((opt) => (
+          <div key={opt.id}>
+            <button type="button" onClick={() => setTyp(opt.id)} style={{ width: "100%", textAlign: "left", padding: 16, borderRadius: 12, border: typ === opt.id ? "2px solid #B7E300" : "1px solid #EAEAE7", background: typ === opt.id ? "rgba(183,227,0,0.08)" : "#FFF", cursor: "pointer" }}>
+              <span style={{ fontSize: 16, fontWeight: 600, color: "#1A1A1A" }}>{opt.label}</span>
+              <span style={{ fontSize: 15, color: "#6F6F6F", marginLeft: 8 }}>{opt.price}</span>
+            </button>
+            {typ === opt.id && (
+              <div style={{ marginTop: 8, padding: "14px 16px", background: "#F7F7F5", borderRadius: 10, border: "1px solid #EAEAE7", fontSize: 14, color: "#3A3A3A", lineHeight: 1.6 }}>
+                {opt.content}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
       <label style={{ display: "block", fontSize: 13, color: "#6F6F6F", marginBottom: 6 }}>Kde si přejete fotit?</label>
       <input type="text" value={kde} onChange={(e) => setKde(e.target.value)} placeholder="např. park, byt, ateliér" className="gate-input" style={{ width: "100%", padding: "12px 14px", border: "1px solid #EAEAE7", borderRadius: 12, fontSize: 15, marginBottom: 16 }} />
