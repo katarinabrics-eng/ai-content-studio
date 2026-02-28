@@ -10,9 +10,16 @@ Když Next.js píše „Port 3000 is in use, trying 3001 instead“, na těch po
 
 Nebo ručně: `lsof -ti :3000 | xargs kill -9` (pro 3001, 3002 stejně s jiným číslem). Pak znovu `npm run dev` – měl by naběhnout na **http://localhost:3000**.
 
-## Spuštění
+## Spuštění (vždy na portu 3000)
 
-Vždy spouštějte z této složky (`apps/content-studio`):
+**Doporučený způsob (uvolní porty a spustí na 3000):**
+
+- V Cursoru: **Cmd+Shift+P** → **Run Task** → **Start dev server (content-studio)**  
+  nebo z této složky v terminálu: **`npm run dev:clean`**
+
+Server pak vždy běží na **http://localhost:3000** – otevřete **http://localhost:3000/start**.
+
+**Klasické spuštění** (pokud jsou porty volné):
 
 ```bash
 cd apps/content-studio
