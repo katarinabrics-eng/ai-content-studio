@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-const FIRECRAWL_BASE = "https://api.firecrawl.dev/v1";
+const FIRECRAWL_BASE = "https://api.firecrawl.dev/v2";
 const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 const OPENAI_MODEL = "gpt-4.1";
 const FETCH_TIMEOUT_MS = 55_000;
@@ -35,18 +35,21 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
     },
     body: JSON.stringify({
       url: normalized,
-      formats: ["markdown", "screenshot"],
+      formats: ["markdown", { type: "screenshot" }],
       onlyMainContent: true,
       waitFor: 2000,
-      screenshot: true,
     }),
   },
     FETCH_TIMEOUT_MS
   );
 
   if (!res.ok) {
-    const e = await res.json().catch(() => ({}));
-    throw new Error((e as { error?: string }).error || `Firecrawl error ${res.status}`);
+    const e = (await res.json().catch(() => ({}))) as { error?: string; message?: string; param?: string };
+    const msg = e?.message ?? e?.error ?? `Firecrawl error ${res.status}`;
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[analyze] Firecrawl error:", { message: msg, param: e?.param });
+    }
+    throw new Error(msg);
   }
 
   const data = await res.json();
@@ -54,13 +57,22 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
     throw new Error((data as { error?: string }).error || "Nepodařilo se načíst web");
   }
 
-  const d = (data as { data?: { markdown?: string; screenshot?: string; metadata?: { title?: string; description?: string } } }).data;
+  const d = (data as {
+    data?: {
+      markdown?: string;
+      screenshot?: string;
+      metadata?: { title?: string | string[]; description?: string | string[] };
+    };
+  }).data;
+  const meta = d?.metadata;
+  const title = meta?.title == null ? undefined : Array.isArray(meta.title) ? meta.title[0] : meta.title;
+  const description = meta?.description == null ? undefined : Array.isArray(meta.description) ? meta.description[0] : meta.description;
   return {
     markdown: d?.markdown ?? "",
     screenshot: d?.screenshot ?? null,
     url: normalized,
-    title: d?.metadata?.title,
-    description: d?.metadata?.description,
+    title,
+    description,
   };
 }
 
@@ -134,7 +146,11 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (!response.ok) {
-      const errMsg = (data as { error?: { message?: string } }).error?.message ?? (data as { error?: string }).error ?? `OpenAI error ${response.status}`;
+      const err = (data as { error?: { message?: string; param?: string } }).error;
+      const errMsg = err?.message ?? (data as { error?: string }).error ?? `OpenAI error ${response.status}`;
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[analyze] OpenAI error:", { message: errMsg, param: err?.param });
+      }
       return NextResponse.json({ error: errMsg }, { status: response.status >= 500 ? 500 : 400 });
     }
 
