@@ -52,10 +52,18 @@ function derivePillarScores(result: ScanResult): Record<string, number> {
   return { light, energy, architecture, identity, trust };
 }
 
-function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Section({
+  children,
+  className = "",
+  compact,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  compact?: boolean;
+}) {
   return (
     <section
-      className={`min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center ${className}`}
+      className={`flex flex-col items-center justify-center px-6 text-center ${compact ? "py-8" : "py-12 md:py-14"} ${className}`}
       style={{ background: "#0c0c14", color: "#e7e7ef" }}
     >
       {children}
@@ -135,7 +143,7 @@ export function ScanResultScrollExperience({
       </Section>
 
       {/* 3. Přechod */}
-      <Section className="py-16">
+      <Section compact>
         <p className="text-xl md:text-2xl text-zinc-500 max-w-lg mx-auto">
           Značka není jen vizuál.<br />Je to systém.
         </p>
@@ -175,7 +183,7 @@ export function ScanResultScrollExperience({
       </Section>
 
       {/* 5. Přechod */}
-      <Section className="py-16">
+      <Section compact>
         <p className="text-xl text-zinc-500 max-w-lg mx-auto">
           Značka může být jasná.<br />Ale proč právě ona?
         </p>
@@ -279,14 +287,14 @@ export function ScanResultScrollExperience({
       </Section>
 
       {/* 11. Finální dramatický blok */}
-      <Section className="py-24">
+      <Section compact>
         <p className="text-2xl md:text-3xl font-semibold text-white max-w-lg mx-auto leading-relaxed">
           Značka má potenciál.<br />Otázka je, zda ho chcete využít.
         </p>
       </Section>
 
       {/* 12. CTA blok */}
-      <Section className="pb-32">
+      <Section className="pb-16">
         <div className="max-w-lg mx-auto rounded-2xl border border-white/10 bg-white/5 p-8 text-left">
           <p className="text-zinc-400 text-sm mb-4">
             Výběr termínu zavazuje k úhradě strategického Visual Boardu
