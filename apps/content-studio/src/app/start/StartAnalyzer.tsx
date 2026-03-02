@@ -134,28 +134,44 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [result, setResult] = useState<Result | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
+  const [mode, setMode] = useState<"web" | "manual">("web");
+  const [manualText, setManualText] = useState("");
+  const [brandFile, setBrandFile] = useState<File | null>(null);
 
   const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
   const score = result?.brandScore?.total ?? 0;
 
   const analyze = async () => {
-    if (!url.trim()) return;
+    if (mode === "web" && !url.trim()) return;
+    if (diagnostika && mode === "manual" && !manualText.trim() && !brandFile) return;
     setError("");
     setResult(null);
     setScraped(null);
     setAnswers({});
     try {
       setPhase("loading");
-      setMsg("Načítám web (text + screenshot)...");
+      setMsg(mode === "web" ? "Načítám web (text + screenshot)..." : "Analyzuji zadané podklady...");
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 90_000);
+      const body: Record<string, unknown> = diagnostika ? { format: "diagnostika" } : {};
+      if (mode === "web") {
+        body.url = url.trim();
+      } else if (diagnostika) {
+        body.manualData = manualText.trim() || undefined;
+        if (brandFile) {
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+            r.onerror = reject;
+            r.readAsDataURL(brandFile);
+          });
+          body.pdfBase64 = base64;
+        }
+      }
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: url.trim(),
-          ...(diagnostika ? { format: "diagnostika" } : {}),
-        }),
+        body: JSON.stringify(body),
         signal: controller.signal,
       });
       clearTimeout(timeout);
@@ -198,7 +214,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       const res = await fetch("/api/analyze/refine", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, brandDna: result?.brandDna, answers }),
+        body: JSON.stringify({ url: url || "zadané podklady", brandDna: result?.brandDna, answers }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Chyba");
@@ -216,6 +232,9 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setScraped(null);
     setAnswers({});
     setError("");
+    setMode("web");
+    setManualText("");
+    setBrandFile(null);
   };
 
   return (
@@ -233,7 +252,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         <span style={{ marginLeft: "auto", fontSize: 10, color: "#222", background: "#161622", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
       </header>
 
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "44px 20px 80px" }}>
+      <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
 
         {phase === "input" && (
           <div className="analyzer-fade">
@@ -303,14 +322,77 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                 Zadejte web.<br /><span style={{ color: "#2a2a3a" }}>Zbytek uděláme za vás.</span>
               </h1>
             </div>
-            <div style={C.card}>
-              <label style={C.lbl}>URL webu klienta</label>
-              <input className="analyzer-inp" style={C.inp} placeholder="simby.cz nebo studiolucifera.cz" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === "Enter" && analyze()} />
+
+            <div className={diagnostika ? "bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl" : ""} style={diagnostika ? undefined : C.card}>
+              {diagnostika && (
+                <div className="flex justify-center mb-6">
+                  <div className="inline-flex bg-white/5 backdrop-blur-md rounded-full p-1 border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setMode("web")}
+                      className={`px-6 py-2 rounded-full text-sm transition ${mode === "web" ? "bg-emerald-500 text-black" : "text-white/60 hover:text-white"}`}
+                    >
+                      Mám web
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode("manual")}
+                      className={`px-6 py-2 rounded-full text-sm transition ${mode === "manual" ? "bg-emerald-500 text-black" : "text-white/60 hover:text-white"}`}
+                    >
+                      Nemám web
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {(!diagnostika || mode === "web") && (
+                <>
+                  <label style={C.lbl}>URL webu klienta</label>
+                  <input className="analyzer-inp" style={C.inp} placeholder="simby.cz nebo studiolucifera.cz" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === "Enter" && analyze()} />
+                </>
+              )}
+
+              {diagnostika && mode === "manual" && (
+                <div className="space-y-6">
+                  <textarea
+                    value={manualText}
+                    onChange={(e) => setManualText(e.target.value)}
+                    placeholder="Popište svou značku, cílovou skupinu, nabídku, styl komunikace..."
+                    className="w-full min-h-[180px] bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/40 focus:outline-none focus:border-emerald-500 transition"
+                  />
+                  <div className="border border-dashed border-white/20 rounded-xl p-6 text-center hover:border-emerald-500 transition">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) setBrandFile(e.target.files[0]);
+                      }}
+                      className="hidden"
+                      id="pdfUpload"
+                    />
+                    <label htmlFor="pdfUpload" className="cursor-pointer text-white/70 hover:text-white transition">
+                      {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Nahrajte PDF s podklady o značce (volitelné)"}
+                    </label>
+                  </div>
+                </div>
+              )}
+
               {error && (
                 <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(224,90,90,0.07)", border: "1px solid rgba(224,90,90,0.2)", borderRadius: 8, color: "#e05a5a", fontSize: 13 }}>⚠ {error}</div>
               )}
-              <button type="button" style={{ ...C.btn, opacity: url.trim() ? 1 : 0.3 }} onClick={analyze} disabled={!url.trim()}>{diagnostika ? "Analyzovat" : "Analyzovat →"}</button>
+              <button
+                type="button"
+                style={{
+                  ...C.btn,
+                  opacity: (mode === "web" && url.trim()) || (diagnostika && mode === "manual" && (manualText.trim() || brandFile)) ? 1 : 0.3,
+                }}
+                onClick={analyze}
+                disabled={(mode === "web" && !url.trim()) || (diagnostika && mode === "manual" && !manualText.trim() && !brandFile)}
+              >
+                {diagnostika ? "Analyzovat" : "Analyzovat →"}
+              </button>
             </div>
+
             <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
               {["Screenshot webu", "Analýza textu", "Claude Vision", "Brand DNA"].map((t) => (
                 <span key={t} style={{ fontSize: 10, color: "#2a2a3a" }}>✓ {t}</span>

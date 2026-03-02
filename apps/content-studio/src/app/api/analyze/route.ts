@@ -98,6 +98,41 @@ Vrať čistý text (ne JSON), oddělené sekce:
 5. Doporučení dalšího kroku – konkrétní návrh, kam směřovat (např. vizuální identita, obsah, CTA).`;
 }
 
+function buildDiagnostikaPromptFromText(sourceContent: string): string {
+  const text = sourceContent.slice(0, 12000);
+  return `Analyzuj zadané podklady o značce a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
+
+OBSAH (zadaný text nebo extrahovaný z dokumentu):
+---
+${text}
+---
+
+JSON musí mít přesně tento tvar (boolean u has* vyhodnoť podle toho, zda jsou v textu uvedeny):
+{
+  "brandScore": {
+    "total": <číslo 0-100, celkové skóre síly brandu>,
+    "hasHeadline": true/false,
+    "hasOffer": true/false,
+    "hasTargetAudience": true/false,
+    "hasCTA": true/false,
+    "hasVisualIdentity": true/false,
+    "hasSocialProof": true/false
+  },
+  "brandDna": {
+    "name": "string nebo null",
+    "positioning": "string nebo null",
+    "tone": "string nebo null",
+    "targetAudience": "string nebo null",
+    "communicationStyle": "string nebo null",
+    "uniqueValue": "string nebo null",
+    "contentPillars": ["string"] nebo [],
+    "missingElements": ["string"] nebo [],
+    "visualStyle": { "primaryColor": "#hex", "secondaryColor": "#hex", "mood": "string", "typography": "string" } nebo null
+  },
+  "summary": "Krátké shrnutí od stratéga – 2–4 věty."
+}`;
+}
+
 function buildDiagnostikaPrompt(scraped: Scraped): string {
   const textContent = scraped.markdown.slice(0, 7000);
   return `Analyzuj tento web a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
@@ -155,22 +190,51 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const url = typeof body?.url === "string" ? body.url.trim() : "";
+    const manualData = typeof body?.manualData === "string" ? body.manualData.trim() : "";
+    const pdfBase64 = typeof body?.pdfBase64 === "string" ? body.pdfBase64 : "";
     const formatDiagnostika = body?.format === "diagnostika";
-    if (!url) {
-      return NextResponse.json({ error: "URL is required" }, { status: 400 });
+
+    let sourceContent = "";
+    let scraped: Scraped | null = null;
+
+    if (url) {
+      const firecrawlKey = process.env.FIRECRAWL_API_KEY;
+      if (!firecrawlKey) return NextResponse.json({ error: "FIRECRAWL_API_KEY není nastaven." }, { status: 500 });
+      scraped = await scrapeWithFirecrawl(url, firecrawlKey);
+      if (!scraped.markdown && !scraped.screenshot) {
+        return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
+      }
+      sourceContent = scraped.markdown ?? "";
     }
 
-    const firecrawlKey = process.env.FIRECRAWL_API_KEY;
+    if (manualData) {
+      sourceContent = sourceContent ? `${sourceContent}\n\n--- Zadaný text ---\n\n${manualData}` : manualData;
+    }
+
+    if (pdfBase64) {
+      const pdfParse = (await import("pdf-parse")).default as (buf: Buffer) => Promise<{ text: string }>;
+      const buffer = Buffer.from(pdfBase64, "base64");
+      const { text: pdfText } = await pdfParse(buffer);
+      sourceContent = sourceContent ? `${sourceContent}\n\n--- PDF ---\n\n${pdfText}` : pdfText;
+    }
+
     const openaiKey = process.env.OPENAI_API_KEY;
-    if (!firecrawlKey) return NextResponse.json({ error: "FIRECRAWL_API_KEY není nastaven." }, { status: 500 });
     if (!openaiKey) return NextResponse.json({ error: "OPENAI_API_KEY není nastaven." }, { status: 500 });
 
-    const scraped = await scrapeWithFirecrawl(url, firecrawlKey);
-    if (!scraped.markdown && !scraped.screenshot) {
-      return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
+    if (!sourceContent.trim()) {
+      return NextResponse.json(
+        { error: "Zadejte URL webu, text o značce nebo nahrajte PDF." },
+        { status: 400 }
+      );
     }
 
-    const prompt = formatDiagnostika ? buildDiagnostikaPrompt(scraped) : buildAnalyzeInput(scraped);
+    if (!formatDiagnostika && !scraped) {
+      return NextResponse.json({ error: "Pro analýzu bez diagnostiky je potřeba zadat URL webu." }, { status: 400 });
+    }
+
+    const prompt = formatDiagnostika
+      ? (scraped ? buildDiagnostikaPrompt(scraped) : buildDiagnostikaPromptFromText(sourceContent))
+      : buildAnalyzeInput(scraped!);
 
     const response = await fetchWithTimeout(
       OPENAI_CHAT_URL,
@@ -202,18 +266,16 @@ export async function POST(request: Request) {
 
     const outputText = getTextFromChatResponse(data);
 
+    const scrapedPayload = scraped
+      ? { markdown: scraped.markdown, screenshot: scraped.screenshot, url: scraped.url, title: scraped.title, description: scraped.description }
+      : { markdown: sourceContent, screenshot: null, url: "", title: "", description: "" };
+
     if (formatDiagnostika) {
       try {
         const result = parseDiagnostikaResult(outputText);
         return NextResponse.json({
           result: { brandScore: result.brandScore, brandDna: result.brandDna, summary: result.summary },
-          scraped: {
-            markdown: scraped.markdown,
-            screenshot: scraped.screenshot,
-            url: scraped.url,
-            title: scraped.title,
-            description: scraped.description,
-          },
+          scraped: scrapedPayload,
         });
       } catch {
         return NextResponse.json({ error: "AI nevrátilo platnou Brand DNA (JSON). Zkuste to znovu." }, { status: 500 });
@@ -222,13 +284,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       result: outputText,
-      scraped: {
-        markdown: scraped.markdown,
-        screenshot: scraped.screenshot,
-        url: scraped.url,
-        title: scraped.title,
-        description: scraped.description,
-      },
+      scraped: scrapedPayload,
     });
   } catch (e) {
     const raw = e instanceof Error ? e.message : "Nepodařilo se analyzovat web.";
