@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 import { ensureProjectFromCheckoutSession } from "@/lib/checkout-project";
-import { setDiagnosticProjectStatus, getDiagnosticProjectById } from "@/lib/lucifera-diagnostic-db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,43 +41,15 @@ export async function POST(request: Request) {
     if (session.payment_status !== "paid") {
       return NextResponse.json({ received: true }, { status: 200 });
     }
-    const metadata = session.metadata as Record<string, string> | null;
-    const isDiagnostika = metadata?.type === "diagnostika";
-    const diagnostikaProjectId = metadata?.projectId;
-
-    if (isDiagnostika && diagnostikaProjectId) {
-      try {
-        await setDiagnosticProjectStatus(diagnostikaProjectId, "active");
-        const project = await getDiagnosticProjectById(diagnostikaProjectId);
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-        const studioLink = `${baseUrl.replace(/\/$/, "")}/studio/${diagnostikaProjectId}`;
-        const consultationDate = (project?.intake_data?.consultationDate as string) ?? "dle domluvy";
-        const email = session.customer_details?.email;
-        if (email) {
-          // TODO: odeslat mail (přístupový link + datum konzultace) – např. Resend / SendGrid
-          if (process.env.NODE_ENV !== "production") {
-            console.log("[webhooks/stripe] Diagnostika paid – odeslat mail:", {
-              to: email,
-              studioLink,
-              consultationDate,
-            });
-          }
-        }
-      } catch (e) {
-        console.error("[webhooks/stripe] Diagnostika flow failed:", e);
-        return NextResponse.json({ error: "Diagnostika post-payment failed" }, { status: 500 });
+    try {
+      const result = await ensureProjectFromCheckoutSession(session);
+      if (!result.ok) {
+        console.error("[webhooks/stripe] ensureProjectFromCheckoutSession failed:", result.error);
+        return NextResponse.json({ error: result.error }, { status: 500 });
       }
-    } else {
-      try {
-        const result = await ensureProjectFromCheckoutSession(session);
-        if (!result.ok) {
-          console.error("[webhooks/stripe] ensureProjectFromCheckoutSession failed:", result.error);
-          return NextResponse.json({ error: result.error }, { status: 500 });
-        }
-      } catch (e) {
-        console.error("[webhooks/stripe]", e);
-        return NextResponse.json({ error: "Failed to create project from checkout" }, { status: 500 });
-      }
+    } catch (e) {
+      console.error("[webhooks/stripe]", e);
+      return NextResponse.json({ error: "Failed to create project from checkout" }, { status: 500 });
     }
   }
 
