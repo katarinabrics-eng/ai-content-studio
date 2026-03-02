@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { StrategicBooking } from "../components/StrategicBooking";
 
 const GUIDANCE_QUESTIONS = [
   { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
@@ -88,7 +87,6 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [result, setResult] = useState<Result | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
-  const [showBooking, setShowBooking] = useState(false);
 
   const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
   const score = result?.brandScore?.total ?? 0;
@@ -342,31 +340,17 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                 <pre style={{ fontSize: 10, color: "#333", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{scraped?.markdown?.slice(0, 2000)}...</pre>
               </div>
             </details>
-            {diagnostika && (
-              <div className="mt-10 space-y-6" style={{ marginTop: 24 }}>
-                <button
-                  type="button"
-                  onClick={() => setShowBooking(true)}
-                  style={{ ...C.btn, maxWidth: 320, margin: "0 auto", display: "block" }}
-                >
-                  Chci strategickou konzultaci
-                </button>
-              </div>
-            )}
-            {!diagnostika && (
-              <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.15)", background: "rgba(168,224,99,0.015)" }}>
-                <p style={{ color: "#a8e063", fontWeight: 600, marginBottom: 5 }}>Brand DNA připravena ✓</p>
-                <p style={{ color: "#333", fontSize: 12, marginBottom: 14 }}>Modul 2: generátor postů ve stylu tohoto klienta</p>
-                <button type="button" style={{ ...C.btn, maxWidth: 260, margin: "0 auto" }}>Pokračovat na tvorbu obsahu →</button>
-              </div>
-            )}
-            {diagnostika && showBooking && (
-              <StrategicBooking
-                brandScore={result.brandScore}
-                brandDna={result.brandDna}
-                analyzedUrl={scraped?.url ?? url}
-              />
-            )}
+            <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.15)", background: "rgba(168,224,99,0.015)" }}>
+              <p style={{ color: "#a8e063", fontWeight: 600, marginBottom: 5 }}>Brand DNA připravena ✓</p>
+              {diagnostika ? (
+                <p style={{ color: "#333", fontSize: 12 }}>Výsledek diagnostiky je připraven.</p>
+              ) : (
+                <>
+                  <p style={{ color: "#333", fontSize: 12, marginBottom: 14 }}>Modul 2: generátor postů ve stylu tohoto klienta</p>
+                  <button type="button" style={{ ...C.btn, maxWidth: 260, margin: "0 auto" }}>Pokračovat na tvorbu obsahu →</button>
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>
