@@ -94,7 +94,7 @@ export function ScanResultScrollExperience({
   const riskCommoditization = scores.energy <= 4;
 
   return (
-    <div className="bg-[#0c0c14] text-[#e7e7ef]" style={{ fontFamily: "system-ui, sans-serif" }}>
+    <div className="bg-[#0c0c14] text-[#e7e7ef] animate-fade-in" style={{ fontFamily: "system-ui, sans-serif" }}>
       {onBack && (
         <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-white/5 bg-[#0c0c14]/90 backdrop-blur">
           <button

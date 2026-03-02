@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
+import { ScanRitualLoading } from "./ScanRitualLoading";
 
 const GUIDANCE_QUESTIONS = [
   { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
@@ -339,6 +340,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         <span style={{ marginLeft: "auto", fontSize: 10, color: "#222", background: "#161622", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
       </header>
 
+      {phase === "loading" && diagnostika && <ScanRitualLoading />}
+
       {phase === "teaser" && diagnostika && result ? (
         <ScanResultScrollExperience
           result={result}
@@ -607,7 +610,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           </div>
         )}
 
-        {phase === "loading" && (
+        {phase === "loading" && !diagnostika && (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
             <div style={{ position: "relative", width: 52, height: 52, margin: "0 auto 20px" }}>
               <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(168,224,99,0.08)" }} />
