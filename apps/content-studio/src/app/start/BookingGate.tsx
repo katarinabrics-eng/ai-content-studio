@@ -176,7 +176,9 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
 
   const isPremiova = from === "premiova";
   const calendarTitle = isPremiova ? "Rezervace strategické konzultace" : "Výběr termínu";
-  const calendarSubtitle = isPremiova ? "60 minut online / osobně v Praze · Součástí je vizuální board" : `${STEP_LABELS[from]} · Výběr termínu`;
+  const calendarSubtitle = isPremiova
+    ? "60 minut · Online / osobně v Praze · Součástí je vizuální board"
+    : `${STEP_LABELS[from]} · Výběr termínu`;
 
   return (
     <div className="gate-fade">
@@ -454,16 +456,34 @@ function PremioveFlow({ basePath = "/start" }: { basePath?: string }) {
   return (
     <div className="gate-fade">
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
-      <p style={{ fontSize: 17, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 16 }}>
-        Prémiová vizuální identita začíná strategickým setkáním. Vytvoříme vizuální směr, pojmenujeme energii značky a připravíme vizuální board.
-      </p>
-      <p style={{ fontSize: 15, color: "#6F6F6F", lineHeight: 1.6, marginBottom: 24 }}>
-        Cena konzultace: <strong style={{ color: "#1A1A1A" }}>7 800 Kč</strong>
-        <br />
-        <span style={{ fontSize: 13 }}>V případě navázání spolupráce se částka odečítá z celkové ceny služby, která začíná na 45 000 Kč.</span>
-      </p>
+      <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1A1A1A", marginBottom: 20 }}>
+        Začínáme strategií
+      </h2>
+      <div style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.75, marginBottom: 24 }}>
+        <p style={{ marginBottom: 12 }}>
+          Prémiová vizuální identita nevzniká z inspirace.
+          <br />
+          Vzniká z jasnosti.
+        </p>
+        <p style={{ marginBottom: 12 }}>
+          Během 60 minut definujeme energii vaší značky,
+          nastavíme vizuální směr
+          a vytvoříme základní vizuální board.
+        </p>
+        <p style={{ marginBottom: 12, fontWeight: 600 }}>
+          Toto setkání stojí 7 800 Kč.
+        </p>
+        <p style={{ marginBottom: 12, fontSize: 14, color: "#6F6F6F" }}>
+          Pokud se rozhodnete pokračovat do plné spolupráce
+          (cena služby začíná na 45 000 Kč),
+          částka se odečítá.
+        </p>
+        <p style={{ fontSize: 14, color: "#6F6F6F" }}>
+          Pokud ne, odcházíte s jasným směrem, který můžete využít dál.
+        </p>
+      </div>
       <Link href={`${basePath}?from=premiova&step=calendar`} style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
-        Rezervovat strategickou konzultaci
+        Chci začít strategií
       </Link>
     </div>
   );

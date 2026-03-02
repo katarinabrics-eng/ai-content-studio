@@ -12,7 +12,7 @@ const SERVICE_LABELS: Record<string, { name: string; amount: number; description
     name: "Strategická konzultace + vizuální board",
     amount: 780000, // 7 800 Kč
     description: (date, time) =>
-      `60 minut · Odečitatelné z plné spolupráce · Termín: ${date} v ${time}`,
+      `Strategická konzultace (60 minut)\nVytvoření vizuálního boardu\nOdečitatelné z plné spolupráce · Termín: ${date} v ${time}`,
   },
 };
 
