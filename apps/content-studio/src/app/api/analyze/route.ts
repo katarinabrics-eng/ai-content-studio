@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 10;
+// Vercel Hobby má limit 10s; Pro 60s. 30s je kompromis pro delší analýzu.
+export const maxDuration = 30;
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v2";
 const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";

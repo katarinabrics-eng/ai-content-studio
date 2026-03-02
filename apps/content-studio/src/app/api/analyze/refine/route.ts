@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 10;
+export const maxDuration = 30;
 
 const REFINE_MODEL = "gpt-4o-mini";
 
