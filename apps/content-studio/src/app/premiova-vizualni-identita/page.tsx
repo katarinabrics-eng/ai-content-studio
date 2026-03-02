@@ -45,7 +45,7 @@ export default function PremioveVizualniIdentitaPage() {
               kteří chtějí kultivovat svou vizuální prezentaci dlouhodobě.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a href="/start?from=premiova" className="rounded-lg bg-[#A8EB12] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
+              <a href="/diagnostika" className="rounded-lg bg-[#A8EB12] px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
                 Posunout značku výš
               </a>
               <a
@@ -115,7 +115,7 @@ export default function PremioveVizualniIdentitaPage() {
               <p className="text-[18px] font-medium leading-[1.6] text-[#1A1A1A]">
                 Pracuji s těmi, kteří vědí, že jejich značka už dávno vyrostla.
               </p>
-              <a href="/start?from=premiova" className="mt-8 inline-block text-[17px] font-medium text-[#111111] underline underline-offset-4 hover:no-underline">
+              <a href="/diagnostika" className="mt-8 inline-block text-[17px] font-medium text-[#111111] underline underline-offset-4 hover:no-underline">
                 Domluvit strategickou konzultaci
               </a>
             </div>
@@ -189,7 +189,7 @@ export default function PremioveVizualniIdentitaPage() {
           <p className="mt-10 max-w-[720px] text-[16px] italic leading-[1.6] text-[#6E6E6E]">
             Investice do prémiové identity začíná na 49 000 Kč a je vždy přizpůsobena rozsahu vašeho byznysu a vašim cílům.
           </p>
-          <a href="/start?from=premiova" className="mt-8 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
+          <a href="/diagnostika" className="mt-8 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
             Domluvit strategickou konzultaci
           </a>
         </div>
@@ -230,7 +230,7 @@ export default function PremioveVizualniIdentitaPage() {
             Je čitelná.
           </h2>
           <p className="mt-6 text-xl font-medium text-[#A8EB12] sm:text-2xl">A čitelnost je otázka rozhodnutí.</p>
-          <a href="/start?from=premiova" className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
+          <a href="/diagnostika" className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90">
             DOMLUVIT STRATEGICKOU KONZULTACI
           </a>
         </div>

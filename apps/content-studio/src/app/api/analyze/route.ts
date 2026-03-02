@@ -98,6 +98,45 @@ Vrať čistý text (ne JSON), oddělené sekce:
 5. Doporučení dalšího kroku – konkrétní návrh, kam směřovat (např. vizuální identita, obsah, CTA).`;
 }
 
+function buildDiagnostikaPrompt(scraped: Scraped): string {
+  const textContent = scraped.markdown.slice(0, 7000);
+  return `Analyzuj tento web a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
+
+URL: ${scraped.url}
+Název: ${scraped.title ?? ""}
+Meta popis: ${scraped.description ?? ""}
+
+OBSAH WEBU (markdown):
+---
+${textContent}
+---
+
+JSON musí mít přesně tento tvar (boolean u has* znamená true/false podle toho, zda to na webu je):
+{
+  "brandScore": {
+    "total": <číslo 0-100, celkové skóre síly brandu>,
+    "hasHeadline": true/false,
+    "hasOffer": true/false,
+    "hasTargetAudience": true/false,
+    "hasCTA": true/false,
+    "hasVisualIdentity": true/false,
+    "hasSocialProof": true/false
+  },
+  "brandDna": {
+    "name": "string nebo null",
+    "positioning": "string nebo null",
+    "tone": "string nebo null",
+    "targetAudience": "string nebo null",
+    "communicationStyle": "string nebo null",
+    "uniqueValue": "string nebo null",
+    "contentPillars": ["string"] nebo [],
+    "missingElements": ["string"] nebo [],
+    "visualStyle": { "primaryColor": "#hex", "secondaryColor": "#hex", "mood": "string", "typography": "string" } nebo null
+  },
+  "summary": "Krátké shrnutí od stratéga – 2–4 věty."
+}`;
+}
+
 /** Extract plain text from Chat Completions response. */
 function getTextFromChatResponse(data: unknown): string {
   if (data == null) return "No output received";
@@ -106,10 +145,17 @@ function getTextFromChatResponse(data: unknown): string {
   return text ?? "No output received";
 }
 
+function parseDiagnostikaResult(raw: string): Record<string, unknown> {
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error("AI nevrátilo platný JSON");
+  return JSON.parse(match[0]) as Record<string, unknown>;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const url = typeof body?.url === "string" ? body.url.trim() : "";
+    const formatDiagnostika = body?.format === "diagnostika";
     if (!url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
@@ -124,7 +170,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
     }
 
-    const prompt = buildAnalyzeInput(scraped);
+    const prompt = formatDiagnostika ? buildDiagnostikaPrompt(scraped) : buildAnalyzeInput(scraped);
 
     const response = await fetchWithTimeout(
       OPENAI_CHAT_URL,
@@ -137,7 +183,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           model: OPENAI_MODEL,
           messages: [{ role: "user", content: prompt }],
-          max_tokens: 2000,
+          max_tokens: formatDiagnostika ? 2500 : 2000,
         }),
       },
       FETCH_TIMEOUT_MS
@@ -155,6 +201,24 @@ export async function POST(request: Request) {
     }
 
     const outputText = getTextFromChatResponse(data);
+
+    if (formatDiagnostika) {
+      try {
+        const result = parseDiagnostikaResult(outputText);
+        return NextResponse.json({
+          result: { brandScore: result.brandScore, brandDna: result.brandDna, summary: result.summary },
+          scraped: {
+            markdown: scraped.markdown,
+            screenshot: scraped.screenshot,
+            url: scraped.url,
+            title: scraped.title,
+            description: scraped.description,
+          },
+        });
+      } catch {
+        return NextResponse.json({ error: "AI nevrátilo platnou Brand DNA (JSON). Zkuste to znovu." }, { status: 500 });
+      }
+    }
 
     return NextResponse.json({
       result: outputText,

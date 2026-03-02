@@ -71,3 +71,33 @@ export async function getDiagnosticProjectsByClientId(
   if (error) throw new Error(`Chyba při načítání projektů: ${error.message}`);
   return (data ?? []) as DiagnosticProjectRow[];
 }
+
+export async function getDiagnosticProjectById(
+  projectId: string
+): Promise<DiagnosticProjectRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("diagnostic_projects")
+    .select("*")
+    .eq("id", projectId)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return null;
+    throw new Error(`Chyba při načítání projektu: ${error.message}`);
+  }
+  return data as DiagnosticProjectRow;
+}
+
+export async function setDiagnosticProjectStatus(
+  projectId: string,
+  status: "pending" | "active" | "closed"
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase
+    .from("diagnostic_projects")
+    .update({ status })
+    .eq("id", projectId);
+
+  if (error) throw new Error(`Chyba při aktualizaci projektu: ${error.message}`);
+}
