@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   getWorkflowStep,
@@ -56,14 +57,22 @@ export default function AdminProjectsPage() {
               CO se zpracovává, KDE to běží, KDO je na tahu.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={fetchProjects}
-            disabled={loading}
-            className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
-          >
-            Obnovit nyní
-          </button>
+          <div className="flex gap-2">
+            <Link
+              href="/admin/clients"
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+            >
+              Klienti (diagnostika)
+            </Link>
+            <button
+              type="button"
+              onClick={fetchProjects}
+              disabled={loading}
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+            >
+              Obnovit nyní
+            </button>
+          </div>
         </div>
 
         {loading && projects.length === 0 && (

@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Stripe from "stripe";
 import { ensureProjectFromCheckoutSession } from "@/lib/checkout-project";
 import { setBookingPaid } from "@/lib/supabase-bookings";
+import { setClientProjectPaidFromBooking } from "@/lib/supabase-client-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,10 +45,12 @@ export async function POST(request: Request) {
     }
     const metadata = session.metadata ?? {};
     if (metadata.type === "booking" && metadata.booking_id) {
+      const bookingId = metadata.booking_id as string;
       try {
-        await setBookingPaid(metadata.booking_id as string, session.id);
+        await setBookingPaid(bookingId, session.id);
+        await setClientProjectPaidFromBooking(bookingId);
       } catch (e) {
-        console.error("[webhooks/stripe] setBookingPaid failed:", e);
+        console.error("[webhooks/stripe] booking/webhook failed:", e);
         return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
       }
       return NextResponse.json({ received: true }, { status: 200 });

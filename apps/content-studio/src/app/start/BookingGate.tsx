@@ -24,9 +24,11 @@ type BookingGateProps = {
   basePath?: string;
   /** When true, hide the intro header (for embedding under /rezervace where intro is shown above tabs). */
   hideIntro?: boolean;
+  /** Client project ID from diagnostika (propojení scan → rezervace). */
+  projectId?: string | null;
 };
 
-export function BookingGate({ basePath = "/start", hideIntro = false }: BookingGateProps = {}) {
+export function BookingGate({ basePath = "/start", hideIntro = false, projectId = null }: BookingGateProps = {}) {
   const searchParams = useSearchParams();
   const fromParam = searchParams.get("from");
   const from: TabId = fromParam === "rodinne" ? "rodinne" : "portret";
@@ -92,7 +94,7 @@ export function BookingGate({ basePath = "/start", hideIntro = false }: BookingG
 
         {showCalendar ? (
           <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl">
-            <CalendarStep from={from} basePath={basePath} />
+            <CalendarStep from={from} basePath={basePath} projectId={projectId ?? undefined} />
           </div>
         ) : (
           <>
@@ -146,7 +148,7 @@ export function BookingGate({ basePath = "/start", hideIntro = false }: BookingG
 const TIME_SLOTS = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
 const MONTHS = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
 
-function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: string }) {
+function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; basePath?: string; projectId?: string }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -238,13 +240,14 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
           date={selectedDate}
           time={selectedTime}
           onClose={() => setModalOpen(false)}
+          projectId={projectId}
         />
       )}
     </div>
   );
 }
 
-function ConfirmModal({ from, date, time, onClose }: { from: TabId; date: Date; time: string; onClose: () => void }) {
+function ConfirmModal({ from, date, time, onClose, projectId }: { from: TabId; date: Date; time: string; onClose: () => void; projectId?: string }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -268,6 +271,7 @@ function ConfirmModal({ from, date, time, onClose }: { from: TabId; date: Date; 
           date: dateApi,
           time,
           email: trimmed,
+          ...(projectId ? { project_id: projectId } : {}),
         }),
       });
       const reserveData = await reserveRes.json();

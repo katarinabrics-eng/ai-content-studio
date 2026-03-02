@@ -137,6 +137,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [mode, setMode] = useState<"web" | "manual">("web");
   const [manualText, setManualText] = useState("");
   const [brandFile, setBrandFile] = useState<File | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
 
   const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
   const score = result?.brandScore?.total ?? 0;
@@ -189,7 +190,22 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       const resData = typeof resResult === "object" && resResult !== null ? (resResult as Result) : null;
       setResult(resData);
       const total = resData?.brandScore?.total ?? 0;
-      if (diagnostika) {
+      if (diagnostika && resData) {
+        try {
+          const saveRes = await fetch("/api/diagnostika/save-scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              webUrl: mode === "web" ? url.trim() : undefined,
+              manualInput: mode === "manual" ? manualText.trim() : undefined,
+              result: resData,
+            }),
+          });
+          const saveData = await saveRes.json();
+          if (saveData.id) setProjectId(saveData.id);
+        } catch { /* ignore */ }
+        setPhase(total < 60 ? "guidance" : "teaser");
+      } else if (diagnostika) {
         setPhase(total < 60 ? "guidance" : "teaser");
       } else {
         setPhase(total < 60 ? "guidance" : "result");
@@ -218,7 +234,23 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Chyba");
-      if (data.result) setResult(data.result);
+      const updatedResult = data.result;
+      if (updatedResult) setResult(updatedResult);
+      if (diagnostika && updatedResult) {
+        try {
+          const saveRes = await fetch("/api/diagnostika/save-scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              webUrl: mode === "web" ? url.trim() : undefined,
+              manualInput: mode === "manual" ? manualText.trim() : undefined,
+              result: updatedResult,
+            }),
+          });
+          const saveData = await saveRes.json();
+          if (saveData.id) setProjectId(saveData.id);
+        } catch { /* ignore */ }
+      }
     } catch {
       // keep current result
     }
@@ -235,6 +267,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setMode("web");
     setManualText("");
     setBrandFile(null);
+    setProjectId(null);
   };
 
   return (
@@ -456,7 +489,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                     Plná diagnostika obsahuje detailní rozbor, vizuální směr a přípravu podkladů pro strategickou spolupráci.
                   </p>
                   <a
-                    href="/rezervace?service=strategicka-konzultace"
+                    href={projectId ? `/rezervace?project_id=${projectId}&service=strategicka-konzultace` : "/rezervace?service=strategicka-konzultace"}
                     style={{
                       display: "block",
                       width: "100%",

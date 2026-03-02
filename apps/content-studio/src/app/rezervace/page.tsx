@@ -109,7 +109,7 @@ function RezervaceContent() {
         </div>
 
         {mainTab === "booking" && (
-          <BookingGate basePath="/rezervace" hideIntro />
+          <BookingGate basePath="/rezervace" hideIntro projectId={searchParams.get("project_id")} />
         )}
 
         {mainTab === "inquiry" && (
