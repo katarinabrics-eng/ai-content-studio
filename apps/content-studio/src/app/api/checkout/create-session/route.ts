@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 const SERVICE_LABELS: Record<string, { name: string; amount: number }> = {
   portret: { name: "Portrétní focení – ateliér", amount: 450000 }, // 4 500 Kč
   rodinne: { name: "Rodinné focení", amount: 580000 }, // 5 800 Kč – reportáž jako default
+  premiova: { name: "Prémiová vizuální identita", amount: 1500000 }, // 15 000 Kč – placeholder
 };
 
 function getStripe() {

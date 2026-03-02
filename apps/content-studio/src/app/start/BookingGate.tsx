@@ -7,16 +7,18 @@ import Link from "next/link";
 
 const figtree = Figtree({ weight: ["400", "600"], subsets: ["latin", "latin-ext"] });
 
-type TabId = "portret" | "rodinne";
+type TabId = "portret" | "rodinne" | "premiova";
 
 const TABS: { id: TabId; label: string; subtitle: string }[] = [
   { id: "portret", label: "Portrétní focení", subtitle: "Obraz, který mluví za vás." },
   { id: "rodinne", label: "Rodinné focení", subtitle: "Zachycený čas bez stresu." },
+  { id: "premiova", label: "Prémiová vizuální identita", subtitle: "Strategická spolupráce pro osobní značky." },
 ];
 
 const STEP_LABELS: Record<TabId, string> = {
   portret: "Portrétní focení",
   rodinne: "Rodinné focení",
+  premiova: "Prémiová vizuální identita",
 };
 
 type BookingGateProps = {
@@ -31,13 +33,17 @@ type BookingGateProps = {
 export function BookingGate({ basePath = "/start", hideIntro = false, projectId = null }: BookingGateProps = {}) {
   const searchParams = useSearchParams();
   const fromParam = searchParams.get("from");
-  const from: TabId = fromParam === "rodinne" ? "rodinne" : "portret";
+  const from: TabId =
+    fromParam === "premiova" ? "premiova"
+    : fromParam === "rodinne" ? "rodinne"
+    : "portret";
   const step = searchParams.get("step");
   const [activeTab, setActiveTab] = useState<TabId>(from);
 
   useEffect(() => {
     const f = searchParams.get("from");
-    if (f === "rodinne") setActiveTab("rodinne");
+    if (f === "premiova") setActiveTab("premiova");
+    else if (f === "rodinne") setActiveTab("rodinne");
     else if (f === "portret") setActiveTab("portret");
   }, [searchParams]);
 
@@ -138,6 +144,7 @@ export function BookingGate({ basePath = "/start", hideIntro = false, projectId 
             >
               {activeTab === "portret" && <PortretFlow basePath={basePath} />}
               {activeTab === "rodinne" && <RodinneFlow basePath={basePath} />}
+              {activeTab === "premiova" && <PremioveFlow basePath={basePath} />}
             </div>
           </>
         )}
@@ -172,7 +179,7 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
       <Link href={backHref} className="inline-block mb-4 text-sm text-zinc-400 hover:text-white transition">← Zpět na výběr služby</Link>
       <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Krok 2 / 3</p>
       <h2 className="text-xl font-semibold text-white mb-2">Výběr termínu</h2>
-      <p className="text-sm text-zinc-400 mb-6">{STEP_LABELS[from]} · Výběr termínu focení</p>
+      <p className="text-sm text-zinc-400 mb-6">{STEP_LABELS[from]} · Výběr termínu</p>
 
       <div className="grid grid-cols-[1fr_200px] gap-8 mb-6">
         <div>
@@ -431,6 +438,21 @@ function RodinneFlow({ basePath = "/start" }: { basePath?: string }) {
         Chcete pomoct s výběrem oblečení?
       </label>
       <Link href={`${basePath}?from=rodinne&step=calendar`} style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+        Pokračovat k výběru termínu
+      </Link>
+    </div>
+  );
+}
+
+function PremioveFlow({ basePath = "/start" }: { basePath?: string }) {
+  return (
+    <div className="gate-fade">
+      <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
+      <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Prémiová vizuální identita</p>
+      <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 24 }}>
+        Strategická spolupráce pro lídry, podnikatele a veřejně vystupující osobnosti. Váš obraz by měl odpovídat úrovni, na které dnes podnikáte.
+      </p>
+      <Link href={`${basePath}?from=premiova&step=calendar`} style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
         Pokračovat k výběru termínu
       </Link>
     </div>

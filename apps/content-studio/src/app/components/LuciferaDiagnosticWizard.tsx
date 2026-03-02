@@ -57,7 +57,7 @@ export function LuciferaDiagnosticWizard() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Chyba ukládání");
-      router.push("/lucifera-diagnostic/book");
+      router.push("/rezervace?from=premiova&step=calendar");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Nepodařilo se uložit.");
     } finally {
