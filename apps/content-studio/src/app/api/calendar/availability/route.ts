@@ -27,13 +27,14 @@ export async function GET() {
     in30Days.setDate(now.getDate() + 30);
 
     const response = await calendar.events.list({
-      calendarId: "primary",
+      calendarId: "katarinabrics@gmail.com",
       timeMin: now.toISOString(),
       timeMax: in30Days.toISOString(),
       singleEvents: true,
       orderBy: "startTime",
     });
 
+    console.log("Using calendar:", "katarinabrics@gmail.com");
     return NextResponse.json({
       success: true,
       events: response.data.items || [],
