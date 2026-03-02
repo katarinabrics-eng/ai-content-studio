@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 export type BrandScore = {
@@ -25,7 +26,9 @@ export type BrandDna = {
 };
 export type PillarAnalysisItem = {
   score?: number;
+  interpretation?: string;
   observed?: string[];
+  notObserved?: string[];
   reasoning?: string;
   strategicOpportunity?: string;
 };
@@ -107,69 +110,108 @@ export function ScanResultScrollExperience({
     score: pillarAnalysis[p.id]?.score ?? scores[p.id] ?? 5,
   }));
   const riskCommoditization = scores.energy <= 4;
+  const [openPillar, setOpenPillar] = useState<string | null>(null);
 
   function PillarBlock({
     id,
     title,
     subtitle,
     children,
-    expandableTrust,
+    showTrustMethodology,
   }: {
     id: string;
     title: string;
     subtitle?: string;
     children: React.ReactNode;
-    expandableTrust?: boolean;
+    showTrustMethodology?: boolean;
   }) {
     const analysis = pillarAnalysis[id];
     const score = analysis?.score ?? scores[id as keyof typeof scores] ?? 5;
-    const hasLayerContent = analysis && (analysis.observed?.length || analysis.reasoning);
+    const hasInterpretation = analysis?.interpretation?.trim();
+    const hasExpandableContent =
+      analysis &&
+      (analysis.observed?.length ||
+        analysis.notObserved?.length ||
+        analysis.reasoning ||
+        (showTrustMethodology && id === "trust"));
+    const isOpen = openPillar === id;
+
+    const publicInterpretation = hasInterpretation
+      ? analysis!.interpretation!
+      : analysis?.reasoning
+        ? analysis.reasoning.split(/(?<=[.!])\s+/).slice(0, 2).join(" ").trim() || null
+        : null;
+
     return (
       <Section>
         <div className="max-w-xl mx-auto text-left">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{title}</h2>
-          {subtitle && <p className="text-sm text-zinc-500 mb-6">{subtitle}</p>}
-          <p className="text-3xl font-bold text-lime-400 mb-6">Skóre: {score} / 10</p>
-          {hasLayerContent ? (
-            <>
-              {analysis?.observed && analysis.observed.length > 0 && (
-                <div className="mb-6">
-                  <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
-                  <ul className="list-disc list-inside text-zinc-300 text-sm space-y-1">
-                    {analysis.observed.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {analysis?.reasoning && (
-                <div className="mb-6">
-                  <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Jak jsme k tomu došli</p>
-                  <p className="text-zinc-300 text-sm leading-relaxed">{analysis.reasoning}</p>
-                </div>
-              )}
-              {analysis?.strategicOpportunity && (
-                <div className="p-4 rounded-xl bg-lime-500/10 border border-lime-500/20">
-                  <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">Strategická příležitost</p>
-                  <p className="text-white text-sm font-medium">{analysis.strategicOpportunity}</p>
-                </div>
-              )}
-            </>
+          {subtitle && <p className="text-sm text-zinc-500 mb-4">{subtitle}</p>}
+          <p className="text-2xl font-bold text-lime-400 mb-4">{title.split(" ")[0]}: {score}/10</p>
+
+          {publicInterpretation ? (
+            <p className="text-zinc-300 text-sm leading-relaxed mb-6">{publicInterpretation}</p>
           ) : (
-            children
+            <div className="mb-6">{children}</div>
           )}
-          {expandableTrust && id === "trust" && (
-            <details className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden">
-              <summary className="px-4 py-3 text-sm text-zinc-400 cursor-pointer hover:text-zinc-300">
-                Jak rozlišujeme portfolio a sociální důkaz
-              </summary>
-              <div className="px-4 pb-4 pt-1 text-xs text-zinc-500 space-y-2 border-t border-white/5">
-                <p><strong className="text-zinc-400">Portfolio</strong> = ukázka práce. Ukazuje, co umíte, ne co si o vás myslí klienti.</p>
-                <p><strong className="text-zinc-400">Reference</strong> = hlas klienta. Citace, hodnocení, doporučení. Důkaz spokojenosti.</p>
-                <p><strong className="text-zinc-400">Case study</strong> = důkaz výsledku. Konkrétní čísla, před/po, měřitelný dopad spolupráce.</p>
+
+          {hasExpandableContent && (
+            <>
+              <button
+                type="button"
+                onClick={() => setOpenPillar(isOpen ? null : id)}
+                className="flex items-center gap-2 py-2 px-0 text-sm text-zinc-500 hover:text-zinc-300 border-0 border-b border-zinc-600/60 hover:border-zinc-500 transition-colors bg-transparent cursor-pointer"
+              >
+                Zjistit, jak jsme hodnotili
+                <span className="text-zinc-500">→</span>
+              </button>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[1200px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}
+                aria-hidden={!isOpen}
+              >
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5 space-y-5 text-sm">
+                  {analysis?.observed && analysis.observed.length > 0 && (
+                    <div>
+                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Zaznamenali jsme</p>
+                      <ul className="list-disc list-inside text-zinc-300 space-y-1">
+                        {analysis.observed.map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {analysis?.notObserved && analysis.notObserved.length > 0 && (
+                    <div>
+                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Nezaznamenali jsme</p>
+                      <ul className="list-disc list-inside text-zinc-400 space-y-1">
+                        {analysis.notObserved.map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {showTrustMethodology && id === "trust" && (
+                    <div>
+                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Metodika rozlišuje mezi</p>
+                      <div className="text-zinc-400 space-y-1.5 text-xs">
+                        <p><strong className="text-zinc-300">Portfolio</strong> = ukázka práce</p>
+                        <p><strong className="text-zinc-300">Reference</strong> = hlas klienta</p>
+                        <p><strong className="text-zinc-300">Case study</strong> = důkaz výsledku</p>
+                      </div>
+                    </div>
+                  )}
+                  {analysis?.reasoning && (
+                    <div>
+                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
+                      <p className="text-zinc-300 leading-relaxed">{analysis.reasoning}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </details>
+            </>
           )}
+
+          {!hasExpandableContent && !publicInterpretation && children}
         </div>
       </Section>
     );
@@ -297,7 +339,7 @@ export function ScanResultScrollExperience({
       </PillarBlock>
 
       {/* 9. PILÍŘ V – DŮVĚRA */}
-      <PillarBlock id="trust" title="DŮVĚRA" expandableTrust>
+      <PillarBlock id="trust" title="DŮVĚRA" showTrustMethodology>
         {!result.brandScore?.hasSocialProof && (
           <ul className="list-disc list-inside text-zinc-400 text-sm space-y-1 mb-6">
             <li>Chybí reference</li>
@@ -370,6 +412,12 @@ export function ScanResultScrollExperience({
             Rezervovat termín
           </Link>
         </div>
+      </Section>
+
+      <Section compact>
+        <p className="text-xs text-zinc-600 max-w-md mx-auto text-center leading-relaxed">
+          Metodika Lucifera Strategic Brand Scan™ je součástí placené spolupráce. Veřejná verze je orientační náhled.
+        </p>
       </Section>
     </div>
   );

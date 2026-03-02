@@ -100,19 +100,22 @@ Vrať čistý text (ne JSON), oddělené sekce:
 
 const PILLAR_ANALYSIS_SCHEMA = `
   "pillarAnalysis": {
-    "light": { "score": 0-10, "observed": ["co jsi na webu/textu zaznamenal"], "reasoning": "2-4 věty: jak jsi k tomuto skóre došel, jakou logiku používáš.", "strategicOpportunity": "jedna konkrétní věta, co doplnit" },
-    "energy": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" },
-    "architecture": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" },
-    "identity": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" },
-    "trust": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" }
+    "light": { "score": 0-10, "interpretation": "3-4 věty pro veřejnou část: stručně a profesionálně, co značka v tomto pilíři dělá a co jí chybí.", "observed": ["konkrétní nález 1"], "notObserved": ["co chybí 1"], "reasoning": "Proč to ovlivnilo skóre – 2-4 věty.", "strategicOpportunity": "jedna věta" },
+    "energy": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" },
+    "architecture": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" },
+    "identity": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" },
+    "trust": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" }
   }
 `;
 
 const DIAGNOSTIKA_METHODOLOGY = `
 METODIKA:
-- U každého pilíře nejprve popis konkrétní nálezy (observed), pak v reasoning vysvětli logiku hodnocení. Klient má vidět, proč jsi k skóre došel.
-- DŮVĚRA: Pokud identifikuješ sekci s ukázkami realizací (portfolium), ale bez citace klienta nebo konkrétního výsledku, vyhodnoť ji jako portfolio, nikoliv plnohodnotný sociální důkaz. V reasoning vysvětli rozdíl: portfolio = ukázka práce, reference = hlas klienta (citace, hodnocení), case study = důkaz měřitelného výsledku. Bez hlasu klienta nebo výsledku může důkaz působit spíše jako prezentace práce než jako sociální proof.
-- Piš jako strategický kurátor: vzdělávej, ne jen hodnot. Každé reasoning má být srozumitelné a férové.
+- interpretation = 3-4 věty pro veřejnou část scanu: stručné, jasné, profesionální. Bez žargonu. Co v pilíři značka dělá a co jí chybí.
+- observed = co jsi na webu/textu konkrétně zaznamenal (položky pro rozbalovací sekci "Co jsme zaznamenali").
+- notObserved = co jsi nezaznamenal, ale v tomto pilíři by to bylo relevantní (pro "Co jsme nezaznamenali").
+- reasoning = proč to ovlivnilo skóre – pro rozbalovací sekci "Jak jsme hodnotili".
+- DŮVĚRA: Sekce s ukázkami realizací bez citace klienta nebo výsledku = portfolio, ne plnohodnotný sociální důkaz. V reasoning rozliš portfolio vs. reference vs. case study.
+- Piš jako strategický kurátor: vzdělávej, ne jen hodnot.
 `;
 
 function buildDiagnostikaPromptFromText(sourceContent: string): string {
