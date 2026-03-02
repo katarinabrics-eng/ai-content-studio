@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
 
 const GUIDANCE_QUESTIONS = [
   { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
@@ -285,6 +286,13 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         <span style={{ marginLeft: "auto", fontSize: 10, color: "#222", background: "#161622", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
       </header>
 
+      {phase === "teaser" && diagnostika && result ? (
+        <ScanResultScrollExperience
+          result={result}
+          projectId={projectId}
+          onBack={reset}
+        />
+      ) : (
       <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
 
         {phase === "input" && (
@@ -445,74 +453,6 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           </div>
         )}
 
-        {phase === "teaser" && diagnostika && result && (
-          <div className="analyzer-fade">
-            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← Analyzovat jiný web</button>
-            {(() => {
-              const t = deriveTeaser(result);
-              const indexColor = t.index >= 70 ? "#a8e063" : t.index >= 40 ? "#f5c842" : "#e05a5a";
-              return (
-                <div
-                  style={{
-                    padding: "28px 24px",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(168,224,99,0.12)",
-                    borderRadius: 16,
-                    boxShadow: "0 0 40px rgba(168,224,99,0.06), inset 0 1px 0 rgba(255,255,255,0.03)",
-                  }}
-                >
-                  <div style={{ textAlign: "center", marginBottom: 24 }}>
-                    <span style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.12em" }}>Index vizuální úrovně</span>
-                    <div style={{ marginTop: 8, fontSize: 48, fontWeight: 800, color: indexColor, lineHeight: 1 }}>{t.index}</div>
-                    <span style={{ fontSize: 14, color: "#444" }}>/ 100</span>
-                  </div>
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", display: "flex", flexDirection: "column", gap: 10 }}>
-                    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#bbb" }}>
-                      <span style={{ color: "#e05a5a", flexShrink: 0 }}>•</span>
-                      <span>{t.weakness1}</span>
-                    </li>
-                    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#bbb" }}>
-                      <span style={{ color: "#e05a5a", flexShrink: 0 }}>•</span>
-                      <span>{t.weakness2}</span>
-                    </li>
-                    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#bbb" }}>
-                      <span style={{ color: "#a8e063", flexShrink: 0 }}>•</span>
-                      <span>{t.strength}</span>
-                    </li>
-                  </ul>
-                  <div style={{ marginBottom: 20, padding: "12px 14px", background: "rgba(168,224,99,0.06)", border: "1px solid rgba(168,224,99,0.1)", borderRadius: 10 }}>
-                    <span style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.1em" }}>Navržený směr</span>
-                    <p style={{ fontSize: 13, color: "#ccc", marginTop: 6, lineHeight: 1.55 }}>{t.suggestedDirection}</p>
-                  </div>
-                  <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5, marginBottom: 20 }}>
-                    Toto je orientační náhled.
-                    Plná diagnostika obsahuje detailní rozbor, vizuální směr a přípravu podkladů pro strategickou spolupráci.
-                  </p>
-                  <a
-                    href={projectId ? `/rezervace?project_id=${projectId}&service=strategicka-konzultace` : "/rezervace?service=strategicka-konzultace"}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      padding: 14,
-                      background: "#a8e063",
-                      color: "#000",
-                      fontWeight: 700,
-                      fontSize: 14,
-                      border: "none",
-                      borderRadius: 10,
-                      cursor: "pointer",
-                      textAlign: "center",
-                      textDecoration: "none",
-                    }}
-                  >
-                    Pokračovat k rezervaci strategické konzultace
-                  </a>
-                </div>
-              );
-            })()}
-          </div>
-        )}
-
         {phase === "guidance" && result && (
           <div className="analyzer-fade">
             <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
@@ -638,6 +578,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
