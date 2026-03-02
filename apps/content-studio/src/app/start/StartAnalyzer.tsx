@@ -28,13 +28,11 @@ type TeaserData = {
 };
 
 const MANUAL_OFFER_TYPES = [
-  "Konzultace / mentoring",
+  "Konzultace",
   "Online kurz",
-  "Workshop / školení",
-  "E-shop / produkt",
-  "Osobní služby",
-  "Kreativní služby",
-  "Zdraví / péče",
+  "Produkt",
+  "Kreativní služba",
+  "Péče / zdraví",
   "Technologie",
   "Jiné",
 ] as const;
@@ -42,34 +40,16 @@ const MANUAL_OFFER_TYPES = [
 const MANUAL_AUDIENCE = [
   "Podnikatelé",
   "Ženy",
-  "Muži",
-  "Začátečníci",
-  "Pokročilí",
   "Firmy",
+  "Začátečníci",
   "Kreativci",
-  "Rodiče",
-  "Studenti",
-  "Jiné",
+  "Široká veřejnost",
 ] as const;
 
-const MANUAL_PRICE_LEVELS = [
-  "Nízká (do 2 000 Kč)",
-  "Střední (2 000 – 10 000 Kč)",
-  "Vyšší (10 000 – 30 000 Kč)",
-  "Prémiová (30 000+ Kč)",
-] as const;
+const MANUAL_PRICE_LEVELS = ["Základní", "Střední", "Prémiová"] as const;
 
-const MANUAL_COMMUNICATION_STYLES = [
-  "Racionální a systematický",
-  "Inspirativní a motivační",
-  "Luxusní a prémiový",
-  "Přátelský a lidský",
-  "Autoritativní",
-  "Minimalistický",
-  "Odvážný / výrazný",
-] as const;
-
-const MAX_COMMUNICATION_STYLES = 2;
+const MAX_OFFER_SELECT = 2;
+const MAX_AUDIENCE_SELECT = 2;
 
 const WEAKNESS_LABELS: { key: keyof BrandScore; label: string }[] = [
   { key: "hasHeadline", label: "Chybí jasná hlavní zpráva" },
@@ -183,11 +163,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [manualText, setManualText] = useState("");
   const [brandName, setBrandName] = useState("");
   const [offerTypes, setOfferTypes] = useState<string[]>([]);
-  const [mainServiceName, setMainServiceName] = useState("");
   const [audience, setAudience] = useState<string[]>([]);
-  const [audienceScope, setAudienceScope] = useState<"narrow" | "broad" | null>(null);
   const [priceLevel, setPriceLevel] = useState<string | null>(null);
-  const [communicationStyles, setCommunicationStyles] = useState<string[]>([]);
   const [manualOptionalText, setManualOptionalText] = useState("");
   const [brandFile, setBrandFile] = useState<File | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
@@ -195,24 +172,20 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   function buildManualData(): string {
     const parts: string[] = [];
     if (brandName.trim()) parts.push(`Název značky: ${brandName.trim()}`);
-    if (offerTypes.length) parts.push(`Typ nabídky: ${offerTypes.join(", ")}`);
-    if (mainServiceName.trim()) parts.push(`Hlavní služba: ${mainServiceName.trim()}`);
-    if (audience.length) parts.push(`Pro koho: ${audience.join(", ")}${audienceScope ? ` · ${audienceScope === "narrow" ? "Úzká specializace" : "Široká veřejnost"}` : ""}`);
+    if (offerTypes.length) parts.push(`Co nabízíte: ${offerTypes.join(", ")}`);
+    if (audience.length) parts.push(`Pro koho: ${audience.join(", ")}`);
     if (priceLevel) parts.push(`Cenová úroveň: ${priceLevel}`);
-    if (communicationStyles.length) parts.push(`Styl komunikace: ${communicationStyles.join(", ")}`);
     if (manualOptionalText.trim()) parts.push(`Popis: ${manualOptionalText.trim()}`);
     return parts.join("\n\n");
   }
 
   const hasManualInput =
-    brandName.trim() ||
-    offerTypes.length > 0 ||
-    mainServiceName.trim() ||
-    audience.length > 0 ||
-    priceLevel ||
-    communicationStyles.length > 0 ||
-    manualOptionalText.trim() ||
-    brandFile;
+    brandName.trim() &&
+    (offerTypes.length > 0 ||
+      audience.length > 0 ||
+      priceLevel ||
+      manualOptionalText.trim() ||
+      brandFile);
 
   const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
   const score = result?.brandScore?.total ?? 0;
@@ -343,11 +316,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setManualText("");
     setBrandName("");
     setOfferTypes([]);
-    setMainServiceName("");
     setAudience([]);
-    setAudienceScope(null);
     setPriceLevel(null);
-    setCommunicationStyles([]);
     setManualOptionalText("");
     setBrandFile(null);
     setProjectId(null);
@@ -360,6 +330,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         .analyzer-fade{animation:up 0.35s ease}
         .analyzer-inp:focus{border-color:rgba(168,224,99,0.4)!important;background:rgba(255,255,255,0.07)!important}
+        .manual-pill:hover:not(:disabled){box-shadow:0 0 24px rgba(168,224,99,0.15);border-color:rgba(168,224,99,0.25)!important}
       `}</style>
 
       <header style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
@@ -476,38 +447,49 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
               )}
 
               {diagnostika && mode === "manual" && (
-                <div className="space-y-8">
-                  <p className="text-sm text-white/70 leading-relaxed">
-                    Nemusíte nic složitě formulovat. Stačí vybrat možnosti, které vám jsou nejbližší. Text můžete doplnit jen pokud chcete.
-                  </p>
+                <div className="max-w-5xl mx-auto space-y-12">
+                  <div className="text-center mb-2">
+                    <h2 className="text-xl md:text-2xl font-semibold text-white mb-1">
+                      Nemáte web?
+                    </h2>
+                    <p className="text-white/60 text-sm md:text-base">
+                      Stačí pár informací. Provedeme vás.
+                    </p>
+                  </div>
 
-                  <div>
-                    <label style={C.lbl}>Název značky / jméno</label>
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8">
+                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-3">Název značky / jméno</label>
                     <input
                       type="text"
                       style={C.inp}
-                      placeholder="Např. Lucifera Studio, Jana Nováková Coaching, FitBalance…"
+                      placeholder="Např. Jana Nováková Coaching"
                       value={brandName}
                       onChange={(e) => setBrandName(e.target.value)}
-                      className="analyzer-inp"
+                      className="analyzer-inp rounded-xl"
                     />
                   </div>
 
-                  <div>
-                    <label style={C.lbl}>Typ nabídky</label>
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8">
+                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-3">Co nabízíte (max 1–2)</label>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {MANUAL_OFFER_TYPES.map((opt) => {
                         const on = offerTypes.includes(opt);
+                        const canAdd = offerTypes.length < MAX_OFFER_SELECT || on;
                         return (
                           <button
                             key={opt}
                             type="button"
-                            onClick={() => setOfferTypes((prev) => on ? prev.filter((x) => x !== opt) : [...prev, opt])}
-                            className="px-4 py-2 rounded-full text-sm border transition"
+                            onClick={() => {
+                              if (on) setOfferTypes((prev) => prev.filter((x) => x !== opt));
+                              else if (canAdd) setOfferTypes((prev) => [...prev, opt]);
+                            }}
+                            disabled={!canAdd}
+                            className="manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                             style={{
-                              background: on ? "rgba(168,224,99,0.15)" : "rgba(255,255,255,0.05)",
-                              borderColor: on ? "rgba(168,224,99,0.4)" : "rgba(255,255,255,0.1)",
-                              color: on ? "#a8e063" : "#999",
+                              background: on ? "rgba(168,224,99,0.18)" : "rgba(255,255,255,0.06)",
+                              border: "1px solid " + (on ? "rgba(168,224,99,0.35)" : "rgba(255,255,255,0.08)"),
+                              color: on ? "#a8e063" : "#a1a1aa",
+                              boxShadow: on ? "0 0 20px rgba(168,224,99,0.12)" : "none",
                             }}
                           >
                             {opt}
@@ -515,31 +497,29 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                         );
                       })}
                     </div>
-                    <input
-                      type="text"
-                      style={{ ...C.inp, marginTop: 10 }}
-                      placeholder="Pokud chcete, doplňte název hlavní služby"
-                      value={mainServiceName}
-                      onChange={(e) => setMainServiceName(e.target.value)}
-                      className="analyzer-inp"
-                    />
                   </div>
 
-                  <div>
-                    <label style={C.lbl}>Pro koho to je?</label>
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8">
+                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-3">Pro koho (max 2)</label>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {MANUAL_AUDIENCE.map((opt) => {
                         const on = audience.includes(opt);
+                        const canAdd = audience.length < MAX_AUDIENCE_SELECT || on;
                         return (
                           <button
                             key={opt}
                             type="button"
-                            onClick={() => setAudience((prev) => on ? prev.filter((x) => x !== opt) : [...prev, opt])}
-                            className="px-4 py-2 rounded-full text-sm border transition"
+                            onClick={() => {
+                              if (on) setAudience((prev) => prev.filter((x) => x !== opt));
+                              else if (canAdd) setAudience((prev) => [...prev, opt]);
+                            }}
+                            disabled={!canAdd}
+                            className="manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                             style={{
-                              background: on ? "rgba(168,224,99,0.15)" : "rgba(255,255,255,0.05)",
-                              borderColor: on ? "rgba(168,224,99,0.4)" : "rgba(255,255,255,0.1)",
-                              color: on ? "#a8e063" : "#999",
+                              background: on ? "rgba(168,224,99,0.18)" : "rgba(255,255,255,0.06)",
+                              border: "1px solid " + (on ? "rgba(168,224,99,0.35)" : "rgba(255,255,255,0.08)"),
+                              color: on ? "#a8e063" : "#a1a1aa",
+                              boxShadow: on ? "0 0 20px rgba(168,224,99,0.12)" : "none",
                             }}
                           >
                             {opt}
@@ -547,32 +527,10 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                         );
                       })}
                     </div>
-                    <div className="flex gap-4 mt-3">
-                      <label className="flex items-center gap-2 cursor-pointer text-sm text-white/80">
-                        <input
-                          type="radio"
-                          name="audienceScope"
-                          checked={audienceScope === "narrow"}
-                          onChange={() => setAudienceScope("narrow")}
-                          className="rounded-full border-white/30"
-                        />
-                        Úzká specializace
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer text-sm text-white/80">
-                        <input
-                          type="radio"
-                          name="audienceScope"
-                          checked={audienceScope === "broad"}
-                          onChange={() => setAudienceScope("broad")}
-                          className="rounded-full border-white/30"
-                        />
-                        Široká veřejnost
-                      </label>
-                    </div>
                   </div>
 
-                  <div>
-                    <label style={C.lbl}>Cenová úroveň</label>
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8">
+                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-3">Cenová úroveň</label>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {MANUAL_PRICE_LEVELS.map((opt) => {
                         const on = priceLevel === opt;
@@ -581,11 +539,12 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                             key={opt}
                             type="button"
                             onClick={() => setPriceLevel(on ? null : opt)}
-                            className="px-4 py-2 rounded-full text-sm border transition"
+                            className="manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200"
                             style={{
-                              background: on ? "rgba(168,224,99,0.15)" : "rgba(255,255,255,0.05)",
-                              borderColor: on ? "rgba(168,224,99,0.4)" : "rgba(255,255,255,0.1)",
-                              color: on ? "#a8e063" : "#999",
+                              background: on ? "rgba(168,224,99,0.18)" : "rgba(255,255,255,0.06)",
+                              border: "1px solid " + (on ? "rgba(168,224,99,0.35)" : "rgba(255,255,255,0.08)"),
+                              color: on ? "#a8e063" : "#a1a1aa",
+                              boxShadow: on ? "0 0 20px rgba(168,224,99,0.12)" : "none",
                             }}
                           >
                             {opt}
@@ -595,47 +554,19 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                     </div>
                   </div>
 
-                  <div>
-                    <label style={C.lbl}>Styl komunikace (emoční profil) – max 2</label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {MANUAL_COMMUNICATION_STYLES.map((opt) => {
-                        const on = communicationStyles.includes(opt);
-                        const canAdd = communicationStyles.length < MAX_COMMUNICATION_STYLES || on;
-                        return (
-                          <button
-                            key={opt}
-                            type="button"
-                            onClick={() => {
-                              if (on) setCommunicationStyles((prev) => prev.filter((x) => x !== opt));
-                              else if (canAdd) setCommunicationStyles((prev) => [...prev, opt]);
-                            }}
-                            disabled={!canAdd}
-                            className="px-4 py-2 rounded-full text-sm border transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            style={{
-                              background: on ? "rgba(168,224,99,0.15)" : "rgba(255,255,255,0.05)",
-                              borderColor: on ? "rgba(168,224,99,0.4)" : "rgba(255,255,255,0.1)",
-                              color: on ? "#a8e063" : "#999",
-                            }}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label style={C.lbl}>Popis značky (volitelné)</label>
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8">
+                    <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-3">Stručně popište, co děláte (volitelné)</label>
                     <textarea
-                      style={{ ...C.inp, minHeight: 100 }}
-                      placeholder={'Například:\n„Pomáhám ženám po mateřské znovu nastartovat kariéru.“\n„Učím malé podnikatele, jak nastavit online prodej.“\n„Vytvářím přírodní kosmetiku pro citlivou pleť.“'}
+                      style={{ ...C.inp, minHeight: 88 }}
+                      placeholder={"Například:\nPomáhám ženám po mateřské nastavit online podnikání.\nVytvářím přírodní kosmetiku pro citlivou pleť.\nUčím firmy pracovat s vizuální identitou."}
                       value={manualOptionalText}
                       onChange={(e) => setManualOptionalText(e.target.value)}
-                      className="analyzer-inp resize-y"
+                      className="analyzer-inp rounded-xl resize-y placeholder:text-zinc-500"
                     />
+                    <p className="text-[11px] text-zinc-500 mt-2">Krátké. Konkrétní. Jasné.</p>
                   </div>
 
-                  <div className="border border-dashed border-white/20 rounded-xl p-6 text-center hover:border-emerald-500/50 transition">
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8 text-center">
                     <input
                       type="file"
                       accept=".pdf"
@@ -645,8 +576,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                       className="hidden"
                       id="pdfUpload"
                     />
-                    <label htmlFor="pdfUpload" className="cursor-pointer text-white/70 hover:text-white transition block">
-                      {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Máte prezentaci, brand manuál nebo jiný podklad? Nahrajte jej. Pomůže nám zpřesnit analýzu."}
+                    <label htmlFor="pdfUpload" className="cursor-pointer text-white/60 hover:text-white/90 transition block text-sm">
+                      {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Máte prezentaci nebo podklady o značce? Nahrajte je."}
                     </label>
                   </div>
                 </div>
