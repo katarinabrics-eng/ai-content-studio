@@ -572,16 +572,28 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                   <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8 text-center">
                     <input
                       type="file"
-                      accept=".pdf"
+                      accept="application/pdf"
                       onChange={(e) => {
-                        if (e.target.files?.[0]) setBrandFile(e.target.files[0]);
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.type !== "application/pdf") {
+                          alert("Povolen je pouze PDF soubor.");
+                          return;
+                        }
+                        const maxSize = 2 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                          alert("Soubor je příliš velký. Maximální velikost je 2 MB.");
+                          return;
+                        }
+                        setBrandFile(file);
                       }}
                       className="hidden"
                       id="pdfUpload"
                     />
                     <label htmlFor="pdfUpload" className="cursor-pointer text-white/60 hover:text-white/90 transition block text-sm">
-                      {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Máte prezentaci nebo podklady o značce? Nahrajte je."}
+                      {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Nahrajte textový PDF dokument (max 2 MB). Dokument by měl obsahovat pouze textové informace o značce."}
                     </label>
+                    <p className="text-[11px] text-zinc-500 mt-2">Dokument musí obsahovat skutečný text (ne naskenované obrázky).</p>
                   </div>
                 </div>
               )}

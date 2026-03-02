@@ -236,8 +236,12 @@ export async function POST(request: Request) {
     }
 
     if (pdfBase64) {
-      const pdfParse = (await import("pdf-parse")).default as (buf: Buffer) => Promise<{ text: string }>;
       const buffer = Buffer.from(pdfBase64, "base64");
+      const maxSize = 2 * 1024 * 1024;
+      if (buffer.length > maxSize) {
+        return NextResponse.json({ error: "Soubor je příliš velký. Maximální velikost je 2 MB." }, { status: 400 });
+      }
+      const pdfParse = (await import("pdf-parse")).default as (buf: Buffer) => Promise<{ text: string }>;
       const { text: pdfText } = await pdfParse(buffer);
       sourceContent = sourceContent ? `${sourceContent}\n\n--- PDF ---\n\n${pdfText}` : pdfText;
     }
