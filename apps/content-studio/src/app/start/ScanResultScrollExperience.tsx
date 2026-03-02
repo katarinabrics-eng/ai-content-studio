@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import BookingCalendar from "@/components/booking/BookingCalendar";
 
 export type BrandScore = {
   total?: number;
@@ -431,33 +432,19 @@ export function ScanResultScrollExperience({
 
         {/* DARK MODAL */}
         {openCalendar && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
-            <div className="relative bg-[#0c0c0f] border border-white/10 rounded-3xl p-10 w-[800px] max-w-[calc(100vw-2rem)] shadow-[0_0_60px_rgba(132,255,0,0.15)]">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-6">
+            <div className="relative w-[800px] max-w-[calc(100vw-2rem)]">
               <button
                 type="button"
                 onClick={() => setOpenCalendar(false)}
-                className="absolute top-6 right-8 text-white/40 hover:text-white"
+                className="absolute top-2 right-2 z-10 text-white/40 hover:text-white"
               >
                 ✕
               </button>
-              <h2 className="text-3xl text-white mb-8">Výběr termínu</h2>
-              <div className="grid grid-cols-7 gap-3 mb-8">
-                {[...Array(31)].map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="border border-white/10 text-white/70 py-3 rounded-lg hover:border-lime-400 hover:text-lime-400 transition"
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                className="w-full bg-lime-400 text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition"
-              >
-                Pokračovat k úhradě
-              </button>
+              <BookingCalendar
+                theme="dark"
+                onConfirm={() => setOpenCalendar(false)}
+              />
             </div>
           </div>
         )}
