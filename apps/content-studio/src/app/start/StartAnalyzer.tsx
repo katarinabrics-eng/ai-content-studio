@@ -348,7 +348,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
               {(!diagnostika || mode === "web") && (
                 <>
                   <label style={C.lbl}>URL webu klienta</label>
-                  <input className="analyzer-inp" style={C.inp} placeholder="simby.cz nebo studiolucifera.cz" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === "Enter" && analyze()} />
+                  <input className="analyzer-inp" style={C.inp} placeholder="Zde zadejte adresu webu" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === "Enter" && analyze()} />
                 </>
               )}
 

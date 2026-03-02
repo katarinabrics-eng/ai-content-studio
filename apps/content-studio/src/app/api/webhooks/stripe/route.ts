@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 import { ensureProjectFromCheckoutSession } from "@/lib/checkout-project";
+import { setBookingPaid } from "@/lib/supabase-bookings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +40,16 @@ export async function POST(request: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     if (session.payment_status !== "paid") {
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+    const metadata = session.metadata ?? {};
+    if (metadata.type === "booking" && metadata.booking_id) {
+      try {
+        await setBookingPaid(metadata.booking_id as string, session.id);
+      } catch (e) {
+        console.error("[webhooks/stripe] setBookingPaid failed:", e);
+        return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
+      }
       return NextResponse.json({ received: true }, { status: 200 });
     }
     try {

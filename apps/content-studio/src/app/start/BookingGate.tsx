@@ -91,14 +91,7 @@ export function BookingGate({ basePath = "/start", hideIntro = false }: BookingG
         )}
 
         {showCalendar ? (
-          <div
-            style={{
-              background: "#FFFFFF",
-              borderRadius: 24,
-              boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
-              padding: 40,
-            }}
-          >
+          <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl">
             <CalendarStep from={from} basePath={basePath} />
           </div>
         ) : (
@@ -172,40 +165,32 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
 
   return (
     <div className="gate-fade">
-      <Link href={backHref} style={{ fontSize: 14, color: "#6F6F6F", textDecoration: "none", marginBottom: 16, display: "inline-block" }}>← Zpět na výběr služby</Link>
-      <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 8 }}>Krok 2 / 3</p>
-      <h2 style={{ fontSize: 22, fontWeight: 600, color: "#1A1A1A", marginBottom: 8 }}>Výběr termínu</h2>
-      <p style={{ fontSize: 15, color: "#6F6F6F", marginBottom: 24 }}>{STEP_LABELS[from]} · Výběr termínu focení</p>
+      <Link href={backHref} className="inline-block mb-4 text-sm text-zinc-400 hover:text-white transition">← Zpět na výběr služby</Link>
+      <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Krok 2 / 3</p>
+      <h2 className="text-xl font-semibold text-white mb-2">Výběr termínu</h2>
+      <p className="text-sm text-zinc-400 mb-6">{STEP_LABELS[from]} · Výběr termínu focení</p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: 32, marginBottom: 24 }}>
+      <div className="grid grid-cols-[1fr_200px] gap-8 mb-6">
         <div>
-          <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.06em" }}>{MONTHS[month]} {year}</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 16 }}>
+          <p className="text-xs uppercase tracking-wider text-zinc-500 mb-3">{MONTHS[month]} {year}</p>
+          <div className="grid grid-cols-7 gap-1 mb-4">
             {["Po", "Út", "St", "Čt", "Pá", "So", "Ne"].map((d) => (
-              <div key={d} style={{ textAlign: "center", fontSize: 12, color: "#6F6F6F", fontWeight: 600 }}>{d}</div>
+              <div key={d} className="text-center text-xs text-zinc-500 font-semibold">{d}</div>
             ))}
             {Array.from({ length: startWeekday - 1 }, (_, i) => <div key={`pad-${i}`} />)}
             {Array.from({ length: daysInMonth }, (_, i) => {
               const d = i + 1;
-              const date = new Date(year, month, d);
-              const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+              const dayDate = new Date(year, month, d);
+              const isPast = dayDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
               const isSelected = selectedDate && selectedDate.getDate() === d && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
               return (
                 <button
                   key={d}
                   type="button"
                   disabled={isPast}
-                  onClick={() => setSelectedDate(date)}
-                  style={{
-                    padding: "10px",
-                    border: isSelected ? "2px solid #B7E300" : "1px solid #EAEAE7",
-                    borderRadius: 10,
-                    background: isSelected ? "rgba(183,227,0,0.15)" : "#FFF",
-                    color: isPast ? "#AAA" : "#1A1A1A",
-                    cursor: isPast ? "not-allowed" : "pointer",
-                    fontSize: 14,
-                    fontWeight: isSelected ? 600 : 400,
-                  }}
+                  onClick={() => setSelectedDate(dayDate)}
+                  className={`rounded-lg text-sm font-medium transition ${isSelected ? "bg-lime-500/20 border-2 border-lime-500 text-white" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"} ${isPast ? "opacity-40 cursor-not-allowed" : ""}`}
+                  style={{ padding: "10px" }}
                 >
                   {d}
                 </button>
@@ -214,8 +199,8 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
           </div>
         </div>
         <div>
-          <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Čas</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 280, overflowY: "auto" }}>
+          <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Čas</p>
+          <div className="flex flex-col gap-1.5 max-h-[280px] overflow-y-auto">
             {TIME_SLOTS.map((t) => {
               const isSelected = selectedTime === t;
               return (
@@ -223,16 +208,7 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
                   key={t}
                   type="button"
                   onClick={() => setSelectedTime(t)}
-                  style={{
-                    padding: "10px 14px",
-                    border: isSelected ? "2px solid #B7E300" : "1px solid #EAEAE7",
-                    borderRadius: 10,
-                    background: isSelected ? "rgba(183,227,0,0.15)" : "#FFF",
-                    color: "#1A1A1A",
-                    cursor: "pointer",
-                    fontSize: 14,
-                    textAlign: "left",
-                  }}
+                  className={`rounded-lg px-3 py-2.5 text-sm text-left transition ${isSelected ? "bg-lime-500/20 border-2 border-lime-500 text-white" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"}`}
                 >
                   {t}
                 </button>
@@ -243,7 +219,7 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
       </div>
 
       {selectedDate && selectedTime && (
-        <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 16 }}>
+        <p className="text-sm text-zinc-400 mb-4">
           Vybraný termín: {selectedDate.getDate()}. {selectedDate.getMonth() + 1}. {selectedDate.getFullYear()} v {selectedTime}
         </p>
       )}
@@ -251,26 +227,16 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
         type="button"
         onClick={handleConfirmSlot}
         disabled={!selectedDate || !selectedTime}
-        style={{
-          padding: "14px 28px",
-          background: selectedDate && selectedTime ? "#B7E300" : "#EAEAE7",
-          color: "#1A1A1A",
-          fontWeight: 600,
-          fontSize: 16,
-          border: "none",
-          borderRadius: 12,
-          cursor: selectedDate && selectedTime ? "pointer" : "not-allowed",
-          opacity: selectedDate && selectedTime ? 1 : 0.7,
-        }}
+        className="w-full bg-lime-500 hover:bg-lime-400 text-black font-semibold rounded-xl py-4 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-lime-500"
       >
-        Potvrdit termín a pokračovat
+        Potvrdit termín a pokračovat k úhradě
       </button>
 
-      {modalOpen && (
+      {modalOpen && selectedDate && selectedTime && (
         <ConfirmModal
           from={from}
-          date={selectedDate!}
-          time={selectedTime!}
+          date={selectedDate}
+          time={selectedTime}
           onClose={() => setModalOpen(false)}
         />
       )}
@@ -279,74 +245,89 @@ function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: s
 }
 
 function ConfirmModal({ from, date, time, onClose }: { from: TabId; date: Date; time: string; onClose: () => void }) {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const dateStr = `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()} v ${time}`;
+  const dateApi = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  const handlePay = async () => {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError("Zadejte e-mail.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    try {
+      const reserveRes = await fetch("/api/bookings/reserve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          service_type: from,
+          date: dateApi,
+          time,
+          email: trimmed,
+        }),
+      });
+      const reserveData = await reserveRes.json();
+      if (!reserveRes.ok) {
+        setError(reserveData.error ?? "Termín je obsazen nebo došlo k chybě.");
+        setLoading(false);
+        return;
+      }
+      const bookingId = reserveData.bookingId;
+      const sessionRes = await fetch("/api/checkout/create-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ booking_id: bookingId }),
+      });
+      const sessionData = await sessionRes.json();
+      if (!sessionRes.ok || !sessionData.url) {
+        setError(sessionData.error ?? "Nepodařilo se otevřít platbu.");
+        setLoading(false);
+        return;
+      }
+      window.location.href = sessionData.url;
+    } catch {
+      setError("Spojení se nezdařilo. Zkuste to znovu.");
+      setLoading(false);
+    }
+  };
+
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-        padding: 24,
-      }}
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        style={{
-          background: "#FFFFFF",
-          borderRadius: 24,
-          padding: 32,
-          maxWidth: 440,
-          width: "100%",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-          border: "1px solid #EAEAE7",
-        }}
+        className="bg-zinc-900 border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 8 }}>Krok 3 / 3</p>
-        <h3 style={{ fontSize: 20, fontWeight: 600, color: "#1A1A1A", marginBottom: 12 }}>Závazně potvrdit termín schůzky</h3>
-        <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 8 }}>
-          Termín focení · {STEP_LABELS[from]}
-        </p>
-        <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 24 }}>Termín: {dateStr}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <button
-            type="button"
-            style={{
-              padding: "14px 20px",
-              background: "#B7E300",
-              color: "#1A1A1A",
-              fontWeight: 600,
-              fontSize: 16,
-              border: "none",
-              borderRadius: 12,
-              cursor: "pointer",
-            }}
-          >
-            Uhradit službu
-          </button>
-          <button
-            type="button"
-            style={{
-              padding: "14px 20px",
-              background: "#FFFFFF",
-              color: "#1A1A1A",
-              fontWeight: 600,
-              fontSize: 16,
-              border: "2px solid #B7E300",
-              borderRadius: 12,
-              cursor: "pointer",
-            }}
-          >
-            Závazně potvrdit termín schůzky
-          </button>
-          <button type="button" onClick={onClose} style={{ padding: 8, background: "none", border: "none", color: "#6F6F6F", fontSize: 14, cursor: "pointer", marginTop: 8 }}>
-            Zrušit
-          </button>
-        </div>
+        <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Krok 3 / 3</p>
+        <h3 className="text-xl font-semibold text-white mb-2">Potvrdit termín a přejít k úhradě</h3>
+        <p className="text-zinc-400 text-sm mb-1">{STEP_LABELS[from]}</p>
+        <p className="text-zinc-500 text-sm mb-6">Termín: {dateStr}</p>
+        <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2">E-mail</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="vas@email.cz"
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-lime-500 mb-4"
+        />
+        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+        <button
+          type="button"
+          onClick={handlePay}
+          disabled={loading}
+          className="w-full bg-lime-500 hover:bg-lime-400 text-black font-semibold rounded-xl py-4 transition disabled:opacity-50"
+        >
+          {loading ? "Přesměrovávám…" : "Potvrdit termín a pokračovat k úhradě"}
+        </button>
+        <button type="button" onClick={onClose} className="mt-4 w-full py-2 text-zinc-500 text-sm hover:text-white transition">
+          Zrušit
+        </button>
       </div>
     </div>
   );

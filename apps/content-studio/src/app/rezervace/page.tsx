@@ -21,11 +21,24 @@ function RezervaceContent() {
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
   const step = searchParams.get("step");
+  const sessionId = searchParams.get("session_id");
   const [mainTab, setMainTab] = useState<MainTab>("booking");
 
   useEffect(() => {
     if (from || step) setMainTab("booking");
   }, [from, step]);
+
+  if (sessionId) {
+    return (
+      <div className={figtree.className} style={{ minHeight: "100vh", background: "#F7F7F5", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+        <div style={{ textAlign: "center", maxWidth: 400 }}>
+          <h1 className="text-2xl font-semibold text-zinc-900 mb-2">Platba dokončena</h1>
+          <p className="text-zinc-600 mb-6">Děkujeme. Rezervace je potvrzena. Brzy vás budeme kontaktovat.</p>
+          <a href="/" className="inline-block rounded-lg bg-[#A8EB12] px-6 py-3 text-black font-semibold hover:opacity-90">Zpět na úvod</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
