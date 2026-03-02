@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Vercel Hobby má limit 10s; Pro 60s. 30s je kompromis pro delší analýzu.
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v2";
 const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
@@ -154,12 +153,7 @@ function parseDiagnostikaResult(raw: string): Record<string, unknown> {
 
 export async function POST(request: Request) {
   try {
-    let body: Record<string, unknown>;
-    try {
-      body = (await request.json()) as Record<string, unknown>;
-    } catch {
-      return NextResponse.json({ error: "Neplatný JSON v těle požadavku." }, { status: 400 });
-    }
+    const body = await request.json();
     const url = typeof body?.url === "string" ? body.url.trim() : "";
     const formatDiagnostika = body?.format === "diagnostika";
     if (!url) {
