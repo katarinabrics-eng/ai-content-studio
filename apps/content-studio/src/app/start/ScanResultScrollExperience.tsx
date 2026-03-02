@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 export type BrandScore = {
   total?: number;
@@ -111,6 +110,7 @@ export function ScanResultScrollExperience({
   }));
   const riskCommoditization = scores.energy <= 4;
   const [openPillar, setOpenPillar] = useState<string | null>(null);
+  const [openCalendar, setOpenCalendar] = useState(false);
 
   function Collapsible({
     children,
@@ -409,26 +409,58 @@ export function ScanResultScrollExperience({
 
       {/* 12. CTA blok */}
       <Section className="pb-16">
-        <div className="max-w-lg mx-auto rounded-2xl border border-white/10 bg-white/5 p-8 text-left">
-          <p className="text-zinc-400 text-sm mb-4">
-            Výběr termínu zavazuje k úhradě strategického Visual Boardu
-          </p>
-          <p className="text-3xl font-bold text-white mb-2">7 800 Kč</p>
-          <p className="text-zinc-500 text-sm mb-8">Částka bude odečtena z celkové spolupráce.</p>
-          <p className="text-zinc-300 text-sm mb-4">Získáte:</p>
-          <ul className="space-y-2 text-sm text-zinc-300 mb-8">
+        <div className="bg-[#0e0f14] border border-white/10 rounded-2xl p-10 max-w-xl mx-auto shadow-2xl text-left">
+          <h3 className="text-4xl font-bold text-white mb-4">7 800 Kč</h3>
+          <p className="text-zinc-400 text-sm mb-2">Výběr termínu zavazuje k úhradě strategického Visual Boardu</p>
+          <p className="text-zinc-500 text-sm mb-4">Částka bude odečtena z celkové spolupráce.</p>
+          <p className="text-zinc-300 text-sm mb-2">Získáte:</p>
+          <ul className="space-y-2 text-sm text-zinc-300 mb-6">
             <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Kompletní strategii značky</li>
             <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Vizuální směr</li>
             <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Obsahový rámec</li>
             <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Směr kampaně</li>
           </ul>
-          <Link
-            href={projectId ? `/rezervace?project_id=${projectId}&service=strategicka-konzultace` : "/rezervace?service=strategicka-konzultace"}
-            className="block w-full py-4 px-6 rounded-xl bg-lime-400 text-black font-bold text-center hover:bg-lime-300 transition"
+          <button
+            type="button"
+            onClick={() => setOpenCalendar(true)}
+            className="mt-6 w-full bg-lime-400 text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-all duration-300"
           >
             Rezervovat termín
-          </Link>
+          </button>
         </div>
+
+        {/* DARK MODAL */}
+        {openCalendar && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50">
+            <div className="relative bg-[#0c0c0f] border border-white/10 rounded-3xl p-10 w-[800px] max-w-[calc(100vw-2rem)] shadow-[0_0_60px_rgba(132,255,0,0.15)]">
+              <button
+                type="button"
+                onClick={() => setOpenCalendar(false)}
+                className="absolute top-6 right-8 text-white/40 hover:text-white"
+              >
+                ✕
+              </button>
+              <h2 className="text-3xl text-white mb-8">Výběr termínu</h2>
+              <div className="grid grid-cols-7 gap-3 mb-8">
+                {[...Array(31)].map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className="border border-white/10 text-white/70 py-3 rounded-lg hover:border-lime-400 hover:text-lime-400 transition"
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="w-full bg-lime-400 text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition"
+              >
+                Pokračovat k úhradě
+              </button>
+            </div>
+          </div>
+        )}
       </Section>
 
       <Section compact>
