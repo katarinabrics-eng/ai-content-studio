@@ -174,12 +174,16 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
     if (selectedDate && selectedTime) setModalOpen(true);
   };
 
+  const isPremiova = from === "premiova";
+  const calendarTitle = isPremiova ? "Rezervace strategické konzultace" : "Výběr termínu";
+  const calendarSubtitle = isPremiova ? "60 minut online / osobně v Praze · Součástí je vizuální board" : `${STEP_LABELS[from]} · Výběr termínu`;
+
   return (
     <div className="gate-fade">
       <Link href={backHref} className="inline-block mb-4 text-sm text-zinc-400 hover:text-white transition">← Zpět na výběr služby</Link>
       <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Krok 2 / 3</p>
-      <h2 className="text-xl font-semibold text-white mb-2">Výběr termínu</h2>
-      <p className="text-sm text-zinc-400 mb-6">{STEP_LABELS[from]} · Výběr termínu</p>
+      <h2 className="text-xl font-semibold text-white mb-2">{calendarTitle}</h2>
+      <p className="text-sm text-zinc-400 mb-6">{calendarSubtitle}</p>
 
       <div className="grid grid-cols-[1fr_200px] gap-8 mb-6">
         <div>
@@ -240,7 +244,7 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
         disabled={!selectedDate || !selectedTime}
         className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-semibold rounded-xl py-4 shadow-[0_10px_40px_rgba(132,204,22,0.4)] hover:scale-[1.02] hover:shadow-[0_15px_50px_rgba(132,204,22,0.55)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-[0_10px_40px_rgba(132,204,22,0.4)]"
       >
-        Potvrdit termín a pokračovat k úhradě
+        {from === "premiova" ? "Potvrdit termín a uhradit 7 800 Kč" : "Potvrdit termín a pokračovat k úhradě"}
       </button>
 
       {modalOpen && selectedDate && selectedTime && (
@@ -319,8 +323,10 @@ function ConfirmModal({ from, date, time, onClose, projectId }: { from: TabId; d
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Krok 3 / 3</p>
-        <h3 className="text-xl font-semibold text-white mb-2">Potvrdit termín a přejít k úhradě</h3>
-        <p className="text-zinc-400 text-sm mb-1">{STEP_LABELS[from]}</p>
+        <h3 className="text-xl font-semibold text-white mb-2">
+          {from === "premiova" ? "Potvrdit termín a uhradit 7 800 Kč" : "Potvrdit termín a přejít k úhradě"}
+        </h3>
+        <p className="text-zinc-400 text-sm mb-1">{from === "premiova" ? "Strategická konzultace + vizuální board" : STEP_LABELS[from]}</p>
         <p className="text-zinc-500 text-sm mb-6">Termín: {dateStr}</p>
         <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2">E-mail</label>
         <input
@@ -337,7 +343,7 @@ function ConfirmModal({ from, date, time, onClose, projectId }: { from: TabId; d
           disabled={loading}
           className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-semibold rounded-xl py-4 shadow-[0_10px_40px_rgba(132,204,22,0.4)] hover:scale-[1.02] hover:shadow-[0_15px_50px_rgba(132,204,22,0.55)] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
         >
-          {loading ? "Přesměrovávám…" : "Potvrdit termín a pokračovat k úhradě"}
+          {loading ? "Přesměrovávám…" : from === "premiova" ? "Potvrdit termín a uhradit 7 800 Kč" : "Potvrdit termín a pokračovat k úhradě"}
         </button>
         <button type="button" onClick={onClose} className="mt-4 w-full py-2 text-zinc-500 text-sm hover:text-white transition">
           Zrušit
@@ -448,12 +454,16 @@ function PremioveFlow({ basePath = "/start" }: { basePath?: string }) {
   return (
     <div className="gate-fade">
       <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 24 }}>Krok 1 / 3</p>
-      <p style={{ fontSize: 17, color: "#6F6F6F", marginBottom: 20 }}>Prémiová vizuální identita</p>
-      <p style={{ fontSize: 15, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 24 }}>
-        Strategická spolupráce pro lídry, podnikatele a veřejně vystupující osobnosti. Váš obraz by měl odpovídat úrovni, na které dnes podnikáte.
+      <p style={{ fontSize: 17, color: "#1A1A1A", lineHeight: 1.6, marginBottom: 16 }}>
+        Prémiová vizuální identita začíná strategickým setkáním. Vytvoříme vizuální směr, pojmenujeme energii značky a připravíme vizuální board.
+      </p>
+      <p style={{ fontSize: 15, color: "#6F6F6F", lineHeight: 1.6, marginBottom: 24 }}>
+        Cena konzultace: <strong style={{ color: "#1A1A1A" }}>7 800 Kč</strong>
+        <br />
+        <span style={{ fontSize: 13 }}>V případě navázání spolupráce se částka odečítá z celkové ceny služby, která začíná na 45 000 Kč.</span>
       </p>
       <Link href={`${basePath}?from=premiova&step=calendar`} style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
-        Pokračovat k výběru termínu
+        Rezervovat strategickou konzultaci
       </Link>
     </div>
   );

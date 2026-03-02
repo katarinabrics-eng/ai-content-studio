@@ -5,10 +5,15 @@ import { getBookingById } from "@/lib/supabase-bookings";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const SERVICE_LABELS: Record<string, { name: string; amount: number }> = {
+const SERVICE_LABELS: Record<string, { name: string; amount: number; description?: (date: string, time: string) => string }> = {
   portret: { name: "Portrétní focení – ateliér", amount: 450000 }, // 4 500 Kč
   rodinne: { name: "Rodinné focení", amount: 580000 }, // 5 800 Kč – reportáž jako default
-  premiova: { name: "Prémiová vizuální identita", amount: 1500000 }, // 15 000 Kč – placeholder
+  premiova: {
+    name: "Strategická konzultace + vizuální board",
+    amount: 780000, // 7 800 Kč
+    description: (date, time) =>
+      `60 minut · Odečitatelné z plné spolupráce · Termín: ${date} v ${time}`,
+  },
 };
 
 function getStripe() {
@@ -48,6 +53,11 @@ export async function POST(request: Request) {
         : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
     ).replace(/\/$/, "");
 
+    const lineDescription =
+      "description" in service && typeof service.description === "function"
+        ? service.description(booking.date, booking.time)
+        : `${booking.date} v ${booking.time}`;
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -56,7 +66,7 @@ export async function POST(request: Request) {
             currency: "czk",
             product_data: {
               name: service.name,
-              description: `${booking.date} v ${booking.time}`,
+              description: lineDescription,
             },
             unit_amount: service.amount,
           },
