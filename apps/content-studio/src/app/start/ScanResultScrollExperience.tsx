@@ -112,6 +112,8 @@ export function ScanResultScrollExperience({
   const riskCommoditization = scores.energy <= 4;
   const [openPillar, setOpenPillar] = useState<string | null>(null);
   const [openCalendar, setOpenCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
 
   function Collapsible({
     children,
@@ -430,17 +432,59 @@ export function ScanResultScrollExperience({
           </button>
         </div>
 
-        {/* DARK MODAL */}
-        {openCalendar && (
+        {/* DARK MODAL – kalendář */}
+        {openCalendar && !openConfirmation && (
           <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-6"
+            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6"
             onClick={() => setOpenCalendar(false)}
           >
             <div onClick={(e) => e.stopPropagation()}>
               <BookingCalendar
                 theme="dark"
-                onConfirm={() => setOpenCalendar(false)}
+                onConfirm={(date) => {
+                  setSelectedDate(date);
+                  setOpenConfirmation(true);
+                }}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Prémiový potvrzovací mezikrok */}
+        {openConfirmation && selectedDate && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6">
+            <div className="bg-[#0e0f14] border border-white/10 rounded-3xl p-12 max-w-lg w-full text-white">
+              <h3 className="text-3xl font-semibold mb-6">
+                Potvrzení vstupu do spolupráce
+              </h3>
+              <p className="text-white/70 mb-6">
+                Rezervujete termín strategického Visual Boardu.
+                Tento krok je závazný a zahajuje přípravu spolupráce.
+              </p>
+              <div className="mb-8">
+                <div className="text-white/50 text-sm">Vybraný termín</div>
+                <div className="text-2xl font-semibold mt-1">{selectedDate}</div>
+                <div className="text-2xl font-semibold mt-4">7 800 Kč</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = `/api/checkout?type=board&date=${encodeURIComponent(selectedDate)}`;
+                }}
+                className="w-full py-4 rounded-xl bg-lime-400 text-black font-semibold hover:scale-[1.02] transition-all"
+              >
+                Uhradit a vstoupit do spolupráce
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenConfirmation(false);
+                  setOpenCalendar(false);
+                }}
+                className="w-full mt-4 text-white/40 hover:text-white transition"
+              >
+                Zrušit
+              </button>
             </div>
           </div>
         )}
