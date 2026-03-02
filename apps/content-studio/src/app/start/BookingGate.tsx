@@ -93,8 +93,10 @@ export function BookingGate({ basePath = "/start", hideIntro = false, projectId 
         )}
 
         {showCalendar ? (
-          <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl">
-            <CalendarStep from={from} basePath={basePath} projectId={projectId ?? undefined} />
+          <div className="relative rounded-3xl bg-[radial-gradient(circle_at_center,rgba(132,204,22,0.08),transparent_60%)]">
+            <div className="relative overflow-hidden bg-zinc-900/95 border border-zinc-800 rounded-3xl p-10 shadow-[0_20px_80px_rgba(0,0,0,0.6)] before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-b before:from-white/5 before:to-transparent before:pointer-events-none">
+              <CalendarStep from={from} basePath={basePath} projectId={projectId ?? undefined} />
+            </div>
           </div>
         ) : (
           <>
@@ -191,7 +193,7 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
                   type="button"
                   disabled={isPast}
                   onClick={() => setSelectedDate(dayDate)}
-                  className={`rounded-lg text-sm font-medium transition ${isSelected ? "bg-lime-500/20 border-2 border-lime-500 text-white" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"} ${isPast ? "opacity-40 cursor-not-allowed" : ""}`}
+                  className={`rounded-lg text-sm font-medium transition-all duration-200 ${isSelected ? "bg-lime-500/20 border border-lime-400 text-white shadow-[0_0_20px_rgba(132,204,22,0.35)] hover:bg-lime-500/30 hover:scale-105" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"} ${isPast ? "opacity-40 cursor-not-allowed" : ""}`}
                   style={{ padding: "10px" }}
                 >
                   {d}
@@ -210,7 +212,7 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
                   key={t}
                   type="button"
                   onClick={() => setSelectedTime(t)}
-                  className={`rounded-lg px-3 py-2.5 text-sm text-left transition ${isSelected ? "bg-lime-500/20 border-2 border-lime-500 text-white" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"}`}
+                  className={`rounded-lg px-3 py-2.5 text-sm text-left transition ${isSelected ? "bg-lime-500/25 border border-lime-400 text-white shadow-[0_0_25px_rgba(132,204,22,0.45)]" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"}`}
                 >
                   {t}
                 </button>
@@ -229,7 +231,7 @@ function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; b
         type="button"
         onClick={handleConfirmSlot}
         disabled={!selectedDate || !selectedTime}
-        className="w-full bg-lime-500 hover:bg-lime-400 text-black font-semibold rounded-xl py-4 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-lime-500"
+        className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-semibold rounded-xl py-4 shadow-[0_10px_40px_rgba(132,204,22,0.4)] hover:scale-[1.02] hover:shadow-[0_15px_50px_rgba(132,204,22,0.55)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-[0_10px_40px_rgba(132,204,22,0.4)]"
       >
         Potvrdit termín a pokračovat k úhradě
       </button>
@@ -301,11 +303,12 @@ function ConfirmModal({ from, date, time, onClose, projectId }: { from: TabId; d
 
   return (
     <div
-      className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/30 backdrop-blur-sm"
       onClick={onClose}
     >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(132,204,22,0.08),transparent_60%)] pointer-events-none" aria-hidden />
       <div
-        className="bg-zinc-900 border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl"
+        className="relative bg-zinc-900/95 border border-zinc-800 rounded-3xl p-8 max-w-md w-full shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Krok 3 / 3</p>
@@ -325,7 +328,7 @@ function ConfirmModal({ from, date, time, onClose, projectId }: { from: TabId; d
           type="button"
           onClick={handlePay}
           disabled={loading}
-          className="w-full bg-lime-500 hover:bg-lime-400 text-black font-semibold rounded-xl py-4 transition disabled:opacity-50"
+          className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-semibold rounded-xl py-4 shadow-[0_10px_40px_rgba(132,204,22,0.4)] hover:scale-[1.02] hover:shadow-[0_15px_50px_rgba(132,204,22,0.55)] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
         >
           {loading ? "Přesměrovávám…" : "Potvrdit termín a pokračovat k úhradě"}
         </button>
