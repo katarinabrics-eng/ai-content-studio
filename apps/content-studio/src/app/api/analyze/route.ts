@@ -109,13 +109,19 @@ const PILLAR_ANALYSIS_SCHEMA = `
 `;
 
 const DIAGNOSTIKA_METHODOLOGY = `
-METODIKA:
-- interpretation = 3-4 věty pro veřejnou část scanu: stručné, jasné, profesionální. Bez žargonu. Co v pilíři značka dělá a co jí chybí.
-- observed = co jsi na webu/textu konkrétně zaznamenal (položky pro rozbalovací sekci "Co jsme zaznamenali").
-- notObserved = co jsi nezaznamenal, ale v tomto pilíři by to bylo relevantní (pro "Co jsme nezaznamenali").
-- reasoning = proč to ovlivnilo skóre – pro rozbalovací sekci "Jak jsme hodnotili".
-- DŮVĚRA: Sekce s ukázkami realizací bez citace klienta nebo výsledku = portfolio, ne plnohodnotný sociální důkaz. V reasoning rozliš portfolio vs. reference vs. case study.
-- Piš jako strategický kurátor: vzdělávej, ne jen hodnot.
+You are a senior brand strategist. Generate output using this strict structure for EACH pillar:
+
+PILÍŘ: [název]
+Skóre: X/10
+Interpretace: Max 4 concise analytical sentences.
+Jak jsme hodnotili: Co jsme zaznamenali | Co jsme nezaznamenali | Proč to ovlivnilo skóre. Pokud relevantní, vysvětli rozdíl mezi pojmy (např. portfolio vs reference vs case study).
+
+Rules:
+- Be analytical, not judgmental. Explain logic clearly.
+- Avoid generic phrases. Use concrete findings.
+- interpretation = 3–4 věty pro veřejnou část: stručné, profesionální. Co v pilíři značka dělá a co jí chybí.
+- observed = konkrétní nálezy. notObserved = co chybí. reasoning = proč to ovlivnilo skóre.
+- DŮVĚRA: Pokud sekce obsahuje ukázky práce, ale ne reference/testimonials, klasifikuj ji jako portfolio (ne plnohodnotný sociální důkaz) a v reasoning vysvětli rozdíl: portfolio = ukázka práce, reference = hlas klienta, case study = důkaz výsledku.
 `;
 
 function buildDiagnostikaPromptFromText(sourceContent: string): string {

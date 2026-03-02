@@ -112,6 +112,33 @@ export function ScanResultScrollExperience({
   const riskCommoditization = scores.energy <= 4;
   const [openPillar, setOpenPillar] = useState<string | null>(null);
 
+  function Collapsible({
+    children,
+    isOpen,
+    onToggle,
+  }: {
+    children: React.ReactNode;
+    isOpen: boolean;
+    onToggle: () => void;
+  }) {
+    return (
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="text-sm text-zinc-400 hover:text-white transition bg-transparent border-0 cursor-pointer p-0"
+        >
+          {isOpen ? "− Skrýt metodiku" : "→ Jak jsme hodnotili"}
+        </button>
+        {isOpen && (
+          <div className="mt-3 p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 text-sm text-zinc-300 leading-relaxed">
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function PillarBlock({
     id,
     title,
@@ -149,30 +176,22 @@ export function ScanResultScrollExperience({
           {subtitle && <p className="text-sm text-zinc-500 mb-4">{subtitle}</p>}
           <p className="text-2xl font-bold text-lime-400 mb-4">{title}: {score}/10</p>
 
-          {publicInterpretation ? (
-            <p className="text-zinc-300 text-sm leading-relaxed mb-6">{publicInterpretation}</p>
-          ) : (
-            <div className="mb-6">{children}</div>
-          )}
+          <div className="space-y-3">
+            {publicInterpretation ? (
+              <p className="text-base text-zinc-200 leading-relaxed">{publicInterpretation}</p>
+            ) : (
+              <div>{children}</div>
+            )}
 
-          {hasExpandableContent && (
-            <>
-              <button
-                type="button"
-                onClick={() => setOpenPillar(isOpen ? null : id)}
-                className="flex items-center gap-2 py-2 px-0 text-sm text-zinc-500 hover:text-zinc-300 border-0 border-b border-zinc-600/60 hover:border-zinc-500 transition-colors bg-transparent cursor-pointer"
+            {hasExpandableContent && (
+              <Collapsible
+                isOpen={isOpen}
+                onToggle={() => setOpenPillar(isOpen ? null : id)}
               >
-                Zjistit, jak jsme hodnotili
-                <span className="text-zinc-500">→</span>
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[1200px] opacity-100 mt-4" : "max-h-0 opacity-0"}`}
-                aria-hidden={!isOpen}
-              >
-                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5 space-y-5 text-sm">
+                <div className="space-y-4">
                   {analysis?.observed && analysis.observed.length > 0 && (
                     <div>
-                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Zaznamenali jsme</p>
+                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
                       <ul className="list-disc list-inside text-zinc-300 space-y-1">
                         {analysis.observed.map((item, i) => (
                           <li key={i}>{item}</li>
@@ -182,7 +201,7 @@ export function ScanResultScrollExperience({
                   )}
                   {analysis?.notObserved && analysis.notObserved.length > 0 && (
                     <div>
-                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Nezaznamenali jsme</p>
+                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme nezaznamenali</p>
                       <ul className="list-disc list-inside text-zinc-400 space-y-1">
                         {analysis.notObserved.map((item, i) => (
                           <li key={i}>{item}</li>
@@ -207,9 +226,9 @@ export function ScanResultScrollExperience({
                     </div>
                   )}
                 </div>
-              </div>
-            </>
-          )}
+              </Collapsible>
+            )}
+          </div>
         </div>
       </Section>
     );
