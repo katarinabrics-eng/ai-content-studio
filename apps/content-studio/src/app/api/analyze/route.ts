@@ -98,6 +98,23 @@ Vrať čistý text (ne JSON), oddělené sekce:
 5. Doporučení dalšího kroku – konkrétní návrh, kam směřovat (např. vizuální identita, obsah, CTA).`;
 }
 
+const PILLAR_ANALYSIS_SCHEMA = `
+  "pillarAnalysis": {
+    "light": { "score": 0-10, "observed": ["co jsi na webu/textu zaznamenal"], "reasoning": "2-4 věty: jak jsi k tomuto skóre došel, jakou logiku používáš.", "strategicOpportunity": "jedna konkrétní věta, co doplnit" },
+    "energy": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" },
+    "architecture": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" },
+    "identity": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" },
+    "trust": { "score": 0-10, "observed": [], "reasoning": "", "strategicOpportunity": "" }
+  }
+`;
+
+const DIAGNOSTIKA_METHODOLOGY = `
+METODIKA:
+- U každého pilíře nejprve popis konkrétní nálezy (observed), pak v reasoning vysvětli logiku hodnocení. Klient má vidět, proč jsi k skóre došel.
+- DŮVĚRA: Pokud identifikuješ sekci s ukázkami realizací (portfolium), ale bez citace klienta nebo konkrétního výsledku, vyhodnoť ji jako portfolio, nikoliv plnohodnotný sociální důkaz. V reasoning vysvětli rozdíl: portfolio = ukázka práce, reference = hlas klienta (citace, hodnocení), case study = důkaz měřitelného výsledku. Bez hlasu klienta nebo výsledku může důkaz působit spíše jako prezentace práce než jako sociální proof.
+- Piš jako strategický kurátor: vzdělávej, ne jen hodnot. Každé reasoning má být srozumitelné a férové.
+`;
+
 function buildDiagnostikaPromptFromText(sourceContent: string): string {
   const text = sourceContent.slice(0, 12000);
   return `Analyzuj zadané podklady o značce a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
@@ -106,8 +123,9 @@ OBSAH (zadaný text nebo extrahovaný z dokumentu):
 ---
 ${text}
 ---
+${DIAGNOSTIKA_METHODOLOGY}
 
-JSON musí mít přesně tento tvar (boolean u has* vyhodnoť podle toho, zda jsou v textu uvedeny):
+JSON musí mít přesně tento tvar:
 {
   "brandScore": {
     "total": <číslo 0-100, celkové skóre síly brandu>,
@@ -129,7 +147,8 @@ JSON musí mít přesně tento tvar (boolean u has* vyhodnoť podle toho, zda js
     "missingElements": ["string"] nebo [],
     "visualStyle": { "primaryColor": "#hex", "secondaryColor": "#hex", "mood": "string", "typography": "string" } nebo null
   },
-  "summary": "Krátké shrnutí od stratéga – 2–4 věty."
+  "summary": "Krátké shrnutí od stratéga – 2–4 věty.",
+  ${PILLAR_ANALYSIS_SCHEMA.trim()}
 }`;
 }
 
@@ -145,8 +164,9 @@ OBSAH WEBU (markdown):
 ---
 ${textContent}
 ---
+${DIAGNOSTIKA_METHODOLOGY}
 
-JSON musí mít přesně tento tvar (boolean u has* znamená true/false podle toho, zda to na webu je):
+JSON musí mít přesně tento tvar:
 {
   "brandScore": {
     "total": <číslo 0-100, celkové skóre síly brandu>,
@@ -168,7 +188,8 @@ JSON musí mít přesně tento tvar (boolean u has* znamená true/false podle to
     "missingElements": ["string"] nebo [],
     "visualStyle": { "primaryColor": "#hex", "secondaryColor": "#hex", "mood": "string", "typography": "string" } nebo null
   },
-  "summary": "Krátké shrnutí od stratéga – 2–4 věty."
+  "summary": "Krátké shrnutí od stratéga – 2–4 věty.",
+  ${PILLAR_ANALYSIS_SCHEMA.trim()}
 }`;
 }
 
@@ -247,7 +268,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           model: OPENAI_MODEL,
           messages: [{ role: "user", content: prompt }],
-          max_tokens: formatDiagnostika ? 2500 : 2000,
+          max_tokens: formatDiagnostika ? 4200 : 2000,
         }),
       },
       FETCH_TIMEOUT_MS
@@ -274,7 +295,12 @@ export async function POST(request: Request) {
       try {
         const result = parseDiagnostikaResult(outputText);
         return NextResponse.json({
-          result: { brandScore: result.brandScore, brandDna: result.brandDna, summary: result.summary },
+          result: {
+            brandScore: result.brandScore,
+            brandDna: result.brandDna,
+            summary: result.summary,
+            pillarAnalysis: result.pillarAnalysis ?? undefined,
+          },
           scraped: scrapedPayload,
         });
       } catch {

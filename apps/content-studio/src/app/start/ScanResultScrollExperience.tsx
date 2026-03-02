@@ -23,7 +23,18 @@ export type BrandDna = {
   missingElements?: string[];
   visualStyle?: VisualStyle;
 };
-export type ScanResult = { brandScore?: BrandScore; brandDna?: BrandDna; summary?: string };
+export type PillarAnalysisItem = {
+  score?: number;
+  observed?: string[];
+  reasoning?: string;
+  strategicOpportunity?: string;
+};
+export type ScanResult = {
+  brandScore?: BrandScore;
+  brandDna?: BrandDna;
+  summary?: string;
+  pillarAnalysis?: Record<string, PillarAnalysisItem>;
+};
 
 const PILLARS = [
   { id: "light", title: "SVĚTLO", subtitle: "Clarity of Value" },
@@ -90,8 +101,79 @@ export function ScanResultScrollExperience({
   const summary = result.summary?.trim() ?? "";
   const d = result.brandDna ?? {};
   const scores = derivePillarScores(result);
-  const pillarList = PILLARS.map((p) => ({ ...p, score: scores[p.id] ?? 5 }));
+  const pillarAnalysis = result.pillarAnalysis ?? {};
+  const pillarList = PILLARS.map((p) => ({
+    ...p,
+    score: pillarAnalysis[p.id]?.score ?? scores[p.id] ?? 5,
+  }));
   const riskCommoditization = scores.energy <= 4;
+
+  function PillarBlock({
+    id,
+    title,
+    subtitle,
+    children,
+    expandableTrust,
+  }: {
+    id: string;
+    title: string;
+    subtitle?: string;
+    children: React.ReactNode;
+    expandableTrust?: boolean;
+  }) {
+    const analysis = pillarAnalysis[id];
+    const score = analysis?.score ?? scores[id as keyof typeof scores] ?? 5;
+    const hasLayerContent = analysis && (analysis.observed?.length || analysis.reasoning);
+    return (
+      <Section>
+        <div className="max-w-xl mx-auto text-left">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{title}</h2>
+          {subtitle && <p className="text-sm text-zinc-500 mb-6">{subtitle}</p>}
+          <p className="text-3xl font-bold text-lime-400 mb-6">Skóre: {score} / 10</p>
+          {hasLayerContent ? (
+            <>
+              {analysis?.observed && analysis.observed.length > 0 && (
+                <div className="mb-6">
+                  <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
+                  <ul className="list-disc list-inside text-zinc-300 text-sm space-y-1">
+                    {analysis.observed.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {analysis?.reasoning && (
+                <div className="mb-6">
+                  <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Jak jsme k tomu došli</p>
+                  <p className="text-zinc-300 text-sm leading-relaxed">{analysis.reasoning}</p>
+                </div>
+              )}
+              {analysis?.strategicOpportunity && (
+                <div className="p-4 rounded-xl bg-lime-500/10 border border-lime-500/20">
+                  <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">Strategická příležitost</p>
+                  <p className="text-white text-sm font-medium">{analysis.strategicOpportunity}</p>
+                </div>
+              )}
+            </>
+          ) : (
+            children
+          )}
+          {expandableTrust && id === "trust" && (
+            <details className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden">
+              <summary className="px-4 py-3 text-sm text-zinc-400 cursor-pointer hover:text-zinc-300">
+                Jak rozlišujeme portfolio a sociální důkaz
+              </summary>
+              <div className="px-4 pb-4 pt-1 text-xs text-zinc-500 space-y-2 border-t border-white/5">
+                <p><strong className="text-zinc-400">Portfolio</strong> = ukázka práce. Ukazuje, co umíte, ne co si o vás myslí klienti.</p>
+                <p><strong className="text-zinc-400">Reference</strong> = hlas klienta. Citace, hodnocení, doporučení. Důkaz spokojenosti.</p>
+                <p><strong className="text-zinc-400">Case study</strong> = důkaz výsledku. Konkrétní čísla, před/po, měřitelný dopad spolupráce.</p>
+              </div>
+            </details>
+          )}
+        </div>
+      </Section>
+    );
+  }
 
   return (
     <div className="bg-[#0c0c14] text-[#e7e7ef] animate-fade-in" style={{ fontFamily: "system-ui, sans-serif" }}>
@@ -150,37 +232,32 @@ export function ScanResultScrollExperience({
       </Section>
 
       {/* 4. PILÍŘ I – SVĚTLO */}
-      <Section>
-        <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">SVĚTLO</h2>
-          <p className="text-sm text-zinc-500 mb-6">Clarity of Value</p>
-          <p className="text-3xl font-bold text-lime-400 mb-8">Skóre: {scores.light} / 10</p>
-          <div className="space-y-4 text-sm text-zinc-300">
-            <div>
-              <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co funguje</p>
-              <ul className="list-disc list-inside space-y-1">
-                {d.positioning && <li>Je jasné, že nabízíte konkrétní hodnotu</li>}
-                {d.targetAudience && <li>Komunikace je srozumitelná</li>}
-                {!d.positioning && !d.targetAudience && <li>Základní struktura je rozpoznatelná</li>}
-              </ul>
-            </div>
-            <div>
-              <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co brzdí růst</p>
-              <ul className="list-disc list-inside space-y-1">
-                {!result.brandScore?.hasHeadline && <li>Hlavní claim je generický nebo chybí</li>}
-                {!result.brandScore?.hasTargetAudience && <li>Cílová skupina není jednoznačně identifikovaná</li>}
-                {(result.brandScore?.hasHeadline && result.brandScore?.hasTargetAudience) && <li>Možnost ještě více vyostřit hlavní zprávu</li>}
-              </ul>
-            </div>
+      <PillarBlock id="light" title="SVĚTLO" subtitle="Clarity of Value">
+        <div className="space-y-4 text-sm text-zinc-300">
+          <div>
+            <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co funguje</p>
+            <ul className="list-disc list-inside space-y-1">
+              {d.positioning && <li>Je jasné, že nabízíte konkrétní hodnotu</li>}
+              {d.targetAudience && <li>Komunikace je srozumitelná</li>}
+              {!d.positioning && !d.targetAudience && <li>Základní struktura je rozpoznatelná</li>}
+            </ul>
           </div>
-          {d.positioning && (
-            <div className="mt-8 p-4 rounded-xl bg-lime-500/10 border border-lime-500/20">
-              <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Pokud by měl být claim přesnější, mohl by znít například:</p>
-              <p className="text-white font-medium">„{d.positioning}“</p>
-            </div>
-          )}
+          <div>
+            <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co brzdí růst</p>
+            <ul className="list-disc list-inside space-y-1">
+              {!result.brandScore?.hasHeadline && <li>Hlavní claim je generický nebo chybí</li>}
+              {!result.brandScore?.hasTargetAudience && <li>Cílová skupina není jednoznačně identifikovaná</li>}
+              {(result.brandScore?.hasHeadline && result.brandScore?.hasTargetAudience) && <li>Možnost ještě více vyostřit hlavní zprávu</li>}
+            </ul>
+          </div>
         </div>
-      </Section>
+        {d.positioning && (
+          <div className="mt-8 p-4 rounded-xl bg-lime-500/10 border border-lime-500/20">
+            <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Pokud by měl být claim přesnější, mohl by znít například:</p>
+            <p className="text-white font-medium">„{d.positioning}“</p>
+          </div>
+        )}
+      </PillarBlock>
 
       {/* 5. Přechod */}
       <Section compact>
@@ -190,68 +267,46 @@ export function ScanResultScrollExperience({
       </Section>
 
       {/* 6. PILÍŘ II – ENERGIE */}
-      <Section>
-        <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">ENERGIE</h2>
-          <p className="text-3xl font-bold text-lime-400 mb-4">Skóre: {scores.energy} / 10</p>
-          {riskCommoditization && (
-            <p className="text-amber-400/90 text-sm font-medium mb-6">Riziko zaměnitelnosti: vysoké</p>
-          )}
-          <p className="text-zinc-400 text-sm mb-4">
-            Osa: Cena ↔ Prémiovost · Obecné ↔ Specializované
-          </p>
-          {d.uniqueValue ? (
-            <p className="text-zinc-300">Unikátní hodnota: {d.uniqueValue}</p>
-          ) : null}
-          <p className="text-zinc-400 text-sm mt-6">
-            „Vaše značka dnes soutěží v přeplněné kategorii.“
-          </p>
-        </div>
-      </Section>
+      <PillarBlock id="energy" title="ENERGIE">
+        {riskCommoditization && (
+          <p className="text-amber-400/90 text-sm font-medium mb-6">Riziko zaměnitelnosti: vysoké</p>
+        )}
+        <p className="text-zinc-400 text-sm mb-4">Osa: Cena ↔ Prémiovost · Obecné ↔ Specializované</p>
+        {d.uniqueValue ? <p className="text-zinc-300">Unikátní hodnota: {d.uniqueValue}</p> : null}
+        <p className="text-zinc-400 text-sm mt-6">„Vaše značka dnes soutěží v přeplněné kategorii.“</p>
+      </PillarBlock>
 
       {/* 7. PILÍŘ III – ARCHITEKTURA */}
-      <Section>
-        <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">ARCHITEKTURA</h2>
-          <p className="text-3xl font-bold text-lime-400 mb-6">Skóre: {scores.architecture} / 10</p>
-          <p className="text-zinc-400 text-sm">
-            {result.brandScore?.hasCTA
-              ? "Výzva k akci je přítomna – uživatel ví, co má udělat."
-              : "Uživatel musí projít více kroků, než pochopí, co má udělat. Body tření. Konverzní mezera."}
-          </p>
-        </div>
-      </Section>
+      <PillarBlock id="architecture" title="ARCHITEKTURA">
+        <p className="text-zinc-400 text-sm">
+          {result.brandScore?.hasCTA
+            ? "Výzva k akci je přítomna – uživatel ví, co má udělat."
+            : "Uživatel musí projít více kroků, než pochopí, co má udělat. Body tření. Konverzní mezera."}
+        </p>
+      </PillarBlock>
 
       {/* 8. PILÍŘ IV – IDENTITA */}
-      <Section>
-        <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">IDENTITA</h2>
-          <p className="text-3xl font-bold text-lime-400 mb-6">Skóre: {scores.identity} / 10</p>
-          <p className="text-zinc-400 text-sm mb-4">Vaše značka působí spíše:</p>
-          <ul className="list-disc list-inside text-zinc-300 text-sm space-y-1 mb-6">
-            {d.tone && <li>{d.tone}</li>}
-            {d.communicationStyle && <li>{d.communicationStyle}</li>}
-            {result.brandScore?.hasVisualIdentity ? <li>Vizuálně sjednoceně</li> : <li>Bez výrazného emočního tónu</li>}
-          </ul>
-          <p className="text-zinc-500 text-sm">Silnější směr by mohl být: Autoritativní + Lidský</p>
-        </div>
-      </Section>
+      <PillarBlock id="identity" title="IDENTITA">
+        <p className="text-zinc-400 text-sm mb-4">Vaše značka působí spíše:</p>
+        <ul className="list-disc list-inside text-zinc-300 text-sm space-y-1 mb-6">
+          {d.tone && <li>{d.tone}</li>}
+          {d.communicationStyle && <li>{d.communicationStyle}</li>}
+          {result.brandScore?.hasVisualIdentity ? <li>Vizuálně sjednoceně</li> : <li>Bez výrazného emočního tónu</li>}
+        </ul>
+        <p className="text-zinc-500 text-sm">Silnější směr by mohl být: Autoritativní + Lidský</p>
+      </PillarBlock>
 
       {/* 9. PILÍŘ V – DŮVĚRA */}
-      <Section>
-        <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">DŮVĚRA</h2>
-          <p className="text-3xl font-bold text-lime-400 mb-6">Skóre: {scores.trust} / 10</p>
-          {!result.brandScore?.hasSocialProof && (
-            <ul className="list-disc list-inside text-zinc-400 text-sm space-y-1 mb-6">
-              <li>Chybí reference</li>
-              <li>Chybí konkrétní výsledky</li>
-              <li>Chybí expertní ukotvení</li>
-            </ul>
-          )}
-          <p className="text-zinc-400 text-sm">„Bez důvěry značka nezíská prémiovou pozici.“</p>
-        </div>
-      </Section>
+      <PillarBlock id="trust" title="DŮVĚRA" expandableTrust>
+        {!result.brandScore?.hasSocialProof && (
+          <ul className="list-disc list-inside text-zinc-400 text-sm space-y-1 mb-6">
+            <li>Chybí reference</li>
+            <li>Chybí konkrétní výsledky</li>
+            <li>Chybí expertní ukotvení</li>
+          </ul>
+        )}
+        <p className="text-zinc-400 text-sm">„Bez důvěry značka nezíská prémiovou pozici.“</p>
+      </PillarBlock>
 
       {/* 10. Shrnutí */}
       <Section>
