@@ -238,17 +238,61 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         {phase === "input" && (
           <div className="analyzer-fade">
             {diagnostika && (
-              <div style={{ marginBottom: 32, padding: "20px 22px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14 }}>
-                <h2 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 12 }}>Analýza vizuální úrovně značky</h2>
-                <p style={{ fontSize: 14, color: "#bbb", lineHeight: 1.65, marginBottom: 10 }}>
-                  Tato vstupní analýza vám ukáže, jak vaše značka působí navenek.
-                  Získáte orientační vyhodnocení čitelnosti a návrh jednoho možného směru.
-                  Plná diagnostika a vizuální board jsou součástí placené strategické konzultace.
-                </p>
-                <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5 }}>
-                  Pokud se rozhodnete pokračovat, berete na vědomí obchodní podmínky a závaznou přípravu podkladů pro konzultaci.
-                </p>
-              </div>
+              <section className="relative max-w-4xl mx-auto mb-20 px-6">
+                {/* Glow background */}
+                <div className="absolute inset-0 -z-10 blur-3xl opacity-20 bg-gradient-to-r from-lime-400 via-emerald-500 to-teal-400 rounded-full" />
+
+                {/* Header */}
+                <div className="text-center mb-10">
+                  <p className="text-xs uppercase tracking-[0.3em] text-lime-400 mb-4">
+                    Strategický vstup
+                  </p>
+
+                  <h2 className="text-4xl md:text-5xl font-semibold text-white mb-6">
+                    Analýza vizuální úrovně značky
+                  </h2>
+
+                  <p className="text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                    Diskrétní orientační rozbor toho, jak vaše značka působí navenek.
+                    Ukážeme vám silné body, slabá místa a jeden možný směr dalšího rozvoje.
+                  </p>
+                </div>
+
+                {/* Premium Card */}
+                <div className="bg-zinc-900/70 border border-zinc-800 rounded-3xl p-10 backdrop-blur-xl shadow-[0_0_80px_rgba(132,204,22,0.08)]">
+                  <p className="text-zinc-300 leading-relaxed mb-8">
+                    Tato ukázková analýza je vstupní fází před strategickou konzultací.
+                    Plná diagnostika a vizuální board jsou součástí placené spolupráce.
+                  </p>
+
+                  {/* Divider */}
+                  <div className="h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent mb-8" />
+
+                  {/* How it works */}
+                  <div>
+                    <p className="text-sm uppercase tracking-widest text-zinc-500 mb-6">
+                      Jak to probíhá
+                    </p>
+
+                    <div className="grid md:grid-cols-3 gap-6 text-sm text-zinc-300">
+                      <div className="bg-zinc-800/50 border border-zinc-700 rounded-2xl p-6">
+                        <div className="text-lime-400 text-lg mb-3">01</div>
+                        Zadáte web nebo podklady o značce.
+                      </div>
+
+                      <div className="bg-zinc-800/50 border border-zinc-700 rounded-2xl p-6">
+                        <div className="text-lime-400 text-lg mb-3">02</div>
+                        Získáte orientační analýzu a návrh jednoho směru.
+                      </div>
+
+                      <div className="bg-zinc-800/50 border border-zinc-700 rounded-2xl p-6">
+                        <div className="text-lime-400 text-lg mb-3">03</div>
+                        Pokud dává smysl pokračovat, rezervujete termín a zahájíme spolupráci.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             )}
             <div style={{ textAlign: "center", marginBottom: 32 }}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 20, background: "rgba(168,224,99,0.07)", border: "1px solid rgba(168,224,99,0.15)", color: "#a8e063", fontSize: 11, marginBottom: 18 }}>
@@ -258,10 +302,6 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
               <h1 style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3, marginBottom: 10, color: "#fff" }}>
                 Zadejte web.<br /><span style={{ color: "#2a2a3a" }}>Zbytek uděláme za vás.</span>
               </h1>
-              <p style={{ color: "#3a3a4a", fontSize: 13, lineHeight: 1.7 }}>
-                Firecrawl načte <strong style={{ color: "#555" }}>screenshot + text</strong> · Claude vidí web jako člověk<br />
-                {diagnostika ? "Výsledek: orientační index a náhled směru" : "Výsledek: přesná Brand DNA postavená na realitě"}
-              </p>
             </div>
             <div style={C.card}>
               <label style={C.lbl}>URL webu klienta</label>
