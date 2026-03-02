@@ -147,7 +147,7 @@ export function ScanResultScrollExperience({
         <div className="max-w-xl mx-auto text-left">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{title}</h2>
           {subtitle && <p className="text-sm text-zinc-500 mb-4">{subtitle}</p>}
-          <p className="text-2xl font-bold text-lime-400 mb-4">{title.split(" ")[0]}: {score}/10</p>
+          <p className="text-2xl font-bold text-lime-400 mb-4">{title}: {score}/10</p>
 
           {publicInterpretation ? (
             <p className="text-zinc-300 text-sm leading-relaxed mb-6">{publicInterpretation}</p>
@@ -210,8 +210,6 @@ export function ScanResultScrollExperience({
               </div>
             </>
           )}
-
-          {!hasExpandableContent && !publicInterpretation && children}
         </div>
       </Section>
     );
