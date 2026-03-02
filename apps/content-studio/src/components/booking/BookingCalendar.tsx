@@ -24,16 +24,16 @@ export default function BookingCalendar({
   return (
     <div
       className={`
-        rounded-3xl p-10 max-w-3xl mx-auto
+        rounded-3xl p-12 max-w-4xl mx-auto transition-all
         ${isDark
-          ? "bg-[#0c0c0f] border border-white/10 text-white"
-          : "bg-white border border-black/10 text-black"
+          ? "bg-[#0b0b10] border border-white/10 text-white"
+          : "bg-white border border-black/10 text-black shadow-xl"
         }
       `}
     >
-      <h2 className="text-3xl mb-8">Výběr termínu</h2>
+      <h2 className="text-4xl font-semibold mb-10">Výběr termínu</h2>
 
-      <div className="grid grid-cols-7 gap-3 mb-8">
+      <div className="grid grid-cols-7 gap-4 mb-12">
         {[...Array(31)].map((_, i) => {
           const day = i + 1;
           const active = selectedDay === day;
@@ -44,14 +44,13 @@ export default function BookingCalendar({
               type="button"
               onClick={() => setSelectedDay(day)}
               className={`
-                py-3 rounded-lg transition
-                ${isDark
-                  ? active
-                    ? "bg-lime-400 text-black"
-                    : "border border-white/20 text-white/70 hover:border-lime-400 hover:text-lime-400"
-                  : active
-                    ? "bg-lime-400 text-black"
-                    : "border border-black/20 text-black/70 hover:border-lime-400 hover:text-lime-400"
+                py-4 rounded-xl text-lg transition-all duration-200
+                ${
+                  active
+                    ? "bg-lime-400 text-black scale-105 shadow-lg"
+                    : isDark
+                      ? "border border-white/20 text-white/70 hover:border-lime-400 hover:text-lime-400 hover:scale-105"
+                      : "border border-black/20 text-black/70 hover:border-lime-500 hover:text-lime-600 hover:scale-105"
                 }
               `}
             >
@@ -66,12 +65,13 @@ export default function BookingCalendar({
         disabled={!selectedDay}
         onClick={handleConfirm}
         className={`
-          w-full py-4 rounded-xl font-semibold transition
-          ${selectedDay
-            ? "bg-lime-400 text-black hover:scale-[1.02]"
-            : isDark
-              ? "bg-white/10 text-white/40"
-              : "bg-black/10 text-black/40"
+          w-full py-5 rounded-2xl text-lg font-semibold transition-all
+          ${
+            selectedDay
+              ? "bg-lime-400 text-black hover:scale-[1.02] shadow-xl"
+              : isDark
+                ? "bg-white/10 text-white/40"
+                : "bg-black/10 text-black/40"
           }
         `}
       >

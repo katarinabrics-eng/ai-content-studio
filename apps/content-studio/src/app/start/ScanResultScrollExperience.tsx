@@ -432,15 +432,11 @@ export function ScanResultScrollExperience({
 
         {/* DARK MODAL */}
         {openCalendar && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-6">
-            <div className="relative w-[800px] max-w-[calc(100vw-2rem)]">
-              <button
-                type="button"
-                onClick={() => setOpenCalendar(false)}
-                className="absolute top-2 right-2 z-10 text-white/40 hover:text-white"
-              >
-                ✕
-              </button>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-6"
+            onClick={() => setOpenCalendar(false)}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
               <BookingCalendar
                 theme="dark"
                 onConfirm={() => setOpenCalendar(false)}

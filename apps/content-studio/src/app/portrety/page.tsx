@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Header } from "../components/Header";
 import { StandardCarousel } from "../components/StandardCarousel";
 import { OfferCarousel } from "../components/OfferCarousel";
-import BookingCalendarModal from "@/components/booking/BookingCalendarModal";
+import BookingCalendar from "@/components/booking/BookingCalendar";
 
 export const metadata: Metadata = {
   title: "Portréty | Studio Lucifera",
@@ -26,9 +26,12 @@ export default function PortretyPage() {
               <p className="mt-6 text-xl text-zinc-700" style={{ lineHeight: "1.6" }}>
                 Vaše tvář je vaše značka. Postarejme se, aby odpovídala vaší skutečné úrovni.
               </p>
-              <div className="mt-10">
-                <BookingCalendarModal theme="light" triggerLabel="Rezervovat termín" />
-              </div>
+              <Link
+                href="#kalendar"
+                className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+              >
+                Rezervovat termín
+              </Link>
               <p className="mt-6 text-[14px] text-stone-500">
                 Odpovídáme osobně do 48 hodin.
               </p>
@@ -229,9 +232,12 @@ export default function PortretyPage() {
               <p className="mt-8 text-[17px] leading-[1.7] text-[#3A3A3A]">
                 Pokud potřebujete více variant nebo delší práci, další hodina ateliérové práce je 3 600 Kč.
               </p>
-              <div className="mt-10">
-                <BookingCalendarModal theme="light" triggerLabel="Rezervovat termín" />
-              </div>
+              <Link
+                href="#kalendar"
+                className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+              >
+                Rezervovat termín
+              </Link>
               <p className="mt-6 text-[14px] text-stone-500">
                 Nejste si jistí, zda je to správný krok? Domluvte si krátkou konzultaci.
               </p>
@@ -240,6 +246,13 @@ export default function PortretyPage() {
               <OfferCarousel />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Výběr termínu – inline kalendář */}
+      <section id="kalendar" className="w-full bg-white py-16 md:py-24">
+        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
+          <BookingCalendar theme="light" />
         </div>
       </section>
 
@@ -270,9 +283,12 @@ export default function PortretyPage() {
           <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#111111] sm:text-4xl md:text-5xl md:leading-[1.15]">
             Silná pozice začíná<br />u obrazu.
           </h2>
-          <div className="mt-10">
-            <BookingCalendarModal theme="light" triggerLabel="Chci svůj portrét" />
-          </div>
+          <Link
+            href="#kalendar"
+            className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+          >
+            Chci svůj portrét
+          </Link>
           <p className="mt-8 text-[15px] text-stone-500">
             Lucifera Studio · Praha. Ateliérová práce s jasným standardem.
           </p>
