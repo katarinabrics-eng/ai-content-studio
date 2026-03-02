@@ -25,7 +25,7 @@ function VstupContent() {
                 {errorParam === "invalid_token" && "Neplatný přístupový token."}
               </p>
             )}
-            <a href="/start" className="btn-lime-primary mt-6 inline-block">
+            <a href="/rezervace" className="btn-lime-primary mt-6 inline-block">
               Přejít na objednávku
             </a>
             <a href="/" className="mt-3 block text-sm text-white/50 hover:text-white/70">

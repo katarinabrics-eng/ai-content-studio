@@ -60,7 +60,7 @@ export function VibeSection() {
           Obraz musí unést vaši úroveň.
         </p>
         <a
-          href="/start"
+          href="/rezervace"
           className="mt-12 inline-block rounded border-2 border-white px-6 py-3 text-[15px] font-medium text-white transition-colors hover:bg-white/10 md:mt-14"
         >
           Spustit projekt

@@ -19,7 +19,14 @@ const STEP_LABELS: Record<TabId, string> = {
   rodinne: "Rodinné focení",
 };
 
-export function BookingGate() {
+type BookingGateProps = {
+  /** Base path for links (e.g. "/rezervace" when embedded on rezervace page). Default "/start". */
+  basePath?: string;
+  /** When true, hide the intro header (for embedding under /rezervace where intro is shown above tabs). */
+  hideIntro?: boolean;
+};
+
+export function BookingGate({ basePath = "/start", hideIntro = false }: BookingGateProps = {}) {
   const searchParams = useSearchParams();
   const fromParam = searchParams.get("from");
   const from: TabId = fromParam === "rodinne" ? "rodinne" : "portret";
@@ -38,10 +45,10 @@ export function BookingGate() {
     <div
       className={figtree.className}
       style={{
-        minHeight: "100vh",
+        minHeight: hideIntro ? undefined : "100vh",
         background: "#F7F7F5",
         color: "#1A1A1A",
-        padding: "80px 24px",
+        padding: hideIntro ? "0 24px 24px" : "80px 24px",
       }}
     >
       <style>{`
@@ -52,7 +59,7 @@ export function BookingGate() {
       `}</style>
 
       <div style={{ maxWidth: 820, margin: "0 auto" }}>
-        {/* Header */}
+        {!hideIntro && (
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <p style={{ fontSize: 13, color: "#6F6F6F", marginBottom: 12 }}>Lucifera Studio</p>
           <h1 style={{ fontSize: 38, fontWeight: 600, lineHeight: 1.25, color: "#1A1A1A", marginBottom: 12 }}>
@@ -81,6 +88,7 @@ export function BookingGate() {
           </div>
           )}
         </div>
+        )}
 
         {showCalendar ? (
           <div
@@ -91,7 +99,7 @@ export function BookingGate() {
               padding: 40,
             }}
           >
-            <CalendarStep from={from} />
+            <CalendarStep from={from} basePath={basePath} />
           </div>
         ) : (
           <>
@@ -131,8 +139,8 @@ export function BookingGate() {
                 padding: 40,
               }}
             >
-              {activeTab === "portret" && <PortretFlow />}
-              {activeTab === "rodinne" && <RodinneFlow />}
+              {activeTab === "portret" && <PortretFlow basePath={basePath} />}
+              {activeTab === "rodinne" && <RodinneFlow basePath={basePath} />}
             </div>
           </>
         )}
@@ -145,7 +153,7 @@ export function BookingGate() {
 const TIME_SLOTS = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
 const MONTHS = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
 
-function CalendarStep({ from }: { from: TabId }) {
+function CalendarStep({ from, basePath = "/start" }: { from: TabId; basePath?: string }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -156,7 +164,7 @@ function CalendarStep({ from }: { from: TabId }) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startWeekday = firstDay.getDay() === 0 ? 7 : firstDay.getDay();
 
-  const backHref = `/start?from=${from}`;
+  const backHref = `${basePath}?from=${from}`;
 
   const handleConfirmSlot = () => {
     if (selectedDate && selectedTime) setModalOpen(true);
@@ -346,7 +354,7 @@ function ConfirmModal({ from, date, time, onClose }: { from: TabId; date: Date; 
 
 const PORTRET_STUDIO_CONTENT = "Profesionální portrétní focení v ateliéru (autorský portrét). Zahrnuje přípravu, focení cca 1–2 hodiny a základní retuše. Výstup: vybrané fotografie v rozlišení vhodném pro web a tisk. Možnost přidat vizážistku (+ 3 500 Kč).";
 
-function PortretFlow() {
+function PortretFlow({ basePath = "/start" }: { basePath?: string }) {
   const [typ, setTyp] = useState<"podnikatelsky" | "umelecky" | "herecky_profesni">("podnikatelsky");
   const [vizazistka, setVizazistka] = useState(false);
   const [studioExpanded, setStudioExpanded] = useState(true);
@@ -383,7 +391,7 @@ function PortretFlow() {
         </label>
       </div>
       <p style={{ fontSize: 14, color: "#6F6F6F", marginBottom: 20 }}>Konzultace zde není – stačí vyplnit dotazník. Termín focení zvolíte v dalším kroku.</p>
-      <Link href="/start?from=portret&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+      <Link href={`${basePath}?from=portret&step=calendar`} style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
         Pokračovat k výběru termínu
       </Link>
     </div>
@@ -396,7 +404,7 @@ const RODINNE_OPTS: { id: "reportaz" | "atelier" | "atelierovy"; label: string; 
   { id: "atelierovy", label: "Atelierový rodinný portrét", price: "4 500 Kč", content: "Klasický rodinný portrét v ateliéru – čisté pozadí nebo jednoduchá stylizace. Cca 1–2 hodiny, vhodné pro portréty i skupinové snímky. Zahrnuje základní retuše a předání fotografií." },
 ];
 
-function RodinneFlow() {
+function RodinneFlow({ basePath = "/start" }: { basePath?: string }) {
   const [typ, setTyp] = useState<"reportaz" | "atelier" | "atelierovy">("reportaz");
   const [kde, setKde] = useState("");
   const [kolik, setKolik] = useState("");
@@ -434,7 +442,7 @@ function RodinneFlow() {
         <input type="checkbox" checked={obleceni} onChange={(e) => setObleceni(e.target.checked)} style={{ width: 18, height: 18 }} />
         Chcete pomoct s výběrem oblečení?
       </label>
-      <Link href="/start?from=rodinne&step=calendar" style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
+      <Link href={`${basePath}?from=rodinne&step=calendar`} style={{ display: "inline-block", padding: "14px 28px", background: "#B7E300", color: "#1A1A1A", fontWeight: 600, fontSize: 16, borderRadius: 12, textDecoration: "none" }} className="hover:opacity-90">
         Pokračovat k výběru termínu
       </Link>
     </div>

@@ -18,6 +18,53 @@ type BrandDna = {
 type Result = { brandScore?: BrandScore; brandDna?: BrandDna; summary?: string };
 type Scraped = { markdown?: string; screenshot?: string | null; url?: string; title?: string; description?: string };
 
+type TeaserData = {
+  index: number;
+  weakness1: string;
+  weakness2: string;
+  strength: string;
+  suggestedDirection: string;
+};
+
+const WEAKNESS_LABELS: { key: keyof BrandScore; label: string }[] = [
+  { key: "hasHeadline", label: "Chybí jasná hlavní zpráva" },
+  { key: "hasOffer", label: "Není zřetelná nabídka" },
+  { key: "hasTargetAudience", label: "Není definována cílová skupina" },
+  { key: "hasCTA", label: "Chybí výzva k akci" },
+  { key: "hasVisualIdentity", label: "Vizuální identita není sjednocená" },
+  { key: "hasSocialProof", label: "Chybí reference nebo důkazy" },
+];
+
+function deriveTeaser(result: Result): TeaserData {
+  const score = result.brandScore ?? {};
+  const total = result.brandScore?.total ?? 0;
+  const index = Math.min(100, Math.max(0, total));
+
+  const weaknesses: string[] = [];
+  if (result.brandDna?.missingElements?.length) {
+    weaknesses.push(...result.brandDna.missingElements.slice(0, 2));
+  }
+  while (weaknesses.length < 2) {
+    const next = WEAKNESS_LABELS.find((w) => !(score[w.key] === true) && !weaknesses.some((x) => x === w.label));
+    if (next) weaknesses.push(next.label);
+    else break;
+  }
+  const weakness1 = weaknesses[0] ?? "Slabá čitelnost nabídky";
+  const weakness2 = weaknesses[1] ?? "Doplnit vizuální konzistenci";
+
+  const strength =
+    result.brandDna?.uniqueValue?.trim() ||
+    result.brandDna?.contentPillars?.[0]?.trim() ||
+    (total >= 50 ? "Dobrá základní struktura" : "Potenciál pro posílení značky");
+
+  const firstSentence = result.summary?.trim().split(/[.!]/)[0]?.trim();
+  const suggestedDirection =
+    (firstSentence ? firstSentence + (result.summary?.includes(".") ? "." : "") : null) ||
+    "Doporučujeme doplnit vizuální konzistenci a jasnou nabídku.";
+
+  return { index, weakness1, weakness2, strength, suggestedDirection };
+}
+
 function ScoreRing({ score }: { score: number }) {
   const color = score >= 70 ? "#a8e063" : score >= 40 ? "#f5c842" : "#e05a5a";
   const label = score >= 70 ? "Silná značka" : score >= 40 ? "Potřebuje doplnění" : "Slabé podklady";
@@ -81,7 +128,7 @@ const C = {
 
 export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }) {
   const [url, setUrl] = useState("");
-  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result">("input");
+  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser">("input");
   const [msg, setMsg] = useState("");
   const [scraped, setScraped] = useState<Scraped | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -123,13 +170,14 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       if (!res.ok) throw new Error(data.error || "Chyba analýzy");
       setScraped(data.scraped ?? null);
       const resResult = data.result;
-      setResult(
-        typeof resResult === "object" && resResult !== null
-          ? (resResult as Result)
-          : null
-      );
-      const total = (resResult as Result)?.brandScore?.total ?? 0;
-      setPhase(total < 60 ? "guidance" : "result");
+      const resData = typeof resResult === "object" && resResult !== null ? (resResult as Result) : null;
+      setResult(resData);
+      const total = resData?.brandScore?.total ?? 0;
+      if (diagnostika) {
+        setPhase(total < 60 ? "guidance" : "teaser");
+      } else {
+        setPhase(total < 60 ? "guidance" : "result");
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Nepodařilo se analyzovat.";
       const friendly =
@@ -158,7 +206,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     } catch {
       // keep current result
     }
-    setPhase("result");
+    setPhase(diagnostika ? "teaser" : "result");
   };
 
   const reset = () => {
@@ -189,17 +237,30 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
 
         {phase === "input" && (
           <div className="analyzer-fade">
+            {diagnostika && (
+              <div style={{ marginBottom: 32, padding: "20px 22px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 12 }}>Analýza vizuální úrovně značky</h2>
+                <p style={{ fontSize: 14, color: "#bbb", lineHeight: 1.65, marginBottom: 10 }}>
+                  Tato vstupní analýza vám ukáže, jak vaše značka působí navenek.
+                  Získáte orientační vyhodnocení čitelnosti a návrh jednoho možného směru.
+                  Plná diagnostika a vizuální board jsou součástí placené strategické konzultace.
+                </p>
+                <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5 }}>
+                  Pokud se rozhodnete pokračovat, berete na vědomí obchodní podmínky a závaznou přípravu podkladů pro konzultaci.
+                </p>
+              </div>
+            )}
             <div style={{ textAlign: "center", marginBottom: 32 }}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 20, background: "rgba(168,224,99,0.07)", border: "1px solid rgba(168,224,99,0.15)", color: "#a8e063", fontSize: 11, marginBottom: 18 }}>
                 <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#a8e063" }} />
-                Modul 1 · Analýza značky
+                {diagnostika ? "Ukázková analýza" : "Modul 1 · Analýza značky"}
               </span>
               <h1 style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3, marginBottom: 10, color: "#fff" }}>
                 Zadejte web.<br /><span style={{ color: "#2a2a3a" }}>Zbytek uděláme za vás.</span>
               </h1>
               <p style={{ color: "#3a3a4a", fontSize: 13, lineHeight: 1.7 }}>
                 Firecrawl načte <strong style={{ color: "#555" }}>screenshot + text</strong> · Claude vidí web jako člověk<br />
-                Výsledek: přesná Brand DNA postavená na realitě
+                {diagnostika ? "Výsledek: orientační index a náhled směru" : "Výsledek: přesná Brand DNA postavená na realitě"}
               </p>
             </div>
             <div style={C.card}>
@@ -208,7 +269,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
               {error && (
                 <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(224,90,90,0.07)", border: "1px solid rgba(224,90,90,0.2)", borderRadius: 8, color: "#e05a5a", fontSize: 13 }}>⚠ {error}</div>
               )}
-              <button type="button" style={{ ...C.btn, opacity: url.trim() ? 1 : 0.3 }} onClick={analyze} disabled={!url.trim()}>Analyzovat →</button>
+              <button type="button" style={{ ...C.btn, opacity: url.trim() ? 1 : 0.3 }} onClick={analyze} disabled={!url.trim()}>{diagnostika ? "Analyzovat" : "Analyzovat →"}</button>
             </div>
             <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
               {["Screenshot webu", "Analýza textu", "Claude Vision", "Brand DNA"].map((t) => (
@@ -226,6 +287,74 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             </div>
             <p style={{ color: "#a8e063", fontSize: 14, fontWeight: 500 }}>{msg}</p>
             <p style={{ color: "#2a2a3a", fontSize: 11, marginTop: 6 }}>cca 15–25 sekund</p>
+          </div>
+        )}
+
+        {phase === "teaser" && diagnostika && result && (
+          <div className="analyzer-fade">
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← Analyzovat jiný web</button>
+            {(() => {
+              const t = deriveTeaser(result);
+              const indexColor = t.index >= 70 ? "#a8e063" : t.index >= 40 ? "#f5c842" : "#e05a5a";
+              return (
+                <div
+                  style={{
+                    padding: "28px 24px",
+                    background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(168,224,99,0.12)",
+                    borderRadius: 16,
+                    boxShadow: "0 0 40px rgba(168,224,99,0.06), inset 0 1px 0 rgba(255,255,255,0.03)",
+                  }}
+                >
+                  <div style={{ textAlign: "center", marginBottom: 24 }}>
+                    <span style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.12em" }}>Index vizuální úrovně</span>
+                    <div style={{ marginTop: 8, fontSize: 48, fontWeight: 800, color: indexColor, lineHeight: 1 }}>{t.index}</div>
+                    <span style={{ fontSize: 14, color: "#444" }}>/ 100</span>
+                  </div>
+                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+                    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#bbb" }}>
+                      <span style={{ color: "#e05a5a", flexShrink: 0 }}>•</span>
+                      <span>{t.weakness1}</span>
+                    </li>
+                    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#bbb" }}>
+                      <span style={{ color: "#e05a5a", flexShrink: 0 }}>•</span>
+                      <span>{t.weakness2}</span>
+                    </li>
+                    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#bbb" }}>
+                      <span style={{ color: "#a8e063", flexShrink: 0 }}>•</span>
+                      <span>{t.strength}</span>
+                    </li>
+                  </ul>
+                  <div style={{ marginBottom: 20, padding: "12px 14px", background: "rgba(168,224,99,0.06)", border: "1px solid rgba(168,224,99,0.1)", borderRadius: 10 }}>
+                    <span style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.1em" }}>Navržený směr</span>
+                    <p style={{ fontSize: 13, color: "#ccc", marginTop: 6, lineHeight: 1.55 }}>{t.suggestedDirection}</p>
+                  </div>
+                  <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5, marginBottom: 20 }}>
+                    Toto je orientační náhled.
+                    Plná diagnostika obsahuje detailní rozbor, vizuální směr a přípravu podkladů pro strategickou spolupráci.
+                  </p>
+                  <a
+                    href="/rezervace?service=strategicka-konzultace"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      padding: 14,
+                      background: "#a8e063",
+                      color: "#000",
+                      fontWeight: 700,
+                      fontSize: 14,
+                      border: "none",
+                      borderRadius: 10,
+                      cursor: "pointer",
+                      textAlign: "center",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Pokračovat k rezervaci strategické konzultace
+                  </a>
+                </div>
+              );
+            })()}
           </div>
         )}
 

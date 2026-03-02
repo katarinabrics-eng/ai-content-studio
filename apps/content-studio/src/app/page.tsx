@@ -41,7 +41,7 @@ export default function HomePage() {
             </a>
             <p className="text-[15px] text-stone-500">
               Nejste si jistí, kde začít?{" "}
-              <a href="/start" className="underline underline-offset-2 hover:text-stone-700">
+              <a href="/rezervace" className="underline underline-offset-2 hover:text-stone-700">
                 Doporučit mi vhodnou službu
               </a>
             </p>
@@ -180,7 +180,7 @@ export default function HomePage() {
             Čitelnost je otázka rozhodnutí.
           </h2>
           <a
-            href="/start"
+            href="/diagnostika"
             className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
           >
             Domluvit strategickou konzultaci
