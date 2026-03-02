@@ -216,7 +216,20 @@ export async function POST(request: Request) {
     const url = typeof body?.url === "string" ? body.url.trim() : "";
     const manualData = typeof body?.manualData === "string" ? body.manualData.trim() : "";
     const pdfBase64 = typeof body?.pdfBase64 === "string" ? body.pdfBase64 : "";
+    const imageBase64 = typeof body?.imageBase64 === "string" ? body.imageBase64 : "";
+    const imageMimeType = typeof body?.imageMimeType === "string" ? body.imageMimeType : "";
     const formatDiagnostika = body?.format === "diagnostika";
+
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
+    if (imageBase64) {
+      if (!imageMimeType || !allowedImageTypes.includes(imageMimeType)) {
+        return NextResponse.json({ error: "Nepovolený formát obrázku." }, { status: 400 });
+      }
+      const imageBuffer = Buffer.from(imageBase64, "base64");
+      if (imageBuffer.length > 1 * 1024 * 1024) {
+        return NextResponse.json({ error: "Obrázek je příliš velký." }, { status: 400 });
+      }
+    }
 
     let sourceContent = "";
     let scraped: Scraped | null = null;
@@ -260,9 +273,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Pro analýzu bez diagnostiky je potřeba zadat URL webu." }, { status: 400 });
     }
 
-    const prompt = formatDiagnostika
+    let prompt = formatDiagnostika
       ? (scraped ? buildDiagnostikaPrompt(scraped) : buildDiagnostikaPromptFromText(sourceContent))
       : buildAnalyzeInput(scraped!);
+
+    if (imageBase64 && imageMimeType) {
+      prompt += "\n\nUživatel přiložil ukázku grafiky nebo fotografie značky. Vyhodnoť ji v kontextu vizuální identity a emoční stopy (pilíř Identita a celkový dojem).";
+    }
+
+    const messageContent = imageBase64 && imageMimeType && allowedImageTypes.includes(imageMimeType)
+      ? [
+          { type: "text" as const, text: prompt },
+          { type: "image_url" as const, image_url: { url: `data:${imageMimeType};base64,${imageBase64}` } },
+        ]
+      : prompt;
 
     const response = await fetchWithTimeout(
       OPENAI_CHAT_URL,
@@ -274,7 +298,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           model: OPENAI_MODEL,
-          messages: [{ role: "user", content: prompt }],
+          messages: [{ role: "user", content: messageContent }],
           max_tokens: formatDiagnostika ? 4200 : 2000,
         }),
       },

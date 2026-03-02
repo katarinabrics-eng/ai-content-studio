@@ -168,6 +168,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [priceLevel, setPriceLevel] = useState<string | null>(null);
   const [manualOptionalText, setManualOptionalText] = useState("");
   const [brandFile, setBrandFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
 
   function buildManualData(): string {
@@ -186,7 +187,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       audience.length > 0 ||
       priceLevel ||
       manualOptionalText.trim() ||
-      brandFile);
+      brandFile ||
+      imageFile);
 
   const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
   const score = result?.brandScore?.total ?? 0;
@@ -216,6 +218,16 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             r.readAsDataURL(brandFile);
           });
           body.pdfBase64 = base64;
+        }
+        if (imageFile) {
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+            r.onerror = reject;
+            r.readAsDataURL(imageFile);
+          });
+          body.imageBase64 = base64;
+          body.imageMimeType = imageFile.type;
         }
       }
       const res = await fetch("/api/analyze", {
@@ -321,6 +333,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setPriceLevel(null);
     setManualOptionalText("");
     setBrandFile(null);
+    setImageFile(null);
     setProjectId(null);
   };
 
@@ -594,6 +607,40 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                       {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Nahrajte textový PDF dokument (max 2 MB). Dokument by měl obsahovat pouze textové informace o značce."}
                     </label>
                     <p className="text-[11px] text-zinc-500 mt-2">Dokument musí obsahovat skutečný text (ne naskenované obrázky).</p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.24)] px-6 py-6 md:px-8 md:py-8 text-center">
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+                        if (!allowedTypes.includes(file.type)) {
+                          alert("Povolen je pouze JPG, PNG nebo WEBP obrázek.");
+                          return;
+                        }
+                        const maxSize = 1 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                          alert("Obrázek je příliš velký. Maximální velikost je 1 MB.");
+                          return;
+                        }
+                        setImageFile(file);
+                      }}
+                      className="hidden"
+                      id="imageUpload"
+                    />
+                    <label htmlFor="imageUpload" className="cursor-pointer text-white/60 hover:text-white/90 transition block text-sm">
+                      {imageFile ? `Vybrán obrázek: ${imageFile.name}` : "Nahrajte jednu ukázku grafiky nebo fotografie (max 1 MB). Ideálně reprezentativní vizuál vaší značky."}
+                    </label>
+                    {imageFile && (
+                      <img
+                        src={URL.createObjectURL(imageFile)}
+                        alt="Náhled"
+                        className="mt-3 rounded-md max-h-40 mx-auto object-contain"
+                      />
+                    )}
                   </div>
                 </div>
               )}
