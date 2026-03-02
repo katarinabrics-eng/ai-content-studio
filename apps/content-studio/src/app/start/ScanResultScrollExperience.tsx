@@ -440,8 +440,10 @@ export function ScanResultScrollExperience({
           >
             <div onClick={(e) => e.stopPropagation()}>
               <BookingCalendar
+                service="board"
                 theme="dark"
-                onConfirm={(date) => {
+                showBackLink={false}
+                onDirectCheckout={(date) => {
                   setSelectedDate(date);
                   setOpenConfirmation(true);
                 }}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Header } from "../components/Header";
 import { StandardCarousel } from "../components/StandardCarousel";
 import { OfferCarousel } from "../components/OfferCarousel";
-import PortraitCheckoutCalendar from "@/components/booking/PortraitCheckoutCalendar";
+import BookingCalendar from "@/components/booking/BookingCalendar";
 
 export const metadata: Metadata = {
   title: "Portréty | Studio Lucifera",
@@ -249,10 +249,17 @@ export default function PortretyPage() {
         </div>
       </section>
 
-      {/* Výběr termínu – inline kalendář → přímý Stripe checkout */}
+      {/* Výběr termínu – jednotný BookingCalendar (theme light, reserve flow) */}
       <section id="kalendar" className="w-full bg-white py-16 md:py-24">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <PortraitCheckoutCalendar />
+          <div className="rounded-2xl border border-zinc-200 bg-white p-10 shadow-xl">
+            <BookingCalendar
+              service="portret"
+              theme="light"
+              basePath="/portrety"
+              showBackLink={false}
+            />
+          </div>
         </div>
       </section>
 

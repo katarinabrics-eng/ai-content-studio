@@ -4,6 +4,7 @@ import { Figtree } from "next/font/google";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import BookingCalendar from "@/components/booking/BookingCalendar";
 
 const figtree = Figtree({ weight: ["400", "600"], subsets: ["latin", "latin-ext"] });
 
@@ -14,12 +15,6 @@ const TABS: { id: TabId; label: string; subtitle: string }[] = [
   { id: "rodinne", label: "Rodinné focení", subtitle: "Zachycený čas bez stresu." },
   { id: "premiova", label: "Prémiová vizuální identita", subtitle: "Strategická spolupráce pro osobní značky." },
 ];
-
-const STEP_LABELS: Record<TabId, string> = {
-  portret: "Portrétní focení",
-  rodinne: "Rodinné focení",
-  premiova: "Prémiová vizuální identita",
-};
 
 type BookingGateProps = {
   /** Base path for links (e.g. "/rezervace" when embedded on rezervace page). Default "/start". */
@@ -99,11 +94,29 @@ export function BookingGate({ basePath = "/start", hideIntro = false, projectId 
         )}
 
         {showCalendar ? (
-          <div className="relative rounded-3xl bg-[radial-gradient(circle_at_center,rgba(132,204,22,0.08),transparent_60%)]">
-            <div className="relative overflow-hidden bg-zinc-900/95 border border-zinc-800 rounded-3xl p-10 shadow-[0_20px_80px_rgba(0,0,0,0.6)] before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-b before:from-white/5 before:to-transparent before:pointer-events-none">
-              <CalendarStep from={from} basePath={basePath} projectId={projectId ?? undefined} />
+          from === "premiova" ? (
+            <div className="relative rounded-3xl bg-[radial-gradient(circle_at_center,rgba(132,204,22,0.08),transparent_60%)]">
+              <div className="relative overflow-hidden bg-zinc-900/95 border border-zinc-800 rounded-3xl p-10 shadow-[0_20px_80px_rgba(0,0,0,0.6)] before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-b before:from-white/5 before:to-transparent before:pointer-events-none">
+                <BookingCalendar
+                  service={from}
+                  theme="dark"
+                  basePath={basePath}
+                  projectId={projectId}
+                  showBackLink
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="relative rounded-3xl border border-zinc-200 bg-white p-10 shadow-xl">
+              <BookingCalendar
+                service={from}
+                theme="light"
+                basePath={basePath}
+                projectId={projectId}
+                showBackLink
+              />
+            </div>
+          )
         ) : (
           <>
             {/* Tabs */}
@@ -148,208 +161,6 @@ export function BookingGate({ basePath = "/start", hideIntro = false, projectId 
             </div>
           </>
         )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Ilustrační kalendář (krok 2) + modal potvrzení ───
-const TIME_SLOTS = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
-const MONTHS = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
-
-function CalendarStep({ from, basePath = "/start", projectId }: { from: TabId; basePath?: string; projectId?: string }) {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const startWeekday = firstDay.getDay() === 0 ? 7 : firstDay.getDay();
-
-  const backHref = `${basePath}?from=${from}`;
-
-  const handleConfirmSlot = () => {
-    if (selectedDate && selectedTime) setModalOpen(true);
-  };
-
-  const isPremiova = from === "premiova";
-  const calendarTitle = isPremiova ? "Rezervace strategické konzultace" : "Výběr termínu";
-  const calendarSubtitle = isPremiova
-    ? "60 minut · Online / osobně v Praze · Součástí je vizuální board"
-    : `${STEP_LABELS[from]} · Výběr termínu`;
-
-  return (
-    <div className="gate-fade">
-      <Link href={backHref} className="inline-block mb-4 text-sm text-zinc-400 hover:text-white transition">← Zpět na výběr služby</Link>
-      <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Krok 2 / 3</p>
-      <h2 className="text-xl font-semibold text-white mb-2">{calendarTitle}</h2>
-      <p className="text-sm text-zinc-400 mb-6">{calendarSubtitle}</p>
-
-      <div className="grid grid-cols-[1fr_200px] gap-8 mb-6">
-        <div>
-          <p className="text-xs uppercase tracking-wider text-zinc-500 mb-3">{MONTHS[month]} {year}</p>
-          <div className="grid grid-cols-7 gap-1 mb-4">
-            {["Po", "Út", "St", "Čt", "Pá", "So", "Ne"].map((d) => (
-              <div key={d} className="text-center text-xs text-zinc-500 font-semibold">{d}</div>
-            ))}
-            {Array.from({ length: startWeekday - 1 }, (_, i) => <div key={`pad-${i}`} />)}
-            {Array.from({ length: daysInMonth }, (_, i) => {
-              const d = i + 1;
-              const dayDate = new Date(year, month, d);
-              const isPast = dayDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-              const isSelected = selectedDate && selectedDate.getDate() === d && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
-              return (
-                <button
-                  key={d}
-                  type="button"
-                  disabled={isPast}
-                  onClick={() => setSelectedDate(dayDate)}
-                  className={`rounded-lg text-sm font-medium transition-all duration-200 ${isSelected ? "bg-lime-500/20 border border-lime-400 text-white shadow-[0_0_20px_rgba(132,204,22,0.35)] hover:bg-lime-500/30 hover:scale-105" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"} ${isPast ? "opacity-40 cursor-not-allowed" : ""}`}
-                  style={{ padding: "10px" }}
-                >
-                  {d}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <div>
-          <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Čas</p>
-          <div className="flex flex-col gap-1.5 max-h-[280px] overflow-y-auto">
-            {TIME_SLOTS.map((t) => {
-              const isSelected = selectedTime === t;
-              return (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setSelectedTime(t)}
-                  className={`rounded-lg px-3 py-2.5 text-sm text-left transition ${isSelected ? "bg-lime-500/25 border border-lime-400 text-white shadow-[0_0_25px_rgba(132,204,22,0.45)]" : "bg-white/5 border border-white/10 text-zinc-300 hover:border-white/20"}`}
-                >
-                  {t}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {selectedDate && selectedTime && (
-        <p className="text-sm text-zinc-400 mb-4">
-          Vybraný termín: {selectedDate.getDate()}. {selectedDate.getMonth() + 1}. {selectedDate.getFullYear()} v {selectedTime}
-        </p>
-      )}
-      <button
-        type="button"
-        onClick={handleConfirmSlot}
-        disabled={!selectedDate || !selectedTime}
-        className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-semibold rounded-xl py-4 shadow-[0_10px_40px_rgba(132,204,22,0.4)] hover:scale-[1.02] hover:shadow-[0_15px_50px_rgba(132,204,22,0.55)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-[0_10px_40px_rgba(132,204,22,0.4)]"
-      >
-        {from === "premiova" ? "Potvrdit termín a uhradit 7 800 Kč" : "Potvrdit termín a pokračovat k úhradě"}
-      </button>
-
-      {modalOpen && selectedDate && selectedTime && (
-        <ConfirmModal
-          from={from}
-          date={selectedDate}
-          time={selectedTime}
-          onClose={() => setModalOpen(false)}
-          projectId={projectId}
-        />
-      )}
-    </div>
-  );
-}
-
-function ConfirmModal({ from, date, time, onClose, projectId }: { from: TabId; date: Date; time: string; onClose: () => void; projectId?: string }) {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const dateStr = `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()} v ${time}`;
-  const dateApi = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-
-  const handlePay = async () => {
-    const trimmed = email.trim();
-    if (!trimmed) {
-      setError("Zadejte e-mail.");
-      return;
-    }
-    setError("");
-    setLoading(true);
-    try {
-      const reserveRes = await fetch("/api/bookings/reserve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          service_type: from,
-          date: dateApi,
-          time,
-          email: trimmed,
-          ...(projectId ? { project_id: projectId } : {}),
-        }),
-      });
-      const reserveData = await reserveRes.json();
-      if (!reserveRes.ok) {
-        setError(reserveData.error ?? "Termín je obsazen nebo došlo k chybě.");
-        setLoading(false);
-        return;
-      }
-      const bookingId = reserveData.bookingId;
-      const sessionRes = await fetch("/api/checkout/create-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ booking_id: bookingId }),
-      });
-      const sessionData = await sessionRes.json();
-      if (!sessionRes.ok || !sessionData.url) {
-        setError(sessionData.error ?? "Nepodařilo se otevřít platbu.");
-        setLoading(false);
-        return;
-      }
-      window.location.href = sessionData.url;
-    } catch {
-      setError("Spojení se nezdařilo. Zkuste to znovu.");
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/30 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(132,204,22,0.08),transparent_60%)] pointer-events-none" aria-hidden />
-      <div
-        className="relative bg-zinc-900/95 border border-zinc-800 rounded-3xl p-8 max-w-md w-full shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Krok 3 / 3</p>
-        <h3 className="text-xl font-semibold text-white mb-2">
-          {from === "premiova" ? "Potvrdit termín a uhradit 7 800 Kč" : "Potvrdit termín a přejít k úhradě"}
-        </h3>
-        <p className="text-zinc-400 text-sm mb-1">{from === "premiova" ? "Strategická konzultace + vizuální board" : STEP_LABELS[from]}</p>
-        <p className="text-zinc-500 text-sm mb-6">Termín: {dateStr}</p>
-        <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2">E-mail</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="vas@email.cz"
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-lime-500 mb-4"
-        />
-        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
-        <button
-          type="button"
-          onClick={handlePay}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-lime-400 to-lime-500 text-black font-semibold rounded-xl py-4 shadow-[0_10px_40px_rgba(132,204,22,0.4)] hover:scale-[1.02] hover:shadow-[0_15px_50px_rgba(132,204,22,0.55)] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
-        >
-          {loading ? "Přesměrovávám…" : from === "premiova" ? "Potvrdit termín a uhradit 7 800 Kč" : "Potvrdit termín a pokračovat k úhradě"}
-        </button>
-        <button type="button" onClick={onClose} className="mt-4 w-full py-2 text-zinc-500 text-sm hover:text-white transition">
-          Zrušit
-        </button>
       </div>
     </div>
   );
