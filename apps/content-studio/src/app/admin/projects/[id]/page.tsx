@@ -293,14 +293,40 @@ export default function AdminProjectDetailPage() {
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <a href="/admin/projects" className="text-sm text-zinc-400 hover:text-[#A8EB12]">← Přehled projektů</a>
-          <button
-            type="button"
-            onClick={() => { fetchProject(); fetchDrafts(); fetchProposals(); }}
-            disabled={updating}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-zinc-200 hover:bg-white/10 disabled:opacity-50"
-          >
-            Obnovit nyní
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const res = await fetch(`/api/admin/projects/${id}/export-plan`);
+                  if (!res.ok) return;
+                  const blob = await res.blob();
+                  const disp = res.headers.get("Content-Disposition");
+                  const match = disp?.match(/filename="?([^";\n]+)"?/);
+                  const name = match?.[1] ?? `strategicky-plan-${(project as unknown as { project_code?: string })?.project_code ?? id.slice(0, 8)}.txt`;
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = name;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                } catch {
+                  // ignore
+                }
+              }}
+              className="rounded-lg border border-[#A8EB12]/40 bg-[#A8EB12]/10 px-3 py-1.5 text-sm font-medium text-[#A8EB12] hover:bg-[#A8EB12]/20"
+            >
+              Stáhnout strategický plán (TXT)
+            </button>
+            <button
+              type="button"
+              onClick={() => { fetchProject(); fetchDrafts(); fetchProposals(); }}
+              disabled={updating}
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-zinc-200 hover:bg-white/10 disabled:opacity-50"
+            >
+              Obnovit nyní
+            </button>
+          </div>
         </div>
         <h1 className="mt-4 text-2xl font-bold text-white">{brief?.brand_name || "Projekt"}</h1>
         <p className="text-zinc-400">
