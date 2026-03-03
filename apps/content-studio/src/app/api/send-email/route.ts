@@ -4,7 +4,11 @@ import { Resend } from "resend";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) throw new Error("RESEND_API_KEY is not configured");
+  return new Resend(key);
+}
 
 const SERVICE_LABELS: Record<string, string> = {
   portrait: "Portrétní focení",
@@ -36,6 +40,7 @@ export async function POST(req: NextRequest) {
   const serviceLabel = SERVICE_LABELS[type] || type || "Rezervace";
 
   try {
+    const resend = getResend();
     const { error } = await resend.emails.send({
       from: "Lucifera <info@studiolucifera.cz>",
       to: email,
