@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -389,6 +390,18 @@ export default function AdminProjectDetailPage() {
             <> · Složka: <span className="font-mono text-xs text-zinc-500">{(project as unknown as { storage_prefix: string }).storage_prefix}</span></>
           )}
         </p>
+        {(project as unknown as { project_code?: string | null }).project_code && (
+          <p className="mt-2">
+            <Link
+              href={`/client/${encodeURIComponent((project as unknown as { project_code: string }).project_code)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#A8EB12]/40 bg-[#A8EB12]/10 px-3 py-1.5 text-sm font-medium text-[#A8EB12] hover:bg-[#A8EB12]/20"
+            >
+              Vidím očima klienta
+            </Link>
+          </p>
+        )}
 
         <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
           <h2 className="font-semibold text-white">Completeness briefu</h2>
