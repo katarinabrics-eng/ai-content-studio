@@ -188,7 +188,7 @@ export function getWorkflowStep(status: string, errorReason?: string | null): Wo
   };
 }
 
-/** Tailwind třídy pro badge. */
+/** Tailwind třídy pro badge (světlé pozadí). */
 export function getBadgeClasses(variant: StatusBadgeVariant): string {
   switch (variant) {
     case "gray":
@@ -203,6 +203,24 @@ export function getBadgeClasses(variant: StatusBadgeVariant): string {
       return "bg-red-100 text-red-800";
     default:
       return "bg-stone-100 text-stone-700";
+  }
+}
+
+/** Tailwind třídy pro badge na tmavém pozadí (admin dark theme). */
+export function getBadgeClassesDark(variant: StatusBadgeVariant): string {
+  switch (variant) {
+    case "gray":
+      return "bg-white/10 text-zinc-400";
+    case "blue":
+      return "bg-blue-500/20 text-blue-300";
+    case "orange":
+      return "bg-amber-500/20 text-amber-300";
+    case "green":
+      return "bg-green-500/20 text-green-300";
+    case "red":
+      return "bg-red-500/20 text-red-300";
+    default:
+      return "bg-white/10 text-zinc-400";
   }
 }
 

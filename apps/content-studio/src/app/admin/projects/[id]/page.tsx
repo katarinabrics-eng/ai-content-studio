@@ -8,7 +8,7 @@ import {
   computeProjectStatus,
   getWorkflowStep,
   getWorkflowStepFromState,
-  getBadgeClasses,
+  getBadgeClassesDark,
   type ProjectStatus,
   type ProjectStateForStatus,
 } from "@/lib/project-status-engine";
@@ -188,8 +188,8 @@ export default function AdminProjectDetailPage() {
     }
   }
 
-  if (loading) return <main className="p-6"><p>Načítám…</p></main>;
-  if (!project) return <main className="p-6"><p>Projekt nenalezen.</p><a href="/admin/projects" className="text-lucifera-lime underline">Zpět</a></main>;
+  if (loading) return <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100"><p>Načítám…</p></main>;
+  if (!project) return <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100"><p>Projekt nenalezen.</p><a href="/admin/projects" className="text-[#A8EB12] underline">Zpět</a></main>;
 
   const workflowState = (project as ProjectWithBriefAndMeta & { workflowState?: ProjectStateForStatus | null }).workflowState;
   const current = (workflowState != null ? computeProjectStatus(workflowState) : project.status) as ProjectStatus;
@@ -210,80 +210,82 @@ export default function AdminProjectDetailPage() {
     ? { percent: meta.brief_completeness, missing: meta.missing_fields }
     : getBriefCompleteness(brief);
 
+  const selectedStrategist = selectedStrategistId ? STRATEGISTS.find((s) => s.id === selectedStrategistId) : null;
+
   return (
-    <main className="min-h-screen bg-stone-100 p-6">
+    <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100">
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <a href="/admin/projects" className="text-sm text-stone-600 hover:underline">← Přehled projektů</a>
+          <a href="/admin/projects" className="text-sm text-zinc-400 hover:text-[#A8EB12]">← Přehled projektů</a>
           <button
             type="button"
             onClick={() => { fetchProject(); fetchDrafts(); }}
             disabled={updating}
-            className="rounded border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-zinc-200 hover:bg-white/10 disabled:opacity-50"
           >
             Obnovit nyní
           </button>
         </div>
-        <h1 className="mt-4 text-2xl font-bold text-stone-900">{brief?.brand_name || "Projekt"}</h1>
-        <p className="text-stone-600">
+        <h1 className="mt-4 text-2xl font-bold text-white">{brief?.brand_name || "Projekt"}</h1>
+        <p className="text-zinc-400">
           ID: {project.id} · Tarif: {project.plan_id}
           {(project as unknown as { project_code?: string | null }).project_code && (
-            <> · Kód: <span className="font-mono">{(project as unknown as { project_code: string }).project_code}</span></>
+            <> · Kód: <span className="font-mono text-zinc-300">{(project as unknown as { project_code: string }).project_code}</span></>
           )}
           {(project as unknown as { storage_prefix?: string | null }).storage_prefix && (
-            <> · Složka: <span className="font-mono text-xs">{(project as unknown as { storage_prefix: string }).storage_prefix}</span></>
+            <> · Složka: <span className="font-mono text-xs text-zinc-500">{(project as unknown as { storage_prefix: string }).storage_prefix}</span></>
           )}
         </p>
 
-        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-          <h2 className="font-semibold text-stone-900">Completeness briefu</h2>
-          <p className="mt-1 text-2xl font-bold text-stone-900">{completenessPercent} %</p>
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Completeness briefu</h2>
+          <p className="mt-1 text-2xl font-bold text-[#A8EB12]">{completenessPercent} %</p>
           {missingFields.length > 0 && (
-            <p className="mt-2 text-sm text-stone-600">Chybějící klíčová pole: {missingFields.join(", ")}</p>
+            <p className="mt-2 text-sm text-zinc-400">Chybějící klíčová pole: {missingFields.join(", ")}</p>
           )}
         </section>
 
-        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-          <h2 className="font-semibold text-stone-900">Dodané informace</h2>
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Dodané informace</h2>
           <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="text-stone-500">Značka</dt><dd className="text-stone-900">{brief?.brand_name ?? "—"}</dd>
-            <dt className="text-stone-500">Obor</dt><dd className="text-stone-900">{brief?.industry ?? "—"}</dd>
-            <dt className="text-stone-500">Cíl</dt><dd className="text-stone-900">{brief?.communication_goal ?? "—"}</dd>
-            <dt className="text-stone-500">Síť(e)</dt><dd className="text-stone-900">{brief?.platforms?.length ? brief.platforms.join(", ") : "—"}</dd>
-            <dt className="text-stone-500">Tonalita</dt><dd className="text-stone-900">{brief?.tone_of_voice ?? "—"}</dd>
-            <dt className="text-stone-500">Web / profil</dt><dd className="text-stone-900">{brief?.website_or_profile ?? "—"}</dd>
-            <dt className="text-stone-500">Poznámka</dt><dd className="text-stone-900">{brief?.note ?? "—"}</dd>
-            <dt className="text-stone-500">E-mail</dt><dd className="text-stone-900">{project.client_email ?? "— (přístup kód + PIN)"}</dd>
-            {brief?.target_audience && <><dt className="text-stone-500">Cílová skupina</dt><dd className="text-stone-900">{brief.target_audience}</dd></>}
-            {brief?.offers && <><dt className="text-stone-500">Nabídky / produkty</dt><dd className="text-stone-900">{brief.offers}</dd></>}
-            {brief?.forbidden_words && <><dt className="text-stone-500">Zakázaná slova</dt><dd className="text-stone-900">{brief.forbidden_words}</dd></>}
-            {brief?.preferred_style && <><dt className="text-stone-500">Preferovaný styl</dt><dd className="text-stone-900">{brief.preferred_style}</dd></>}
-            {brief?.preferred_cta && <><dt className="text-stone-500">Preferovaná CTA</dt><dd className="text-stone-900">{brief.preferred_cta}</dd></>}
-            {brief?.logo_url && <><dt className="text-stone-500">Logo URL</dt><dd className="text-stone-900 truncate">{brief.logo_url}</dd></>}
-            {brief?.brand_colors && <><dt className="text-stone-500">Barvy</dt><dd className="text-stone-900">{brief.brand_colors}</dd></>}
-            {brief?.brand_fonts && <><dt className="text-stone-500">Fonty</dt><dd className="text-stone-900">{brief.brand_fonts}</dd></>}
-            {brief?.source_url && <><dt className="text-stone-500">URL auto-fill</dt><dd className="text-stone-900">{brief.source_url}</dd></>}
-            {brief?.brand_pdf_url && <><dt className="text-stone-500">PDF</dt><dd className="text-stone-900 truncate">{brief.brand_pdf_url}</dd></>}
+            <dt className="text-zinc-500">Značka</dt><dd className="text-zinc-200">{brief?.brand_name ?? "—"}</dd>
+            <dt className="text-zinc-500">Obor</dt><dd className="text-zinc-200">{brief?.industry ?? "—"}</dd>
+            <dt className="text-zinc-500">Cíl</dt><dd className="text-zinc-200">{brief?.communication_goal ?? "—"}</dd>
+            <dt className="text-zinc-500">Síť(e)</dt><dd className="text-zinc-200">{brief?.platforms?.length ? brief.platforms.join(", ") : "—"}</dd>
+            <dt className="text-zinc-500">Tonalita</dt><dd className="text-zinc-200">{brief?.tone_of_voice ?? "—"}</dd>
+            <dt className="text-zinc-500">Web / profil</dt><dd className="text-zinc-200">{brief?.website_or_profile ?? "—"}</dd>
+            <dt className="text-zinc-500">Poznámka</dt><dd className="text-zinc-200">{brief?.note ?? "—"}</dd>
+            <dt className="text-zinc-500">E-mail</dt><dd className="text-zinc-200">{project.client_email ?? "— (přístup kód + PIN)"}</dd>
+            {brief?.target_audience && <><dt className="text-zinc-500">Cílová skupina</dt><dd className="text-zinc-200">{brief.target_audience}</dd></>}
+            {brief?.offers && <><dt className="text-zinc-500">Nabídky / produkty</dt><dd className="text-zinc-200">{brief.offers}</dd></>}
+            {brief?.forbidden_words && <><dt className="text-zinc-500">Zakázaná slova</dt><dd className="text-zinc-200">{brief.forbidden_words}</dd></>}
+            {brief?.preferred_style && <><dt className="text-zinc-500">Preferovaný styl</dt><dd className="text-zinc-200">{brief.preferred_style}</dd></>}
+            {brief?.preferred_cta && <><dt className="text-zinc-500">Preferovaná CTA</dt><dd className="text-zinc-200">{brief.preferred_cta}</dd></>}
+            {brief?.logo_url && <><dt className="text-zinc-500">Logo URL</dt><dd className="text-zinc-200 truncate">{brief.logo_url}</dd></>}
+            {brief?.brand_colors && <><dt className="text-zinc-500">Barvy</dt><dd className="text-zinc-200">{brief.brand_colors}</dd></>}
+            {brief?.brand_fonts && <><dt className="text-zinc-500">Fonty</dt><dd className="text-zinc-200">{brief.brand_fonts}</dd></>}
+            {brief?.source_url && <><dt className="text-zinc-500">URL auto-fill</dt><dd className="text-zinc-200">{brief.source_url}</dd></>}
+            {brief?.brand_pdf_url && <><dt className="text-zinc-500">PDF</dt><dd className="text-zinc-200 truncate">{brief.brand_pdf_url}</dd></>}
           </dl>
         </section>
 
         {Array.isArray((project as unknown as { files?: unknown[] }).files) &&
         (project as unknown as { files: { id: string; kind: string; original_name: string | null; download_url: string | null }[] }).files.length > 0 && (
-          <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-            <h2 className="font-semibold text-stone-900">Soubory (logo, fotky, PDF)</h2>
+          <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+            <h2 className="font-semibold text-white">Soubory (logo, fotky, PDF)</h2>
             <ul className="mt-3 space-y-2">
               {(project as unknown as { files: { id: string; kind: string; original_name: string | null; download_url: string | null }[] }).files.map((f) => (
-                <li key={f.id} className="flex items-center justify-between rounded border border-stone-100 bg-stone-50 px-3 py-2 text-sm">
-                  <span className="text-stone-700">
-                    <span className="font-medium text-stone-500">{f.kind}</span>
+                <li key={f.id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                  <span className="text-zinc-300">
+                    <span className="font-medium text-zinc-500">{f.kind}</span>
                     {f.original_name && ` · ${f.original_name}`}
                   </span>
                   {f.download_url ? (
-                    <a href={f.download_url} target="_blank" rel="noreferrer" className="text-lucifera-lime hover:underline">
+                    <a href={f.download_url} target="_blank" rel="noreferrer" className="text-[#A8EB12] hover:underline">
                       Stáhnout
                     </a>
                   ) : (
-                    <span className="text-stone-400">—</span>
+                    <span className="text-zinc-500">—</span>
                   )}
                 </li>
               ))}
@@ -291,39 +293,39 @@ export default function AdminProjectDetailPage() {
           </section>
         )}
 
-        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-          <h2 className="font-semibold text-stone-900">Workflow</h2>
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Workflow</h2>
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span className={`rounded-md px-2.5 py-1 text-sm font-medium ${getBadgeClasses(wf.badge)}`}>
+            <span className={`rounded-md px-2.5 py-1 text-sm font-medium ${getBadgeClassesDark(wf.badge)}`}>
               {wf.label}
             </span>
             {wf.step > 0 && (
-              <span className="text-sm text-stone-500">Krok {wf.step}/{wf.total}</span>
+              <span className="text-sm text-zinc-500">Krok {wf.step}/{wf.total}</span>
             )}
             {wf.who && (
-              <span className="rounded bg-stone-100 px-2 py-0.5 text-sm text-stone-600">
+              <span className="rounded bg-white/10 px-2 py-0.5 text-sm text-zinc-400">
                 Na tahu: {wf.who}
               </span>
             )}
           </div>
-          <p className="mt-3 text-stone-700">
+          <p className="mt-3 text-zinc-300">
             Právě teď: {wf.currentAction}
           </p>
           {(current === "AI_PROCESSING" || current === "IN_PRODUCTION") && (
-            <p className="mt-1 text-sm text-stone-500">ETA: cca 2–5 min</p>
+            <p className="mt-1 text-sm text-zinc-500">ETA: cca 2–5 min</p>
           )}
 
           {current === "ERROR" && (
-            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
-              <p className="font-medium text-red-800">Důvod chyby:</p>
-              <p className="mt-1 text-sm text-red-700">
+            <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+              <p className="font-medium text-red-300">Důvod chyby:</p>
+              <p className="mt-1 text-sm text-red-200/90">
                 {meta?.internal_notes || "Neurčeno. Zkuste znovu nebo doplňte internal_notes."}
               </p>
               <button
                 type="button"
                 onClick={() => setStatus("AWAITING_MANUAL_PROMPT")}
                 disabled={updating}
-                className="mt-3 rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
               >
                 Zkusit znovu
               </button>
@@ -332,14 +334,14 @@ export default function AdminProjectDetailPage() {
 
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <span className="text-stone-600">AI režim:</span>
+              <span className="text-zinc-400">AI režim:</span>
               <button
                 type="button"
                 role="switch"
                 aria-checked={aiModeManual}
                 onClick={() => setAiModeManual(!aiModeManual)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  aiModeManual ? "bg-amber-500" : "bg-stone-300"
+                  aiModeManual ? "bg-amber-500" : "bg-zinc-600"
                 }`}
               >
                 <span
@@ -348,7 +350,7 @@ export default function AdminProjectDetailPage() {
                   }`}
                 />
               </button>
-              <span className="font-medium text-stone-700">
+              <span className="font-medium text-zinc-300">
                 {aiModeManual ? "Manuální" : "Automatický"}
               </span>
             </label>
@@ -357,81 +359,86 @@ export default function AdminProjectDetailPage() {
           {(current === "WAITING_MANUAL_AI_COMMAND" || current === "AWAITING_MANUAL_PROMPT" || current === "READY_FOR_AI" || current === "INPUT_RECEIVED") && aiModeManual && (
             <div className="mt-4 space-y-3">
               {current === "WAITING_MANUAL_AI_COMMAND" && (
-                <p className="text-sm text-amber-700 font-medium">
+                <p className="text-sm text-amber-300 font-medium">
                   ⚡ AI se spustí pouze po manuálním pokynu. Bez tohoto kroku se AI job nevytvoří.
                 </p>
               )}
               <div className="flex flex-wrap items-end gap-3">
                 <div className="flex-1 min-w-[200px]">
-                  <label className="block text-xs text-stone-500 mb-1">Volitelný pokyn pro AI</label>
+                  <label className="block text-xs text-zinc-500 mb-1">Volitelný pokyn pro AI</label>
                   <input
                     type="text"
                     id="ai-instruction"
                     placeholder="Např. Zaměř se na B2B, použij formálnější tón…"
-                    className="w-full rounded border border-stone-300 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-[#A8EB12]/50 focus:outline-none focus:ring-1 focus:ring-[#A8EB12]/30"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={current === "WAITING_MANUAL_AI_COMMAND" ? handleTriggerAI : handleGenerateDrafts}
                   disabled={generating}
-                  className="rounded bg-[#A8EB12] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
+                  className="rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
                 >
                   {generating ? "Pokyn přijat, zpracováváme…" : current === "WAITING_MANUAL_AI_COMMAND" ? "Spustit AI podle pokynu" : "Odeslat nový pokyn AI"}
                 </button>
               </div>
-              {generating && <p className="mt-1 text-sm text-stone-500">AI zpracovává zadání</p>}
+              {generating && <p className="mt-1 text-sm text-zinc-500">AI zpracovává zadání</p>}
             </div>
           )}
 
-          <h3 className="mt-6 font-medium text-stone-800">Změnit stav ručně</h3>
+          <h3 className="mt-6 font-medium text-zinc-300">Změnit stav ručně</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {nextStatuses.map((s) => (
               <button
                 key={s}
                 onClick={() => setStatus(s as ProjectStatus)}
                 disabled={updating}
-                className="rounded bg-stone-800 px-3 py-1.5 text-sm text-white hover:bg-stone-700 disabled:opacity-50"
+                className="rounded-lg bg-zinc-700 px-3 py-1.5 text-sm text-white hover:bg-zinc-600 disabled:opacity-50"
               >
                 → {PROJECT_STATUS_LABELS[s] ?? s}
               </button>
             ))}
-            {nextStatuses.length === 0 && <span className="text-sm text-stone-500">Žádné další přechody</span>}
+            {nextStatuses.length === 0 && <span className="text-sm text-zinc-500">Žádné další přechody</span>}
           </div>
         </section>
 
-        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-          <h2 className="font-semibold text-stone-900">Timeline</h2>
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Timeline</h2>
           <ul className="mt-4 space-y-3">
             <li className="flex items-start gap-3 text-sm">
               <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-green-500" />
               <div>
-                <p className="font-medium text-stone-800">Projekt vytvořen</p>
-                <p className="text-stone-500">{new Date(project.created_at).toLocaleString("cs-CZ")}</p>
+                <p className="font-medium text-zinc-200">Projekt vytvořen</p>
+                <p className="text-zinc-500">{new Date(project.created_at).toLocaleString("cs-CZ")}</p>
               </div>
             </li>
             <li className="flex items-start gap-3 text-sm">
               <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
               <div>
-                <p className="font-medium text-stone-800">Aktuální stav: {wf.label}</p>
-                <p className="text-stone-500">{new Date(project.updated_at).toLocaleString("cs-CZ")}</p>
+                <p className="font-medium text-zinc-200">Aktuální stav: {wf.label}</p>
+                <p className="text-zinc-500">{new Date(project.updated_at).toLocaleString("cs-CZ")}</p>
               </div>
             </li>
           </ul>
         </section>
 
-        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
-          <h2 className="font-semibold text-stone-900">Stratega</h2>
-          <p className="mt-1 text-sm text-stone-600">
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Stratega</h2>
+          <p className="mt-1 text-sm text-zinc-400">
             Vyber stratega a spusť ho – výstup vychází z dat projektu a briefu.
           </p>
+          {selectedStrategist && (
+            <p className="mt-3 rounded-lg border border-[#A8EB12]/30 bg-[#A8EB12]/10 px-3 py-2 text-sm font-medium text-[#A8EB12]">
+              Vybraný: {selectedStrategist.name} – {selectedStrategist.title}
+            </p>
+          )}
           <div className="mt-4 flex flex-wrap items-end gap-3">
-            <div className="min-w-[200px]">
-              <label className="block text-xs text-stone-500 mb-1">Strateg</label>
+            <div className="min-w-[280px]">
+              <label className="block text-xs text-zinc-500 mb-1">Změnit stratega</label>
               <select
                 value={selectedStrategistId}
                 onChange={(e) => setSelectedStrategistId((e.target.value || "") as StrategistId | "")}
-                className="w-full rounded border border-stone-300 px-3 py-2 text-sm bg-white"
+                className="w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2.5 text-sm text-white focus:border-[#A8EB12]/50 focus:outline-none focus:ring-1 focus:ring-[#A8EB12]/30"
               >
                 {STRATEGISTS.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -439,35 +446,38 @@ export default function AdminProjectDetailPage() {
                   </option>
                 ))}
               </select>
+              <p className="mt-1.5 text-xs text-zinc-500">
+                {STRATEGISTS.map((s) => s.name).join(" · ")}
+              </p>
             </div>
             <button
               type="button"
               onClick={handleRunStrategist}
               disabled={strategistLoading || !selectedStrategistId}
-              className="rounded bg-[#A8EB12] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
+              className="rounded-lg bg-[#A8EB12] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
             >
               {strategistLoading ? "Spouštím…" : "Spustit stratega"}
             </button>
           </div>
           {strategistError && (
-            <p className="mt-3 text-sm text-red-600">{strategistError}</p>
+            <p className="mt-3 text-sm text-red-400">{strategistError}</p>
           )}
           {strategistOutput != null && strategistOutput !== "" && (
-            <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
-              <p className="text-xs font-medium text-stone-500 mb-2">Výstup</p>
-              <pre className="whitespace-pre-wrap text-sm text-stone-800 font-sans max-h-96 overflow-y-auto">
+            <div className="mt-4 rounded-lg border border-white/10 bg-zinc-800/50 p-4">
+              <p className="text-xs font-medium text-zinc-500 mb-2">Výstup</p>
+              <pre className="whitespace-pre-wrap text-sm text-zinc-200 font-sans max-h-96 overflow-y-auto">
                 {strategistOutput}
               </pre>
             </div>
           )}
         </section>
 
-        <section className="mt-6 rounded-lg border-2 border-amber-200 bg-amber-50 p-6">
-          <h2 className="font-semibold text-stone-900 flex items-center gap-2">
-            <span className="text-amber-600">⚡</span>
+        <section className="mt-6 rounded-xl border-2 border-amber-500/30 bg-amber-500/10 p-6">
+          <h2 className="font-semibold text-white flex items-center gap-2">
+            <span className="text-amber-400">⚡</span>
             AI Textové návrhy
           </h2>
-          <p className="mt-2 text-sm text-stone-600">
+          <p className="mt-2 text-sm text-zinc-400">
             Vygenerujte 3 textové návrhy příspěvků na základě briefu klienta.
           </p>
 
@@ -475,7 +485,7 @@ export default function AdminProjectDetailPage() {
             <button
               onClick={handleGenerateDrafts}
               disabled={generating}
-              className="rounded bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+              className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-amber-400 disabled:opacity-50"
             >
               {generating ? "Generuji..." : drafts.length > 0 ? "Regenerovat texty" : "Vygenerovat 3 textové návrhy"}
             </button>
@@ -483,7 +493,7 @@ export default function AdminProjectDetailPage() {
               <button
                 onClick={handleMarkReady}
                 disabled={updating}
-                className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500 disabled:opacity-50"
               >
                 Označit jako připraveno pro klienta
               </button>
@@ -491,30 +501,30 @@ export default function AdminProjectDetailPage() {
           </div>
 
           {generationError && (
-            <p className="mt-3 text-sm text-red-600">{generationError}</p>
+            <p className="mt-3 text-sm text-red-400">{generationError}</p>
           )}
           {generationWarning && (
-            <p className="mt-3 text-sm text-amber-700">{generationWarning}</p>
+            <p className="mt-3 text-sm text-amber-300">{generationWarning}</p>
           )}
 
-          {draftsLoading && <p className="mt-4 text-sm text-stone-500">Načítám návrhy...</p>}
+          {draftsLoading && <p className="mt-4 text-sm text-zinc-500">Načítám návrhy...</p>}
 
           {!draftsLoading && drafts.length > 0 && (
             <div className="mt-6 space-y-4">
               {drafts.map((draft, i) => (
-                <div key={draft.id ?? i} className="rounded-lg border border-stone-200 bg-white p-4">
+                <div key={draft.id ?? i} className="rounded-lg border border-white/10 bg-white/5 p-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-stone-900">Návrh {draft.draft_index ?? i + 1}</h3>
-                    <span className="text-xs text-stone-500">{draft.platform}</span>
+                    <h3 className="font-medium text-white">Návrh {draft.draft_index ?? i + 1}</h3>
+                    <span className="text-xs text-zinc-500">{draft.platform}</span>
                   </div>
                   <div className="mt-3 space-y-2 text-sm">
-                    <p><span className="font-medium text-stone-600">Hook:</span> {draft.hook}</p>
-                    <p><span className="font-medium text-stone-600">Body:</span> {draft.body}</p>
-                    <p><span className="font-medium text-stone-600">CTA:</span> {draft.cta}</p>
-                    <p><span className="font-medium text-stone-600">Hashtags:</span> {draft.hashtags?.join(" ") ?? "—"}</p>
+                    <p><span className="font-medium text-zinc-500">Hook:</span> <span className="text-zinc-200">{draft.hook}</span></p>
+                    <p><span className="font-medium text-zinc-500">Body:</span> <span className="text-zinc-200">{draft.body}</span></p>
+                    <p><span className="font-medium text-zinc-500">CTA:</span> <span className="text-zinc-200">{draft.cta}</span></p>
+                    <p><span className="font-medium text-zinc-500">Hashtags:</span> <span className="text-zinc-200">{draft.hashtags?.join(" ") ?? "—"}</span></p>
                   </div>
                   {draft.status && (
-                    <p className="mt-2 text-xs text-stone-400">Status: {draft.status}</p>
+                    <p className="mt-2 text-xs text-zinc-500">Status: {draft.status}</p>
                   )}
                 </div>
               ))}
@@ -522,15 +532,15 @@ export default function AdminProjectDetailPage() {
           )}
 
           {!draftsLoading && drafts.length === 0 && (
-            <p className="mt-4 text-sm text-stone-500">Zatím žádné návrhy. Klikněte na tlačítko výše pro vygenerování.</p>
+            <p className="mt-4 text-sm text-zinc-500">Zatím žádné návrhy. Klikněte na tlačítko výše pro vygenerování.</p>
           )}
 
-          <p className="mt-4 text-xs text-stone-400">
+          <p className="mt-4 text-xs text-zinc-500">
             Poznámka: Vizuální generování je v této fázi vypnuto.
           </p>
         </section>
 
-        <p className="mt-4 text-sm text-stone-500">Vytvořeno: {new Date(project.created_at).toLocaleString("cs-CZ")} · Aktualizováno: {new Date(project.updated_at).toLocaleString("cs-CZ")}</p>
+        <p className="mt-4 text-sm text-zinc-500">Vytvořeno: {new Date(project.created_at).toLocaleString("cs-CZ")} · Aktualizováno: {new Date(project.updated_at).toLocaleString("cs-CZ")}</p>
       </div>
     </main>
   );
