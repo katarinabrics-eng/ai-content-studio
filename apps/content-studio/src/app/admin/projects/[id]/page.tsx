@@ -14,6 +14,7 @@ import {
 } from "@/lib/project-status-engine";
 import { getBriefCompleteness } from "@/lib/supabase-projects";
 import type { ProjectWithBriefAndMeta } from "@/lib/supabase-projects";
+import { STRATEGISTS, type StrategistId } from "@/lib/strategists/config";
 
 type Draft = {
   id: string;
@@ -39,6 +40,11 @@ export default function AdminProjectDetailPage() {
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationWarning, setGenerationWarning] = useState<string | null>(null);
   const [aiModeManual, setAiModeManual] = useState(true);
+
+  const [selectedStrategistId, setSelectedStrategistId] = useState<StrategistId | "">("hormozi");
+  const [strategistOutput, setStrategistOutput] = useState<string | null>(null);
+  const [strategistLoading, setStrategistLoading] = useState(false);
+  const [strategistError, setStrategistError] = useState<string | null>(null);
 
   const fetchProject = useCallback(() => {
     fetch(`/api/admin/projects/${id}`)
@@ -137,6 +143,30 @@ export default function AdminProjectDetailPage() {
       setGenerationError(e instanceof Error ? e.message : "Chyba při spuštění AI");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function handleRunStrategist() {
+    if (!selectedStrategistId) return;
+    setStrategistLoading(true);
+    setStrategistError(null);
+    setStrategistOutput(null);
+    try {
+      const res = await fetch(`/api/admin/projects/${id}/run-strategist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ strategistId: selectedStrategistId }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setStrategistOutput(data.output ?? "");
+      } else {
+        setStrategistError(data.error ?? "Spuštění stratega selhalo");
+      }
+    } catch (e) {
+      setStrategistError(e instanceof Error ? e.message : "Chyba při spuštění stratega");
+    } finally {
+      setStrategistLoading(false);
     }
   }
 
