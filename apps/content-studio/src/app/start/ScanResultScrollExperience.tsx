@@ -141,6 +141,17 @@ export function ScanResultScrollExperience({
       });
       const data = await res.json();
       if (data.ok) {
+        if (projectId) {
+          try {
+            await fetch("/api/diagnostika/update-email", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ projectId, email: trimmed }),
+            });
+          } catch {
+            /* neblokovat – lead je uložen v analysis_leads */
+          }
+        }
         setLeadSubmitted(true);
       } else {
         setLeadError(data.error ?? "Nepodařilo se odeslat.");
