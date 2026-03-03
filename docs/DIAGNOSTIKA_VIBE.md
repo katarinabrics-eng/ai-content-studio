@@ -68,7 +68,9 @@
 
 **Kde (technicky):**
 
-- Migrace: `access_token`, `access_expires_at` na `client_projects` (např. `supabase/migrations/20250601120000_client_projects_access_token.sql`).
+- Migrace: `access_token`, `access_expires_at` na `client_projects`:
+  - **Kanonický skript:** `apps/content-studio/supabase/migrations/20250601120000_client_projects_access_token.sql` (sloupce `timestamptz`, `unique`).
+  - Pokud jste sloupce přidali ručně (např. s `timestamp` nebo bez UNIQUE), spusťte v SQL Editoru i **opravný skript:** `20250601130000_client_projects_access_token_fix.sql`.
 - `createClientProject`: generování tokenu a `access_expires_at`.
 - `getClientProjectByAccessToken`: načtení projektu při platném tokenu a nevypršené lhůtě.
 - API: `GET /api/diagnostika/access?token=...`; `POST /api/diagnostika/update-email` vrací `accessUrl`.
