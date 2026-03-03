@@ -1,6 +1,7 @@
 "use client";
 
 import { ChoiceButton } from "@/components/ChoiceButton";
+import { tokens } from "@/lib/design-tokens";
 
 const MANUAL_OFFER_TYPES = [
   "Konzultace",
@@ -17,6 +18,8 @@ const MANUAL_AUDIENCE = [
   "Ženy budující osobní značku",
   "Malé a střední firmy",
   "Kreativci a freelanceři",
+  "Začátečníci",
+  "Široká veřejnost",
 ] as const;
 
 const MANUAL_PRICE_LEVELS = ["Základní", "Střední", "Prémiová"] as const;
@@ -88,6 +91,7 @@ export type WebAnalyzerProps = {
   hasManualInput: boolean;
   onAnalyze: () => void;
   error: string;
+  onRetry?: () => void;
 };
 
 /** Vstup URL + toggle mám/nemám web + manual formulář. */
@@ -114,6 +118,7 @@ export function WebAnalyzer({
   hasManualInput,
   onAnalyze,
   error,
+  onRetry,
 }: WebAnalyzerProps) {
   const canSubmit = (mode === "web" && url.trim()) || (diagnostika && mode === "manual" && hasManualInput);
   return (
@@ -362,18 +367,37 @@ export function WebAnalyzer({
         )}
 
         {error && (
-          <div
-            style={{
-              marginTop: 10,
-              padding: "10px 14px",
-              background: `${tokens.colors.error}18`,
-              border: `1px solid ${tokens.colors.error}40`,
-              borderRadius: 12,
-              color: tokens.colors.error,
-              fontSize: 13,
-            }}
-          >
-            ⚠ {error}
+          <div style={{ marginTop: 10 }}>
+            <div
+              style={{
+                padding: "10px 14px",
+                background: `${tokens.colors.error}18`,
+                border: `1px solid ${tokens.colors.error}40`,
+                borderRadius: 12,
+                color: tokens.colors.error,
+                fontSize: 13,
+              }}
+            >
+              ⚠ {error}
+            </div>
+            {onRetry && (
+              <button
+                type="button"
+                onClick={onRetry}
+                style={{
+                  marginTop: 8,
+                  padding: "8px 14px",
+                  background: "transparent",
+                  border: `1px solid ${tokens.colors.border}`,
+                  borderRadius: 10,
+                  color: tokens.colors.muted,
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                Zkusit znovu
+              </button>
+            )}
           </div>
         )}
         <button

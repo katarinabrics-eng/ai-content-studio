@@ -12,7 +12,7 @@ import { ScanRitualLoading } from "./ScanRitualLoading";
 /** Doplňující otázky dle systémového promptu v2.0 – vždy volby, nikdy přímé textové otázky. */
 const GUIDANCE_QUESTIONS_FULL = [
   { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
-  { id: "audience", question: "Kdo je váš typický klient?", options: ["Podnikatelé a manažeři", "Ženy budující osobní značku", "Malé a střední firmy", "Kreativci a freelanceři"] },
+  { id: "audience", question: "Kdo je váš typický klient?", options: ["Podnikatelé a manažeři", "Ženy budující osobní značku", "Malé a střední firmy", "Kreativci a freelanceři", "Začátečníci", "Široká veřejnost"] },
   { id: "goals", question: "Co je hlavní cíl komunikace na sociálních sítích?", options: ["Budovat důvěru a autoritu", "Generovat přímé poptávky", "Vzdělávat a inspirovat", "Ukázat zákulisí a osobnost"] },
   { id: "style", question: "Jaký tón komunikace vám sedí?", options: ["Klidný a autoritativní", "Přátelský a osobní", "Odborný a precizní", "Inspirativní a energický"] },
   { id: "differentiation", question: "Jak se hlavně odlišujete od konkurence?", options: ["Osobním přístupem a vztahem", "Výsledky a měřitelným dopadem", "Specializací na konkrétní niku", "Stylem a vizuální identitou"] },
@@ -20,8 +20,31 @@ const GUIDANCE_QUESTIONS_FULL = [
   { id: "business_phase", question: "V jaké fázi podnikání jste?", options: ["Začínám, hledám první klienty", "Mám klienty, chci růst", "Rebranding / nový směr", "Škáluju, chci systém"] },
   { id: "success_definition", question: "Co pro vás znamená úspěch za 3 měsíce?", options: ["Nové poptávky z internetu", "Silnější brand a viditelnost", "Větší engagement komunity", "Konkrétní počet nových klientů"] },
 ];
-/** V diagnostice zobrazujeme max 5 otázek (VIBE: „max 4–5 doplňujících otázek“). */
-const GUIDANCE_QUESTIONS = GUIDANCE_QUESTIONS_FULL.slice(0, 5);
+
+/** Mapování: questionId → odpověď z analýzy (pokud je dostatečně vyplněná, otázku nezobrazujeme). */
+function isAnsweredByWeb(questionId: string, result: Result | null): boolean {
+  if (!result?.brandDna) return false;
+  const d = result.brandDna;
+  const s = result.brandScore ?? {};
+  const has = (v: string | undefined, minLen = 15) => (v ?? "").trim().length >= minLen;
+  switch (questionId) {
+    case "positioning": return has(d.positioning);
+    case "audience": return s.hasTargetAudience === true || has(d.targetAudience);
+    case "goals": return has(d.communicationStyle) || has(d.uniqueValue);
+    case "style": return has(d.tone) || has(d.communicationStyle);
+    case "differentiation": return has(d.uniqueValue);
+    case "platform": return false; // žádné pole z analýzy
+    case "business_phase": return false;
+    case "success_definition": return false;
+    default: return false;
+  }
+}
+
+/** Zobraz jen otázky, na které web neposkytl odpověď. Max 5, pořadí 1–8. */
+function getRelevantGuidanceQuestions(result: Result | null): typeof GUIDANCE_QUESTIONS_FULL {
+  const relevant = GUIDANCE_QUESTIONS_FULL.filter((q) => !isAnsweredByWeb(q.id, result));
+  return relevant.slice(0, 5);
+}
 
 type BrandScore = { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
 type VisualStyle = { primaryColor?: string; secondaryColor?: string; mood?: string; typography?: string };
@@ -161,7 +184,6 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       brandFile ||
       imageFile);
 
-  const allAnswered = GUIDANCE_QUESTIONS.every((q) => answers[q.id]);
   const score = result?.brandScore?.total ?? 0;
 
   const analyze = async () => {
@@ -171,9 +193,19 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setResult(null);
     setScraped(null);
     setAnswers({});
+    const loadingMessages =
+      mode === "web"
+        ? ["Načítám web...", "Analyzuji obsah...", "Generuji skóre..."]
+        : ["Analyzuji zadané podklady...", "Analyzuji obsah...", "Generuji skóre..."];
+    let loadingStep = 0;
+    let progressInterval: ReturnType<typeof setInterval> | undefined;
     try {
       setPhase("loading");
-      setMsg(mode === "web" ? "Načítám web (text + screenshot)..." : "Analyzuji zadané podklady...");
+      setMsg(loadingMessages[0]);
+      progressInterval = setInterval(() => {
+        loadingStep = Math.min(loadingStep + 1, loadingMessages.length - 1);
+        setMsg(loadingMessages[loadingStep]);
+      }, 5000);
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 90_000);
       const body: Record<string, unknown> = diagnostika ? { format: "diagnostika" } : {};
@@ -208,6 +240,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         signal: controller.signal,
       });
       clearTimeout(timeout);
+      clearInterval(progressInterval);
       let data: { result?: Result; scraped?: Scraped; error?: string };
       try {
         data = await res.json();
@@ -243,6 +276,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         setPhase(total < 60 ? "guidance" : "result");
       }
     } catch (e) {
+      if (progressInterval !== undefined) clearInterval(progressInterval);
       const msg = e instanceof Error ? e.message : "Nepodařilo se analyzovat.";
       const friendly =
         msg === "fetch failed" || msg === "Failed to fetch"
@@ -259,10 +293,13 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setPhase("loading");
     setMsg("Obohacuji Brand DNA o vaše odpovědi...");
     try {
+      const answersFiltered = Object.fromEntries(
+        Object.entries(answers).filter(([, v]) => v != null && String(v).trim() !== "")
+      );
       const res = await fetch("/api/analyze/refine", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url || "zadané podklady", brandDna: result?.brandDna, answers }),
+        body: JSON.stringify({ url: url || "zadané podklady", brandDna: result?.brandDna, answers: answersFiltered }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Chyba");
@@ -391,6 +428,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             hasManualInput={!!hasManualInput}
             onAnalyze={analyze}
             error={error}
+            onRetry={() => setError("")}
           />
         )}
 
@@ -416,11 +454,12 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
               screenshot={scraped?.screenshot ?? undefined}
             />
             <GapQuestions
-              questions={GUIDANCE_QUESTIONS}
+              questions={getRelevantGuidanceQuestions(result)}
               answers={answers}
               onAnswer={(questionId, value) => setAnswers((p) => ({ ...p, [questionId]: value }))}
               confirmLabel="Zobrazit Brand DNA →"
               onConfirm={confirmGuidance}
+              onSkipAll={confirmGuidance}
             />
           </div>
         )}

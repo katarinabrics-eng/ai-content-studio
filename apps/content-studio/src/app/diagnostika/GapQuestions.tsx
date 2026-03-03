@@ -27,19 +27,21 @@ const btnStyle = (selected: boolean): React.CSSProperties => ({
   marginBottom: 5,
 });
 
-/** Doplňující otázky s klikacími volbami (žádné textové inputy). */
+/** Doplňující otázky s klikacími volbami. Single-select: klik na stejnou volbu = odznačí. */
 export function GapQuestions({
   questions,
   answers,
   onAnswer,
   confirmLabel,
   onConfirm,
+  onSkipAll,
 }: {
   questions: GapQuestion[];
   answers: Record<string, string>;
   onAnswer: (questionId: string, value: string) => void;
   confirmLabel: string;
   onConfirm: () => void;
+  onSkipAll?: () => void;
 }) {
   return (
     <>
@@ -65,40 +67,62 @@ export function GapQuestions({
             </span>
             <p style={{ fontSize: 13, color: "#ddd", lineHeight: 1.5 }}>{q.question}</p>
           </div>
-          {q.options.map((o) => (
-            <button
-              key={o}
-              type="button"
-              onClick={() => onAnswer(q.id, o)}
-              style={btnStyle(answers[q.id] === o)}
-            >
-              {o}
-            </button>
-          ))}
+          {q.options.map((o) => {
+            const selected = answers[q.id] === o;
+            return (
+              <button
+                key={o}
+                type="button"
+                onClick={() => onAnswer(q.id, selected ? "" : o)}
+                style={btnStyle(selected)}
+              >
+                {o}
+              </button>
+            );
+          })}
         </div>
       ))}
       <p style={{ fontSize: 11, color: "#555", marginBottom: 10 }}>
         Všechny volby jsou dobrovolné. Nic nevyberete? Pokračujeme s rozumným předpokladem.
       </p>
-      <button
-        type="button"
-        onClick={onConfirm}
-        style={{
-          width: "100%",
-          padding: 13,
-          background: "#a8e063",
-          color: "#000",
-          fontWeight: 700,
-          fontSize: 14,
-          border: "none",
-          borderRadius: 10,
-          cursor: "pointer",
-          marginTop: 10,
-          opacity: 1,
-        }}
-      >
-        {confirmLabel}
-      </button>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
+        {onSkipAll && (
+          <button
+            type="button"
+            onClick={onSkipAll}
+            style={{
+              padding: "12px 18px",
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 10,
+              color: "#888",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            Přeskočit vše
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onConfirm}
+          style={{
+            flex: 1,
+            minWidth: 200,
+            padding: 13,
+            background: "#a8e063",
+            color: "#000",
+            fontWeight: 700,
+            fontSize: 14,
+            border: "none",
+            borderRadius: 10,
+            cursor: "pointer",
+            opacity: 1,
+          }}
+        >
+          {confirmLabel}
+        </button>
+      </div>
     </>
   );
 }
