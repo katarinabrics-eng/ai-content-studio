@@ -6,8 +6,8 @@ export const tokens = {
     bg: "#0a0a0a",
     card: "#111111",
     border: "#222222",
-    primary: "#c8f135", // lime – CTA tlačítka
-    accent: "#00d4aa", // mint – aktivní stav (selected)
+    primary: "#A8EB12", // Lucifera lime – CTA, sjednoceno s globals.css
+    accent: "#A8EB12", // Lucifera lime – aktivní stav (selected)
     text: "#ffffff",
     muted: "#888888",
     warning: "#f5c842", // žlutá – skóre pod 70
