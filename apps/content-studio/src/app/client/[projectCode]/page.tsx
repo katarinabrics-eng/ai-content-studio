@@ -193,7 +193,7 @@ export default function ClientProjectPage() {
 
   return (
     <main className="min-h-screen bg-lucifera-dark px-4 py-12">
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-4xl">
         <div className="text-center mb-10">
           <h1 className="text-2xl font-bold text-white">
             {brief?.brand_name && brief.brand_name !== "—"
