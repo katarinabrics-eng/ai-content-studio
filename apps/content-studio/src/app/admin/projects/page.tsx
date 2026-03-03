@@ -59,6 +59,12 @@ export default function AdminProjectsPage() {
           </div>
           <div className="flex gap-2">
             <Link
+              href="/admin/analysis-leads"
+              className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
+            >
+              Leady z analýzy
+            </Link>
+            <Link
               href="/admin/clients"
               className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50"
             >

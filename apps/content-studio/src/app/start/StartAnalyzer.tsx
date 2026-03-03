@@ -170,6 +170,10 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [brandFile, setBrandFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
 
   function buildManualData(): string {
     const parts: string[] = [];
@@ -325,6 +329,9 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setScraped(null);
     setAnswers({});
     setError("");
+    setLeadEmail("");
+    setLeadSubmitted(false);
+    setLeadError(null);
     setMode("web");
     setManualText("");
     setBrandName("");
@@ -336,6 +343,39 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setImageFile(null);
     setProjectId(null);
   };
+
+  async function handleSaveLead() {
+    const trimmed = leadEmail.trim();
+    if (!trimmed || !result) return;
+    setLeadSubmitting(true);
+    setLeadError(null);
+    try {
+      const scrapedMeta =
+        scraped != null
+          ? { url: scraped.url, title: scraped.title, description: scraped.description }
+          : {};
+      const res = await fetch("/api/analysis-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmed,
+          analyzedUrl: scraped?.url ?? url ?? "",
+          result: { brandScore: result.brandScore, brandDna: result.brandDna, summary: result.summary },
+          scrapedMeta,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setLeadSubmitted(true);
+      } else {
+        setLeadError(data.error ?? "Nepodařilo se odeslat.");
+      }
+    } catch {
+      setLeadError("Chyba při odesílání. Zkuste to znovu.");
+    } finally {
+      setLeadSubmitting(false);
+    }
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#0c0c14", color: "#e7e7ef", fontFamily: "system-ui,sans-serif" }}>
@@ -802,6 +842,37 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                 </>
               )}
             </div>
+
+            {!leadSubmitted ? (
+              <div style={{ ...C.card, borderColor: "rgba(168,224,99,0.2)", background: "rgba(168,224,99,0.03)" }}>
+                <p style={{ color: "#ccc", fontSize: 14, marginBottom: 8 }}>Chcete se k analýze vrátit a my vás můžeme kontaktovat?</p>
+                <p style={{ color: "#666", fontSize: 12, marginBottom: 12 }}>Zadejte e-mail – nebudeme vás spamovat, můžeme vám poslat ukázku a dál s vámi pracovat.</p>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+                  <input
+                    type="email"
+                    placeholder="vas@email.cz"
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    className="analyzer-inp"
+                    style={{ ...C.inp, flex: "1 1 200px", marginTop: 0 }}
+                  />
+                  <button
+                    type="button"
+                    style={{ ...C.btn, width: "auto", padding: "12px 20px", marginTop: 0 }}
+                    onClick={handleSaveLead}
+                    disabled={leadSubmitting || !leadEmail.trim()}
+                  >
+                    {leadSubmitting ? "Odesílám…" : "Odeslat"}
+                  </button>
+                </div>
+                {leadError && <p style={{ color: "#e05a5a", fontSize: 12, marginTop: 8 }}>{leadError}</p>}
+              </div>
+            ) : (
+              <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.2)", background: "rgba(168,224,99,0.05)" }}>
+                <p style={{ color: "#a8e063", fontWeight: 600 }}>Děkujeme, budeme vás kontaktovat.</p>
+                <p style={{ color: "#888", fontSize: 12, marginTop: 4 }}>Vaše analýza je u nás uložená.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
