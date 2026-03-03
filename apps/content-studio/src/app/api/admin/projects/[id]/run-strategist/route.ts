@@ -38,8 +38,8 @@ export async function POST(
       return NextResponse.json({ ok: false, error: "Stratega nenalezen" }, { status: 400 });
     }
 
-    const params = { ...projectToStrategistParams(project), ...overrides };
-    const prompt = buildPrompt(strategist, params);
+    const strategistParams = { ...projectToStrategistParams(project), ...overrides };
+    const prompt = buildPrompt(strategist, strategistParams);
 
     const openaiKey = process.env.OPENAI_API_KEY;
     if (!openaiKey) {
