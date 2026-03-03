@@ -27,6 +27,26 @@ type Draft = {
   status: string;
 };
 
+type Proposal = {
+  id: string;
+  format: string;
+  hook: string;
+  body: string;
+  cta: string;
+  hashtags: string[];
+  visual_brief: string;
+  selected_for_client: boolean;
+  created_at: string;
+};
+
+const PROPOSAL_FORMATS: { id: string; label: string }[] = [
+  { id: "facebook", label: "Facebook" },
+  { id: "instagram", label: "Instagram" },
+  { id: "linkedin", label: "LinkedIn" },
+  { id: "letak", label: "Leták" },
+  { id: "carousel", label: "Carousel" },
+];
+
 export default function AdminProjectDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -45,6 +65,12 @@ export default function AdminProjectDetailPage() {
   const [strategistOutput, setStrategistOutput] = useState<string | null>(null);
   const [strategistLoading, setStrategistLoading] = useState(false);
   const [strategistError, setStrategistError] = useState<string | null>(null);
+
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [proposalsLoading, setProposalsLoading] = useState(false);
+  const [proposalsGenerating, setProposalsGenerating] = useState(false);
+  const [proposalsError, setProposalsError] = useState<string | null>(null);
+  const [proposalFormat, setProposalFormat] = useState<string>("instagram");
 
   const fetchProject = useCallback(() => {
     fetch(`/api/admin/projects/${id}`)
@@ -67,10 +93,23 @@ export default function AdminProjectDetailPage() {
       .finally(() => setDraftsLoading(false));
   }, [id]);
 
+  const fetchProposals = useCallback(() => {
+    setProposalsLoading(true);
+    fetch(`/api/admin/projects/${id}/proposals`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && Array.isArray(d.proposals)) {
+          setProposals(d.proposals);
+        }
+      })
+      .finally(() => setProposalsLoading(false));
+  }, [id]);
+
   useEffect(() => {
     fetchProject();
     fetchDrafts();
-  }, [fetchProject, fetchDrafts]);
+    fetchProposals();
+  }, [fetchProject, fetchDrafts, fetchProposals]);
 
   useEffect(() => {
     const interval = setInterval(fetchProject, 10_000);
@@ -188,6 +227,43 @@ export default function AdminProjectDetailPage() {
     }
   }
 
+  async function handleGenerateProposals() {
+    setProposalsGenerating(true);
+    setProposalsError(null);
+    try {
+      const res = await fetch(`/api/admin/projects/${id}/proposals`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format: proposalFormat }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setProposals(Array.isArray(data.proposals) ? data.proposals : []);
+        fetchProposals();
+      } else {
+        setProposalsError(data.error ?? "Generování návrhů selhalo");
+      }
+    } catch (e) {
+      setProposalsError(e instanceof Error ? e.message : "Chyba při generování");
+    } finally {
+      setProposalsGenerating(false);
+    }
+  }
+
+  async function handleToggleProposalSelection(proposalId: string, selectedForClient: boolean) {
+    try {
+      const res = await fetch(`/api/admin/projects/${id}/proposals`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ proposalIds: [proposalId], selectedForClient }),
+      });
+      const data = await res.json();
+      if (data.ok) fetchProposals();
+    } catch {
+      // ignore
+    }
+  }
+
   if (loading) return <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100"><p>Načítám…</p></main>;
   if (!project) return <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100"><p>Projekt nenalezen.</p><a href="/admin/projects" className="text-[#A8EB12] underline">Zpět</a></main>;
 
@@ -219,7 +295,7 @@ export default function AdminProjectDetailPage() {
           <a href="/admin/projects" className="text-sm text-zinc-400 hover:text-[#A8EB12]">← Přehled projektů</a>
           <button
             type="button"
-            onClick={() => { fetchProject(); fetchDrafts(); }}
+            onClick={() => { fetchProject(); fetchDrafts(); fetchProposals(); }}
             disabled={updating}
             className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-zinc-200 hover:bg-white/10 disabled:opacity-50"
           >
@@ -468,6 +544,105 @@ export default function AdminProjectDetailPage() {
               <pre className="whitespace-pre-wrap text-sm text-zinc-200 font-sans max-h-96 overflow-y-auto">
                 {strategistOutput}
               </pre>
+            </div>
+          )}
+        </section>
+
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Vytvoření příspěvku dle strategie</h2>
+          <p className="mt-1 text-sm text-zinc-400">
+            Návrhy vycházejí z nasazené strategie a vstupních dat. Vyberte formát a vygenerujte min. 5 návrhů (text + popis vizuálu). Vybrané návrhy uvidí klient.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {PROPOSAL_FORMATS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setProposalFormat(f.id)}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  proposalFormat === f.id
+                    ? "bg-[#A8EB12] text-zinc-900"
+                    : "border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleGenerateProposals}
+              disabled={proposalsGenerating}
+              className="rounded-lg bg-[#A8EB12] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
+            >
+              {proposalsGenerating ? "Generuji…" : "Vygenerovat návrhy (min. 5)"}
+            </button>
+          </div>
+          {proposalsError && (
+            <p className="mt-3 text-sm text-red-400">{proposalsError}</p>
+          )}
+          {proposalsLoading && <p className="mt-3 text-sm text-zinc-500">Načítám návrhy…</p>}
+          {!proposalsLoading && proposals.length > 0 && (
+            <div className="mt-6 space-y-6">
+              <div>
+                <h3 className="font-medium text-[#A8EB12] mb-2">Projekt – výběr (zobrazí se klientovi)</h3>
+                <div className="space-y-3">
+                  {proposals.filter((p) => p.selected_for_client).length === 0 ? (
+                    <p className="text-sm text-zinc-500">Zatím žádný návrh ve výběru. Zaškrtněte níže.</p>
+                  ) : (
+                    proposals
+                      .filter((p) => p.selected_for_client)
+                      .map((p) => (
+                        <div key={p.id} className="rounded-lg border border-[#A8EB12]/30 bg-white/5 p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-xs font-medium text-zinc-500 uppercase">{p.format}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleProposalSelection(p.id, false)}
+                              className="text-xs text-zinc-400 hover:text-red-400"
+                            >
+                              Odebrat z výběru
+                            </button>
+                          </div>
+                          <p className="mt-2 text-sm"><span className="text-zinc-500">Hook:</span> <span className="text-zinc-200">{p.hook}</span></p>
+                          <p className="mt-1 text-sm"><span className="text-zinc-500">Body:</span> <span className="text-zinc-200">{p.body}</span></p>
+                          <p className="mt-1 text-sm"><span className="text-zinc-500">CTA:</span> <span className="text-zinc-200">{p.cta}</span></p>
+                          <p className="mt-1 text-sm"><span className="text-zinc-500">Vizuál:</span> <span className="text-zinc-200">{p.visual_brief}</span></p>
+                          {p.hashtags?.length > 0 && <p className="mt-1 text-sm text-zinc-400">{p.hashtags.join(" ")}</p>}
+                        </div>
+                      ))
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3 className="font-medium text-zinc-300 mb-2">Návrhy (zařadit do výběru)</h3>
+                <div className="space-y-3">
+                  {proposals
+                    .filter((p) => !p.selected_for_client)
+                    .map((p) => (
+                      <div key={p.id} className="rounded-lg border border-white/10 bg-white/5 p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-xs font-medium text-zinc-500 uppercase">{p.format}</span>
+                          <label className="flex items-center gap-2 text-sm text-zinc-400 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={false}
+                              onChange={() => handleToggleProposalSelection(p.id, true)}
+                              className="rounded border-white/20"
+                            />
+                            Zařadit do výběru
+                          </label>
+                        </div>
+                        <p className="mt-2 text-sm"><span className="text-zinc-500">Hook:</span> <span className="text-zinc-200">{p.hook}</span></p>
+                        <p className="mt-1 text-sm"><span className="text-zinc-500">Body:</span> <span className="text-zinc-200">{p.body}</span></p>
+                        <p className="mt-1 text-sm"><span className="text-zinc-500">CTA:</span> <span className="text-zinc-200">{p.cta}</span></p>
+                        <p className="mt-1 text-sm"><span className="text-zinc-500">Vizuál:</span> <span className="text-zinc-200">{p.visual_brief}</span></p>
+                        {p.hashtags?.length > 0 && <p className="mt-1 text-sm text-zinc-400">{p.hashtags.join(" ")}</p>}
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
           )}
         </section>

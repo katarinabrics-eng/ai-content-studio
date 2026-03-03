@@ -25,6 +25,25 @@ type ProjectData = {
   } | null;
 };
 
+type ClientProposal = {
+  id: string;
+  format: string;
+  hook: string;
+  body: string;
+  cta: string;
+  hashtags: string[];
+  visual_brief: string;
+  created_at: string;
+};
+
+const FORMAT_LABELS: Record<string, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  letak: "Leták",
+  carousel: "Carousel",
+};
+
 const CLIENT_VISIBLE_STATUSES = PROJECT_STATUS_ORDER.filter(
   (s) => s !== "WAITING_PAYMENT" && s !== "ERROR"
 );
@@ -111,6 +130,7 @@ export default function ClientProjectPage() {
   const params = useParams();
   const projectCode = params.projectCode as string;
   const [project, setProject] = useState<ProjectData | null>(null);
+  const [proposals, setProposals] = useState<ClientProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -131,6 +151,16 @@ export default function ClientProjectPage() {
       }
     }
     fetchProject();
+  }, [projectCode]);
+
+  useEffect(() => {
+    if (!projectCode) return;
+    fetch(`/api/client/proposals?code=${encodeURIComponent(projectCode)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && Array.isArray(d.proposals)) setProposals(d.proposals);
+      })
+      .catch(() => {});
   }, [projectCode]);
 
   if (loading) {
@@ -201,6 +231,41 @@ export default function ClientProjectPage() {
               >
                 Vyplnit dotazník
               </a>
+            </div>
+          )}
+
+          {/* Výběr návrhů – zobrazí se klientovi */}
+          {proposals.length > 0 && (
+            <div className="glass-panel p-6 sm:col-span-2 border-lucifera-lime/20">
+              <h2 className="font-semibold text-white flex items-center gap-2">
+                <span className="text-lucifera-lime">✨</span> Výběr návrhů pro vás
+              </h2>
+              <p className="mt-2 text-white/70 text-sm">
+                Níže jsou návrhy příspěvků vybrané pro váš projekt. Můžete je dále upravit s naším týmem.
+              </p>
+              <div className="mt-4 space-y-4">
+                {proposals.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
+                  >
+                    <span className="text-xs font-medium text-lucifera-lime/90 uppercase">
+                      {FORMAT_LABELS[p.format] ?? p.format} · Návrh {i + 1}
+                    </span>
+                    <p className="mt-2 font-medium text-white">{p.hook}</p>
+                    <p className="mt-1 text-sm text-white/80">{p.body}</p>
+                    <p className="mt-2 text-sm text-lucifera-lime">{p.cta}</p>
+                    {p.visual_brief && (
+                      <p className="mt-2 text-sm text-white/60">
+                        <span className="text-white/50">Návrh vizuálu:</span> {p.visual_brief}
+                      </p>
+                    )}
+                    {p.hashtags?.length > 0 && (
+                      <p className="mt-2 text-xs text-white/50">{p.hashtags.join(" ")}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
