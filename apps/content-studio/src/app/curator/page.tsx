@@ -56,13 +56,30 @@ export default async function CuratorDashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800">Kurátor – přehled podle stavu</h1>
-        <Link
-          href="/drafts"
-          className="rounded-md bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
-        >
-          Návrhy postů
-        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Kurátor – přehled podle stavu</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Pouze zakázky. Pro plnou pracovní plochu (zakázky + projekty + diagnostika) otevři{" "}
+            <Link href="/redakce" className="font-medium text-slate-700 underline hover:text-slate-900">
+              Redakční okno
+            </Link>
+            .
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link
+            href="/redakce"
+            className="rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-700 hover:bg-slate-50"
+          >
+            Redakční okno
+          </Link>
+          <Link
+            href="/drafts"
+            className="rounded-md bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
+          >
+            Návrhy postů
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
