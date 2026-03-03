@@ -102,6 +102,13 @@ export default function AdminClientDetailPage() {
         <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
           <h1 className="text-xl font-bold text-white">Detail klienta</h1>
           <p className="mt-1 text-sm text-zinc-500">Vytvořeno: {new Date(project.created_at).toLocaleString("cs-CZ")}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link href={`/admin/clients/${id}/style`} className="text-sm text-zinc-400 hover:text-[#A8EB12]">Styl</Link>
+            <span className="text-zinc-600">·</span>
+            <Link href={`/admin/clients/${id}/generate`} className="text-sm text-zinc-400 hover:text-[#A8EB12]">Generování</Link>
+            <span className="text-zinc-600">·</span>
+            <Link href={`/admin/clients/${id}/approve`} className="text-sm text-zinc-400 hover:text-[#A8EB12]">Schválení</Link>
+          </div>
 
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             <div>
