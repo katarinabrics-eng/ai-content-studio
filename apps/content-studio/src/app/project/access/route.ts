@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   // Prefer redirect to client dashboard (card layout) when we have project_code
   const project = await getProjectById(projectId);
   const projectCode = (project as { project_code?: string | null } | null)?.project_code;
-  const redirectPath = projectCode ? `/client/${encodeURIComponent(projectCode)}` : "/project";
+  const redirectPath = "/kreativa";
 
   const redirectUrl = new URL(redirectPath, request.url);
   const res = NextResponse.redirect(redirectUrl);

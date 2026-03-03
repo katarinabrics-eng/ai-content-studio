@@ -34,28 +34,59 @@ const DIAG_STATUS_LABELS: Record<string, string> = {
   done: "Hotovo",
 };
 
-export default async function RedakcePage() {
-  const supabase = getSupabaseClient();
-
-  const [jobsResult, projects, clientProjects] = await Promise.all([
-    supabase
+async function loadJobs(): Promise<{ jobs: JobRow[]; clientMap: Record<string, { name: string; email: string } | null> }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data: rows, error } = await supabase
       .from("client_jobs")
       .select("id, client_id, week_key, status, due_at, updated_at")
-      .order("updated_at", { ascending: false }),
-    listProjects(),
-    listClientProjects(),
+      .order("updated_at", { ascending: false });
+    if (error) return { jobs: [], clientMap: {} };
+    const jobs = (rows ?? []) as JobRow[];
+    const clientIds = Array.from(new Set(jobs.map((j) => j.client_id)));
+    const clientMap: Record<string, { name: string; email: string } | null> = {};
+    await Promise.all(
+      clientIds.map(async (id) => {
+        const c = await getClientById(id);
+        clientMap[id] = c ? { name: c.name, email: c.email } : null;
+      })
+    );
+    return { jobs, clientMap };
+  } catch {
+    return { jobs: [], clientMap: {} };
+  }
+}
+
+async function loadProjects(): Promise<{
+  projects: ProjectWithBriefAndMeta[];
+  stateMap: Map<string, ProjectStateForStatus>;
+}> {
+  try {
+    const projects = await listProjects();
+    const stateMap = await getWorkflowStateForProjects(projects);
+    return { projects, stateMap };
+  } catch {
+    return { projects: [], stateMap: new Map() };
+  }
+}
+
+async function loadClientProjects(): Promise<ClientProjectRow[]> {
+  try {
+    return await listClientProjects();
+  } catch {
+    return [];
+  }
+}
+
+export default async function RedakcePage() {
+  const [jobsData, projectsData, clientProjects] = await Promise.all([
+    loadJobs(),
+    loadProjects(),
+    loadClientProjects(),
   ]);
 
-  const stateMap = await getWorkflowStateForProjects(projects);
-  const jobs = (jobsResult.data ?? []) as JobRow[];
-  const clientIds = Array.from(new Set(jobs.map((j) => j.client_id)));
-  const clientMap: Record<string, { name: string; email: string } | null> = {};
-  await Promise.all(
-    clientIds.map(async (id) => {
-      const c = await getClientById(id);
-      clientMap[id] = c ? { name: c.name, email: c.email } : null;
-    })
-  );
+  const { jobs, clientMap } = jobsData;
+  const { projects, stateMap } = projectsData;
 
   const byStatus = CLIENT_JOB_STATUS_ORDER.reduce(
     (acc, status) => {

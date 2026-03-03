@@ -31,6 +31,6 @@ export async function GET(request: Request) {
     },
     token: result.newToken,
     expiresAt: result.expiresAt.toISOString(),
-    redirectTo: "/client/onboarding",
+    redirectTo: "/kreativa",
   });
 }

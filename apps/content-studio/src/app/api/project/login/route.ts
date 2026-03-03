@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const project = result.project;
 
     const token = await createProjectSession(project.id);
-    const res = NextResponse.json({ ok: true, redirect: "/project" });
+    const res = NextResponse.json({ ok: true, redirect: "/kreativa" });
     const expires = new Date();
     expires.setDate(expires.getDate() + COOKIE_DAYS);
     res.cookies.set(COOKIE_NAME, token, {
