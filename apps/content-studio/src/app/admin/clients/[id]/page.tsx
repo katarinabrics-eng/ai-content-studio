@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import {
+  getDiagnostikaWorkflowStep,
+  getDiagBadgeClassesDark,
+  canDiagTransition,
+  type DiagWorkflowStatus,
+} from "@/lib/diagnostika-workflow";
 
 type ClientProject = {
   id: string;
@@ -18,6 +24,7 @@ type ClientProject = {
   booking_date: string | null;
   booking_time: string | null;
   status: string;
+  workflow_status?: string;
 };
 
 export default function AdminClientDetailPage() {
@@ -34,6 +41,21 @@ export default function AdminClientDetailPage() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  const setWorkflowStatus = useCallback(
+    (workflowStatus: DiagWorkflowStatus) => {
+      fetch(`/api/admin/client-projects/${id}/workflow`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workflow_status: workflowStatus }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok && d.project) setProject(d.project);
+        });
+    },
+    [id]
+  );
 
   useEffect(() => {
     fetchProject();
@@ -85,9 +107,36 @@ export default function AdminClientDetailPage() {
               {project.booking_date && project.booking_time && (
                 <p className="mt-1 text-zinc-400">Termín: {project.booking_date} {project.booking_time}</p>
               )}
-              <p className="mt-1 text-sm text-zinc-500">Stav: {project.status}</p>
             </div>
           </div>
+
+          {(() => {
+            const wf = getDiagnostikaWorkflowStep(project.workflow_status);
+            return (
+              <div className="mt-6 border-t border-white/10 pt-6">
+                <h2 className="text-sm font-semibold uppercase text-zinc-500">Workflow</h2>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <span className={`inline-flex rounded px-2 py-1 text-sm font-medium ${getDiagBadgeClassesDark(wf.badge)}`}>
+                    {wf.label}
+                  </span>
+                  {wf.who && <span className="text-sm text-zinc-500">Na tahu: {wf.who}</span>}
+                  <span className="text-sm text-zinc-500" title={wf.currentAction}>Krok {wf.step}/{wf.total}</span>
+                </div>
+                <p className="mt-1 text-sm text-zinc-400">{wf.currentAction}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {canDiagTransition(project.workflow_status, "DIAG_READY_FOR_CLIENT") && (
+                    <button type="button" onClick={() => setWorkflowStatus("DIAG_READY_FOR_CLIENT")} className="rounded-lg bg-white/10 px-3 py-1.5 text-sm text-zinc-300 hover:bg-white/20">Připravit pro klienta</button>
+                  )}
+                  {canDiagTransition(project.workflow_status, "DIAG_SENT_TO_CLIENT") && (
+                    <button type="button" onClick={() => setWorkflowStatus("DIAG_SENT_TO_CLIENT")} className="rounded-lg bg-white/10 px-3 py-1.5 text-sm text-zinc-300 hover:bg-white/20">Zasláno</button>
+                  )}
+                  {canDiagTransition(project.workflow_status, "DIAG_AWAITING_CURATOR") && (
+                    <button type="button" onClick={() => setWorkflowStatus("DIAG_AWAITING_CURATOR")} className="rounded-lg bg-white/10 px-3 py-1.5 text-sm text-zinc-300 hover:bg-white/20">Zpět na kurátora</button>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           <div className="mt-8 border-t border-white/10 pt-6">
             <h2 className="text-sm font-semibold uppercase text-zinc-500">Vstup</h2>

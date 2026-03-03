@@ -2,10 +2,17 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import {
+  getDiagnostikaWorkflowStep,
+  getDiagBadgeClassesDark,
+  canDiagTransition,
+  type DiagWorkflowStatus,
+} from "@/lib/diagnostika-workflow";
 
 type ClientProject = {
   id: string;
   created_at: string;
+  updated_at?: string;
   name: string | null;
   email: string | null;
   web_url: string | null;
@@ -13,6 +20,7 @@ type ClientProject = {
   booking_date: string | null;
   booking_time: string | null;
   status: string;
+  workflow_status?: string;
 };
 
 export default function AdminClientsPage() {
@@ -27,6 +35,21 @@ export default function AdminClientsPage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const setWorkflowStatus = useCallback(
+    (projectId: string, workflowStatus: DiagWorkflowStatus) => {
+      fetch(`/api/admin/client-projects/${projectId}/workflow`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workflow_status: workflowStatus }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok) fetchProjects();
+        });
+    },
+    [fetchProjects]
+  );
 
   useEffect(() => {
     fetchProjects();
@@ -71,36 +94,56 @@ export default function AdminClientsPage() {
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-zinc-500">Web / vstup</th>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-zinc-500">Platba</th>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-zinc-500">Termín</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-zinc-500">Stav</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase text-zinc-500">Detail</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-zinc-500">Workflow</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase text-zinc-500">Akce / Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
-                {projects.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/5">
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-zinc-400">
-                      {new Date(p.created_at).toLocaleDateString("cs-CZ")}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-zinc-200">{p.email ?? "—"}</td>
-                    <td className="max-w-[180px] truncate px-4 py-3 text-sm text-zinc-400" title={p.web_url ?? ""}>
-                      {p.web_url || "ruční vstup"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${p.payment_status === "paid" ? "bg-green-500/20 text-green-300" : p.payment_status === "pending" ? "bg-amber-500/20 text-amber-300" : "bg-white/10 text-zinc-400"}`}>
-                        {p.payment_status === "paid" ? "Zaplaceno" : p.payment_status === "pending" ? "Čeká" : "—"}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-zinc-400">
-                      {p.booking_date && p.booking_time ? `${p.booking_date} ${p.booking_time}` : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-zinc-400">{p.status}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/clients/${p.id}`} className="text-sm font-medium text-[#A8EB12] hover:underline">
-                        Otevřít
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                {projects.map((p) => {
+                  const wf = getDiagnostikaWorkflowStep(p.workflow_status);
+                  return (
+                    <tr key={p.id} className="hover:bg-white/5">
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-zinc-400">
+                        {new Date(p.created_at).toLocaleDateString("cs-CZ")}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-zinc-200">{p.email ?? "—"}</td>
+                      <td className="max-w-[180px] truncate px-4 py-3 text-sm text-zinc-400" title={p.web_url ?? ""}>
+                        {p.web_url || "ruční vstup"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${p.payment_status === "paid" ? "bg-green-500/20 text-green-300" : p.payment_status === "pending" ? "bg-amber-500/20 text-amber-300" : "bg-white/10 text-zinc-400"}`}>
+                          {p.payment_status === "paid" ? "Zaplaceno" : p.payment_status === "pending" ? "Čeká" : "—"}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-zinc-400">
+                        {p.booking_date && p.booking_time ? `${p.booking_date} ${p.booking_time}` : "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col gap-0.5">
+                          <span className={`inline-flex w-fit rounded px-2 py-0.5 text-xs font-medium ${getDiagBadgeClassesDark(wf.badge)}`}>
+                            {wf.label}
+                          </span>
+                          {wf.who && <span className="text-[10px] text-zinc-500">Na tahu: {wf.who}</span>}
+                          <span className="text-[10px] text-zinc-500" title={wf.currentAction}>Krok {wf.step}/{wf.total}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex flex-wrap items-center justify-end gap-1">
+                          {canDiagTransition(p.workflow_status, "DIAG_READY_FOR_CLIENT") && (
+                            <button type="button" onClick={() => setWorkflowStatus(p.id, "DIAG_READY_FOR_CLIENT")} className="rounded bg-white/10 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-white/20">Připravit pro klienta</button>
+                          )}
+                          {canDiagTransition(p.workflow_status, "DIAG_SENT_TO_CLIENT") && (
+                            <button type="button" onClick={() => setWorkflowStatus(p.id, "DIAG_SENT_TO_CLIENT")} className="rounded bg-white/10 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-white/20">Zasláno</button>
+                          )}
+                          {canDiagTransition(p.workflow_status, "DIAG_AWAITING_CURATOR") && (
+                            <button type="button" onClick={() => setWorkflowStatus(p.id, "DIAG_AWAITING_CURATOR")} className="rounded bg-white/10 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-white/20">Zpět na kurátora</button>
+                          )}
+                          <Link href={`/admin/clients/${p.id}`} className="text-sm font-medium text-[#A8EB12] hover:underline ml-1">Otevřít</Link>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

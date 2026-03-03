@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "./supabase-server";
+import type { DiagWorkflowStatus } from "./diagnostika-workflow";
 
 export type PaymentStatus = "none" | "pending" | "paid";
 export type ClientProjectStatus = "new" | "paid" | "in_progress" | "done";
@@ -17,6 +18,7 @@ export type ClientProjectRow = {
   booking_date: string | null;
   booking_time: string | null;
   status: ClientProjectStatus;
+  workflow_status: DiagWorkflowStatus;
 };
 
 export async function createClientProject(params: {
@@ -31,6 +33,7 @@ export async function createClientProject(params: {
       web_url: params.web_url ?? null,
       manual_input: params.manual_input ?? null,
       scan_result: params.scan_result ?? {},
+      workflow_status: "DIAG_AWAITING_CURATOR",
       updated_at: new Date().toISOString(),
     })
     .select("id")
@@ -38,6 +41,21 @@ export async function createClientProject(params: {
 
   if (error) throw error;
   return { id: (data as { id: string }).id };
+}
+
+export async function updateClientProjectWorkflowStatus(
+  projectId: string,
+  workflowStatus: DiagWorkflowStatus
+): Promise<ClientProjectRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("client_projects")
+    .update({ workflow_status: workflowStatus, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .select()
+    .single();
+  if (error) return null;
+  return data as ClientProjectRow;
 }
 
 export async function updateClientProjectEmail(projectId: string, email: string): Promise<void> {
