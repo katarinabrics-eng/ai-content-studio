@@ -5,7 +5,7 @@ import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
 import { ScanRitualLoading } from "./ScanRitualLoading";
 
 /** Doplňující otázky dle systémového promptu v2.0 – vždy volby, nikdy přímé textové otázky. */
-const GUIDANCE_QUESTIONS = [
+const GUIDANCE_QUESTIONS_FULL = [
   { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
   { id: "audience", question: "Kdo je váš typický klient?", options: ["Podnikatelé a manažeři", "Ženy budující osobní značku", "Malé a střední firmy", "Kreativci a freelanceři"] },
   { id: "goals", question: "Co je hlavní cíl komunikace na sociálních sítích?", options: ["Budovat důvěru a autoritu", "Generovat přímé poptávky", "Vzdělávat a inspirovat", "Ukázat zákulisí a osobnost"] },
@@ -15,6 +15,8 @@ const GUIDANCE_QUESTIONS = [
   { id: "business_phase", question: "V jaké fázi podnikání jste?", options: ["Začínám, hledám první klienty", "Mám klienty, chci růst", "Rebranding / nový směr", "Škáluju, chci systém"] },
   { id: "success_definition", question: "Co pro vás znamená úspěch za 3 měsíce?", options: ["Nové poptávky z internetu", "Silnější brand a viditelnost", "Větší engagement komunity", "Konkrétní počet nových klientů"] },
 ];
+/** V diagnostice zobrazujeme max 5 otázek (VIBE: „max 4–5 doplňujících otázek“). */
+const GUIDANCE_QUESTIONS = GUIDANCE_QUESTIONS_FULL.slice(0, 5);
 
 type BrandScore = { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
 type VisualStyle = { primaryColor?: string; secondaryColor?: string; mood?: string; typography?: string };
