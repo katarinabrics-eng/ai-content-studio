@@ -16,6 +16,7 @@ type ClientProject = {
   name: string | null;
   email: string | null;
   web_url: string | null;
+  manual_input: string | null;
   payment_status: string;
   booking_date: string | null;
   booking_time: string | null;
