@@ -20,11 +20,11 @@ export function projectToStrategistParams(project: ProjectWithBrief): Record<str
   const note = brief?.note ?? "";
   const combined = [brand, brief?.industry, goal].filter(Boolean).join(" · ");
   return {
-    produkt_sluzba: combined || project.client_email ?? "",
+    produkt_sluzba: combined || (project.client_email ?? ""),
     tema_napad: goal || brand,
     cil: goal || brand,
     sdeleni_text: note || goal || brand,
-    produkt: brand || project.plan_id ?? "",
+    produkt: brand || (project.plan_id ?? ""),
   };
 }
 
