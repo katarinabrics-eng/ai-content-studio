@@ -95,10 +95,13 @@ export function ScanResultScrollExperience({
   result,
   projectId,
   onBack,
+  onEnterWorkspace,
 }: {
   result: ScanResult;
   projectId: string | null;
   onBack?: () => void;
+  /** Po odeslání e-mailu: vstup do pracovní plochy (tabbed Brand DNA atd.). */
+  onEnterWorkspace?: () => void;
 }) {
   const total = Math.min(100, Math.max(0, result.brandScore?.total ?? 0));
   const summary = result.summary?.trim() ?? "";
@@ -492,7 +495,18 @@ export function ScanResultScrollExperience({
               )}
             </>
           ) : (
-            <p className="text-lime-400 font-medium">Děkujeme. Budeme vás kontaktovat.</p>
+            <div className="space-y-4">
+              <p className="text-lime-400 font-medium">Děkujeme. Budeme vás kontaktovat.</p>
+              {onEnterWorkspace && (
+                <button
+                  type="button"
+                  onClick={onEnterWorkspace}
+                  className="rounded-xl bg-lime-400 text-black font-semibold px-6 py-3 hover:bg-lime-300 transition-all"
+                >
+                  Vstoupit do pracovní plochy
+                </button>
+              )}
+            </div>
           )}
         </div>
       </Section>

@@ -160,6 +160,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [brandFile, setBrandFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [teaserView, setTeaserView] = useState<"scroll" | "workspace">("scroll");
   const [leadEmail, setLeadEmail] = useState("");
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
@@ -346,6 +347,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setBrandFile(null);
     setImageFile(null);
     setProjectId(null);
+    setTeaserView("scroll");
   };
 
   async function handleSaveLead() {
@@ -400,7 +402,16 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       {phase === "loading" && diagnostika && <ScanRitualLoading />}
 
       {phase === "teaser" && diagnostika && result ? (
-        <StrategyOutput result={result} projectId={projectId} onBack={reset} />
+        teaserView === "scroll" ? (
+          <ScanResultScrollExperience
+            result={result}
+            projectId={projectId}
+            onBack={reset}
+            onEnterWorkspace={() => setTeaserView("workspace")}
+          />
+        ) : (
+          <StrategyOutput result={result} projectId={projectId} onBack={reset} />
+        )
       ) : (
       <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
 
