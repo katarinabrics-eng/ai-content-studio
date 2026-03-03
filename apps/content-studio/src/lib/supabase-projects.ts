@@ -346,6 +346,35 @@ export async function getProjectById(id: string): Promise<ProjectWithBriefAndMet
   };
 }
 
+/** Aktualizuje internal_notes v project_admin_meta (upsert řádku pro project_id). */
+export async function updateProjectInternalNotes(
+  projectId: string,
+  internalNotes: string | null
+): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { data: existing } = await supabase
+    .from("project_admin_meta")
+    .select("project_id")
+    .eq("project_id", projectId)
+    .maybeSingle();
+  const now = new Date().toISOString();
+  if (existing) {
+    const { error } = await supabase
+      .from("project_admin_meta")
+      .update({ internal_notes: internalNotes ?? null, updated_at: now })
+      .eq("project_id", projectId);
+    return !error;
+  }
+  const { error } = await supabase.from("project_admin_meta").insert({
+    project_id: projectId,
+    internal_notes: internalNotes ?? null,
+    brief_completeness: 0,
+    missing_fields: [],
+    updated_at: now,
+  });
+  return !error;
+}
+
 /** Pro klienta: projekt + brief (bez admin_meta). */
 export async function getProjectByIdForClient(id: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
   const supabase = getSupabaseClient();
