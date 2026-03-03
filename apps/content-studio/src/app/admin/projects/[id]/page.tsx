@@ -420,6 +420,48 @@ export default function AdminProjectDetailPage() {
           </ul>
         </section>
 
+        <section className="mt-6 rounded-lg border border-stone-200 bg-white p-6">
+          <h2 className="font-semibold text-stone-900">Stratega</h2>
+          <p className="mt-1 text-sm text-stone-600">
+            Vyber stratega a spusť ho – výstup vychází z dat projektu a briefu.
+          </p>
+          <div className="mt-4 flex flex-wrap items-end gap-3">
+            <div className="min-w-[200px]">
+              <label className="block text-xs text-stone-500 mb-1">Strateg</label>
+              <select
+                value={selectedStrategistId}
+                onChange={(e) => setSelectedStrategistId((e.target.value || "") as StrategistId | "")}
+                className="w-full rounded border border-stone-300 px-3 py-2 text-sm bg-white"
+              >
+                {STRATEGISTS.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} – {s.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={handleRunStrategist}
+              disabled={strategistLoading || !selectedStrategistId}
+              className="rounded bg-[#A8EB12] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
+            >
+              {strategistLoading ? "Spouštím…" : "Spustit stratega"}
+            </button>
+          </div>
+          {strategistError && (
+            <p className="mt-3 text-sm text-red-600">{strategistError}</p>
+          )}
+          {strategistOutput != null && strategistOutput !== "" && (
+            <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <p className="text-xs font-medium text-stone-500 mb-2">Výstup</p>
+              <pre className="whitespace-pre-wrap text-sm text-stone-800 font-sans max-h-96 overflow-y-auto">
+                {strategistOutput}
+              </pre>
+            </div>
+          )}
+        </section>
+
         <section className="mt-6 rounded-lg border-2 border-amber-200 bg-amber-50 p-6">
           <h2 className="font-semibold text-stone-900 flex items-center gap-2">
             <span className="text-amber-600">⚡</span>
