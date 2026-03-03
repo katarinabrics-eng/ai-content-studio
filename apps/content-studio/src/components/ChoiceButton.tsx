@@ -1,5 +1,7 @@
 "use client";
 
+import { tokens } from "@/lib/design-tokens";
+
 /** Klikací pill tlačítko pro volby (single nebo multi). */
 export function ChoiceButton({
   label,
@@ -19,12 +21,16 @@ export function ChoiceButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={multi ? "manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed" : "manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200"}
+      className={
+        multi
+          ? "manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          : "manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200"
+      }
       style={{
-        background: selected ? "rgba(168,224,99,0.18)" : "rgba(255,255,255,0.06)",
-        border: "1px solid " + (selected ? "rgba(168,224,99,0.35)" : "rgba(255,255,255,0.08)"),
-        color: selected ? "#a8e063" : "#a1a1aa",
-        boxShadow: selected ? "0 0 20px rgba(168,224,99,0.12)" : "none",
+        background: selected ? `${tokens.colors.accent}18` : tokens.colors.card,
+        border: `1px solid ${selected ? tokens.colors.accent + "99" : tokens.colors.border}`,
+        color: selected ? tokens.colors.accent : tokens.colors.muted,
+        boxShadow: selected ? `0 0 20px ${tokens.colors.accent}20` : "none",
       }}
     >
       {label}

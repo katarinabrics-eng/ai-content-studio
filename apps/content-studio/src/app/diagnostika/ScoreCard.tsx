@@ -1,11 +1,12 @@
 "use client";
 
 import { ScoreRing } from "@/components/ScoreRing";
+import { tokens } from "@/lib/design-tokens";
 
 const cardStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.025)",
-  border: "1px solid rgba(255,255,255,0.07)",
-  borderRadius: 14,
+  background: tokens.colors.card,
+  border: `1px solid ${tokens.colors.border}`,
+  borderRadius: 16,
   padding: 20,
   marginBottom: 12,
 };
@@ -26,7 +27,7 @@ export function ScoreCard({
 }) {
   const lblStyle: React.CSSProperties = {
     fontSize: 9,
-    color: "#444",
+    color: tokens.colors.muted,
     textTransform: "uppercase",
     letterSpacing: "0.15em",
     marginBottom: 5,
@@ -42,8 +43,8 @@ export function ScoreCard({
             alt="screenshot webu"
             style={{
               width: "100%",
-              borderRadius: 8,
-              border: "1px solid rgba(255,255,255,0.05)",
+              borderRadius: 12,
+              border: `1px solid ${tokens.colors.border}`,
               maxHeight: 200,
               objectFit: "cover",
               objectPosition: "top",
@@ -54,9 +55,9 @@ export function ScoreCard({
       <div style={{ ...cardStyle, display: "flex", gap: 18, alignItems: "center" }}>
         <ScoreRing score={score} />
         <div>
-          {url && <p style={{ fontSize: 12, color: "#333", marginBottom: 4 }}>{url}</p>}
-          {subtitle && <p style={{ fontSize: 14, color: "#ccc", fontWeight: 600, marginBottom: 4 }}>{subtitle}</p>}
-          {hint && <p style={{ fontSize: 12, color: "#444" }}>{hint}</p>}
+          {url && <p style={{ fontSize: 12, color: tokens.colors.muted, marginBottom: 4 }}>{url}</p>}
+          {subtitle && <p style={{ fontSize: 14, color: tokens.colors.text, fontWeight: 600, marginBottom: 4 }}>{subtitle}</p>}
+          {hint && <p style={{ fontSize: 12, color: tokens.colors.muted }}>{hint}</p>}
         </div>
       </div>
     </>
