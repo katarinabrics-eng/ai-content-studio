@@ -114,6 +114,43 @@ export function ScanResultScrollExperience({
   const [openCalendar, setOpenCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+
+  async function handleSaveLead() {
+    const trimmed = leadEmail.trim();
+    if (!trimmed) return;
+    setLeadSubmitting(true);
+    setLeadError(null);
+    try {
+      const res = await fetch("/api/analysis-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmed,
+          analyzedUrl: "",
+          result: {
+            brandScore: result.brandScore,
+            brandDna: result.brandDna,
+            summary: result.summary,
+          },
+          scrapedMeta: {},
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setLeadSubmitted(true);
+      } else {
+        setLeadError(data.error ?? "Nepodařilo se odeslat.");
+      }
+    } catch {
+      setLeadError("Chyba při odesílání. Zkuste to znovu.");
+    } finally {
+      setLeadSubmitting(false);
+    }
+  }
 
   function Collapsible({
     children,
@@ -408,6 +445,45 @@ export function ScanResultScrollExperience({
         <p className="text-2xl md:text-3xl font-semibold text-white max-w-lg mx-auto leading-relaxed">
           Značka má potenciál.<br />Otázka je, zda ho chcete využít.
         </p>
+      </Section>
+
+      {/* 11b. E-mail pro novinky a uložení dat – nad cenou */}
+      <Section className="pb-8">
+        <div className="bg-[#0e0f14] border border-white/10 rounded-2xl p-8 max-w-xl mx-auto shadow-2xl text-left">
+          <h3 className="text-lg font-semibold text-white mb-2">Nechte nám e-mail</h3>
+          <p className="text-zinc-400 text-sm mb-4">
+            Chcete dostávat novinky a nabídky služeb na míru? Zadejte e-mail – nebudeme vás spamovat.
+          </p>
+          <p className="text-zinc-500 text-sm mb-6">
+            Vaše zadaná data u nás zůstanou. Když se k nám jednou vrátíte, nic se vám neztratí.
+          </p>
+          {!leadSubmitted ? (
+            <>
+              <div className="flex flex-wrap gap-3 items-end">
+                <input
+                  type="email"
+                  placeholder="vas@email.cz"
+                  value={leadEmail}
+                  onChange={(e) => setLeadEmail(e.target.value)}
+                  className="flex-1 min-w-[200px] rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                />
+                <button
+                  type="button"
+                  onClick={handleSaveLead}
+                  disabled={leadSubmitting || !leadEmail.trim()}
+                  className="rounded-xl bg-lime-400 text-black font-semibold px-6 py-3 hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  {leadSubmitting ? "Odesílám…" : "Odeslat"}
+                </button>
+              </div>
+              {leadError && (
+                <p className="mt-3 text-sm text-red-400">{leadError}</p>
+              )}
+            </>
+          ) : (
+            <p className="text-lime-400 font-medium">Děkujeme. Budeme vás kontaktovat.</p>
+          )}
+        </div>
       </Section>
 
       {/* 12. CTA blok */}
