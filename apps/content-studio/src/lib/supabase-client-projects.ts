@@ -1,5 +1,18 @@
+import { randomBytes } from "crypto";
 import { getSupabaseClient } from "./supabase-server";
 import type { DiagWorkflowStatus } from "./diagnostika-workflow";
+
+const ACCESS_DAYS = 7;
+
+function generateAccessToken(): string {
+  return randomBytes(32).toString("hex");
+}
+
+function getAccessExpiresAt(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + ACCESS_DAYS);
+  return d.toISOString();
+}
 
 export type PaymentStatus = "none" | "pending" | "paid";
 export type ClientProjectStatus = "new" | "paid" | "in_progress" | "done";
@@ -19,6 +32,8 @@ export type ClientProjectRow = {
   booking_time: string | null;
   status: ClientProjectStatus;
   workflow_status: DiagWorkflowStatus;
+  access_token: string | null;
+  access_expires_at: string | null;
 };
 
 export async function createClientProject(params: {
@@ -27,6 +42,8 @@ export async function createClientProject(params: {
   scan_result: Record<string, unknown>;
 }): Promise<{ id: string }> {
   const supabase = getSupabaseClient();
+  const access_token = generateAccessToken();
+  const access_expires_at = getAccessExpiresAt();
   const { data, error } = await supabase
     .from("client_projects")
     .insert({
@@ -35,6 +52,8 @@ export async function createClientProject(params: {
       scan_result: params.scan_result ?? {},
       workflow_status: "DIAG_AWAITING_CURATOR",
       updated_at: new Date().toISOString(),
+      access_token,
+      access_expires_at,
     })
     .select("id")
     .single();
@@ -133,4 +152,21 @@ export async function getClientProjectById(id: string): Promise<ClientProjectRow
   const { data, error } = await supabase.from("client_projects").select("*").eq("id", id).maybeSingle();
   if (error) throw error;
   return data as ClientProjectRow | null;
+}
+
+/** Vrací projekt při platném tokenu. Pokud token chybí nebo je po access_expires_at, vrací null. */
+export async function getClientProjectByAccessToken(token: string): Promise<ClientProjectRow | null> {
+  if (!token?.trim()) return null;
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("client_projects")
+    .select("*")
+    .eq("access_token", token.trim())
+    .maybeSingle();
+  if (error) return null;
+  const row = data as ClientProjectRow | null;
+  if (!row) return null;
+  const expiresAt = row.access_expires_at ? new Date(row.access_expires_at).getTime() : 0;
+  if (expiresAt > 0 && Date.now() > expiresAt) return null;
+  return row;
 }

@@ -221,7 +221,7 @@ export default async function RedakcePage() {
                         {new Date(cp.created_at).toLocaleDateString("cs-CZ")}
                       </td>
                       <td className="px-4 py-3 text-sm text-zinc-200">
-                        {cp.name || cp.email || "—"}
+                        {cp.name || cp.email || cp.web_url || (cp.manual_input ? (cp.manual_input.slice(0, 50) + (cp.manual_input.length > 50 ? "…" : "")) : "") || "—"}
                         {cp.email && cp.name !== cp.email && (
                           <span className="block text-xs text-zinc-500">{cp.email}</span>
                         )}

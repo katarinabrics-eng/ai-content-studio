@@ -121,6 +121,7 @@ export function ScanResultScrollExperience({
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
   const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [accessUrl, setAccessUrl] = useState<string | null>(null);
 
   async function handleSaveLead() {
     const trimmed = leadEmail.trim();
@@ -146,11 +147,13 @@ export function ScanResultScrollExperience({
       if (data.ok) {
         if (projectId) {
           try {
-            await fetch("/api/diagnostika/update-email", {
+            const updateRes = await fetch("/api/diagnostika/update-email", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ projectId, email: trimmed }),
             });
+            const updateData = await updateRes.json();
+            if (updateData?.accessUrl) setAccessUrl(updateData.accessUrl);
           } catch {
             /* neblokovat – lead je uložen v analysis_leads */
           }
@@ -302,6 +305,16 @@ export function ScanResultScrollExperience({
           <span className="text-[10px] uppercase tracking-widest text-zinc-600">Lucifera Strategic Brand Scan™</span>
         </div>
       )}
+
+      {/* CTA: Chci – Prémiovou vizuální identitu (platba za Visual Board / konzultaci) */}
+      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 py-2.5 px-4 border-b border-white/5 bg-[#0c0c14]/95 backdrop-blur">
+        <a
+          href="/rezervace?from=premiova"
+          className="inline-flex items-center justify-center rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-[#0c0c14] hover:bg-[#b8f022]"
+        >
+          Chci – Prémiovou vizuální identitu
+        </a>
+      </div>
 
       {/* 1. HERO – Zrcadlo */}
       <Section>
@@ -497,6 +510,12 @@ export function ScanResultScrollExperience({
           ) : (
             <div className="space-y-4">
               <p className="text-lime-400 font-medium">Děkujeme. Budeme vás kontaktovat.</p>
+              {accessUrl && (
+                <p className="text-sm text-zinc-400">
+                  Váš odkaz pro návrat k výsledkům (platný 7 dní):{" "}
+                  <a href={accessUrl} className="text-lime-400 underline break-all" target="_blank" rel="noreferrer">{accessUrl}</a>
+                </p>
+              )}
               {onEnterWorkspace && (
                 <button
                   type="button"

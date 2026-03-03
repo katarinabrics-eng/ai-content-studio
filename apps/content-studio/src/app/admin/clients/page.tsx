@@ -106,7 +106,9 @@ export default function AdminClientsPage() {
                       <td className="whitespace-nowrap px-4 py-3 text-sm text-zinc-400">
                         {new Date(p.created_at).toLocaleDateString("cs-CZ")}
                       </td>
-                      <td className="px-4 py-3 text-sm text-zinc-200">{p.email ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-zinc-200">
+                        {p.email ?? p.web_url ?? (p.manual_input ? (p.manual_input.slice(0, 50) + (p.manual_input.length > 50 ? "…" : "")) : null) ?? "—"}
+                      </td>
                       <td className="max-w-[180px] truncate px-4 py-3 text-sm text-zinc-400" title={p.web_url ?? ""}>
                         {p.web_url || "ruční vstup"}
                       </td>

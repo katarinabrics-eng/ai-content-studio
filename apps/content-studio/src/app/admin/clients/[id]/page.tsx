@@ -81,6 +81,18 @@ export default function AdminClientDetailPage() {
   const score = project.scan_result?.brandScore as { total?: number } | undefined;
   const brandDna = project.scan_result?.brandDna as Record<string, unknown> | undefined;
   const summary = project.scan_result?.summary as string | undefined;
+  const pillarAnalysis = project.scan_result?.pillarAnalysis as Record<string, {
+    score?: number;
+    interpretation?: string;
+    observed?: string[];
+    notObserved?: string[];
+    reasoning?: string;
+    strategicOpportunity?: string;
+  }> | undefined;
+  const missingElements = (project.scan_result?.missingElements as string[] | undefined)
+    ?? (brandDna?.missingElements as string[] | undefined)
+    ?? [];
+  const PILLAR_NAMES: Record<string, string> = { light: "SVĚTLO", energy: "ENERGIE", architecture: "ARCHITEKTURA", identity: "IDENTITA", trust: "DŮVĚRA" };
 
   return (
     <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100">
@@ -148,11 +160,51 @@ export default function AdminClientDetailPage() {
           <div className="mt-8 border-t border-white/10 pt-6">
             <h2 className="text-sm font-semibold uppercase text-zinc-500">Výstup scanu</h2>
             {score?.total != null && <p className="mt-2 text-zinc-300">Skóre: <strong>{score.total}</strong> / 100</p>}
-            {summary && <p className="mt-2 text-zinc-300">{summary}</p>}
+
+            {pillarAnalysis && Object.keys(pillarAnalysis).length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xs font-semibold uppercase text-zinc-500">Pilíře (pillarAnalysis)</h3>
+                <div className="mt-2 space-y-4">
+                  {Object.entries(pillarAnalysis).map(([key, p]) => (
+                    <div key={key} className="rounded-lg bg-zinc-800/50 p-4 text-sm">
+                      <p className="font-medium text-zinc-200">{PILLAR_NAMES[key] ?? key} {p.score != null && <span className="text-zinc-500">— {p.score}/10</span>}</p>
+                      {p.interpretation && <p className="mt-2 text-zinc-300">{p.interpretation}</p>}
+                      {p.observed && p.observed.length > 0 && (
+                        <p className="mt-2"><span className="text-zinc-500">Zaznamenáno:</span> <span className="text-zinc-300">{p.observed.join("; ")}</span></p>
+                      )}
+                      {p.notObserved && p.notObserved.length > 0 && (
+                        <p className="mt-1"><span className="text-zinc-500">Chybí:</span> <span className="text-amber-200/90">{p.notObserved.join("; ")}</span></p>
+                      )}
+                      {p.reasoning && <p className="mt-2 text-zinc-400 italic">{p.reasoning}</p>}
+                      {p.strategicOpportunity && <p className="mt-1 text-[#A8EB12]">{p.strategicOpportunity}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {missingElements.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xs font-semibold uppercase text-zinc-500">Rizika (missingElements)</h3>
+                <ul className="mt-2 list-inside list-disc space-y-1 text-zinc-300">
+                  {missingElements.slice(0, 3).map((m, i) => (
+                    <li key={i}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {summary && (
+              <div className="mt-6">
+                <h3 className="text-xs font-semibold uppercase text-zinc-500">Doporučený posun (summary)</h3>
+                <p className="mt-2 text-zinc-300">{summary}</p>
+              </div>
+            )}
+
             {brandDna && (
-              <div className="mt-4 rounded-lg bg-zinc-800/50 p-4 text-sm">
-                <p className="font-medium text-zinc-200">Brand DNA</p>
-                <pre className="mt-2 overflow-auto max-h-60 whitespace-pre-wrap text-zinc-400">{JSON.stringify(brandDna, null, 2)}</pre>
+              <div className="mt-6 rounded-lg bg-zinc-800/50 p-4 text-sm">
+                <p className="font-medium text-zinc-200">Brand DNA (surová data)</p>
+                <pre className="mt-2 overflow-auto max-h-48 whitespace-pre-wrap text-zinc-400 text-xs">{JSON.stringify(brandDna, null, 2)}</pre>
               </div>
             )}
             {(!project.scan_result || Object.keys(project.scan_result).length === 0) && <p className="mt-2 text-zinc-500">Žádná data.</p>}

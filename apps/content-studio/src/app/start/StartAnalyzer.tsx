@@ -165,6 +165,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
   const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   function buildManualData(): string {
     const parts: string[] = [];
@@ -268,8 +269,15 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             }),
           });
           const saveData = await saveRes.json();
-          if (saveData.id) setProjectId(saveData.id);
-        } catch { /* ignore */ }
+          if (saveRes.ok && saveData?.id) {
+            setProjectId(saveData.id);
+            setSaveError(null);
+          } else {
+            setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit do projektu.");
+          }
+        } catch {
+          setSaveError("Výsledek se nepodařilo uložit do projektu. Zkuste to znovu nebo nás kontaktujte.");
+        }
         setPhase(total < 60 ? "guidance" : "teaser");
       } else if (diagnostika) {
         setPhase(total < 60 ? "guidance" : "teaser");
@@ -402,16 +410,23 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       {phase === "loading" && diagnostika && <ScanRitualLoading />}
 
       {phase === "teaser" && diagnostika && result ? (
-        teaserView === "scroll" ? (
-          <ScanResultScrollExperience
-            result={result}
-            projectId={projectId}
-            onBack={reset}
-            onEnterWorkspace={() => setTeaserView("workspace")}
-          />
-        ) : (
-          <StrategyOutput result={result} projectId={projectId} onBack={reset} />
-        )
+        <>
+          {saveError && (
+            <div role="alert" style={{ background: "rgba(220,80,80,0.12)", borderBottom: "1px solid rgba(220,80,80,0.3)", padding: "12px 22px", color: "#e8a0a0", fontSize: 13 }}>
+              {saveError}
+            </div>
+          )}
+          {teaserView === "scroll" ? (
+            <ScanResultScrollExperience
+              result={result}
+              projectId={projectId}
+              onBack={reset}
+              onEnterWorkspace={() => setTeaserView("workspace")}
+            />
+          ) : (
+            <StrategyOutput result={result} projectId={projectId} onBack={reset} />
+          )}
+        </>
       ) : (
       <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
 

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { updateClientProjectEmail } from "@/lib/supabase-client-projects";
+import { updateClientProjectEmail, getClientProjectById } from "@/lib/supabase-client-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** POST: Uloží e-mail k záznamu diagnostiky (client_projects). */
+/** POST: Uloží e-mail k záznamu diagnostiky (client_projects). Vrací accessUrl pro návrat klienta (magický odkaz). */
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
@@ -19,7 +19,15 @@ export async function POST(request: Request) {
     }
 
     await updateClientProjectEmail(projectId, email);
-    return NextResponse.json({ ok: true });
+    const project = await getClientProjectById(projectId);
+    const origin = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const protocol = request.headers.get("x-forwarded-proto") === "https" ? "https" : "http";
+    const base = origin ? `${protocol}://${origin}` : "";
+    const accessUrl =
+      project?.access_token && base
+        ? `${base}/diagnostika/view?token=${encodeURIComponent(project.access_token)}`
+        : undefined;
+    return NextResponse.json({ ok: true, accessUrl });
   } catch (e) {
     console.error("[diagnostika/update-email]", e);
     return NextResponse.json(
