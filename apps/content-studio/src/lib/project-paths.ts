@@ -23,6 +23,8 @@ export const PATH = {
   aiVisualIn: "ai/visual/in",
   aiVisualOut: "ai/visual/out",
   deliverablesFinal: "deliverables/final",
+  /** Výstup stratega (JSON: strategistId, output, createdAt). */
+  strategistOut: "ai/strategist/out.json",
 } as const;
 
 /** Plné cesty v rámci prefixu projektu (např. projects/LCF-xxx/v1/brief/brief.json) */

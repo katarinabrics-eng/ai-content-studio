@@ -3,6 +3,8 @@ import OpenAI from "openai";
 import { getProjectById } from "@/lib/supabase-projects";
 import { getStrategist, buildPrompt } from "@/lib/strategists/config";
 import { projectToStrategistParams, isValidStrategistId } from "@/lib/strategists/project-params";
+import { fullPath, PATH } from "@/lib/project-paths";
+import { uploadFile } from "@/lib/storage-upload";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,6 +59,22 @@ export async function POST(
     });
 
     const output = completion.choices[0]?.message?.content?.trim() ?? "";
+    const storagePrefix = (project as { storage_prefix?: string | null }).storage_prefix;
+    if (storagePrefix && typeof storagePrefix === "string") {
+      const path = fullPath(storagePrefix, PATH.strategistOut);
+      const payload = JSON.stringify(
+        { strategistId, output, createdAt: new Date().toISOString() },
+        null,
+        2
+      );
+      const uploaded = await uploadFile(path, payload, {
+        contentType: "application/json",
+        upsert: true,
+      });
+      if (!uploaded.ok) {
+        console.warn("[run-strategist] Uložení výstupu do složky projektu selhalo:", uploaded.error);
+      }
+    }
     return NextResponse.json({ ok: true, output });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
