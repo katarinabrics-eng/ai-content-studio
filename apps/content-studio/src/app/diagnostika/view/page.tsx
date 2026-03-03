@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -12,7 +13,7 @@ type AccessState =
   | { status: "not_found" }
   | { status: "ok"; project: { id: string; scan_result: Record<string, unknown>; access_expires_at: string | null } };
 
-export default function DiagnostikaViewPage() {
+function DiagnostikaViewContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
   const [state, setState] = useState<AccessState>({ status: "loading" });
@@ -90,5 +91,19 @@ export default function DiagnostikaViewPage() {
         onEnterWorkspace={undefined}
       />
     </main>
+  );
+}
+
+export default function DiagnostikaViewPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center text-zinc-400">
+          <p>Načítám…</p>
+        </main>
+      }
+    >
+      <DiagnostikaViewContent />
+    </Suspense>
   );
 }
