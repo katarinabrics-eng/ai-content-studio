@@ -27,7 +27,13 @@ export async function POST(request: Request) {
       project?.access_token && base
         ? `${base}/diagnostika/view?token=${encodeURIComponent(project.access_token)}`
         : undefined;
-    return NextResponse.json({ ok: true, accessUrl });
+    const shortUrl =
+      base && project?.short_code ? `${base}/d/${project.short_code}` : undefined;
+    return NextResponse.json({
+      ok: true,
+      accessUrl: shortUrl ?? accessUrl,
+      shortUrl: shortUrl ?? undefined,
+    });
   } catch (e) {
     console.error("[diagnostika/update-email]", e);
     return NextResponse.json(

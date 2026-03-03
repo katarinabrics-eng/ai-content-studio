@@ -3,9 +3,20 @@ import { getSupabaseClient } from "./supabase-server";
 import type { DiagWorkflowStatus } from "./diagnostika-workflow";
 
 const ACCESS_DAYS = 7;
+const SHORT_CODE_LENGTH = 8;
+const SHORT_CODE_CHARS = "abcdefghjkmnpqrstuvwxyz23456789";
 
 function generateAccessToken(): string {
   return randomBytes(32).toString("hex");
+}
+
+function generateShortCode(): string {
+  let s = "";
+  const bytes = randomBytes(SHORT_CODE_LENGTH);
+  for (let i = 0; i < SHORT_CODE_LENGTH; i++) {
+    s += SHORT_CODE_CHARS[bytes[i]! % SHORT_CODE_CHARS.length];
+  }
+  return s;
 }
 
 function getAccessExpiresAt(): string {
@@ -34,6 +45,7 @@ export type ClientProjectRow = {
   workflow_status: DiagWorkflowStatus;
   access_token: string | null;
   access_expires_at: string | null;
+  short_code: string | null;
 };
 
 export async function createClientProject(params: {
@@ -44,6 +56,7 @@ export async function createClientProject(params: {
   const supabase = getSupabaseClient();
   const access_token = generateAccessToken();
   const access_expires_at = getAccessExpiresAt();
+  const short_code = generateShortCode();
   const { data, error } = await supabase
     .from("client_projects")
     .insert({
@@ -54,6 +67,7 @@ export async function createClientProject(params: {
       updated_at: new Date().toISOString(),
       access_token,
       access_expires_at,
+      short_code,
     })
     .select("id")
     .single();
@@ -166,6 +180,22 @@ export async function getClientProjectByAccessToken(token: string): Promise<Clie
   if (error) return null;
   const row = data as ClientProjectRow | null;
   if (!row) return null;
+  const expiresAt = row.access_expires_at ? new Date(row.access_expires_at).getTime() : 0;
+  if (expiresAt > 0 && Date.now() > expiresAt) return null;
+  return row;
+}
+
+/** Vyhledá projekt podle krátkého kódu (pro /d/[shortCode]). Kontroluje platnost přístupu. */
+export async function getClientProjectByShortCode(shortCode: string): Promise<ClientProjectRow | null> {
+  if (!shortCode?.trim()) return null;
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("client_projects")
+    .select("*")
+    .eq("short_code", shortCode.trim())
+    .maybeSingle();
+  if (error || !data) return null;
+  const row = data as ClientProjectRow;
   const expiresAt = row.access_expires_at ? new Date(row.access_expires_at).getTime() : 0;
   if (expiresAt > 0 && Date.now() > expiresAt) return null;
   return row;

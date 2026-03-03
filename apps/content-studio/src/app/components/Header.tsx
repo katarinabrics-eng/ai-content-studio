@@ -73,6 +73,12 @@ export function Header() {
             )}
           </button>
           <a
+            href="/client/pristup"
+            className="shrink-0 text-sm text-stone-600 hover:text-stone-900 hidden sm:inline"
+          >
+            Pro klienty
+          </a>
+          <a
             href="/rezervace"
             className="rounded-lg bg-[#A8EB12] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 sm:px-5"
           >
@@ -95,6 +101,15 @@ export function Header() {
                 </a>
               </li>
             ))}
+            <li>
+              <a
+                href="/client/pristup"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-lg px-3 py-2 text-sm text-stone-700 hover:bg-stone-50"
+              >
+                Pro klienty
+              </a>
+            </li>
           </ul>
         </nav>
       )}
