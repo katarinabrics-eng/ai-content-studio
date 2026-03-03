@@ -65,6 +65,12 @@ export default function AdminProjectsPage() {
               Leady z analýzy
             </Link>
             <Link
+              href="/admin/kurator"
+              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10"
+            >
+              Kurátor
+            </Link>
+            <Link
               href="/admin/clients"
               className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10"
             >

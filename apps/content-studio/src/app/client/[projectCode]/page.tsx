@@ -36,6 +36,17 @@ type ClientProposal = {
   created_at: string;
 };
 
+type ContentPost = {
+  id: string;
+  status: string;
+  hook: string | null;
+  body: string | null;
+  cta: string | null;
+  canva_preview_url: string | null;
+  platform: string | null;
+  scheduled_for: string | null;
+};
+
 const FORMAT_LABELS: Record<string, string> = {
   facebook: "Facebook",
   instagram: "Instagram",
@@ -131,8 +142,11 @@ export default function ClientProjectPage() {
   const projectCode = params.projectCode as string;
   const [project, setProject] = useState<ProjectData | null>(null);
   const [proposals, setProposals] = useState<ClientProposal[]>([]);
+  const [contentPosts, setContentPosts] = useState<ContentPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [contentPostActionId, setContentPostActionId] = useState<string | null>(null);
+  const [revisionNote, setRevisionNote] = useState("");
 
   useEffect(() => {
     async function fetchProject() {
@@ -159,6 +173,16 @@ export default function ClientProjectPage() {
       .then((r) => r.json())
       .then((d) => {
         if (d.ok && Array.isArray(d.proposals)) setProposals(d.proposals);
+      })
+      .catch(() => {});
+  }, [projectCode]);
+
+  useEffect(() => {
+    if (!projectCode) return;
+    fetch(`/api/client/content-posts?code=${encodeURIComponent(projectCode)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && Array.isArray(d.posts)) setContentPosts(d.posts);
       })
       .catch(() => {});
   }, [projectCode]);
@@ -215,6 +239,115 @@ export default function ClientProjectPage() {
             <p className="mt-2 text-white/70 text-sm">{getStatusMessage(status)}</p>
             <TimelineSteps currentStatus={status} />
           </div>
+
+          {/* Příspěvky ke schválení (content pipeline) */}
+          {contentPosts.filter((p) => p.status === "client_review").length > 0 && (
+            <div className="glass-panel p-6 sm:col-span-2 border-lucifera-lime/20">
+              <h2 className="font-semibold text-white flex items-center gap-2">
+                <span className="text-lucifera-lime">🔔</span> Nový příspěvek připraven
+              </h2>
+              <p className="mt-2 text-white/70 text-sm">
+                Podívejte se na náhled a dejte nám vědět, zda vám vyhovuje.
+              </p>
+              <div className="mt-4 space-y-6">
+                {contentPosts
+                  .filter((p) => p.status === "client_review")
+                  .map((post) => (
+                    <div
+                      key={post.id}
+                      className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
+                    >
+                      {post.canva_preview_url && (
+                        <img
+                          src={post.canva_preview_url}
+                          alt="Náhled"
+                          className="mb-4 max-h-64 rounded-lg object-cover"
+                        />
+                      )}
+                      <p className="font-medium text-white">{post.hook ?? ""}</p>
+                      {post.body && <p className="mt-1 text-sm text-white/80">{post.body}</p>}
+                      {post.cta && <p className="mt-2 text-sm text-lucifera-lime">{post.cta}</p>}
+                      {post.scheduled_for && (
+                        <p className="mt-2 text-xs text-white/50">
+                          Plánované: {new Date(post.scheduled_for).toLocaleDateString("cs-CZ")} · {post.platform ?? "Instagram"}
+                        </p>
+                      )}
+                      {contentPostActionId === post.id ? (
+                        <div className="mt-4">
+                          <textarea
+                            value={revisionNote}
+                            onChange={(e) => setRevisionNote(e.target.value)}
+                            placeholder="Napište, co chcete upravit…"
+                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/40"
+                            rows={2}
+                          />
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const res = await fetch(`/api/client/content-posts/${post.id}`, {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({
+                                    code: projectCode,
+                                    action: "revision",
+                                    client_note: revisionNote,
+                                  }),
+                                });
+                                const d = await res.json();
+                                if (d.ok) {
+                                  setContentPosts((prev) => prev.filter((p) => p.id !== post.id));
+                                  setContentPostActionId(null);
+                                  setRevisionNote("");
+                                }
+                              }}
+                              className="rounded-lg bg-amber-500/20 px-4 py-2 text-sm font-medium text-amber-200 hover:bg-amber-500/30"
+                            >
+                              Odeslat připomínku
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setContentPostActionId(null);
+                                setRevisionNote("");
+                              }}
+                              className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/20"
+                            >
+                              Zrušit
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const res = await fetch(`/api/client/content-posts/${post.id}`, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ code: projectCode, action: "approve" }),
+                              });
+                              const d = await res.json();
+                              if (d.ok) setContentPosts((prev) => prev.filter((p) => p.id !== post.id));
+                            }}
+                            className="rounded-lg bg-lucifera-lime px-4 py-2 text-sm font-medium text-black hover:bg-lucifera-lime/90"
+                          >
+                            ✅ Líbí se
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setContentPostActionId(post.id)}
+                            className="rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
+                          >
+                            💬 Mám komentář
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
 
           {/* CTA: Vyplnit dotazník - pouze když PAID nebo WAITING_BRIEF */}
           {(status === "PAID" || status === "WAITING_BRIEF") && (
@@ -306,6 +439,24 @@ export default function ClientProjectPage() {
                 Zatím žádná data. Vyplňte dotazník v dalším kroku.
               </p>
             )}
+          </div>
+
+          {/* Přidat podklady (fotky, nápady) */}
+          <div className="glass-panel p-6 sm:col-span-2">
+            <h2 className="font-semibold text-white flex items-center gap-2">
+              <span className="text-lucifera-lime">📎</span> Přidat podklady
+            </h2>
+            <p className="mt-2 text-white/70 text-sm">
+              Vlastní fotky nebo nápady k příspěvkům (nepovinné). Brzy zde bude upload.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-4">
+              <div className="min-h-[80px] min-w-[160px] rounded-xl border border-dashed border-white/20 flex items-center justify-center">
+                <span className="text-sm text-white/50">+ Nahrát vlastní fotku</span>
+              </div>
+              <div className="min-h-[80px] min-w-[160px] rounded-xl border border-dashed border-white/20 flex items-center justify-center">
+                <span className="text-sm text-white/50">+ Napsat nápad nebo přání</span>
+              </div>
+            </div>
           </div>
 
           {/* Neaktivní karty – Brzy dostupné */}
