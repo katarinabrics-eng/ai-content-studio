@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       messages: [
         {
           role: "user",
-          content: `Zpřesni Brand DNA. Web: ${url}\nPůvodní brandDna:\n${JSON.stringify(brandDna)}\nOdpovědi klienta:\n${answersStr}\n\nVrať POUZE validní JSON ve stejném formátu jako vstup: { "brandScore": { "total": <zvýšené o 15-25>, "hasHeadline", "hasOffer", "hasTargetAudience", "hasCTA", "hasVisualIdentity", "hasSocialProof" }, "brandDna": { ... stejná pole ... }, "summary": "..." }. Zvyš total o 15-25 bodů.`,
+          content: `Jsi konzultant Lucifera AI Content Studio. Zpřesni Brand DNA na základě webu a doplňujících voleb klienta (vždy jen volby, nikdy přímé textové odpovědi). Web: ${url}\nPůvodní brandDna:\n${JSON.stringify(brandDna)}\nOdpovědi klienta (výběr z voleb):\n${answersStr}\n\nVrať POUZE validní JSON ve stejném formátu jako vstup: { "brandScore": { "total": <zvýšené o 15-25>, "hasHeadline", "hasOffer", "hasTargetAudience", "hasCTA", "hasVisualIdentity", "hasSocialProof" }, "brandDna": { ... stejná pole, obohacené o odpovědi ... }, "summary": "..." }. Zvyš total o 15-25 bodů. Respektuj cenovou úroveň (Základní / Střední / Prémiová) v tónu a doporučeních.`,
         },
       ],
       max_tokens: 1200,

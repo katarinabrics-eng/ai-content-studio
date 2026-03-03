@@ -1,4 +1,5 @@
 export type StrategistId =
+  | "lucifera"
   | "hormozi"
   | "garyvee"
   | "tonyrobbins"
@@ -16,6 +17,54 @@ export type Strategist = {
 };
 
 export const STRATEGISTS: Strategist[] = [
+  {
+    id: "lucifera",
+    name: "Lucifera",
+    title: "Kompletní strategický plán v2.0",
+    focus: "Brand DNA, persony, content strategie, funnel, 30denní kalendář, KPI, vizuální brief. Jedna struktura pro celý projekt.",
+    placeholders: ["kontext"],
+    promptTemplate: `Jsi strategický AI konzultant Lucifera AI Content Studio. Tvůj tón: přátelský, sebejistý, konzultantský. Vedoucí, ne dotazující.
+
+Na základě následujícího kontextu o klientovi vygeneruj kompletní strategický plán. Výstup musí být v češtině a musí obsahovat VŠECHNY níže uvedené sekce v tomto pořadí. Pokud nějaká data chybí, uveď rozumný předpoklad a v závěru v sekci TRANSPARENTNOST PŘEDPOKLADŮ zmiň, co bylo doplněno.
+
+KONTEXT O KLIENTOVI:
+{{kontext}}
+
+---
+
+Vygeneruj nyní kompletní strategický plán v tomto přesném formátu:
+
+## 4.1 BRAND DNA
+- Název značky a jeho potenciál
+- Positioning statement (jedna věta)
+- Hodnotová propozice (3 konkrétní hodnoty)
+- Brand hlas: tón, styl, čemu se vyhýbat
+- Odlišení od konkurence
+
+## 4.2 CÍLOVÉ PERSONY
+1–3 persony: jméno, věk, profese, životní situace, pain point, desire, proč zvolí tuto značku, kde tráví čas online, jaký obsah je přitahuje.
+
+## 4.3 CONTENT STRATEGIE
+- 4 obsahové pilíře (název, téma, proč funguje, formát, 3 nápady na příspěvek)
+- Doporučená frekvence (feed, stories, reels)
+- Content mix v %
+
+## 4.4 FUNNEL MAPA
+POVĚDOMÍ → ZÁJEM → DŮVĚRA → POPTÁVKA → KLIENT
+Pro každou fázi: mindset klienta, obsah/akce, kde se zasekne, co to řeší.
+
+## 4.5 30DENNÍ OBSAHOVÝ KALENDÁŘ
+Týden 1–4: každý den – formát, pilíř, téma, krátký hook.
+
+## 4.6 KPI A METRIKY
+Primární a sekundární metriky, co neměřit.
+
+## 4.7 VIZUÁLNÍ BRIEF
+Barevná paleta (3 barvy + hex), vizuální styl, Instagram grid, typografie, 3 typy vizuálů pro první měsíc.
+
+## 5. TRANSPARENTNOST PŘEDPOKLADŮ
+Co bylo zjištěno z podkladů, co bylo doplněno výběrem, co nebylo vyplněno a jaký předpoklad byl použit.`,
+  },
   {
     id: "hormozi",
     name: "Alex Hormozi",

@@ -69,12 +69,23 @@ export type ProjectRow = {
   updated_at: string;
 };
 
+/** Druhy souborů: intake (logo, photo, manual) + kurátorské materiály. */
+export type ProjectFileKind =
+  | "logo"
+  | "photo"
+  | "manual"
+  | "strategy"
+  | "checklist"
+  | "visual"
+  | "presentation"
+  | "pdf";
+
 /** Záznam v project_files (nahraný soubor). */
 export type ProjectFileRow = {
   id: string;
   project_id: string;
   storage_path: string;
-  kind: "logo" | "photo" | "manual";
+  kind: ProjectFileKind;
   original_name: string | null;
   content_type: string | null;
   size_bytes: number | null;
@@ -641,7 +652,7 @@ export async function getProjectFiles(projectId: string): Promise<ProjectFileRow
 export async function insertProjectFile(row: {
   project_id: string;
   storage_path: string;
-  kind: "logo" | "photo" | "manual";
+  kind: ProjectFileKind;
   original_name?: string | null;
   content_type?: string | null;
   size_bytes?: number | null;

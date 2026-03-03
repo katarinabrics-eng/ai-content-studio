@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   PROJECT_STATUS_LABELS,
   ALLOWED_TRANSITIONS,
@@ -47,6 +47,23 @@ const PROPOSAL_FORMATS: { id: string; label: string }[] = [
   { id: "carousel", label: "Carousel" },
 ];
 
+const CURATOR_FILE_KINDS: { id: string; label: string }[] = [
+  { id: "strategy", label: "Strategie" },
+  { id: "checklist", label: "Checklist" },
+  { id: "visual", label: "Vizuály" },
+  { id: "presentation", label: "Prezentace" },
+  { id: "pdf", label: "PDF" },
+];
+
+type ProjectFile = {
+  id: string;
+  kind: string;
+  original_name: string | null;
+  download_url: string | null;
+  created_at?: string;
+};
+const CURATOR_KIND_IDS = new Set(CURATOR_FILE_KINDS.map((k) => k.id));
+
 export default function AdminProjectDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -61,7 +78,7 @@ export default function AdminProjectDetailPage() {
   const [generationWarning, setGenerationWarning] = useState<string | null>(null);
   const [aiModeManual, setAiModeManual] = useState(true);
 
-  const [selectedStrategistId, setSelectedStrategistId] = useState<StrategistId | "">("hormozi");
+  const [selectedStrategistId, setSelectedStrategistId] = useState<StrategistId | "">("lucifera");
   const [strategistOutput, setStrategistOutput] = useState<string | null>(null);
   const [strategistLoading, setStrategistLoading] = useState(false);
   const [strategistError, setStrategistError] = useState<string | null>(null);
@@ -71,6 +88,11 @@ export default function AdminProjectDetailPage() {
   const [proposalsGenerating, setProposalsGenerating] = useState(false);
   const [proposalsError, setProposalsError] = useState<string | null>(null);
   const [proposalFormat, setProposalFormat] = useState<string>("instagram");
+
+  const [fileUploadKind, setFileUploadKind] = useState<string>("strategy");
+  const [fileUploading, setFileUploading] = useState(false);
+  const [fileUploadError, setFileUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchProject = useCallback(() => {
     fetch(`/api/admin/projects/${id}`)
@@ -264,6 +286,35 @@ export default function AdminProjectDetailPage() {
     }
   }
 
+  async function handleUploadFile(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const input = fileInputRef.current;
+    const file = input?.files?.[0];
+    if (!file) {
+      setFileUploadError("Vyberte soubor.");
+      return;
+    }
+    setFileUploading(true);
+    setFileUploadError(null);
+    try {
+      const form = new FormData();
+      form.set("file", file);
+      form.set("kind", fileUploadKind);
+      const res = await fetch(`/api/admin/projects/${id}/files`, { method: "POST", body: form });
+      const data = await res.json();
+      if (data.ok) {
+        fetchProject();
+        input.value = "";
+      } else {
+        setFileUploadError(data.error ?? "Nahrání selhalo.");
+      }
+    } catch {
+      setFileUploadError("Chyba při nahrávání.");
+    } finally {
+      setFileUploading(false);
+    }
+  }
+
   if (loading) return <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100"><p>Načítám…</p></main>;
   if (!project) return <main className="min-h-screen bg-[#0c0c14] p-6 text-zinc-100"><p>Projekt nenalezen.</p><a href="/admin/projects" className="text-[#A8EB12] underline">Zpět</a></main>;
 
@@ -372,28 +423,94 @@ export default function AdminProjectDetailPage() {
         </section>
 
         {Array.isArray((project as unknown as { files?: unknown[] }).files) &&
-        (project as unknown as { files: { id: string; kind: string; original_name: string | null; download_url: string | null }[] }).files.length > 0 && (
+        (project as unknown as { files: ProjectFile[] }).files.filter((f) => !CURATOR_KIND_IDS.has(f.kind)).length > 0 && (
           <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
             <h2 className="font-semibold text-white">Soubory (logo, fotky, PDF)</h2>
             <ul className="mt-3 space-y-2">
-              {(project as unknown as { files: { id: string; kind: string; original_name: string | null; download_url: string | null }[] }).files.map((f) => (
-                <li key={f.id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm">
-                  <span className="text-zinc-300">
-                    <span className="font-medium text-zinc-500">{f.kind}</span>
-                    {f.original_name && ` · ${f.original_name}`}
-                  </span>
-                  {f.download_url ? (
-                    <a href={f.download_url} target="_blank" rel="noreferrer" className="text-[#A8EB12] hover:underline">
-                      Stáhnout
-                    </a>
-                  ) : (
-                    <span className="text-zinc-500">—</span>
-                  )}
-                </li>
-              ))}
+              {(project as unknown as { files: ProjectFile[] }).files
+                .filter((f) => !CURATOR_KIND_IDS.has(f.kind))
+                .map((f) => (
+                  <li key={f.id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                    <span className="text-zinc-300">
+                      <span className="font-medium text-zinc-500">{f.kind}</span>
+                      {f.original_name && ` · ${f.original_name}`}
+                    </span>
+                    {f.download_url ? (
+                      <a href={f.download_url} target="_blank" rel="noreferrer" className="text-[#A8EB12] hover:underline">
+                        Stáhnout
+                      </a>
+                    ) : (
+                      <span className="text-zinc-500">—</span>
+                    )}
+                  </li>
+                ))}
             </ul>
           </section>
         )}
+
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+          <h2 className="font-semibold text-white">Materiály projektu (kurátor)</h2>
+          <p className="mt-1 text-sm text-zinc-400">
+            Nahrajte strategii, checklist, vizuály, prezentaci nebo PDF. Vše se uloží do složky projektu.
+          </p>
+          <form onSubmit={handleUploadFile} className="mt-4 flex flex-wrap items-end gap-3">
+            <div className="min-w-[160px]">
+              <label className="block text-xs text-zinc-500 mb-1">Typ</label>
+              <select
+                value={fileUploadKind}
+                onChange={(e) => setFileUploadKind(e.target.value)}
+                className="w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2 text-sm text-white focus:border-[#A8EB12]/50 focus:outline-none focus:ring-1 focus:ring-[#A8EB12]/30"
+              >
+                {CURATOR_FILE_KINDS.map((k) => (
+                  <option key={k.id} value={k.id}>{k.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="min-w-[200px]">
+              <label className="block text-xs text-zinc-500 mb-1">Soubor</label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,image/*,.ppt,.pptx,.doc,.docx"
+                className="w-full rounded-lg border border-white/10 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 file:mr-2 file:rounded file:border-0 file:bg-[#A8EB12]/20 file:px-3 file:py-1 file:text-sm file:text-[#A8EB12]"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={fileUploading}
+              className="rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 disabled:opacity-50"
+            >
+              {fileUploading ? "Nahrávám…" : "Nahrát"}
+            </button>
+          </form>
+          {fileUploadError && <p className="mt-2 text-sm text-red-400">{fileUploadError}</p>}
+          {Array.isArray((project as unknown as { files?: unknown[] }).files) &&
+            (project as unknown as { files: ProjectFile[] }).files.filter((f) => CURATOR_KIND_IDS.has(f.kind)).length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-zinc-300 mb-2">Nahrané materiály</h3>
+                <ul className="space-y-2">
+                  {(project as unknown as { files: ProjectFile[] }).files
+                    .filter((f) => CURATOR_KIND_IDS.has(f.kind))
+                    .sort((a, b) => (CURATOR_FILE_KINDS.findIndex((k) => k.id === a.kind) - CURATOR_FILE_KINDS.findIndex((k) => k.id === b.kind)) || 0)
+                    .map((f) => (
+                      <li key={f.id} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                        <span className="text-zinc-300">
+                          <span className="font-medium text-zinc-500">{CURATOR_FILE_KINDS.find((k) => k.id === f.kind)?.label ?? f.kind}</span>
+                          {f.original_name && ` · ${f.original_name}`}
+                        </span>
+                        {f.download_url ? (
+                          <a href={f.download_url} target="_blank" rel="noreferrer" className="text-[#A8EB12] hover:underline">
+                            Stáhnout
+                          </a>
+                        ) : (
+                          <span className="text-zinc-500">—</span>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+        </section>
 
         <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
           <h2 className="font-semibold text-white">Workflow</h2>

@@ -4,11 +4,16 @@ import { useState } from "react";
 import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
 import { ScanRitualLoading } from "./ScanRitualLoading";
 
+/** Doplňující otázky dle systémového promptu v2.0 – vždy volby, nikdy přímé textové otázky. */
 const GUIDANCE_QUESTIONS = [
   { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
   { id: "audience", question: "Kdo je váš typický klient?", options: ["Podnikatelé a manažeři", "Ženy budující osobní značku", "Malé a střední firmy", "Kreativci a freelanceři"] },
   { id: "goals", question: "Co je hlavní cíl komunikace na sociálních sítích?", options: ["Budovat důvěru a autoritu", "Generovat přímé poptávky", "Vzdělávat a inspirovat", "Ukázat zákulisí a osobnost"] },
   { id: "style", question: "Jaký tón komunikace vám sedí?", options: ["Klidný a autoritativní", "Přátelský a osobní", "Odborný a precizní", "Inspirativní a energický"] },
+  { id: "differentiation", question: "Jak se hlavně odlišujete od konkurence?", options: ["Osobním přístupem a vztahem", "Výsledky a měřitelným dopadem", "Specializací na konkrétní niku", "Stylem a vizuální identitou"] },
+  { id: "platform", question: "Kde je vaše primární platforma?", options: ["Instagram (foto + reels)", "LinkedIn (odbornost)", "Facebook (komunita)", "TikTok / YouTube (video)"] },
+  { id: "business_phase", question: "V jaké fázi podnikání jste?", options: ["Začínám, hledám první klienty", "Mám klienty, chci růst", "Rebranding / nový směr", "Škáluju, chci systém"] },
+  { id: "success_definition", question: "Co pro vás znamená úspěch za 3 měsíce?", options: ["Nové poptávky z internetu", "Silnější brand a viditelnost", "Větší engagement komunity", "Konkrétní počet nových klientů"] },
 ];
 
 type BrandScore = { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
@@ -38,13 +43,12 @@ const MANUAL_OFFER_TYPES = [
   "Jiné",
 ] as const;
 
+/** Pro koho – v souladu s v2.0 (typický klient). */
 const MANUAL_AUDIENCE = [
-  "Podnikatelé",
-  "Ženy",
-  "Firmy",
-  "Začátečníci",
-  "Kreativci",
-  "Široká veřejnost",
+  "Podnikatelé a manažeři",
+  "Ženy budující osobní značku",
+  "Malé a střední firmy",
+  "Kreativci a freelanceři",
 ] as const;
 
 const MANUAL_PRICE_LEVELS = ["Základní", "Střední", "Prémiová"] as const;
@@ -748,7 +752,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                 ))}
               </div>
             ))}
-            <button type="button" style={{ ...C.btn, opacity: allAnswered ? 1 : 0.3 }} onClick={confirmGuidance} disabled={!allAnswered}>Zobrazit Brand DNA →</button>
+            <p style={{ fontSize: 11, color: "#555", marginBottom: 10 }}>Všechny volby jsou dobrovolné. Nic nevyberete? Pokračujeme s rozumným předpokladem.</p>
+            <button type="button" style={{ ...C.btn, opacity: 1 }} onClick={confirmGuidance}>Zobrazit Brand DNA →</button>
           </div>
         )}
 

@@ -23,6 +23,8 @@ export const PATH = {
   aiVisualIn: "ai/visual/in",
   aiVisualOut: "ai/visual/out",
   deliverablesFinal: "deliverables/final",
+  /** Materiály nahrané kurátorem (strategie, checklist, vizuály, prezentace, PDF). */
+  curatorDir: "deliverables/curator",
   /** Výstup stratega (JSON: strategistId, output, createdAt). */
   strategistOut: "ai/strategist/out.json",
 } as const;
