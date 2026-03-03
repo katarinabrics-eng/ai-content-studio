@@ -125,7 +125,9 @@ export function WebAnalyzer({
     <div className="analyzer-fade">
       {diagnostika && (
         <section className="relative max-w-4xl mx-auto mb-20 px-6">
-          <div className="absolute inset-0 -z-10 blur-3xl opacity-20 rounded-full" style={{ background: `linear-gradient(to right, ${tokens.colors.primary}40, ${tokens.colors.accent}40)` }} />
+          {/* Záře pod velkým oknem – vrstvený efekt (měkká + výraznější) */}
+          <div className="absolute inset-0 -z-20 blur-[100px] opacity-25 rounded-full scale-150" style={{ background: `radial-gradient(ellipse 80% 50% at 50% 70%, ${tokens.colors.primary}50, transparent 70%)` }} />
+          <div className="absolute inset-0 -z-10 blur-3xl opacity-40 rounded-full" style={{ background: `linear-gradient(to right, ${tokens.colors.primary}60, ${tokens.colors.accent}60)` }} />
           <div className="text-center mb-10">
             <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: tokens.colors.accent }}>Strategický vstup</p>
             <h2 className="text-4xl md:text-5xl font-semibold mb-6" style={{ color: tokens.colors.text }}>Analýza vizuální úrovně značky</h2>
