@@ -138,16 +138,28 @@ export async function GET() {
     if (diagResult.error) {
       console.warn("[admin/klienti-dashboard] diagnostic_projects:", diagResult.error.message);
     }
-    const diagnosticProjects = (diagResult.data ?? []) as Array<{
-      id: string;
-      created_at: string;
-      status: string;
-      type: string;
-      intake_data: Record<string, unknown>;
-      clients: { email: string | null; name: string | null } | null;
-    }>;
+    const rawDiagnostic = (diagResult.data ?? []) as unknown[];
+    type ClientRef = { email: string | null; name: string | null } | null;
+    const diagnosticProjects = rawDiagnostic.map((row: unknown) => {
+      const r = row as Record<string, unknown>;
+      const clients = r.clients;
+      const client: ClientRef =
+        Array.isArray(clients) && clients.length > 0
+          ? (clients[0] as ClientRef)
+          : clients && typeof clients === "object" && !Array.isArray(clients)
+            ? (clients as ClientRef)
+            : null;
+      return {
+        id: String(r.id),
+        created_at: String(r.created_at),
+        status: String(r.status),
+        type: String(r.type),
+        intake_data: (r.intake_data as Record<string, unknown>) ?? {},
+        client,
+      };
+    });
     for (const dp of diagnosticProjects) {
-      const client = dp.clients;
+      const client = dp.client;
       const email = (client?.email ?? "").trim().toLowerCase() || "bez-emailu";
       if (!emailToClient.has(email)) {
         emailToClient.set(email, {
