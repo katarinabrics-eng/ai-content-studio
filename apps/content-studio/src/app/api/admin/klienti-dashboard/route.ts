@@ -155,14 +155,16 @@ export async function GET() {
       });
     }
 
-    const clients = Array.from(emailToClient.values()).map((c) => ({
-      ...c,
-      projects: c.projects.sort((a, b) => {
-        const tA = a.sortAt ?? a.created;
-        const tB = b.sortAt ?? b.created;
-        return new Date(tB).getTime() - new Date(tA).getTime();
-      }),
-    }));
+    const clients = Array.from(emailToClient.values())
+      .filter((c) => c.projects.length > 0)
+      .map((c) => ({
+        ...c,
+        projects: c.projects.sort((a, b) => {
+          const tA = a.sortAt ?? a.created;
+          const tB = b.sortAt ?? b.created;
+          return new Date(tB).getTime() - new Date(tA).getTime();
+        }),
+      }));
 
     return NextResponse.json({
       ok: true,
