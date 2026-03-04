@@ -246,12 +246,12 @@ export default function AdminDashboard() {
     border: "1px solid #222",
     borderRadius: 8,
     marginBottom: 8,
-    cursor: "pointer" as const,
+    cursor: "pointer",
   });
 
   return (
     <div style={{ display: "flex", flex: 1, minHeight: "100vh", minWidth: 0 }}>
-      {/* Střední sloupec – seznam */}
+      {/* Stredni sloupec */}
       <div
         style={{
           width: 360,
@@ -369,7 +369,7 @@ export default function AdminDashboard() {
         </a>
       </div>
 
-      {/* Pravý sloupec – detail */}
+      {/* Pravy sloupec - detail */}
       <div
         style={{
           flex: 1,
@@ -581,8 +581,8 @@ export default function AdminDashboard() {
                   </span>
                 </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Accordion: ROZBOR */}
             {(selected.scan_result as ScanResult) && (
@@ -681,8 +681,8 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
-                </div>
-              </div>
+              )}
+            </div>
             )}
 
             {/* Accordion: Zdrojové podklady */}
