@@ -821,6 +821,9 @@ export default function AdminKlientiPage() {
                     const data = await res.json();
                     if (data.ok) {
                       setShowClearModal(false);
+                      setClients([]);
+                      setMeta({ totalClientProjects: 0, totalProjects: 0 });
+                      setSelectedClientId(null);
                       fetchDashboard();
                     } else {
                       setClearError(data.error ?? "Chyba");

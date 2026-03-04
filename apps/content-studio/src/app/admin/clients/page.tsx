@@ -83,8 +83,8 @@ export default function AdminClientsPage() {
                 <span className="ml-2 text-zinc-500">
                   · {projects.length} záznamů
                   {backendRef && (
-                    <span className="ml-2 text-zinc-600" title="Supabase projekt, ze kterého se čte. Diagnostika zapisuje sem (save-scan → client_projects).">
-                      · DB: {backendRef}
+                    <span className="ml-2 text-zinc-600" title="Identifikátor databáze (Supabase), ze které se načítají záznamy. Diagnostika zapisuje sem.">
+                      · Databáze: {backendRef}
                     </span>
                   )}
                 </span>
@@ -94,7 +94,7 @@ export default function AdminClientsPage() {
               <p className="mt-2 text-xs text-zinc-500">
                 Záznamy z diagnostiky se ukládají do tabulky <strong>client_projects</strong> (odkaz /d/xxx i „Vstoupit do pracovní plochy“). Pokud zde vidíte 0, ale odkaz z e-mailu funguje, otevřete diagnostiku na této adrese a v konzoli zadejte:{" "}
                 <code className="bg-white/10 px-1 rounded">fetch(&quot;/api/diagnostika/backend-id&quot;).then(r=&gt;r.json()).then(console.log)</code>
-                {" "}– hodnota <strong>supabaseRef</strong> musí být stejná jako DB zde ({backendRef}).
+                {" "}– hodnota <strong>supabaseRef</strong> musí být stejná jako Databáze zde ({backendRef}).
               </p>
             )}
           </div>

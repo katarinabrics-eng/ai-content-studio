@@ -25,15 +25,18 @@ export async function POST(request: Request) {
 
     const supabase = getSupabaseClient();
 
+    const BATCH = 100;
+
     if (scope === "client_projects" || scope === "all") {
       const { data: rows } = await supabase.from("client_projects").select("id");
       const ids = (rows ?? []).map((r: { id: string }) => r.id);
-      if (ids.length > 0) {
-        const { error } = await supabase.from("client_projects").delete().in("id", ids);
+      for (let i = 0; i < ids.length; i += BATCH) {
+        const chunk = ids.slice(i, i + BATCH);
+        const { error } = await supabase.from("client_projects").delete().in("id", chunk);
         if (error) {
           console.error("[admin/clear-data] client_projects", error);
           return NextResponse.json(
-            { ok: false, error: "Chyba při mazání diagnostik." },
+            { ok: false, error: "Chyba při mazání diagnostik: " + (error.message || "neznámá chyba") },
             { status: 500 }
           );
         }
@@ -43,12 +46,13 @@ export async function POST(request: Request) {
     if (scope === "projects" || scope === "all") {
       const { data: rows } = await supabase.from("projects").select("id");
       const ids = (rows ?? []).map((r: { id: string }) => r.id);
-      if (ids.length > 0) {
-        const { error } = await supabase.from("projects").delete().in("id", ids);
+      for (let i = 0; i < ids.length; i += BATCH) {
+        const chunk = ids.slice(i, i + BATCH);
+        const { error } = await supabase.from("projects").delete().in("id", chunk);
         if (error) {
           console.error("[admin/clear-data] projects", error);
           return NextResponse.json(
-            { ok: false, error: "Chyba při mazání projektů. Možná závislosti." },
+            { ok: false, error: "Chyba při mazání projektů: " + (error.message || "neznámá chyba") },
             { status: 500 }
           );
         }
