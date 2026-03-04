@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
-import { getProjectById, getProjectFiles, getProjectWorkflowState, updateProjectStatus, deleteProject } from "@/lib/supabase-projects";
+import { getProjectById, getProjectFiles, getProjectWorkflowState, updateProjectStatus, deleteProjectWithStorage } from "@/lib/supabase-projects";
 import { isProjectStatus, canTransition, type ProjectStatus } from "@/lib/project-status-engine";
 
 const CLIENT_PROJECTS_BUCKET = "client-projects";
@@ -77,7 +77,7 @@ export async function DELETE(
   const project = await getProjectById(id);
   if (!project) return NextResponse.json({ ok: false, error: "Projekt nenalezen" }, { status: 404 });
   try {
-    await deleteProject(id);
+    await deleteProjectWithStorage(id);
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("[admin/projects DELETE]", e);

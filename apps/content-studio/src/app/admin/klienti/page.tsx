@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
+import { VISUAL_STYLE_PRESETS, CANONICAL_STYLE_IDS } from "@/lib/visual-style-presets";
 
 // ── Status a služby (z clients-section.jsx) ───────────────────
 const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
@@ -87,17 +88,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function ServiceTag({ name }: { name: string }) {
-  const c = SERVICE_COLORS[name] ?? SERVICE_COLORS.Text;
-  return (
-    <span
-      className="rounded-md px-3 py-1 text-xs font-medium"
-      style={{ background: c.bg, color: c.text }}
-    >
-      {name}
-    </span>
-  );
-}
 
 function HistoryTimeline({ items }: { items: TimelineItem[] }) {
   if (!items.length) {
@@ -183,6 +173,238 @@ function CardLabel({
   );
 }
 
+/** Parsuje brand_colors string (napr. "#FF0000, #00FF00") na pole hex hodnôt. */
+function parseBrandColors(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(/[,;|\s]+/)
+    .map((s) => s.trim())
+    .filter((s) => /^#[0-9A-Fa-f]{3,6}$/.test(s));
+}
+
+// ── StylePicker ───────────────────────────────────────────────
+function StylePicker({
+  projectId,
+  initialStyle,
+  onSaved,
+}: {
+  projectId: string;
+  initialStyle: string | null;
+  onSaved?: (style: string | null) => void;
+}) {
+  const [selected, setSelected] = useState<string | null>(initialStyle);
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState(false);
+  const isDirty = selected !== initialStyle;
+
+  useEffect(() => {
+    setSelected(initialStyle);
+  }, [initialStyle]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/projects/${projectId}/brief`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preferred_style: selected }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSavedMsg(true);
+        onSaved?.(data.preferred_style ?? null);
+        setTimeout(() => setSavedMsg(false), 2000);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card className="mb-4">
+      <CardLabel
+        action={isDirty ? (saving ? "Ukládám…" : "Uložit") : undefined}
+        onAction={isDirty ? handleSave : undefined}
+        actionDisabled={saving}
+      >
+        Vizuální styl
+      </CardLabel>
+      <div className="grid grid-cols-2 gap-2">
+        {CANONICAL_STYLE_IDS.map((id) => {
+          const preset = VISUAL_STYLE_PRESETS[id];
+          if (!preset) return null;
+          const isActive = selected === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setSelected(isActive ? null : id)}
+              className={`rounded-lg p-2.5 text-left border transition-colors ${
+                isActive
+                  ? "border-[#A8EB12]/60 bg-[#A8EB12]/10"
+                  : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]"
+              }`}
+            >
+              <div
+                className={`text-xs font-medium mb-0.5 ${
+                  isActive ? "text-[#A8EB12]" : "text-[#C0C0C0]"
+                }`}
+              >
+                {preset.label}
+              </div>
+              <div className="text-[11px] text-[#555] leading-tight line-clamp-2">
+                {preset.description}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      {savedMsg && <p className="text-xs text-[#22C55E] mt-2">Uloženo.</p>}
+    </Card>
+  );
+}
+
+// ── BrandColorPicker ──────────────────────────────────────────
+function BrandColorPicker({
+  projectId,
+  initialColors,
+  onSaved,
+}: {
+  projectId: string;
+  initialColors: string[];
+  onSaved?: (colors: string[]) => void;
+}) {
+  const [colors, setColors] = useState<string[]>(initialColors);
+  const [pendingColor, setPendingColor] = useState("#000000");
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState(false);
+  const isDirty = colors.join(",") !== initialColors.join(",");
+
+  useEffect(() => {
+    setColors(initialColors);
+  }, [initialColors.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const addColor = () => {
+    if (!colors.includes(pendingColor)) {
+      setColors((prev) => [...prev, pendingColor]);
+    }
+  };
+
+  const removeColor = (color: string) => {
+    setColors((prev) => prev.filter((c) => c !== color));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/projects/${projectId}/brief`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brand_colors: colors.join(", ") }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSavedMsg(true);
+        onSaved?.(colors);
+        setTimeout(() => setSavedMsg(false), 2000);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card className="mb-4">
+      <CardLabel
+        action={isDirty ? (saving ? "Ukládám…" : "Uložit") : undefined}
+        onAction={isDirty ? handleSave : undefined}
+        actionDisabled={saving}
+      >
+        Brand barvy
+      </CardLabel>
+      <div className="flex flex-wrap gap-2 mb-3 min-h-[32px]">
+        {colors.length === 0 && (
+          <span className="text-[13px] text-[#444]">Žádné barvy</span>
+        )}
+        {colors.map((color) => (
+          <button
+            key={color}
+            type="button"
+            title={`Odebrat ${color}`}
+            onClick={() => removeColor(color)}
+            className="w-8 h-8 rounded-full border-2 border-white/20 flex items-center justify-center hover:border-red-400/60 transition-colors group relative"
+            style={{ background: color }}
+          >
+            <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] font-bold drop-shadow-sm">
+              ×
+            </span>
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={pendingColor}
+          onChange={(e) => setPendingColor(e.target.value)}
+          className="w-8 h-8 rounded cursor-pointer border-0 p-0"
+          style={{ background: "transparent" }}
+        />
+        <span className="text-[12px] text-[#666] font-mono">{pendingColor}</span>
+        <button
+          type="button"
+          onClick={addColor}
+          className="ml-auto px-3 py-1 rounded-md border border-white/10 bg-white/5 text-xs text-[#C0C0C0] hover:bg-white/10 transition-colors"
+        >
+          + Přidat
+        </button>
+      </div>
+      {savedMsg && <p className="text-xs text-[#22C55E] mt-2">Uloženo.</p>}
+    </Card>
+  );
+}
+
+// ── ServicesEditor ────────────────────────────────────────────
+function ServicesEditor({ initialServices }: { initialServices: string[] }) {
+  const [services, setServices] = useState<string[]>(initialServices);
+  const allServices = Object.keys(SERVICE_COLORS);
+
+  useEffect(() => {
+    setServices(initialServices);
+  }, [initialServices.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggle = (name: string) => {
+    setServices((prev) =>
+      prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
+    );
+  };
+
+  return (
+    <Card>
+      <CardLabel>Služby</CardLabel>
+      <div className="flex flex-wrap gap-2">
+        {allServices.map((name) => {
+          const c = SERVICE_COLORS[name]!;
+          const isActive = services.includes(name);
+          return (
+            <button
+              key={name}
+              type="button"
+              onClick={() => toggle(name)}
+              title={isActive ? `Odebrat ${name}` : `Přidat ${name}`}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-opacity ${
+                isActive ? "opacity-100" : "opacity-30 hover:opacity-60"
+              }`}
+              style={{ background: c.bg, color: c.text }}
+            >
+              {name}
+            </button>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
 function ProjectDetail({
   project,
   clientName,
@@ -207,6 +429,29 @@ function ProjectDetail({
   const [archiving, setArchiving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const isArchived = project.status === "archivovano";
+
+  const [briefData, setBriefData] = useState<{
+    preferred_style: string | null;
+    brand_colors: string[];
+  } | null>(null);
+
+  useEffect(() => {
+    if (project.source !== "project" || !project.projectId) {
+      setBriefData(null);
+      return;
+    }
+    fetch(`/api/admin/projects/${project.projectId}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok && d.project?.brief) {
+          setBriefData({
+            preferred_style: d.project.brief.preferred_style ?? null,
+            brand_colors: parseBrandColors(d.project.brief.brand_colors ?? null),
+          });
+        }
+      })
+      .catch(() => {});
+  }, [project.projectId, project.source]);
 
   const validity =
     project.expires != null && project.expires !== ""
@@ -315,18 +560,7 @@ function ProjectDetail({
 
       {/* Grid 2 sloupce */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <Card>
-          <CardLabel action="+ Upravit">
-            Služby
-          </CardLabel>
-          <div className="flex flex-wrap gap-2">
-            {project.services.length > 0 ? (
-              project.services.map((s) => <ServiceTag key={s} name={s} />)
-            ) : (
-              <span className="text-[13px] text-[#444]">Žádné služby</span>
-            )}
-          </div>
-        </Card>
+        <ServicesEditor initialServices={project.services} />
 
         <Card>
           <CardLabel>Info</CardLabel>
@@ -346,6 +580,30 @@ function ProjectDetail({
           </div>
         </Card>
       </div>
+
+      {/* StylePicker + BrandColorPicker (len pre projekt source) */}
+      {project.source === "project" && project.projectId && (
+        <>
+          <StylePicker
+            projectId={project.projectId}
+            initialStyle={briefData?.preferred_style ?? null}
+            onSaved={(style) =>
+              setBriefData((prev) =>
+                prev ? { ...prev, preferred_style: style } : { preferred_style: style, brand_colors: [] }
+              )
+            }
+          />
+          <BrandColorPicker
+            projectId={project.projectId}
+            initialColors={briefData?.brand_colors ?? []}
+            onSaved={(updated) =>
+              setBriefData((prev) =>
+                prev ? { ...prev, brand_colors: updated } : { preferred_style: null, brand_colors: updated }
+              )
+            }
+          />
+        </>
+      )}
 
       {/* Poznámky – u projektů ukládáme přes API */}
       <Card className="mb-4">
@@ -446,6 +704,8 @@ export default function AdminKlientiPage() {
   const [showClearModal, setShowClearModal] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [clearError, setClearError] = useState<string | null>(null);
+  const [cleaningStorage, setCleaningStorage] = useState(false);
+  const [storageCleanResult, setStorageCleanResult] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(() => {
     setLoading(true);
@@ -600,10 +860,39 @@ export default function AdminKlientiPage() {
             <button
               type="button"
               onClick={() => { setShowClearModal(true); setClearError(null); }}
-              className="mb-3 w-full rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/20"
+              className="mb-2 w-full rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/20"
             >
               Vyčistit vše (diagnostiky i projekty)
             </button>
+          )}
+          <button
+            type="button"
+            disabled={cleaningStorage}
+            onClick={async () => {
+              setCleaningStorage(true);
+              setStorageCleanResult(null);
+              try {
+                const res = await fetch("/api/admin/cleanup-storage", { method: "POST" });
+                const data = await res.json();
+                if (data.ok) {
+                  setStorageCleanResult(data.orphans?.length === 0
+                    ? "Storage je čistý."
+                    : `Vymazáno ${data.deleted} súborov z ${data.orphans?.length} priečinkov.`);
+                } else {
+                  setStorageCleanResult(`Chyba: ${data.error ?? "neznáma"}`);
+                }
+              } catch {
+                setStorageCleanResult("Chyba pripojenia.");
+              } finally {
+                setCleaningStorage(false);
+              }
+            }}
+            className="mb-3 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-[#888] hover:bg-white/10 disabled:opacity-50"
+          >
+            {cleaningStorage ? "Čistím storage…" : "Vyčistit orphan storage priečinky"}
+          </button>
+          {storageCleanResult && (
+            <p className="mb-2 text-[11px] text-[#666]">{storageCleanResult}</p>
           )}
           <input
             value={search}

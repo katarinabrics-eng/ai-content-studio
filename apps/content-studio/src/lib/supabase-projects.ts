@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
 import { getSupabaseClient } from "./supabase-server";
 import type { ProjectStatus, ProjectStateForStatus } from "./project-status-engine";
+import { BUCKET_CLIENT_PROJECTS } from "./project-paths";
 
 const CODE_LENGTH = 8;
 const PIN_LENGTH = 6;
@@ -346,6 +347,20 @@ export async function getProjectById(id: string): Promise<ProjectWithBriefAndMet
   };
 }
 
+/** Aktualizuje volitelné pole briefu (preferred_style, brand_colors). */
+export async function updateProjectBriefFields(
+  projectId: string,
+  fields: { preferred_style?: string | null; brand_colors?: string | null }
+): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("project_brief")
+    .update({ ...fields, updated_at: now })
+    .eq("project_id", projectId);
+  return !error;
+}
+
 /** Aktualizuje internal_notes v project_admin_meta (upsert řádku pro project_id). */
 export async function updateProjectInternalNotes(
   projectId: string,
@@ -634,6 +649,53 @@ export async function deleteProject(id: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { error } = await supabase.from("projects").delete().eq("id", id);
   if (error) throw new Error(`Chyba při mazání projektu: ${error.message}`);
+}
+
+/** Rekurzivně vrátí všechny cesty souborů v dané storage cestě (bucket client-projects). */
+async function listStorageFilesUnderPrefix(
+  supabase: ReturnType<typeof getSupabaseClient>,
+  prefix: string
+): Promise<string[]> {
+  const normPrefix = prefix.replace(/\/+$/, "");
+  const { data, error } = await supabase.storage
+    .from(BUCKET_CLIENT_PROJECTS)
+    .list(normPrefix, { limit: 1000 });
+  if (error || !data) return [];
+  const paths: string[] = [];
+  for (const item of data) {
+    const itemPath = `${normPrefix}/${item.name}`;
+    if (item.id === null) {
+      // "Virtuální složka" – jdi hlouběji
+      const sub = await listStorageFilesUnderPrefix(supabase, itemPath);
+      paths.push(...sub);
+    } else {
+      paths.push(itemPath);
+    }
+  }
+  return paths;
+}
+
+/**
+ * Smaže projekt i všechny soubory v jeho storage_prefix složce.
+ * Použij místo deleteProject() když chceš kompletní čistku.
+ */
+export async function deleteProjectWithStorage(id: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const project = await getProjectById(id);
+
+  if (project?.storage_prefix) {
+    const allPaths = await listStorageFilesUnderPrefix(supabase, project.storage_prefix);
+    if (allPaths.length > 0) {
+      // Supabase remove zvládne max ~1000 naraz, dělíme po 100
+      for (let i = 0; i < allPaths.length; i += 100) {
+        await supabase.storage
+          .from(BUCKET_CLIENT_PROJECTS)
+          .remove(allPaths.slice(i, i + 100));
+      }
+    }
+  }
+
+  await deleteProject(id);
 }
 
 const SESSION_BYTES = 32;
