@@ -44,15 +44,6 @@ export default function AdminLayout({
             </Link>
           ))}
         </nav>
-        <div className="p-2 border-t border-white/[0.06]">
-          <Link
-            href="/admin/login"
-            className="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-[#888] hover:text-[#F0F0F0] hover:bg-white/[0.06] transition-colors text-sm"
-          >
-            <span>⚙️</span>
-            <span>Nastavení</span>
-          </Link>
-        </div>
       </aside>
       {/* Hlavní pracovní plocha */}
       <main className="flex-1 overflow-auto bg-[#0A0A0A] min-w-0">
