@@ -2,12 +2,13 @@ import Link from "next/link";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "📊" },
+  { href: "/diagnostika", label: "Diagnostika", icon: "🔬" },
   { href: "/admin/new-client", label: "Nový klient", icon: "➕" },
   { href: "/admin/klienti", label: "Klienti", icon: "👥" },
   { href: "/admin/styles", label: "Styly", icon: "🎨" },
   { href: "/admin/projects", label: "Projekty", icon: "📋" },
   { href: "/admin/kurator", label: "Schválení", icon: "✅" },
-  { href: "/admin/clients", label: "Klienti (diagnostika)", icon: "🔬" },
+  { href: "/admin/clients", label: "Výsledky diagnostik", icon: "📋" },
 ];
 
 export default function AdminLayout({

@@ -138,8 +138,11 @@ export default function AdminNewClientPage() {
       <h1 className="text-2xl font-semibold text-[#F5F5F5] mb-1">
         Nový klient
       </h1>
-      <p className="text-sm text-[#888] mb-8">
+      <p className="text-sm text-[#888] mb-4">
         Zadejte údaje a spusťte AI diagnostiku z webu nebo z manuálních podkladů.
+      </p>
+      <p className="text-sm text-[#A8EB12]/90 mb-8 p-3 rounded-lg bg-[#A8EB12]/10 border border-[#A8EB12]/20 max-w-xl">
+        Po odeslání budete přesměrováni na <strong>Klienti (diagnostika)</strong> – tam uvidíte nový záznam. V sekci „Projekty“ v menu ho nehledejte (tam jsou AI zakázky, ne diagnostiky).
       </p>
 
       <form
