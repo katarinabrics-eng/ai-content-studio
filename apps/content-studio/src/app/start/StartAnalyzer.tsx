@@ -8,7 +8,14 @@ import { WebAnalyzer } from "@/app/diagnostika/WebAnalyzer";
 import { StrategyOutput } from "@/app/diagnostika/StrategyOutput";
 import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
 import { ScanRitualLoading } from "./ScanRitualLoading";
-import { buildManualData as buildManualDataFromLib } from "@/lib/diagnostika-manual";
+import {
+  buildManualData as buildManualDataFromLib,
+  type MissingFieldKey,
+  MISSING_FIELD_LABELS,
+  MANUAL_STYLE_OPTIONS,
+} from "@/lib/diagnostika-manual";
+import { ChoiceButton } from "@/components/ChoiceButton";
+import { tokens } from "@/lib/design-tokens";
 
 /** Doplňující otázky dle systémového promptu v2.0 – vždy volby, nikdy přímé textové otázky. */
 const GUIDANCE_QUESTIONS_FULL = [
@@ -45,6 +52,20 @@ function isAnsweredByWeb(questionId: string, result: Result | null): boolean {
 function getRelevantGuidanceQuestions(result: Result | null): typeof GUIDANCE_QUESTIONS_FULL {
   const relevant = GUIDANCE_QUESTIONS_FULL.filter((q) => !isAnsweredByWeb(q.id, result));
   return relevant.slice(0, 5);
+}
+
+/** Z výsledku analýzy webu odvodí, která pole chybí – zobrazí se v druhém kroku. */
+function getMissingFieldsFromResult(result: Result | null): MissingFieldKey[] {
+  if (!result?.brandDna) return [];
+  const vs = result.brandDna.visualStyle;
+  const score = result.brandScore ?? {};
+  const has = (v: string | undefined, minLen = 8) => (v ?? "").trim().length >= minLen;
+  const missing: MissingFieldKey[] = [];
+  if (score.hasVisualIdentity !== true || !vs) missing.push("preferred_style");
+  if (!has(vs?.primaryColor)) missing.push("brand_colors");
+  if (!has(vs?.typography)) missing.push("brand_fonts");
+  if (!has(result.brandDna.tone) && !has(result.brandDna.communicationStyle)) missing.push("tone_of_voice");
+  return missing;
 }
 
 type BrandScore = { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
@@ -143,9 +164,16 @@ const C = {
   btn: { width: "100%", padding: 13, background: "#a8e063", color: "#000", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
 };
 
+const C_FILL = {
+  card: { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 12 },
+  lbl: { fontSize: 9, color: "#444", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
+  inp: { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 10, padding: "12px 14px", color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
+  btn: { width: "100%", padding: 13, background: "#a8e063", color: "#000", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
+};
+
 export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }) {
   const [url, setUrl] = useState("");
-  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser">("input");
+  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser" | "fillMissing">("input");
   const [msg, setMsg] = useState("");
   const [scraped, setScraped] = useState<Scraped | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -160,6 +188,12 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [manualOptionalText, setManualOptionalText] = useState("");
   const [brandFile, setBrandFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preferredStyle, setPreferredStyle] = useState<string | null>(null);
+  const [brandColors, setBrandColors] = useState("");
+  const [brandFonts, setBrandFonts] = useState("");
+  const [toneOfVoice, setToneOfVoice] = useState("");
+  const [missingFields, setMissingFields] = useState<MissingFieldKey[]>([]);
+  const [fillMissingValues, setFillMissingValues] = useState<Partial<Record<MissingFieldKey, string>>>({});
   const [projectId, setProjectId] = useState<string | null>(null);
   const [teaserView, setTeaserView] = useState<"scroll" | "workspace">("scroll");
   const [leadEmail, setLeadEmail] = useState("");
@@ -175,6 +209,10 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       audience,
       priceLevel,
       manualOptionalText,
+      preferred_style: preferredStyle,
+      brand_colors: brandColors.trim() || undefined,
+      brand_fonts: brandFonts.trim() || undefined,
+      tone_of_voice: toneOfVoice.trim() || undefined,
     });
   }
 
@@ -259,6 +297,15 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       setResult(resData);
       const total = resData?.brandScore?.total ?? 0;
       if (diagnostika && resData) {
+        if (mode === "web") {
+          const missing = getMissingFieldsFromResult(resData);
+          if (missing.length > 0) {
+            setMissingFields(missing);
+            setFillMissingValues({});
+            setPhase("fillMissing");
+            return;
+          }
+        }
         try {
           const saveRes = await fetch("/api/diagnostika/save-scan", {
             method: "POST",
@@ -356,8 +403,57 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setManualOptionalText("");
     setBrandFile(null);
     setImageFile(null);
+    setPreferredStyle(null);
+    setBrandColors("");
+    setBrandFonts("");
+    setToneOfVoice("");
+    setMissingFields([]);
+    setFillMissingValues({});
     setProjectId(null);
     setTeaserView("scroll");
+  };
+
+  const confirmFillMissing = async () => {
+    if (!result) return;
+    const total = result.brandScore?.total ?? 0;
+    const hexes = (fillMissingValues.brand_colors ?? "")
+      .trim()
+      .split(/[,\s]+/)
+      .map((s) => (s.startsWith("#") ? s : `#${s}`))
+      .filter((s) => /^#[0-9A-Fa-f]{3,6}$/.test(s));
+    const merged: Result = {
+      ...result,
+      brandDna: {
+        ...result.brandDna,
+        tone: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.tone,
+        communicationStyle: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.communicationStyle,
+        visualStyle: {
+          ...result.brandDna?.visualStyle,
+          primaryColor: hexes[0] || result.brandDna?.visualStyle?.primaryColor,
+          secondaryColor: hexes[1] || result.brandDna?.visualStyle?.secondaryColor,
+          typography: fillMissingValues.brand_fonts?.trim() || result.brandDna?.visualStyle?.typography,
+          mood: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.visualStyle?.mood,
+        },
+      },
+    };
+    setResult(merged);
+    try {
+      const saveRes = await fetch("/api/diagnostika/save-scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: projectId ?? undefined,
+          webUrl: url.trim(),
+          result: merged,
+        }),
+      });
+      const saveData = await saveRes.json();
+      if (saveRes.ok && saveData?.id) setProjectId(saveData.id);
+      else setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit.");
+    } catch {
+      setSaveError("Výsledek se nepodařilo uložit. Zkuste to znovu.");
+    }
+    setPhase(total < 60 ? "guidance" : "teaser");
   };
 
   async function handleSaveLead() {
@@ -453,11 +549,90 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             setBrandFile={setBrandFile}
             imageFile={imageFile}
             setImageFile={setImageFile}
+            preferredStyle={preferredStyle}
+            setPreferredStyle={setPreferredStyle}
+            brandColors={brandColors}
+            setBrandColors={setBrandColors}
+            brandFonts={brandFonts}
+            setBrandFonts={setBrandFonts}
+            toneOfVoice={toneOfVoice}
+            setToneOfVoice={setToneOfVoice}
             hasManualInput={!!hasManualInput}
             onAnalyze={analyze}
             error={error}
             onRetry={() => setError("")}
           />
+        )}
+
+        {phase === "fillMissing" && result && missingFields.length > 0 && (
+          <div className="analyzer-fade" style={{ maxWidth: 640, margin: "0 auto" }}>
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
+            <p className="text-sm mb-6" style={{ color: tokens.colors.muted }}>
+              Z analýzy webu nám chybí několik údajů. Doplňte je prosím – pak pokračujeme k výsledkům.
+            </p>
+            <div className="space-y-6">
+              {missingFields.includes("preferred_style") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.preferred_style}</label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {MANUAL_STYLE_OPTIONS.map((opt) => (
+                      <ChoiceButton
+                        key={opt.id}
+                        label={opt.label}
+                        selected={fillMissingValues.preferred_style === opt.id}
+                        onClick={() => setFillMissingValues((p) => ({ ...p, preferred_style: p.preferred_style === opt.id ? undefined : opt.id }))}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {missingFields.includes("brand_colors") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.brand_colors}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. #1a1a2e, #16213e"
+                    value={fillMissingValues.brand_colors ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, brand_colors: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+              {missingFields.includes("brand_fonts") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.brand_fonts}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. Inter, Playfair Display"
+                    value={fillMissingValues.brand_fonts ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, brand_fonts: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+              {missingFields.includes("tone_of_voice") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.tone_of_voice}</label>
+                  <textarea
+                    style={{ ...C_FILL.inp, minHeight: 80 }}
+                    placeholder="Např. důvěra, profesionalita, teplo, energie…"
+                    value={fillMissingValues.tone_of_voice ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, tone_of_voice: e.target.value }))}
+                    className="analyzer-inp rounded-xl resize-y placeholder:text-zinc-500"
+                  />
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              style={{ ...C_FILL.btn, marginTop: 20 }}
+              onClick={confirmFillMissing}
+            >
+              Pokračovat k výsledkům →
+            </button>
+          </div>
         )}
 
         {phase === "loading" && !diagnostika && (

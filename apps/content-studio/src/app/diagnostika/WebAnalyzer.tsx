@@ -6,6 +6,7 @@ import {
   MANUAL_OFFER_TYPES,
   MANUAL_AUDIENCE,
   MANUAL_PRICE_LEVELS,
+  MANUAL_STYLE_OPTIONS,
   MAX_OFFER_SELECT,
   MAX_AUDIENCE_SELECT,
 } from "@/lib/diagnostika-manual";
@@ -71,6 +72,14 @@ export type WebAnalyzerProps = {
   setBrandFile: (f: File | null) => void;
   imageFile: File | null;
   setImageFile: (f: File | null) => void;
+  preferredStyle: string | null;
+  setPreferredStyle: (s: string | null) => void;
+  brandColors: string;
+  setBrandColors: (s: string) => void;
+  brandFonts: string;
+  setBrandFonts: (s: string) => void;
+  toneOfVoice: string;
+  setToneOfVoice: (s: string) => void;
   hasManualInput: boolean;
   onAnalyze: () => void;
   error: string;
@@ -98,6 +107,14 @@ export function WebAnalyzer({
   setBrandFile,
   imageFile,
   setImageFile,
+  preferredStyle,
+  setPreferredStyle,
+  brandColors,
+  setBrandColors,
+  brandFonts,
+  setBrandFonts,
+  toneOfVoice,
+  setToneOfVoice,
   hasManualInput,
   onAnalyze,
   error,
@@ -281,6 +298,55 @@ export function WebAnalyzer({
                   />
                 ))}
               </div>
+            </div>
+
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Preferovaný styl (volitelné)</label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {MANUAL_STYLE_OPTIONS.map((opt) => (
+                  <ChoiceButton
+                    key={opt.id}
+                    label={opt.label}
+                    selected={preferredStyle === opt.id}
+                    onClick={() => setPreferredStyle(preferredStyle === opt.id ? null : opt.id)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Barvy značky (volitelné)</label>
+              <input
+                type="text"
+                style={C.inp}
+                placeholder="Např. #1a1a2e, #16213e, #e94560"
+                value={brandColors}
+                onChange={(e) => setBrandColors(e.target.value)}
+                className="analyzer-inp rounded-xl"
+              />
+            </div>
+
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Fonty (volitelné)</label>
+              <input
+                type="text"
+                style={C.inp}
+                placeholder="Např. Inter, Playfair Display"
+                value={brandFonts}
+                onChange={(e) => setBrandFonts(e.target.value)}
+                className="analyzer-inp rounded-xl"
+              />
+            </div>
+
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Co chcete vyzařovat (volitelné)</label>
+              <textarea
+                style={{ ...C.inp, minHeight: 80 }}
+                placeholder="Např. důvěra, profesionalita, teplo, energie, minimalismus…"
+                value={toneOfVoice}
+                onChange={(e) => setToneOfVoice(e.target.value)}
+                className="analyzer-inp rounded-xl resize-y placeholder:text-zinc-500"
+              />
             </div>
 
             <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
