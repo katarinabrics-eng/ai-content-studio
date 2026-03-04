@@ -727,11 +727,6 @@ export default function AdminKlientiPage() {
   const [search, setSearch] = useState("");
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [meta, setMeta] = useState<{ totalClientProjects?: number; totalDiagnosticProjects?: number; totalProjects?: number }>({});
-  const [showClearModal, setShowClearModal] = useState(false);
-  const [clearing, setClearing] = useState(false);
-  const [clearError, setClearError] = useState<string | null>(null);
-  const [cleaningStorage, setCleaningStorage] = useState(false);
-  const [storageCleanResult, setStorageCleanResult] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(() => {
     setLoading(true);
@@ -798,66 +793,6 @@ export default function AdminKlientiPage() {
 
   return (
     <div className="flex h-full min-h-0 bg-[#0A0A0A] text-[#F0F0F0] overflow-hidden">
-      {showClearModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-          onClick={() => !clearing && setShowClearModal(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-xl border border-white/10 bg-[#141414] p-6 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-lg font-semibold text-white">Vyčistit vše</h2>
-            <p className="mt-2 text-sm text-zinc-400">
-              Smaže všechny diagnostiky i všechny AI projekty z databáze. Přehled bude úplně prázdný. Toto nelze vrátit.
-            </p>
-            {clearError && <p className="mt-3 text-sm text-red-400">{clearError}</p>}
-            <div className="mt-6 flex gap-2 justify-end">
-              <button
-                type="button"
-                disabled={clearing}
-                onClick={() => setShowClearModal(false)}
-                className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 hover:bg-white/10 disabled:opacity-50"
-              >
-                Zrušit
-              </button>
-              <button
-                type="button"
-                disabled={clearing}
-                onClick={async () => {
-                  setClearing(true);
-                  setClearError(null);
-                  try {
-                    const res = await fetch("/api/admin/clear-data", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ scope: "all" }),
-                    });
-                    const data = await res.json();
-                    if (data.ok) {
-                      setShowClearModal(false);
-                      setClients([]);
-                      setMeta({ totalClientProjects: 0, totalDiagnosticProjects: 0, totalProjects: 0 });
-                      setSelectedClientId(null);
-                      fetchDashboard();
-                    } else {
-                      setClearError(data.error ?? "Chyba");
-                    }
-                  } catch {
-                    setClearError("Chyba připojení.");
-                  } finally {
-                    setClearing(false);
-                  }
-                }}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
-              >
-                {clearing ? "Mažu…" : "Smazat vše"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Sidebar 370px (z JSX) */}
       <div
         className="w-[370px] min-w-[370px] flex flex-col border-r overflow-y-auto"
@@ -885,44 +820,6 @@ export default function AdminKlientiPage() {
               )}
             </span>
           </div>
-          {clients.length > 0 && (
-            <button
-              type="button"
-              onClick={() => { setShowClearModal(true); setClearError(null); }}
-              className="mb-2 w-full rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/20"
-            >
-              Vyčistit vše (diagnostiky i projekty)
-            </button>
-          )}
-          <button
-            type="button"
-            disabled={cleaningStorage}
-            onClick={async () => {
-              setCleaningStorage(true);
-              setStorageCleanResult(null);
-              try {
-                const res = await fetch("/api/admin/cleanup-storage", { method: "POST" });
-                const data = await res.json();
-                if (data.ok) {
-                  setStorageCleanResult(data.orphans?.length === 0
-                    ? "Storage je čistý."
-                    : `Vymazáno ${data.deleted} súborov z ${data.orphans?.length} priečinkov.`);
-                } else {
-                  setStorageCleanResult(`Chyba: ${data.error ?? "neznáma"}`);
-                }
-              } catch {
-                setStorageCleanResult("Chyba pripojenia.");
-              } finally {
-                setCleaningStorage(false);
-              }
-            }}
-            className="mb-3 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-[#888] hover:bg-white/10 disabled:opacity-50"
-          >
-            {cleaningStorage ? "Čistím storage…" : "Vyčistit orphan storage priečinky"}
-          </button>
-          {storageCleanResult && (
-            <p className="mb-2 text-[11px] text-[#666]">{storageCleanResult}</p>
-          )}
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
