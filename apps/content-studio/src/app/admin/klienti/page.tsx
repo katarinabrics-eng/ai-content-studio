@@ -64,6 +64,7 @@ type ProjectItem = {
   source: "client_project" | "project";
   clientProjectId?: string;
   projectId?: string;
+  projectCode?: string;
 };
 type ClientItem = {
   id: string;
@@ -514,11 +515,21 @@ function ProjectDetail({
         </div>
       )}
 
-      {/* Archivovat / Smazat */}
+      {/* Archivovat / Smazat / Zobrazit jako klient */}
       {(project.clientProjectId || project.projectId) && (
         <div className="mb-5 p-4 rounded-xl border border-white/[0.06] bg-white/[0.03]">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-[#555] mb-3">Akce</div>
           <div className="flex flex-wrap gap-2">
+            {project.source === "project" && project.projectCode && (
+              <a
+                href={`/client/${project.projectCode}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-lg border border-[#A8EB12]/40 bg-[#A8EB12]/10 text-sm text-[#A8EB12] hover:bg-[#A8EB12]/20 transition-colors"
+              >
+                👁 Zobrazit jako klient
+              </a>
+            )}
             {!isArchived && onArchive && (
               <button
                 type="button"

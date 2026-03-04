@@ -152,6 +152,7 @@ export async function GET() {
         timeline,
         source: "project",
         projectId: proj.id,
+        projectCode: proj.project_code ?? undefined,
         sortAt: proj.created_at,
       });
     }
