@@ -134,9 +134,11 @@ function AdminLoginForm() {
           )}
         </div>
 
-        <p className="text-center text-xs text-zinc-500">
-          Heslo je v .env.local (ADMIN_PASSWORD). Po změně restartujte dev server.
-        </p>
+        {process.env.NODE_ENV === "development" && (
+          <p className="text-center text-xs text-zinc-500">
+            Heslo je v .env.local (ADMIN_PASSWORD).
+          </p>
+        )}
       </div>
     </main>
   );
