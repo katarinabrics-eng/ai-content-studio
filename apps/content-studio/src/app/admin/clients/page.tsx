@@ -9,30 +9,6 @@ import {
   type DiagWorkflowStatus,
 } from "@/lib/diagnostika-workflow";
 
-/** Zobrazí aktuální adresu (kvůli kontrole stejné DB jako diagnostika). */
-function CurrentOriginNotice() {
-  const [origin, setOrigin] = useState<string>("");
-  useEffect(() => {
-    setOrigin(typeof window !== "undefined" ? window.location.origin : "");
-  }, []);
-  if (!origin) return null;
-  return (
-    <div className="mt-4 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 max-w-2xl">
-      <p className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">Proč nevidím záznam z dokončené diagnostiky?</p>
-      <p className="text-sm text-amber-100/90 mb-2">
-        Záznam se ukládá do databáze podle toho, <strong>na které adrese</strong> jste diagnostiku dokončili (obrazovka s odkazem typu /d/xxxxx nebo „Vstoupit do pracovní plochy“). Admin musíte mít otevřený na <strong>stejné adrese</strong>, jinak vidíte jinou databázi a nový záznam tam nebude.
-      </p>
-      <p className="text-sm text-zinc-300">
-        <span className="text-zinc-500">Právě jste na:</span>{" "}
-        <strong className="text-white break-all">{origin}</strong>
-      </p>
-      <p className="text-xs text-zinc-500 mt-2">
-        Dokončili jste diagnostiku na jiné adrese (např. localhost vs. vercel.app)? Otevřete admin tam, kde jste měli diagnostiku – nebo spusťte diagnostiku znovu z této adresy.
-      </p>
-    </div>
-  );
-}
-
 type ClientProject = {
   id: string;
   created_at: string;
@@ -58,15 +34,21 @@ export default function AdminClientsPage() {
   const [clearing, setClearing] = useState(false);
   const [clearError, setClearError] = useState<string | null>(null);
 
+  const [backendRef, setBackendRef] = useState<string | null>(null);
+
   const fetchProjects = useCallback(() => {
     setFetchError(null);
     fetch("/api/admin/client-projects", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
-        if (d.ok && Array.isArray(d.projects)) setProjects(d.projects);
-        else setFetchError(d.error ?? "Chyba načtení.");
+        if (d.ok && Array.isArray(d.projects)) {
+          setProjects(d.projects);
+          if (d._meta?.supabaseRef) setBackendRef(d._meta.supabaseRef);
+        } else {
+          setFetchError(d.error ?? "Chyba načtení.");
+        }
       })
-      .catch(() => setFetchError("Chyba připojení. Jste na stejné adrese jako při diagnostice?"))
+      .catch(() => setFetchError("Chyba připojení."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -97,23 +79,24 @@ export default function AdminClientsPage() {
             <h1 className="text-2xl font-bold text-white">Klienti (diagnostika)</h1>
             <p className="mt-1 text-zinc-400">
               Scan + platba + termín. Jeden zdroj pravdy.
-              {!loading && projects.length > 0 && (
-                <span className="ml-2 text-zinc-500">· {projects.length} záznamů</span>
+              {!loading && (
+                <span className="ml-2 text-zinc-500">
+                  · {projects.length} záznamů
+                  {backendRef && (
+                    <span className="ml-2 text-zinc-600" title="Supabase projekt, ze kterého se čte. Diagnostika zapisuje sem (save-scan → client_projects).">
+                      · DB: {backendRef}
+                    </span>
+                  )}
+                </span>
               )}
             </p>
-            <p className="mt-2 text-sm text-[#A8EB12]/90 max-w-xl">
-              ✓ Zde jsou <strong>všechny diagnostiky</strong> – včetně nových z <strong>Nový klient</strong>. Každý řádek lze archivovat nebo smazat. AI zakázky (projekty) jsou v sekci <strong>Projekty</strong>.
-            </p>
-            <div className="mt-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">Co zde uvidíte</p>
-              <ul className="text-sm text-zinc-300 space-y-1.5 list-none">
-                <li><strong className="text-white">Nový záznam z „Nový klient“</strong> se vždy objeví <strong className="text-[#A8EB12]">zde v této tabulce</strong>. V menu vlevo neklikejte na „Projekty“ – tam jsou jiné záznamy (AI zakázky).</li>
-                <li><strong className="text-white">Smazat jeden řádek:</strong> v sloupci „Akce / Detail“ klikněte na červené tlačítko <strong>Smazat</strong> (potvrdíte v dialogu).</li>
-                <li><strong className="text-white">Smazat vše:</strong> červené tlačítko <strong>Vyčistit přehled</strong> nahoře vpravo.</li>
-                <li>Nevidíte nový záznam? Klikněte <strong>Obnovit</strong>. Pokud tam pořád není, viz žlutý box níže – musíte být na stejné adrese jako při dokončení diagnostiky.</li>
-              </ul>
-            </div>
-            <CurrentOriginNotice />
+            {!loading && projects.length === 0 && backendRef && (
+              <p className="mt-2 text-xs text-zinc-500">
+                Záznamy z diagnostiky se ukládají do tabulky <strong>client_projects</strong> (odkaz /d/xxx i „Vstoupit do pracovní plochy“). Pokud zde vidíte 0, ale odkaz z e-mailu funguje, otevřete diagnostiku na této adrese a v konzoli zadejte:{" "}
+                <code className="bg-white/10 px-1 rounded">fetch(&quot;/api/diagnostika/backend-id&quot;).then(r=&gt;r.json()).then(console.log)</code>
+                {" "}– hodnota <strong>supabaseRef</strong> musí být stejná jako DB zde ({backendRef}).
+              </p>
+            )}
           </div>
           <div className="flex gap-2">
             <Link
