@@ -29,7 +29,7 @@ const AUTHOR_CONFIG: Record<string, { icon: string; label: string }> = {
 const TIMELINE_DOT: Record<string, string> = {
   auto: "#333",
   client: "#22C55E",
-  admin: "#3B6FD4",
+  admin: "#A8EB12",
 };
 
 /** Barvy avataru podle id/brand klienta (konzistentní hash). */
@@ -174,7 +174,7 @@ function CardLabel({
           type="button"
           onClick={onAction}
           disabled={actionDisabled}
-          className="text-[13px] text-[#3B6FD4] hover:underline bg-transparent border-none cursor-pointer p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-[13px] text-[#A8EB12] hover:underline bg-transparent border-none cursor-pointer p-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {action}
         </button>
@@ -220,14 +220,11 @@ function ProjectDetail({
           {project.name}
         </h1>
         <span
-          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-medium"
-          style={{
-            background: "#3B6FD4",
-            color: "white",
-          }}
+          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-medium text-zinc-900"
+          style={{ background: "#A8EB12" }}
         >
           <span
-            className="w-2 h-2 rounded-full bg-white/60 inline-block"
+            className="w-2 h-2 rounded-full bg-zinc-700 inline-block"
           />
           {STATUS_CONFIG[project.status]?.label ?? project.status}
         </span>
@@ -237,16 +234,16 @@ function ProjectDetail({
       {(project.status === "aktivni" || project.status === "diagnostika") &&
         project.source === "client_project" &&
         project.clientProjectId && (
-          <div className="mb-5 p-4 rounded-xl flex items-center justify-between border border-blue-500/20 bg-blue-500/10">
+          <div className="mb-5 p-4 rounded-xl flex items-center justify-between border border-[#A8EB12]/25 bg-[#A8EB12]/10">
             <div>
-              <div className="text-sm font-medium text-blue-300">Převést na zakázku</div>
-              <div className="text-xs text-blue-400/80 mt-0.5">
+              <div className="text-sm font-medium text-[#A8EB12]">Převést na zakázku</div>
+              <div className="text-xs text-[#888] mt-0.5">
                 Workflow a platbu nastavíš v detailu klienta
               </div>
             </div>
             <Link
               href={`/admin/clients/${project.clientProjectId}`}
-              className="px-4 py-2 rounded-lg bg-[#3B6FD4] hover:bg-[#4a7ee5] text-white text-sm font-medium transition-colors"
+              className="px-4 py-2 rounded-lg bg-[#A8EB12] hover:bg-[#b8f022] text-zinc-900 text-sm font-medium transition-colors"
             >
               Otevřít detail
             </Link>
@@ -258,7 +255,7 @@ function ProjectDetail({
           <div className="text-sm text-[#888]">Projekt AI (strategie, návrhy)</div>
           <Link
             href={`/admin/projects/${project.projectId}`}
-            className="px-4 py-2 rounded-lg bg-zinc-600 hover:bg-zinc-500 text-white text-sm font-medium transition-colors"
+            className="px-4 py-2 rounded-lg bg-[#A8EB12] hover:bg-[#b8f022] text-zinc-900 text-sm font-medium transition-colors"
           >
             Otevřít projekt
           </Link>
@@ -358,7 +355,7 @@ function ProjectDetail({
         )}
         {project.source === "project" && project.projectId && !editingNotes && (
           <p className="text-xs text-[#555] mt-2">
-            <Link href={`/admin/projects/${project.projectId}`} className="text-[#3B6FD4] hover:underline">
+            <Link href={`/admin/projects/${project.projectId}`} className="text-[#A8EB12] hover:underline">
               Otevřít detail projektu
             </Link>
           </p>
@@ -548,7 +545,7 @@ export default function AdminKlientiPage() {
                         const st = STATUS_CONFIG[project.status];
                         const dotColor =
                           isActive
-                            ? "#3B6FD4"
+                            ? "#A8EB12"
                             : project.status === "archivovano"
                               ? "#2A2A2A"
                               : "#333";
@@ -558,7 +555,7 @@ export default function AdminKlientiPage() {
                             type="button"
                             onClick={() => selectProject(project, client)}
                             className={`w-full flex items-center gap-2.5 pl-[58px] pr-5 py-2.5 border-b border-white/[0.03] text-left transition-colors ${
-                              isActive ? "bg-[#3B6FD4]/10 border-l-2 border-l-[#3B6FD4]" : "border-l-2 border-l-transparent hover:bg-white/[0.03]"
+                              isActive ? "bg-[#A8EB12]/10 border-l-2 border-l-[#A8EB12]" : "border-l-2 border-l-transparent hover:bg-white/[0.03]"
                             }`}
                           >
                             <div

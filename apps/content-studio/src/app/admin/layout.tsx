@@ -30,18 +30,18 @@ export default function AdminLayout({
 }) {
   return (
     <div
-      className={`${dmSans.variable} ${dmSerif.variable} flex h-screen bg-[#0F0F0F] text-[#F5F5F5] overflow-hidden font-sans`}
+      className={`${dmSans.variable} ${dmSerif.variable} flex h-screen bg-[#0A0A0A] text-[#F0F0F0] overflow-hidden font-sans`}
       style={{ fontFamily: "var(--font-admin-sans), system-ui, sans-serif" }}
     >
-      {/* Sidebar 260px – vizuální DNA z CURSOR_PROMPT */}
+      {/* Sidebar – sjednoceno s webem: lime #A8EB12, pozadí #141414 */}
       <aside
-        className="w-[260px] flex-shrink-0 border-r border-white/[0.08] bg-[#242424] flex flex-col"
-        style={{ boxShadow: "0 0 40px rgba(201,169,110,0.05)" }}
+        className="w-[260px] flex-shrink-0 border-r border-white/[0.06] bg-[#141414] flex flex-col"
+        style={{ boxShadow: "0 0 40px rgba(168,235,18,0.04)" }}
       >
-        <div className="p-5 border-b border-white/[0.08]">
+        <div className="p-5 border-b border-white/[0.06]">
           <Link
             href="/admin/dashboard"
-            className="flex items-center gap-2 text-[#C9A96E] focus:outline-none focus:ring-2 focus:ring-[#C9A96E]/50 rounded"
+            className="flex items-center gap-2 text-[#A8EB12] focus:outline-none focus:ring-2 focus:ring-[#A8EB12]/50 rounded"
             style={{ fontFamily: "var(--font-admin-serif), serif" }}
           >
             <span className="text-xl">🎨</span>
@@ -54,17 +54,17 @@ export default function AdminLayout({
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-[#888] hover:text-[#F5F5F5] hover:bg-white/[0.06] transition-colors text-sm"
+              className="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-[#888] hover:text-[#F0F0F0] hover:bg-white/[0.06] transition-colors text-sm"
             >
               <span className="text-base">{item.icon}</span>
               <span>{item.label}</span>
             </Link>
           ))}
         </nav>
-        <div className="p-2 border-t border-white/[0.08]">
+        <div className="p-2 border-t border-white/[0.06]">
           <Link
             href="/admin/login"
-            className="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-[#888] hover:text-[#F5F5F5] hover:bg-white/[0.06] transition-colors text-sm"
+            className="flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-[#888] hover:text-[#F0F0F0] hover:bg-white/[0.06] transition-colors text-sm"
           >
             <span>⚙️</span>
             <span>Nastavení</span>
@@ -72,7 +72,7 @@ export default function AdminLayout({
         </div>
       </aside>
       {/* Hlavní pracovní plocha */}
-      <main className="flex-1 overflow-auto bg-[#0F0F0F] min-w-0">
+      <main className="flex-1 overflow-auto bg-[#0A0A0A] min-w-0">
         {children}
       </main>
     </div>

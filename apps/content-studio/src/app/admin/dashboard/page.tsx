@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="p-6 max-w-4xl">
       <h1
-        className="text-2xl font-semibold text-[#F5F5F5]"
+        className="text-2xl font-semibold text-[#F0F0F0]"
         style={{ fontFamily: "var(--font-admin-serif), serif" }}
       >
         Dashboard
@@ -25,12 +25,12 @@ export default function AdminDashboardPage() {
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-start gap-4 rounded-xl border border-white/[0.08] bg-[#1A1A1A] p-5 transition-colors hover:bg-[#242424] hover:border-[#C9A96E]/20"
-            style={{ boxShadow: "0 0 40px rgba(201,169,110,0.05)" }}
+            className="flex items-start gap-4 rounded-xl border border-white/[0.06] bg-[#141414] p-5 transition-colors hover:bg-white/[0.04] hover:border-[#A8EB12]/25"
+            style={{ boxShadow: "0 0 40px rgba(168,235,18,0.04)" }}
           >
             <span className="text-2xl">{item.icon}</span>
             <div>
-              <div className="font-medium text-[#F5F5F5]">{item.label}</div>
+              <div className="font-medium text-[#F0F0F0]">{item.label}</div>
               <div className="text-sm text-[#888] mt-0.5">{item.desc}</div>
             </div>
           </Link>

@@ -42,14 +42,14 @@ export default function AdminClientApprovePage() {
     return (
       <div className="p-6">
         <p className="text-[#888]">Projekt nenalezen.</p>
-        <Link href="/admin/clients" className="mt-2 inline-block text-sm text-[#C9A96E] hover:underline">← Seznam klientů</Link>
+        <Link href="/admin/clients" className="mt-2 inline-block text-sm text-[#A8EB12] hover:underline">← Seznam klientů</Link>
       </div>
     );
   }
 
   return (
     <div className="p-6 max-w-4xl">
-      <Link href={`/admin/clients/${id}`} className="text-sm text-[#888] hover:text-[#C9A96E]">← Detail klienta</Link>
+      <Link href={`/admin/clients/${id}`} className="text-sm text-[#888] hover:text-[#A8EB12]">← Detail klienta</Link>
       <h1
         className="mt-4 text-2xl font-semibold text-[#F5F5F5]"
         style={{ fontFamily: "var(--font-admin-serif), serif" }}
@@ -60,13 +60,13 @@ export default function AdminClientApprovePage() {
 
       <div
         className="mt-8 rounded-xl border border-white/[0.08] bg-[#1A1A1A] p-8 text-center"
-        style={{ boxShadow: "0 0 40px rgba(201,169,110,0.05)" }}
+        style={{ boxShadow: "0 0 40px rgba(168,235,18,0.04)" }}
       >
         <p className="text-[#888]">Sekce schválení a exportu schválených postů bude doplněna podle CURSOR_PROMPT. Fronta ke schválení je v Kurátor (Schválení).</p>
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Link
             href="/admin/kurator"
-            className="inline-flex items-center rounded-lg bg-[#C9A96E] px-4 py-2 text-sm font-medium text-[#0F0F0F] hover:bg-[#d4b87a]"
+            className="inline-flex items-center rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-[#b8f022]"
           >
             Otevřít Kurátor
           </Link>

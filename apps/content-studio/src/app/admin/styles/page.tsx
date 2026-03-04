@@ -29,8 +29,8 @@ export default function AdminStylesPage() {
         {STYLE_CARDS.map((style) => (
           <div
             key={style.id}
-            className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] p-5 flex flex-wrap items-center justify-between gap-4"
-            style={{ boxShadow: "0 0 40px rgba(201,169,110,0.05)" }}
+            className="rounded-xl border border-white/[0.06] bg-[#141414] p-5 flex flex-wrap items-center justify-between gap-4"
+            style={{ boxShadow: "0 0 40px rgba(168,235,18,0.04)" }}
           >
             <div>
               <h2 className="text-lg font-medium text-[#F5F5F5]">{style.name}</h2>
