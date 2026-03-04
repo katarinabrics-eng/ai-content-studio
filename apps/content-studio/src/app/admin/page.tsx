@@ -37,7 +37,20 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [strategistLoading, setStrategistLoading] = useState(false);
   const [strategistId, setStrategistId] = useState("lucifera");
+  const [accordion, setAccordion] = useState<Record<string, boolean>>({
+    prevest: true,
+    akce: true,
+    info: true,
+    rozbor: true,
+    zdroje: true,
+    poznamky: true,
+    strategie: true,
+  });
   const router = useRouter();
+
+  function toggleAccordion(id: string) {
+    setAccordion((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
 
   useEffect(() => {
     fetch("/api/admin/data")
@@ -375,79 +388,114 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div
-              style={{
-                background: "rgba(168,235,18,0.1)",
-                border: "1px solid rgba(168,235,18,0.3)",
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 24,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 12,
-              }}
-            >
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>Převést na zakázku</div>
-                <div style={{ fontSize: 13, color: "#888" }}>
-                  Po konzultaci, když klientka nastoupí do spolupráce, nebo když si předplatí službu Content Studio Lucifera.
+            {/* Accordion: Převést na zakázku */}
+            <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+              <button
+                type="button"
+                onClick={() => toggleAccordion("prevest")}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "14px 16px",
+                  background: "rgba(168,235,18,0.08)",
+                  border: "none",
+                  borderBottom: accordion.prevest ? "1px solid #222" : "none",
+                  color: "#fff",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                <span>Převést na zakázku</span>
+                <span style={{ transform: accordion.prevest ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+              </button>
+              {accordion.prevest && (
+                <div style={{ padding: 16, borderTop: "1px solid #222" }}>
+                  <div style={{ fontSize: 13, color: "#888", marginBottom: 12 }}>
+                    Po konzultaci, když klientka nastoupí do spolupráce, nebo když si předplatí službu Content Studio Lucifera.
+                  </div>
+                  {selected.short_code ? (
+                    <a href={`/d/${selected.short_code}`} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", background: "#A8EB12", color: "#000", fontWeight: 600, borderRadius: 8, textDecoration: "none", fontSize: 14, display: "inline-block" }}>
+                      Otevřít detail
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: 13, color: "#666" }}>Odkaz není k dispozici</span>
+                  )}
                 </div>
-              </div>
-              {selected.short_code ? (
-                <a
-                  href={`/d/${selected.short_code}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    padding: "10px 20px",
-                    background: "#A8EB12",
-                    color: "#000",
-                    fontWeight: 600,
-                    borderRadius: 8,
-                    textDecoration: "none",
-                    fontSize: 14,
-                  }}
-                >
-                  Otevřít detail
-                </a>
-              ) : (
-                <span style={{ fontSize: 13, color: "#666" }}>Odkaz není k dispozici</span>
               )}
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Akce</div>
-              <div style={{ display: "flex", gap: 10 }}>
-                <button
-                  type="button"
-                  onClick={() => selectedId && handleDelete(selectedId)}
-                  style={{
-                    padding: "8px 16px",
-                    background: "transparent",
-                    border: "1px solid rgba(255,68,68,0.5)",
-                    color: "#ff4444",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    fontSize: 13,
-                  }}
-                >
-                  Smazat
-                </button>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Info</div>
-              <div
+            {/* Accordion: AKCE */}
+            <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+              <button
+                type="button"
+                onClick={() => toggleAccordion("akce")}
                 style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
                   background: "#111",
-                  border: "1px solid #222",
-                  borderRadius: 10,
-                  padding: 16,
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
                 }}
               >
+                <span>Akce</span>
+                <span style={{ transform: accordion.akce ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+              </button>
+              {accordion.akce && (
+                <div style={{ padding: 16, borderTop: "1px solid #222" }}>
+                  <button
+                    type="button"
+                    onClick={() => selectedId && handleDelete(selectedId)}
+                    style={{ padding: "8px 16px", background: "transparent", border: "1px solid rgba(255,68,68,0.5)", color: "#ff4444", borderRadius: 8, cursor: "pointer", fontSize: 13 }}
+                  >
+                    Smazat
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Accordion: INFO */}
+            <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+              <button
+                type="button"
+                onClick={() => toggleAccordion("info")}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  background: "#111",
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                <span>Info</span>
+                <span style={{ transform: accordion.info ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+              </button>
+              {accordion.info && (
+                <div
+                  style={{
+                    padding: 16,
+                    borderTop: "1px solid #222",
+                  }}
+                >
                 <div style={{ marginBottom: 8 }}>
                   <span style={{ color: "#666", fontSize: 12 }}>Vytvořeno </span>
                   <span style={{ fontSize: 14 }}>{formatDate(selected.created_at)}</span>
@@ -480,14 +528,36 @@ export default function AdminDashboard() {
                     {selected.payment_status || "—"}
                   </span>
                 </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Rozbor diagnostiky */}
+            {/* Accordion: ROZBOR */}
             {(selected.scan_result as ScanResult) && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Rozbor</div>
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 16 }}>
+              <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion("rozbor")}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "12px 16px",
+                    background: "#111",
+                    border: "none",
+                    color: "#888",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  <span>Rozbor</span>
+                  <span style={{ transform: accordion.rozbor ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+                </button>
+                {accordion.rozbor && (
+                <div style={{ padding: 16, borderTop: "1px solid #222" }}>
                   {(selected.scan_result as ScanResult).summary && (
                     <div style={{ marginBottom: 12 }}>
                       <div style={{ color: "#888", fontSize: 11, marginBottom: 4 }}>Shrnutí</div>
@@ -559,21 +629,66 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
+                </div>
               </div>
             )}
 
-            {/* Zdrojové podklady */}
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Zdrojové podklady</div>
-              <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 12 }}>
-                {selected.web_url && <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>Web: {selected.web_url}</div>}
-                <div style={{ fontSize: 13, color: "#bbb", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{selected.manual_input || "—"}</div>
-              </div>
+            {/* Accordion: Zdrojové podklady */}
+            <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+              <button
+                type="button"
+                onClick={() => toggleAccordion("zdroje")}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  background: "#111",
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                <span>Zdrojové podklady</span>
+                <span style={{ transform: accordion.zdroje ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+              </button>
+              {accordion.zdroje && (
+                <div style={{ padding: 12, borderTop: "1px solid #222" }}>
+                  {selected.web_url && <div style={{ fontSize: 13, color: "#888", marginBottom: 6 }}>Web: {selected.web_url}</div>}
+                  <div style={{ fontSize: 13, color: "#bbb", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{selected.manual_input || "—"}</div>
+                </div>
+              )}
             </div>
 
-            {/* Interní poznámky + úprava podkladů */}
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Interní poznámky</div>
+            {/* Accordion: Interní poznámky + podklady */}
+            <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+              <button
+                type="button"
+                onClick={() => toggleAccordion("poznamky")}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  background: "#111",
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                <span>Interní poznámky a podklady</span>
+                <span style={{ transform: accordion.poznamky ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+              </button>
+              {accordion.poznamky && (
+            <div style={{ padding: 16, borderTop: "1px solid #222" }}>
               <textarea
                 value={editInternalNotes}
                 onChange={(e) => setEditInternalNotes(e.target.value)}
@@ -613,10 +728,34 @@ export default function AdminDashboard() {
                 {saving ? "Ukládám…" : "Uložit poznámky a podklady"}
               </button>
             </div>
+              )}
+            </div>
 
-            {/* Strategický plán */}
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Strategický plán</div>
+            {/* Accordion: Strategický plán */}
+            <div style={{ marginBottom: 12, border: "1px solid #222", borderRadius: 10, overflow: "hidden", background: "#111" }}>
+              <button
+                type="button"
+                onClick={() => toggleAccordion("strategie")}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  background: "#111",
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                <span>Strategický plán</span>
+                <span style={{ transform: accordion.strategie ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", fontSize: 10 }}>▼</span>
+              </button>
+              {accordion.strategie && (
+              <div style={{ padding: 16, borderTop: "1px solid #222" }}>
               <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
                 <select
                   value={strategistId}
@@ -660,6 +799,8 @@ export default function AdminDashboard() {
                 <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 16, maxHeight: 400, overflow: "auto" }}>
                   <pre style={{ margin: 0, fontSize: 13, color: "#bbb", whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{(selected.scan_result as ScanResult).strategic_plan}</pre>
                 </div>
+              )}
+              </div>
               )}
             </div>
           </>
