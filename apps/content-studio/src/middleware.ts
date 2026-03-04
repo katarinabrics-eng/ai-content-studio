@@ -35,7 +35,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/redakce" || pathname.startsWith("/redakce/")) {
-    return NextResponse.redirect(new URL("/admin/klienti", request.url), 307);
+    return NextResponse.redirect(new URL("/admin", request.url), 307);
   }
   
   if (!isProtectedPath(pathname)) {
