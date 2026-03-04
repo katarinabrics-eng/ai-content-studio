@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { VISUAL_STYLE_PRESETS, CANONICAL_STYLE_IDS } from "@/lib/visual-style-presets";
+import { getDiagnostikaWorkflowStep } from "@/lib/diagnostika-workflow";
 
 // ── Status a služby (z clients-section.jsx) ───────────────────
 const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
@@ -66,6 +67,7 @@ type ProjectItem = {
   projectId?: string;
   projectCode?: string;
   diagnosticProjectId?: string;
+  workflow_status?: string;
 };
 type ClientItem = {
   id: string;
@@ -78,14 +80,26 @@ type ClientItem = {
 };
 
 // ── Komponenty (podle JSX) ────────────────────────────────────
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, workflowStatus }: { status: string; workflowStatus?: string }) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.draft;
+  const wfLabel = workflowStatus ? getDiagnostikaWorkflowStep(workflowStatus).label : null;
   return (
-    <span
-      className="rounded px-2 py-0.5 text-[11px] font-medium tracking-wide"
-      style={{ background: cfg.bg, color: cfg.text }}
-    >
-      {cfg.label}
+    <span className="inline-flex flex-wrap items-center gap-1">
+      <span
+        className="rounded px-2 py-0.5 text-[11px] font-medium tracking-wide"
+        style={{ background: cfg.bg, color: cfg.text }}
+      >
+        {cfg.label}
+      </span>
+      {wfLabel && (
+        <span
+          className="rounded px-2 py-0.5 text-[11px] font-medium tracking-wide"
+          style={{ background: "rgba(255,255,255,0.08)", color: "#A0A0A0" }}
+          title={wfLabel}
+        >
+          {wfLabel}
+        </span>
+      )}
     </span>
   );
 }
@@ -994,7 +1008,7 @@ export default function AdminKlientiPage() {
                                 {project.name}
                               </div>
                               <div className="flex gap-1.5 mt-1 flex-wrap items-center">
-                                <StatusBadge status={project.status} />
+                                <StatusBadge status={project.status} workflowStatus={project.workflow_status} />
                                 {project.expires && (
                                   <span
                                     className="rounded px-2 py-0.5 text-[11px]"

@@ -91,6 +91,7 @@ export async function GET() {
           projectCode?: string;
           diagnosticProjectId?: string;
           sortAt?: string;
+          workflow_status?: string;
         }>;
       }
     > = new Map();
@@ -132,6 +133,7 @@ export async function GET() {
         source: "client_project",
         clientProjectId: cp.id,
         sortAt: cp.created_at,
+        workflow_status: cp.workflow_status ?? undefined,
       });
     }
 
