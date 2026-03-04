@@ -267,7 +267,7 @@ export default function AdminDashboard() {
               <div>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>Převést na zakázku</div>
                 <div style={{ fontSize: 13, color: "#888" }}>
-                  Workflow a platbu nastavíš v detailu klienta.
+                  Po konzultaci, když klientka nastoupí do spolupráce, nebo když si předplatí službu Content Studio Lucifera.
                 </div>
               </div>
               {selected.short_code ? (
