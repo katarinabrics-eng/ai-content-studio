@@ -16,4 +16,7 @@ node_modules
 .idea
 .vscode/*.log
 
+# Cursor / Claude worktrees
+.claude/
+
 secrets/
