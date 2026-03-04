@@ -13,10 +13,7 @@ export default function AdminStylesPage() {
     <div className="p-6 max-w-4xl">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
-          <h1
-            className="text-2xl font-semibold text-[#F5F5F5]"
-            style={{ fontFamily: "var(--font-admin-serif), serif" }}
-          >
+          <h1 className="text-2xl font-semibold text-[#F5F5F5]">
             Grafické styly
           </h1>
           <p className="text-sm text-[#888] mt-1">

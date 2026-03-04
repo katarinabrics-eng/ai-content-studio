@@ -50,10 +50,7 @@ export default function AdminClientApprovePage() {
   return (
     <div className="p-6 max-w-4xl">
       <Link href={`/admin/clients/${id}`} className="text-sm text-[#888] hover:text-[#A8EB12]">← Detail klienta</Link>
-      <h1
-        className="mt-4 text-2xl font-semibold text-[#F5F5F5]"
-        style={{ fontFamily: "var(--font-admin-serif), serif" }}
-      >
+      <h1 className="mt-4 text-2xl font-semibold text-[#F5F5F5]">
         Schválení postů · {project.name ?? project.email ?? "Klient"}
       </h1>
       <p className="mt-1 text-sm text-[#888]">Ke schválení / schváleno / zamítnuto, export ZIP.</p>

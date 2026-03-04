@@ -12,10 +12,7 @@ const quickLinks = [
 export default function AdminDashboardPage() {
   return (
     <div className="p-6 max-w-4xl">
-      <h1
-        className="text-2xl font-semibold text-[#F0F0F0]"
-        style={{ fontFamily: "var(--font-admin-serif), serif" }}
-      >
+      <h1 className="text-2xl font-semibold text-[#F0F0F0]">
         Dashboard
       </h1>
       <p className="mt-1 text-sm text-[#888]">Kurátorský admin panel · Lucifera AI Content Studio</p>

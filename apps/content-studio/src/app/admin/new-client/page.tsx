@@ -10,10 +10,7 @@ export default function AdminNewClientPage() {
 
   return (
     <div className="p-6 max-w-2xl">
-      <h1
-        className="text-2xl font-semibold text-[#F5F5F5] mb-1"
-        style={{ fontFamily: "var(--font-admin-serif), serif" }}
-      >
+      <h1 className="text-2xl font-semibold text-[#F5F5F5] mb-1">
         Nový klient
       </h1>
       <p className="text-sm text-[#888] mb-8">

@@ -1,17 +1,4 @@
 import Link from "next/link";
-import { DM_Sans, DM_Serif_Display } from "next/font/google";
-
-const dmSans = DM_Sans({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-admin-sans",
-});
-const dmSerif = DM_Serif_Display({
-  weight: "400",
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-  variable: "--font-admin-serif",
-});
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "📊" },
@@ -29,11 +16,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`${dmSans.variable} ${dmSerif.variable} flex h-screen bg-[#0A0A0A] text-[#F0F0F0] overflow-hidden font-sans`}
-      style={{ fontFamily: "var(--font-admin-sans), system-ui, sans-serif" }}
-    >
-      {/* Sidebar – sjednoceno s webem: lime #A8EB12, pozadí #141414 */}
+    <div className="flex h-screen bg-[#0A0A0A] text-[#F0F0F0] overflow-hidden font-sans">
+      {/* Sidebar – sjednoceno s webem: lime #A8EB12, pozadí #141414, font bez patků */}
       <aside
         className="w-[260px] flex-shrink-0 border-r border-white/[0.06] bg-[#141414] flex flex-col"
         style={{ boxShadow: "0 0 40px rgba(168,235,18,0.04)" }}
@@ -41,11 +25,10 @@ export default function AdminLayout({
         <div className="p-5 border-b border-white/[0.06]">
           <Link
             href="/admin/dashboard"
-            className="flex items-center gap-2 text-[#A8EB12] focus:outline-none focus:ring-2 focus:ring-[#A8EB12]/50 rounded"
-            style={{ fontFamily: "var(--font-admin-serif), serif" }}
+            className="flex items-center gap-2 text-[#A8EB12] focus:outline-none focus:ring-2 focus:ring-[#A8EB12]/50 rounded text-lg font-semibold"
           >
             <span className="text-xl">🎨</span>
-            <span className="text-lg font-serif">Lucifera</span>
+            <span>Lucifera</span>
           </Link>
           <p className="text-xs text-[#888] mt-1">Admin</p>
         </div>

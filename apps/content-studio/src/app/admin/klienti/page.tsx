@@ -453,10 +453,7 @@ export default function AdminKlientiPage() {
     : null;
 
   return (
-    <div
-      className="flex h-full min-h-0 bg-[#0A0A0A] text-[#F0F0F0] overflow-hidden"
-      style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}
-    >
+    <div className="flex h-full min-h-0 bg-[#0A0A0A] text-[#F0F0F0] overflow-hidden">
       {/* Sidebar 370px (z JSX) */}
       <div
         className="w-[370px] min-w-[370px] flex flex-col border-r overflow-y-auto"
