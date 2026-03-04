@@ -164,7 +164,11 @@ export async function GET() {
       }),
     }));
 
-    return NextResponse.json({ ok: true, clients });
+    return NextResponse.json({
+      ok: true,
+      clients,
+      meta: { totalClientProjects: clientProjects.length, totalProjects: projects.length },
+    });
   } catch (e) {
     console.error("[admin/klienti-dashboard]", e);
     return NextResponse.json({ error: "Chyba načtení dashboardu." }, { status: 500 });

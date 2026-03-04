@@ -393,14 +393,18 @@ export default function AdminKlientiPage() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [expandedClients, setExpandedClients] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [meta, setMeta] = useState<{ totalClientProjects?: number; totalProjects?: number }>({});
 
   const fetchDashboard = useCallback(() => {
     setLoading(true);
+    setFetchError(null);
     fetch("/api/admin/klienti-dashboard")
       .then((r) => r.json())
       .then((d) => {
         if (d.ok && Array.isArray(d.clients)) {
           setClients(d.clients);
+          if (d.meta) setMeta(d.meta);
           const first = d.clients[0];
           if (first?.projects?.length) {
             setExpandedClients({ [first.id]: true });
@@ -412,8 +416,11 @@ export default function AdminKlientiPage() {
             });
             setSelectedClientId(first.id);
           }
+        } else {
+          setFetchError(d.error ?? "Chyba načtení.");
         }
       })
+      .catch(() => setFetchError("Chyba připojení. Jste na stejné adrese jako při diagnostice?"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -459,13 +466,26 @@ export default function AdminKlientiPage() {
         style={{ borderColor: "rgba(255,255,255,0.06)" }}
       >
         <div className="pt-6 px-5 pb-0">
+          {fetchError && (
+            <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+              {fetchError}
+              <p className="mt-1 text-amber-200/80">Admin otevřete na stejné URL jako diagnostika (Vercel vs. localhost = jiná DB).</p>
+            </div>
+          )}
           <div className="flex justify-between items-center mb-3">
             <span
               className="text-xs font-bold uppercase tracking-widest text-[#F0F0F0]"
             >
               Klienti
             </span>
-            <span className="text-[13px] text-[#555]">{clients.length} celkem</span>
+            <span className="text-[13px] text-[#555]">
+              {clients.length} celkem
+              {(meta.totalClientProjects != null || meta.totalProjects != null) && (
+                <span className="block text-[11px] text-[#666] mt-0.5">
+                  {meta.totalClientProjects ?? 0} diagnostik · {meta.totalProjects ?? 0} projektů
+                </span>
+              )}
+            </span>
           </div>
           <input
             value={search}

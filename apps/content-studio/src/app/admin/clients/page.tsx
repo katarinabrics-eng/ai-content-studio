@@ -28,12 +28,17 @@ export default function AdminClientsPage() {
   const [projects, setProjects] = useState<ClientProject[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const fetchProjects = useCallback(() => {
+    setFetchError(null);
     fetch("/api/admin/client-projects")
       .then((r) => r.json())
       .then((d) => {
         if (d.ok && Array.isArray(d.projects)) setProjects(d.projects);
+        else setFetchError(d.error ?? "Chyba načtení.");
       })
+      .catch(() => setFetchError("Chyba připojení. Jste na stejné adrese jako při diagnostice?"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -62,7 +67,12 @@ export default function AdminClientsPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white">Klienti (diagnostika)</h1>
-            <p className="mt-1 text-zinc-400">Scan + platba + termín. Jeden zdroj pravdy.</p>
+            <p className="mt-1 text-zinc-400">
+              Scan + platba + termín. Jeden zdroj pravdy.
+              {!loading && projects.length > 0 && (
+                <span className="ml-2 text-zinc-500">· {projects.length} záznamů</span>
+              )}
+            </p>
           </div>
           <div className="flex gap-2">
             <Link
@@ -82,8 +92,23 @@ export default function AdminClientsPage() {
           </div>
         </div>
 
-        {loading && projects.length === 0 && <p className="mt-6 text-zinc-500">Načítám…</p>}
-        {!loading && projects.length === 0 && <p className="mt-6 text-zinc-500">Zatím žádné záznamy.</p>}
+        {fetchError && (
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+            {fetchError}
+            <p className="mt-2 text-amber-200/80 text-xs">
+              Otevřete admin na stejné URL jako při spuštění diagnostiky (např. ai-content-studio-omega.vercel.app). Jinak se načítají data z jiné databáze.
+            </p>
+          </div>
+        )}
+        {loading && projects.length === 0 && !fetchError && <p className="mt-6 text-zinc-500">Načítám…</p>}
+        {!loading && projects.length === 0 && !fetchError && (
+          <div className="mt-6">
+            <p className="text-zinc-500">Zatím žádné záznamy.</p>
+            <p className="mt-2 text-zinc-500 text-sm">
+              Jste na stejné adrese jako klient při dokončení diagnostiky? (Vercel vs. localhost = jiná databáze.)
+            </p>
+          </div>
+        )}
 
         {!loading && projects.length > 0 && (
           <div className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-white/5">
