@@ -61,10 +61,11 @@ type ProjectItem = {
   services: string[];
   notes: string | null;
   timeline: TimelineItem[];
-  source: "client_project" | "project";
+  source: "client_project" | "project" | "diagnostic_project";
   clientProjectId?: string;
   projectId?: string;
   projectCode?: string;
+  diagnosticProjectId?: string;
 };
 type ClientItem = {
   id: string;
@@ -711,7 +712,7 @@ export default function AdminKlientiPage() {
   const [expandedClients, setExpandedClients] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState("");
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [meta, setMeta] = useState<{ totalClientProjects?: number; totalProjects?: number }>({});
+  const [meta, setMeta] = useState<{ totalClientProjects?: number; totalDiagnosticProjects?: number; totalProjects?: number }>({});
   const [showClearModal, setShowClearModal] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [clearError, setClearError] = useState<string | null>(null);
@@ -822,7 +823,7 @@ export default function AdminKlientiPage() {
                     if (data.ok) {
                       setShowClearModal(false);
                       setClients([]);
-                      setMeta({ totalClientProjects: 0, totalProjects: 0 });
+                      setMeta({ totalClientProjects: 0, totalDiagnosticProjects: 0, totalProjects: 0 });
                       setSelectedClientId(null);
                       fetchDashboard();
                     } else {
@@ -863,9 +864,9 @@ export default function AdminKlientiPage() {
             </span>
             <span className="text-[13px] text-[#555]">
               {clients.length} celkem
-              {(meta.totalClientProjects != null || meta.totalProjects != null) && (
+              {(meta.totalClientProjects != null || meta.totalDiagnosticProjects != null || meta.totalProjects != null) && (
                 <span className="block text-[11px] text-[#666] mt-0.5">
-                  {meta.totalClientProjects ?? 0} diagnostik · {meta.totalProjects ?? 0} projektů
+                  {(meta.totalClientProjects ?? 0) + (meta.totalDiagnosticProjects ?? 0)} diagnostik · {meta.totalProjects ?? 0} projektů
                 </span>
               )}
             </span>

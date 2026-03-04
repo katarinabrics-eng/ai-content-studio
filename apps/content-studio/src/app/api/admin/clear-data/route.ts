@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
  * Body: { scope: "client_projects" | "projects" | "all" }
  * - client_projects: smaže všechny záznamy z diagnostiky (scan + platba)
  * - projects: smaže všechny AI projekty (cascade smaže související tabulky)
- * - all: obojí
+ * - all: client_projects + projects + diagnostic_projects + clients (kompletní výmaz historie)
+ * Cesty k Supabase, Vercel a API zůstávají nedotčeny.
  * Není vratné.
  */
 export async function POST(request: Request) {
@@ -26,6 +27,35 @@ export async function POST(request: Request) {
     const supabase = getSupabaseClient();
 
     const BATCH = 100;
+
+    if (scope === "all") {
+      const { data: diagRows } = await supabase.from("diagnostic_projects").select("id");
+      const diagIds = (diagRows ?? []).map((r: { id: string }) => r.id);
+      for (let i = 0; i < diagIds.length; i += BATCH) {
+        const chunk = diagIds.slice(i, i + BATCH);
+        const { error } = await supabase.from("diagnostic_projects").delete().in("id", chunk);
+        if (error) {
+          console.error("[admin/clear-data] diagnostic_projects", error);
+          return NextResponse.json(
+            { ok: false, error: "Chyba při mazání Lucifera diagnostik: " + (error.message || "neznámá chyba") },
+            { status: 500 }
+          );
+        }
+      }
+      const { data: clientRows } = await supabase.from("clients").select("id");
+      const clientIds = (clientRows ?? []).map((r: { id: string }) => r.id);
+      for (let i = 0; i < clientIds.length; i += BATCH) {
+        const chunk = clientIds.slice(i, i + BATCH);
+        const { error } = await supabase.from("clients").delete().in("id", chunk);
+        if (error) {
+          console.error("[admin/clear-data] clients", error);
+          return NextResponse.json(
+            { ok: false, error: "Chyba při mazání klientů: " + (error.message || "neznámá chyba") },
+            { status: 500 }
+          );
+        }
+      }
+    }
 
     if (scope === "client_projects" || scope === "all") {
       const { data: rows } = await supabase.from("client_projects").select("id");
@@ -63,7 +93,7 @@ export async function POST(request: Request) {
       ok: true,
       message:
         scope === "all"
-          ? "Diagnostiky i projekty smazány."
+          ? "Diagnostiky, klienti i projekty smazány."
           : scope === "client_projects"
             ? "Diagnostiky smazány."
             : "Projekty smazány.",

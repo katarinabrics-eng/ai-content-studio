@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSupabaseClient } from "@/lib/supabase-server";
 import { listClientProjects } from "@/lib/supabase-client-projects";
 import { listProjects, getWorkflowStateForProjects } from "@/lib/supabase-projects";
 import { computeProjectStatus } from "@/lib/project-status-engine";
@@ -16,6 +17,12 @@ function mapClientProjectStatus(cp: ClientProjectRow): DashboardStatus {
   if (expiresAt > 0 && Date.now() > expiresAt) return "archivovano";
   if (cp.payment_status === "paid") return "zakazka";
   if (cp.workflow_status === "DIAG_SENT_TO_CLIENT" || cp.workflow_status === "DIAG_DELIVERED") return "aktivni";
+  return "diagnostika";
+}
+
+function mapDiagnosticProjectStatus(status: string): DashboardStatus {
+  if (status === "closed") return "archivovano";
+  if (status === "active") return "aktivni";
   return "diagnostika";
 }
 
@@ -44,12 +51,19 @@ function initials(email: string | null, name: string | null): string {
   return "?";
 }
 
-/** GET – agreguje client_projects + projects do tvaru pro dashboard Klienti (bez změny DB). */
+type ProjectSource = "client_project" | "project" | "diagnostic_project";
+
+/** GET – agreguje client_projects + diagnostic_projects (Lucifera) + projects do tvaru pro dashboard Klienti (bez změny DB). */
 export async function GET() {
   try {
-    const [clientProjects, projects] = await Promise.all([
+    const supabase = getSupabaseClient();
+    const [clientProjects, projects, diagResult] = await Promise.all([
       listClientProjects(),
       listProjects(),
+      supabase
+        .from("diagnostic_projects")
+        .select("id, created_at, status, type, intake_data, clients(email, name)")
+        .order("created_at", { ascending: false }),
     ]);
     const stateMap = await getWorkflowStateForProjects(projects);
 
@@ -71,10 +85,11 @@ export async function GET() {
           services: string[];
           notes: string | null;
           timeline: Array< { date: string; event: string; type: "auto" | "client" | "admin" }>;
-          source: "client_project" | "project";
+          source: ProjectSource;
           clientProjectId?: string;
           projectId?: string;
           projectCode?: string;
+          diagnosticProjectId?: string;
           sortAt?: string;
         }>;
       }
@@ -117,6 +132,51 @@ export async function GET() {
         source: "client_project",
         clientProjectId: cp.id,
         sortAt: cp.created_at,
+      });
+    }
+
+    if (diagResult.error) {
+      console.warn("[admin/klienti-dashboard] diagnostic_projects:", diagResult.error.message);
+    }
+    const diagnosticProjects = (diagResult.data ?? []) as Array<{
+      id: string;
+      created_at: string;
+      status: string;
+      type: string;
+      intake_data: Record<string, unknown>;
+      clients: { email: string | null; name: string | null } | null;
+    }>;
+    for (const dp of diagnosticProjects) {
+      const client = dp.clients;
+      const email = (client?.email ?? "").trim().toLowerCase() || "bez-emailu";
+      if (!emailToClient.has(email)) {
+        emailToClient.set(email, {
+          id: email,
+          name: (client?.name ?? email.split("@")[0] ?? "Klient").trim() || "Klient",
+          email: client?.email ?? "",
+          brand: "Lucifera diagnostika",
+          avatar: initials(client?.email ?? null, client?.name ?? null),
+          expanded: false,
+          projects: [],
+        });
+      }
+      const status = mapDiagnosticProjectStatus(dp.status);
+      const created = formatDate(dp.created_at);
+      const timeline: Array<{ date: string; event: string; type: "auto" | "client" | "admin" }> = [
+        { date: created, event: "Lucifera diagnostika vytvořena", type: "auto" },
+      ];
+      emailToClient.get(email)!.projects.push({
+        id: dp.id,
+        name: "Lucifera diagnostika " + created,
+        status,
+        created,
+        expires: null,
+        services: [],
+        notes: null,
+        timeline,
+        source: "diagnostic_project",
+        diagnosticProjectId: dp.id,
+        sortAt: dp.created_at,
       });
     }
 
@@ -172,7 +232,11 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       clients,
-      meta: { totalClientProjects: clientProjects.length, totalProjects: projects.length },
+      meta: {
+        totalClientProjects: clientProjects.length,
+        totalDiagnosticProjects: diagnosticProjects.length,
+        totalProjects: projects.length,
+      },
     });
   } catch (e) {
     console.error("[admin/klienti-dashboard]", e);
