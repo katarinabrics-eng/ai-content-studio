@@ -183,9 +183,9 @@ export function ScanResultScrollExperience({
         <button
           type="button"
           onClick={onToggle}
-          className="text-sm text-zinc-400 hover:text-white transition bg-transparent border-0 cursor-pointer p-0"
+          className="text-sm text-white hover:text-lime-400 underline underline-offset-2 transition bg-transparent border-0 cursor-pointer p-0"
         >
-          {isOpen ? "− Skrýt metodiku" : "→ Jak jsme hodnotili"}
+          {isOpen ? "− Skrýt metodiku" : "Zjistit, jak jsme hodnotili →"}
         </button>
         {isOpen && (
           <div className="mt-3 p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 text-sm text-zinc-300 leading-relaxed">
@@ -240,51 +240,55 @@ export function ScanResultScrollExperience({
               <div>{children}</div>
             )}
 
-            {hasExpandableContent && (
-              <Collapsible
-                isOpen={isOpen}
-                onToggle={() => setOpenPillar(isOpen ? null : id)}
-              >
-                <div className="space-y-4">
-                  {analysis?.observed && analysis.observed.length > 0 && (
-                    <div>
-                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
-                      <ul className="list-disc list-inside text-zinc-300 space-y-1">
-                        {analysis.observed.map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {analysis?.notObserved && analysis.notObserved.length > 0 && (
-                    <div>
-                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme nezaznamenali</p>
-                      <ul className="list-disc list-inside text-zinc-400 space-y-1">
-                        {analysis.notObserved.map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {showTrustMethodology && id === "trust" && (
-                    <div>
-                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Metodika rozlišuje mezi</p>
-                      <div className="text-zinc-400 space-y-1.5 text-xs">
-                        <p><strong className="text-zinc-300">Portfolio</strong> = ukázka práce</p>
-                        <p><strong className="text-zinc-300">Reference</strong> = hlas klienta</p>
-                        <p><strong className="text-zinc-300">Case study</strong> = důkaz výsledku</p>
+            <Collapsible
+              isOpen={isOpen}
+              onToggle={() => setOpenPillar(isOpen ? null : id)}
+            >
+              <div className="space-y-4">
+                {hasExpandableContent ? (
+                  <>
+                    {analysis?.observed && analysis.observed.length > 0 && (
+                      <div>
+                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
+                        <ul className="list-disc list-inside text-zinc-300 space-y-1">
+                          {analysis.observed.map((item, i) => (
+                            <li key={i}>{item}</li>
+                          ))}
+                        </ul>
                       </div>
-                    </div>
-                  )}
-                  {analysis?.reasoning && (
-                    <div>
-                      <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
-                      <p className="text-zinc-300 leading-relaxed">{analysis.reasoning}</p>
-                    </div>
-                  )}
-                </div>
-              </Collapsible>
-            )}
+                    )}
+                    {analysis?.notObserved && analysis.notObserved.length > 0 && (
+                      <div>
+                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme nezaznamenali</p>
+                        <ul className="list-disc list-inside text-zinc-400 space-y-1">
+                          {analysis.notObserved.map((item, i) => (
+                            <li key={i}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {showTrustMethodology && id === "trust" && (
+                      <div>
+                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Metodika rozlišuje mezi</p>
+                        <div className="text-zinc-400 space-y-1.5 text-xs">
+                          <p><strong className="text-zinc-300">Portfolio</strong> = ukázka práce</p>
+                          <p><strong className="text-zinc-300">Reference</strong> = hlas klienta</p>
+                          <p><strong className="text-zinc-300">Case study</strong> = důkaz výsledku</p>
+                        </div>
+                      </div>
+                    )}
+                    {analysis?.reasoning && (
+                      <div>
+                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
+                        <p className="text-zinc-300 leading-relaxed">{analysis.reasoning}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-zinc-500 text-sm">Pro tento pilíř není k dispozici rozepsaná metodika hodnocení.</p>
+                )}
+              </div>
+            </Collapsible>
           </div>
         </div>
       </Section>
