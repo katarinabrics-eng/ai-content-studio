@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+type SavedStrategy = { id: string; name: string; content: string; created_at: string; strategist_id: string | null };
+
 type ScanResult = {
   brandScore?: { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
   brandDna?: { name?: string; positioning?: string; tone?: string; targetAudience?: string; communicationStyle?: string; uniqueValue?: string; contentPillars?: string[]; missingElements?: string[]; visualStyle?: { primaryColor?: string; secondaryColor?: string; mood?: string; typography?: string } };
@@ -10,6 +12,8 @@ type ScanResult = {
   pillarAnalysis?: Record<string, { score?: number; interpretation?: string; observed?: string[]; notObserved?: string[]; reasoning?: string; strategicOpportunity?: string }>;
   admin_notes?: string | null;
   strategic_plan?: string | null;
+  saved_strategies?: SavedStrategy[];
+  active_strategy_id?: string | null;
 };
 
 type DiagRow = {
@@ -37,6 +41,8 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [strategistLoading, setStrategistLoading] = useState(false);
   const [strategistId, setStrategistId] = useState("lucifera");
+  const [strategyName, setStrategyName] = useState("");
+  const [saveStrategyLoading, setSaveStrategyLoading] = useState(false);
   const [accordion, setAccordion] = useState<Record<string, boolean>>({
     prevest: true,
     akce: true,
@@ -184,6 +190,52 @@ export default function AdminDashboard() {
       alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
     } finally {
       setStrategistLoading(false);
+    }
+  }
+
+  async function saveStrategy() {
+    if (!selectedId || !strategyName.trim()) return;
+    setSaveStrategyLoading(true);
+    try {
+      const res = await fetch(`/api/admin/diagnostika/${selectedId}/save-strategy`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: strategyName.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Chyba");
+      const list = (selected?.scan_result as ScanResult)?.saved_strategies ?? [];
+      const added = data.strategy as SavedStrategy;
+      const nextList = added ? [...list, added] : list;
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id !== selectedId ? r : { ...r, scan_result: { ...(r.scan_result ?? {}), saved_strategies: nextList } as ScanResult }
+        )
+      );
+      setStrategyName("");
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Nepodařilo se uložit strategii");
+    } finally {
+      setSaveStrategyLoading(false);
+    }
+  }
+
+  async function setActiveStrategy(strategyId: string | null) {
+    if (!selectedId) return;
+    try {
+      const res = await fetch(`/api/admin/diagnostika/${selectedId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active_strategy_id: strategyId ?? null }),
+      });
+      if (!res.ok) throw new Error("Nepodařilo se nastavit strategii");
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id !== selectedId ? r : { ...r, scan_result: { ...(r.scan_result ?? {}), active_strategy_id: strategyId ?? null } as ScanResult }
+        )
+      );
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Chyba");
     }
   }
 
@@ -796,8 +848,88 @@ export default function AdminDashboard() {
                 </button>
               </div>
               {(selected.scan_result as ScanResult)?.strategic_plan && (
-                <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 16, maxHeight: 400, overflow: "auto" }}>
-                  <pre style={{ margin: 0, fontSize: 13, color: "#bbb", whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{(selected.scan_result as ScanResult).strategic_plan}</pre>
+                <>
+                  <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 16, maxHeight: 400, overflow: "auto" }}>
+                    <pre style={{ margin: 0, fontSize: 13, color: "#bbb", whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{(selected.scan_result as ScanResult).strategic_plan}</pre>
+                  </div>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
+                    <input
+                      type="text"
+                      value={strategyName}
+                      onChange={(e) => setStrategyName(e.target.value)}
+                      placeholder="Název strategie"
+                      style={{
+                        padding: "8px 12px",
+                        background: "#111",
+                        border: "1px solid #333",
+                        borderRadius: 8,
+                        color: "#fff",
+                        fontSize: 13,
+                        minWidth: 180,
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={saveStrategy}
+                      disabled={saveStrategyLoading || !strategyName.trim()}
+                      style={{
+                        padding: "8px 16px",
+                        background: "#333",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 8,
+                        cursor: saveStrategyLoading || !strategyName.trim() ? "not-allowed" : "pointer",
+                        fontSize: 13,
+                      }}
+                    >
+                      {saveStrategyLoading ? "Ukládám…" : "Uložit jako strategii"}
+                    </button>
+                  </div>
+                </>
+              )}
+              {((selected.scan_result as ScanResult)?.saved_strategies?.length ?? 0) > 0 && (
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Uložené strategie</div>
+                  <p style={{ margin: "0 0 8px 0", fontSize: 12, color: "#666" }}>Aktivní strategie se použije při tvorbě příspěvků.</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {(selected.scan_result as ScanResult).saved_strategies!.map((s) => (
+                      <div
+                        key={s.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 8,
+                          padding: "10px 12px",
+                          background: "#111",
+                          border: "1px solid #222",
+                          borderRadius: 8,
+                          borderLeft: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "4px solid #A8EB12" : "4px solid transparent",
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontWeight: 600, fontSize: 13 }}>{s.name}</span>
+                          <span style={{ marginLeft: 8, fontSize: 12, color: "#666" }}>{new Date(s.created_at).toLocaleDateString("cs-CZ")}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setActiveStrategy((selected.scan_result as ScanResult)?.active_strategy_id === s.id ? null : s.id)}
+                          style={{
+                            padding: "6px 12px",
+                            background: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "#333" : "#A8EB12",
+                            color: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "#888" : "#000",
+                            border: "none",
+                            borderRadius: 6,
+                            cursor: "pointer",
+                            fontSize: 12,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {(selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "Zrušit" : "Použít pro příspěvky"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
               </div>

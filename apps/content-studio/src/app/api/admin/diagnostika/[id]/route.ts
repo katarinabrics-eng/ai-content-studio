@@ -42,6 +42,15 @@ export async function PATCH(
     if (!updatedScan) return NextResponse.json({ error: "Nepodařilo se uložit poznámky" }, { status: 500 });
   }
 
+  if (body.active_strategy_id !== undefined) {
+    const activeId = body.active_strategy_id === null || body.active_strategy_id === "" ? null : (typeof body.active_strategy_id === "string" ? body.active_strategy_id : null);
+    const freshForStrategy = await getClientProjectById(id);
+    const scanResult = (freshForStrategy?.scan_result ?? project.scan_result ?? {}) as Record<string, unknown>;
+    const merged = { ...scanResult, active_strategy_id: activeId };
+    const updatedScan = await updateClientProjectScanResult(id, { scan_result: merged });
+    if (!updatedScan) return NextResponse.json({ error: "Nepodařilo se uložit aktivní strategii" }, { status: 500 });
+  }
+
   const fresh = await getClientProjectById(id);
   return NextResponse.json({
     ok: true,
