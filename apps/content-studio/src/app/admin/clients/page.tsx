@@ -35,10 +35,13 @@ export default function AdminClientsPage() {
   const [clearError, setClearError] = useState<string | null>(null);
 
   const [backendRef, setBackendRef] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchProjects = useCallback(() => {
     setFetchError(null);
-    fetch("/api/admin/client-projects", { cache: "no-store" })
+    setDeleteError(null);
+    fetch(`/api/admin/client-projects?t=${Date.now()}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         if (d.ok && Array.isArray(d.projects)) {
@@ -164,13 +167,13 @@ export default function AdminClientsPage() {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ scope: "client_projects" }),
                       });
-                      const data = await res.json();
+                      const data = await res.json().catch(() => ({}));
                       if (data.ok) {
                         setShowClearModal(false);
-                        fetchProjects();
-                      } else {
-                        setClearError(data.error ?? "Chyba");
+                        setProjects([]);
+                        return;
                       }
+                      setClearError(data.error ?? "Chyba při mazání.");
                     } catch {
                       setClearError("Chyba připojení.");
                     } finally {
@@ -186,6 +189,12 @@ export default function AdminClientsPage() {
           </div>
         )}
 
+        {deleteError && (
+          <div className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {deleteError}
+            <button type="button" onClick={() => setDeleteError(null)} className="ml-2 underline">Zavřít</button>
+          </div>
+        )}
         {fetchError && (
           <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
             {fetchError}
@@ -278,14 +287,30 @@ export default function AdminClientsPage() {
                           )}
                           <button
                             type="button"
+                            disabled={deletingId === p.id}
                             onClick={async () => {
                               if (!confirm("Opravdu smazat tento záznam? Tuto akci nelze vrátit.")) return;
-                              const res = await fetch(`/api/admin/client-projects/${p.id}`, { method: "DELETE" });
-                              if (res.ok) fetchProjects();
+                              setDeleteError(null);
+                              setDeletingId(p.id);
+                              setProjects((prev) => prev.filter((x) => x.id !== p.id));
+                              try {
+                                const res = await fetch(`/api/admin/client-projects/${p.id}`, { method: "DELETE" });
+                                const data = await res.json().catch(() => ({}));
+                                if (res.ok && data.ok) {
+                                  return;
+                                }
+                                setDeleteError(data?.error ?? `Smazání selhalo (${res.status}). Obnovím seznam.`);
+                                fetchProjects();
+                              } catch {
+                                setDeleteError("Chyba připojení. Obnovím seznam.");
+                                fetchProjects();
+                              } finally {
+                                setDeletingId(null);
+                              }
                             }}
-                            className="rounded border border-red-500/40 px-2 py-0.5 text-[10px] text-red-400 hover:bg-red-500/10"
+                            className="rounded border border-red-500/40 px-2 py-0.5 text-[10px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
                           >
-                            Smazat
+                            {deletingId === p.id ? "Mažu…" : "Smazat"}
                           </button>
                           {p.access_token && (
                             <Link href={`/diagnostika/view?token=${encodeURIComponent(p.access_token)}`} className="text-sm font-medium text-[#A8EB12] hover:underline ml-1">Otevřít výsledek</Link>
