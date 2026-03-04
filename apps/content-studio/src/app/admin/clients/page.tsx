@@ -76,6 +76,9 @@ export default function AdminClientsPage() {
                 <span className="ml-2 text-zinc-500">· {projects.length} záznamů</span>
               )}
             </p>
+            <p className="mt-2 text-sm text-[#A8EB12]/90 max-w-xl">
+              ✓ Zde jsou <strong>všechny diagnostiky</strong> – včetně nových z <strong>Nový klient</strong>. Každý řádek lze archivovat nebo smazat. AI zakázky (projekty) jsou v sekci <strong>Projekty</strong>.
+            </p>
           </div>
           <div className="flex gap-2">
             <Link

@@ -60,6 +60,12 @@ export default function AdminProjectsPage() {
             <p className="mt-1 text-zinc-400">
               CO se zpracovává, KDE to běží, KDO je na tahu.
             </p>
+            <p className="mt-2 text-sm text-zinc-500 max-w-xl">
+              Tato stránka zobrazuje jen <strong>AI projekty (zakázky)</strong>. Nové diagnostiky z <strong>Nový klient</strong> hledejte v{" "}
+              <Link href="/admin/clients" className="text-[#A8EB12] hover:underline">Klienti (diagnostika)</Link>
+              {" "}nebo v{" "}
+              <Link href="/admin/klienti" className="text-[#A8EB12] hover:underline">Klienti</Link>.
+            </p>
           </div>
           <div className="flex gap-2">
             <Link
