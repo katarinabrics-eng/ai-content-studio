@@ -29,6 +29,9 @@ export default function AdminClientsPage() {
   const [loading, setLoading] = useState(true);
 
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const [clearError, setClearError] = useState<string | null>(null);
 
   const fetchProjects = useCallback(() => {
     setFetchError(null);
@@ -89,8 +92,72 @@ export default function AdminClientsPage() {
             >
               Obnovit
             </button>
+            <button
+              type="button"
+              onClick={() => { setShowClearModal(true); setClearError(null); }}
+              className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 hover:bg-red-500/20"
+            >
+              Vyčistit přehled
+            </button>
           </div>
         </div>
+
+        {showClearModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+            onClick={() => !clearing && setShowClearModal(false)}
+          >
+            <div
+              className="w-full max-w-md rounded-xl border border-white/10 bg-[#141414] p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-white">Vyčistit diagnostiky</h2>
+              <p className="mt-2 text-sm text-zinc-400">
+                Smaže všechny záznamy z této tabulky (scan + platba). Toto nelze vrátit. Přehled bude prázdný.
+              </p>
+              {clearError && <p className="mt-3 text-sm text-red-400">{clearError}</p>}
+              <div className="mt-6 flex gap-2 justify-end">
+                <button
+                  type="button"
+                  disabled={clearing}
+                  onClick={() => setShowClearModal(false)}
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 hover:bg-white/10 disabled:opacity-50"
+                >
+                  Zrušit
+                </button>
+                <button
+                  type="button"
+                  disabled={clearing}
+                  onClick={async () => {
+                    setClearing(true);
+                    setClearError(null);
+                    try {
+                      const res = await fetch("/api/admin/clear-data", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ scope: "client_projects" }),
+                      });
+                      const data = await res.json();
+                      if (data.ok) {
+                        setShowClearModal(false);
+                        fetchProjects();
+                      } else {
+                        setClearError(data.error ?? "Chyba");
+                      }
+                    } catch {
+                      setClearError("Chyba připojení.");
+                    } finally {
+                      setClearing(false);
+                    }
+                  }}
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+                >
+                  {clearing ? "Mažu…" : "Smazat vše"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {fetchError && (
           <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">

@@ -25,6 +25,10 @@ export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [clearScope, setClearScope] = useState<"client_projects" | "all" | null>(null);
+  const [clearing, setClearing] = useState(false);
+  const [clearError, setClearError] = useState<string | null>(null);
 
   const fetchProjects = useCallback(() => {
     fetch("/api/admin/projects")
@@ -90,8 +94,95 @@ export default function AdminProjectsPage() {
             >
               Obnovit nyní
             </button>
+            <button
+              type="button"
+              onClick={() => { setShowClearModal(true); setClearError(null); }}
+              className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 hover:bg-red-500/20"
+            >
+              Vyčistit přehled
+            </button>
           </div>
         </div>
+
+        {/* Modal: Vyčistit přehled */}
+        {showClearModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+            onClick={() => !clearing && setShowClearModal(false)}
+          >
+            <div
+              className="w-full max-w-md rounded-xl border border-white/10 bg-[#141414] p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-white">Vyčistit přehled</h2>
+              <p className="mt-2 text-sm text-zinc-400">
+                Smaže data v databázi. Toto nelze vrátit. Chcete mít čistý stůl a vidět jen nové záznamy.
+              </p>
+              <div className="mt-4 space-y-2">
+                <button
+                  type="button"
+                  disabled={clearing}
+                  onClick={() => setClearScope("client_projects")}
+                  className={`block w-full rounded-lg border px-4 py-3 text-left text-sm ${clearScope === "client_projects" ? "border-[#A8EB12]/50 bg-[#A8EB12]/10 text-white" : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"}`}
+                >
+                  Jen diagnostiky (Klienti diagnostika) – projekty zůstanou
+                </button>
+                <button
+                  type="button"
+                  disabled={clearing}
+                  onClick={() => setClearScope("all")}
+                  className={`block w-full rounded-lg border px-4 py-3 text-left text-sm ${clearScope === "all" ? "border-red-500/50 bg-red-500/10 text-white" : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"}`}
+                >
+                  Vše (diagnostiky + projekty) – úplně čistý stůl
+                </button>
+              </div>
+              {clearError && (
+                <p className="mt-3 text-sm text-red-400">{clearError}</p>
+              )}
+              <div className="mt-6 flex gap-2 justify-end">
+                <button
+                  type="button"
+                  disabled={clearing}
+                  onClick={() => setShowClearModal(false)}
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 hover:bg-white/10 disabled:opacity-50"
+                >
+                  Zrušit
+                </button>
+                <button
+                  type="button"
+                  disabled={clearing || !clearScope}
+                  onClick={async () => {
+                    if (!clearScope) return;
+                    setClearing(true);
+                    setClearError(null);
+                    try {
+                      const res = await fetch("/api/admin/clear-data", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ scope: clearScope }),
+                      });
+                      const data = await res.json();
+                      if (data.ok) {
+                        setShowClearModal(false);
+                        setClearScope(null);
+                        fetchProjects();
+                      } else {
+                        setClearError(data.error ?? "Chyba");
+                      }
+                    } catch {
+                      setClearError("Chyba připojení.");
+                    } finally {
+                      setClearing(false);
+                    }
+                  }}
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+                >
+                  {clearing ? "Mažu…" : "Smazat"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {loading && projects.length === 0 && (
           <p className="mt-6 text-zinc-500">Načítám…</p>
