@@ -1,0 +1,15 @@
+---
+description: Dávat vždy jasné kroky pro samouka / amatéra
+alwaysApply: true
+---
+
+# Jasné kroky pro samouka
+
+- Uživatelka je samouk a amatér; potřebuje **srozumitelné, krok za krokem** instrukce.
+- Při úkolech (SQL, nasazení, nastavení):
+  1. **Číslované kroky** (1., 2., 3.).
+  2. **Co přesně udělat** (otevři X, klikni na Y, vlož Z).
+  3. **Co NEvkládat / co NEdělat** (např. „nevkládej cestu k souboru, jen jeho obsah“).
+  4. Kde možno **jedna věc v jednom kroku**.
+- U SQL: vždy napsat, že do editoru patří **jen text příkazů**, ne cesta ani název souboru; případně vložit přímo blok SQL.
+- Formulace typu „zkopíruj obsah souboru [cesta]“ je nejasná – raději: „Otevři soubor [cesta] v editoru, zkopíruj celý text uvnitř a ten vlož do …“
