@@ -36,7 +36,7 @@ export function ScanRitualLoading() {
 
   return (
     <div
-      className="fixed inset-0 z-20 flex flex-col items-center justify-center bg-[#0c0c14] text-[#e7e7ef] px-6"
+      className="fixed inset-0 z-20 flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e7e7ef] px-6"
       style={{ fontFamily: "system-ui, sans-serif" }}
     >
       <div className="max-w-lg mx-auto text-center">

@@ -55,7 +55,7 @@ function DiagnostikaViewContent() {
 
   if (state.status === "loading") {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center text-zinc-400">
+      <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-zinc-400">
         <p>Načítám…</p>
       </main>
     );
@@ -63,7 +63,7 @@ function DiagnostikaViewContent() {
 
   if (state.status === "not_found") {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex flex-col items-center justify-center px-6 text-zinc-300">
+      <main className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6 text-zinc-300">
         <p className="text-lg">Odkaz je neplatný nebo již nebyl aktivován.</p>
         <Link href="/diagnostika" className="mt-4 text-[#A8EB12] underline">Spustit diagnostiku</Link>
       </main>
@@ -72,7 +72,7 @@ function DiagnostikaViewContent() {
 
   if (state.status === "expired") {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex flex-col items-center justify-center px-6 text-zinc-300">
+      <main className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6 text-zinc-300">
         <h1 className="text-xl font-semibold text-white">Přístup vypršel</h1>
         <p className="mt-2 text-center max-w-md">
           Bezplatný 7denní přístup k výsledkům diagnostiky skončil. Vaše data u nás zůstávají (nerealizované projekty).
@@ -80,7 +80,7 @@ function DiagnostikaViewContent() {
         <p className="mt-4 text-zinc-400">Chcete‑li pokračovat s prémiovou vizuální identitou nebo konzultací:</p>
         <Link
           href="/rezervace?from=premiova"
-          className="mt-4 inline-flex items-center justify-center rounded-lg bg-[#A8EB12] px-5 py-2.5 text-sm font-medium text-[#0c0c14] hover:bg-[#b8f022]"
+          className="mt-4 inline-flex items-center justify-center rounded-lg bg-[#A8EB12] px-5 py-2.5 text-sm font-medium text-[#0a0a0a] hover:bg-[#b8f022]"
         >
           Chci – Prémiovou vizuální identitu
         </Link>
@@ -92,7 +92,7 @@ function DiagnostikaViewContent() {
   const result = state.project.scan_result as ScanResult;
   if (!result || typeof result !== "object") {
     return (
-      <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center text-zinc-500">
+      <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-zinc-500">
         <p>Žádná data k zobrazení.</p>
       </main>
     );
@@ -142,8 +142,8 @@ function DiagnostikaViewContent() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0c0c14]">
-      <div className="border-b border-white/10 bg-[#0c0c14]/95 backdrop-blur sticky top-0 z-10 px-4 py-3">
+    <main className="min-h-screen bg-[#0a0a0a]">
+      <div className="border-b border-white/10 bg-[#0a0a0a]/95 backdrop-blur sticky top-0 z-10 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <span className="text-sm text-zinc-400 truncate">
             {project.name || project.email || "Diagnostika"}
@@ -216,7 +216,7 @@ export default function DiagnostikaViewPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center text-zinc-400">
+        <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-zinc-400">
           <p>Načítám…</p>
         </main>
       }

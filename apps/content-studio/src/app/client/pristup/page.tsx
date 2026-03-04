@@ -48,7 +48,7 @@ export default function PristupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0c0c14] text-white flex flex-col items-center justify-center px-6 py-12">
+    <main className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
         <h1 className="text-2xl font-semibold text-center mb-2">Přístup pro klienty</h1>
         <p className="text-zinc-400 text-sm text-center mb-8">

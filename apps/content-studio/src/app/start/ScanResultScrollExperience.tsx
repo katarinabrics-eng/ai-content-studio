@@ -78,7 +78,7 @@ function Section({
   return (
     <section
       className={`flex flex-col items-center justify-center px-6 text-center ${compact ? "py-8" : "py-12 md:py-14"} ${className}`}
-      style={{ background: "#0c0c14", color: "#e7e7ef" }}
+      style={{ background: "#0a0a0a", color: "#e7e7ef" }}
     >
       {children}
     </section>
@@ -312,9 +312,9 @@ export function ScanResultScrollExperience({
   }
 
   return (
-    <div className="bg-[#0c0c14] text-[#e7e7ef] animate-fade-in" style={{ fontFamily: "system-ui, sans-serif" }}>
+    <div className="bg-[#0a0a0a] text-[#e7e7ef] animate-fade-in" style={{ fontFamily: "system-ui, sans-serif" }}>
       {onBack && (
-        <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-white/5 bg-[#0c0c14]/90 backdrop-blur">
+        <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur">
           <button
             type="button"
             onClick={onBack}
@@ -327,10 +327,10 @@ export function ScanResultScrollExperience({
       )}
 
       {/* CTA: Chci – Prémiovou vizuální identitu (platba za Visual Board / konzultaci) */}
-      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 py-2.5 px-4 border-b border-white/5 bg-[#0c0c14]/95 backdrop-blur">
+      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 py-2.5 px-4 border-b border-white/5 bg-[#0a0a0a]/95 backdrop-blur">
         <a
           href="/rezervace?from=premiova"
-          className="inline-flex items-center justify-center rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-[#0c0c14] hover:bg-[#b8f022]"
+          className="inline-flex items-center justify-center rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-[#0a0a0a] hover:bg-[#b8f022]"
         >
           Chci – Prémiovou vizuální identitu
         </a>
@@ -496,7 +496,7 @@ export function ScanResultScrollExperience({
 
       {/* 11b. E-mail pro novinky a uložení dat – nad cenou */}
       <Section className="pb-8">
-        <div className="bg-[#0e0f14] border border-white/10 rounded-2xl p-8 max-w-xl mx-auto shadow-2xl text-left">
+        <div className="bg-[#0e0e0e] border border-white/10 rounded-2xl p-8 max-w-xl mx-auto shadow-2xl text-left">
           <h3 className="text-lg font-semibold text-white mb-2">Nechte nám e-mail</h3>
           <p className="text-zinc-400 text-sm mb-4">
             Chcete dostávat novinky a nabídky služeb na míru? Zadejte e-mail – nebudeme vás spamovat.
@@ -552,7 +552,7 @@ export function ScanResultScrollExperience({
 
       {/* 12. CTA blok */}
       <Section className="pb-16">
-        <div className="bg-[#0e0f14] border border-white/10 rounded-2xl p-10 max-w-xl mx-auto shadow-2xl text-left">
+        <div className="bg-[#0e0e0e] border border-white/10 rounded-2xl p-10 max-w-xl mx-auto shadow-2xl text-left">
           <h3 className="text-4xl font-bold text-white mb-4">7 800 Kč</h3>
           <p className="text-zinc-400 text-sm mb-2">Výběr termínu zavazuje k úhradě strategického Visual Boardu</p>
           <p className="text-zinc-500 text-sm mb-4">Částka bude odečtena z celkové spolupráce.</p>
@@ -595,7 +595,7 @@ export function ScanResultScrollExperience({
         {/* Prémiový potvrzovací mezikrok */}
         {openConfirmation && selectedDate && (
           <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6">
-            <div className="bg-[#0e0f14] border border-white/10 rounded-3xl p-12 max-w-lg w-full text-white">
+            <div className="bg-[#0e0e0e] border border-white/10 rounded-3xl p-12 max-w-lg w-full text-white">
               <h3 className="text-3xl font-semibold mb-6">
                 Potvrzení vstupu do spolupráce
               </h3>

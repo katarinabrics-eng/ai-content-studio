@@ -30,7 +30,7 @@ function PaymentSuccessRedirect({ sessionId }: { sessionId: string }) {
   }, [sessionId, router]);
 
   return (
-    <main className="min-h-screen bg-[#0c0c14] flex items-center justify-center">
+    <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin h-10 w-10 border-2 border-[#a8e063] border-t-transparent rounded-full mx-auto" />
         <p className="mt-4 text-white/80">

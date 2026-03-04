@@ -300,8 +300,9 @@ export function WebAnalyzer({
               </div>
             </div>
 
+            <p className="text-sm font-medium pt-2 pb-1" style={{ color: tokens.colors.muted }}>Vizuál a tón (volitelné)</p>
             <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Preferovaný styl (volitelné)</label>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Preferovaný styl</label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MANUAL_STYLE_OPTIONS.map((opt) => (
                   <ChoiceButton
