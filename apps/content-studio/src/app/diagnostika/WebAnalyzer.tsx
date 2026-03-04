@@ -2,30 +2,13 @@
 
 import { ChoiceButton } from "@/components/ChoiceButton";
 import { tokens } from "@/lib/design-tokens";
-
-const MANUAL_OFFER_TYPES = [
-  "Konzultace",
-  "Online kurz",
-  "Produkt",
-  "Kreativní služba",
-  "Péče / zdraví",
-  "Technologie",
-  "Jiné",
-] as const;
-
-const MANUAL_AUDIENCE = [
-  "Podnikatelé a manažeři",
-  "Ženy budující osobní značku",
-  "Malé a střední firmy",
-  "Kreativci a freelanceři",
-  "Začátečníci",
-  "Široká veřejnost",
-] as const;
-
-const MANUAL_PRICE_LEVELS = ["Základní", "Střední", "Prémiová"] as const;
-
-const MAX_OFFER_SELECT = 2;
-const MAX_AUDIENCE_SELECT = 2;
+import {
+  MANUAL_OFFER_TYPES,
+  MANUAL_AUDIENCE,
+  MANUAL_PRICE_LEVELS,
+  MAX_OFFER_SELECT,
+  MAX_AUDIENCE_SELECT,
+} from "@/lib/diagnostika-manual";
 
 const C = {
   card: {

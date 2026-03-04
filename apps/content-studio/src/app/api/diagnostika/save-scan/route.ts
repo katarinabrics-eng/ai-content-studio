@@ -10,6 +10,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const webUrl = typeof body?.webUrl === "string" ? body.webUrl.trim() || null : null;
     const manualInput = typeof body?.manualInput === "string" ? body.manualInput.trim() || null : null;
+    const name = typeof body?.name === "string" ? body.name.trim() || null : null;
+    const email = typeof body?.email === "string" ? body.email.trim() || null : null;
     const result = body?.result;
 
     if (!result || typeof result !== "object") {
@@ -20,6 +22,8 @@ export async function POST(request: Request) {
       web_url: webUrl,
       manual_input: manualInput,
       scan_result: result as Record<string, unknown>,
+      name: name ?? undefined,
+      email: email ?? undefined,
     });
 
     return NextResponse.json({ ok: true, id });

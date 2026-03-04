@@ -8,6 +8,7 @@ import { WebAnalyzer } from "@/app/diagnostika/WebAnalyzer";
 import { StrategyOutput } from "@/app/diagnostika/StrategyOutput";
 import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
 import { ScanRitualLoading } from "./ScanRitualLoading";
+import { buildManualData as buildManualDataFromLib } from "@/lib/diagnostika-manual";
 
 /** Doplňující otázky dle systémového promptu v2.0 – vždy volby, nikdy přímé textové otázky. */
 const GUIDANCE_QUESTIONS_FULL = [
@@ -168,13 +169,13 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [saveError, setSaveError] = useState<string | null>(null);
 
   function buildManualData(): string {
-    const parts: string[] = [];
-    if (brandName.trim()) parts.push(`Název značky: ${brandName.trim()}`);
-    if (offerTypes.length) parts.push(`Co nabízíte: ${offerTypes.join(", ")}`);
-    if (audience.length) parts.push(`Pro koho: ${audience.join(", ")}`);
-    if (priceLevel) parts.push(`Cenová úroveň: ${priceLevel}`);
-    if (manualOptionalText.trim()) parts.push(`Popis: ${manualOptionalText.trim()}`);
-    return parts.join("\n\n");
+    return buildManualDataFromLib({
+      brandName,
+      offerTypes,
+      audience,
+      priceLevel,
+      manualOptionalText,
+    });
   }
 
   const hasManualInput =

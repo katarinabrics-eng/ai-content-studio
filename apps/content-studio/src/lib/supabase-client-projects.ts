@@ -52,6 +52,8 @@ export async function createClientProject(params: {
   web_url?: string | null;
   manual_input?: string | null;
   scan_result: Record<string, unknown>;
+  name?: string | null;
+  email?: string | null;
 }): Promise<{ id: string }> {
   const supabase = getSupabaseClient();
   const access_token = generateAccessToken();
@@ -63,6 +65,8 @@ export async function createClientProject(params: {
       web_url: params.web_url ?? null,
       manual_input: params.manual_input ?? null,
       scan_result: params.scan_result ?? {},
+      name: params.name ?? null,
+      email: params.email ?? null,
       workflow_status: "DIAG_AWAITING_CURATOR",
       updated_at: new Date().toISOString(),
       access_token,
