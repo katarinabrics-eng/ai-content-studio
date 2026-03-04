@@ -233,6 +233,33 @@ export default function AdminClientsPage() {
                           {canDiagTransition(p.workflow_status, "DIAG_AWAITING_CURATOR") && (
                             <button type="button" onClick={() => setWorkflowStatus(p.id, "DIAG_AWAITING_CURATOR")} className="rounded bg-white/10 px-2 py-0.5 text-[10px] text-zinc-300 hover:bg-white/20">Zpět na kurátora</button>
                           )}
+                          {p.status !== "done" && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const res = await fetch(`/api/admin/client-projects/${p.id}`, {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ archive: true }),
+                                });
+                                if (res.ok) fetchProjects();
+                              }}
+                              className="rounded border border-white/20 px-2 py-0.5 text-[10px] text-zinc-400 hover:bg-white/10"
+                            >
+                              Archivovat
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!confirm("Opravdu smazat tento záznam? Tuto akci nelze vrátit.")) return;
+                              const res = await fetch(`/api/admin/client-projects/${p.id}`, { method: "DELETE" });
+                              if (res.ok) fetchProjects();
+                            }}
+                            className="rounded border border-red-500/40 px-2 py-0.5 text-[10px] text-red-400 hover:bg-red-500/10"
+                          >
+                            Smazat
+                          </button>
                           <Link href={`/admin/clients/${p.id}`} className="text-sm font-medium text-[#A8EB12] hover:underline ml-1">Otevřít</Link>
                         </div>
                       </td>

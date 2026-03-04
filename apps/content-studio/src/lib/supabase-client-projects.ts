@@ -95,6 +95,27 @@ export async function updateClientProjectWorkflowStatus(
   return data as ClientProjectRow;
 }
 
+export async function updateClientProjectStatus(
+  projectId: string,
+  status: ClientProjectStatus
+): Promise<ClientProjectRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("client_projects")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .select()
+    .single();
+  if (error) return null;
+  return data as ClientProjectRow;
+}
+
+export async function deleteClientProject(projectId: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("client_projects").delete().eq("id", projectId);
+  if (error) throw error;
+}
+
 export async function updateClientProjectEmail(projectId: string, email: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { error } = await supabase

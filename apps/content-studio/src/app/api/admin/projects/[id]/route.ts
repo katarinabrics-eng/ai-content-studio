@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
-import { getProjectById, getProjectFiles, getProjectWorkflowState, updateProjectStatus } from "@/lib/supabase-projects";
-import { isProjectStatus, canTransition } from "@/lib/project-status-engine";
+import { getProjectById, getProjectFiles, getProjectWorkflowState, updateProjectStatus, deleteProject } from "@/lib/supabase-projects";
+import { isProjectStatus, canTransition, type ProjectStatus } from "@/lib/project-status-engine";
 
 const CLIENT_PROJECTS_BUCKET = "client-projects";
 const SIGNED_URL_EXPIRY_SEC = 3600; // 1 hour
@@ -50,18 +50,37 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
+  const archive = body?.archive === true;
   const status = typeof body.status === "string" ? body.status : null;
-  if (!status || !isProjectStatus(status)) {
-    return NextResponse.json({ ok: false, error: "Neplatný status" }, { status: 400 });
-  }
+
   const project = await getProjectById(id);
   if (!project) return NextResponse.json({ ok: false, error: "Projekt nenalezen" }, { status: 404 });
-  if (!isProjectStatus(project.status)) return NextResponse.json({ ok: false, error: "Neplatný stav projektu" }, { status: 400 });
-  if (!canTransition(project.status, status)) {
+
+  const targetStatus = archive ? "CLOSED" : status;
+  if (!targetStatus || !isProjectStatus(targetStatus)) {
+    return NextResponse.json({ ok: false, error: archive ? "Neplatný požadavek" : "Neplatný status" }, { status: 400 });
+  }
+  if (!archive && !canTransition(project.status, targetStatus)) {
     return NextResponse.json({ ok: false, error: "Tento přechod stavu není povolen" }, { status: 400 });
   }
-  const updated = await updateProjectStatus(id, status);
+  const updated = await updateProjectStatus(id, targetStatus as ProjectStatus);
   if (!updated) return NextResponse.json({ ok: false, error: "Chyba při ukládání" }, { status: 500 });
   const refreshedProject = await getProjectById(id);
   return NextResponse.json({ ok: true, project: refreshedProject ?? updated });
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const project = await getProjectById(id);
+  if (!project) return NextResponse.json({ ok: false, error: "Projekt nenalezen" }, { status: 404 });
+  try {
+    await deleteProject(id);
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("[admin/projects DELETE]", e);
+    return NextResponse.json({ ok: false, error: "Chyba při mazání projektu." }, { status: 500 });
+  }
 }

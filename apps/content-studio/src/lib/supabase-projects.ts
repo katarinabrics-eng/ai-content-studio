@@ -630,6 +630,12 @@ export async function updateProjectStatus(id: string, status: ProjectStatus): Pr
   return data as ProjectRow;
 }
 
+export async function deleteProject(id: string): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+  if (error) throw new Error(`Chyba při mazání projektu: ${error.message}`);
+}
+
 const SESSION_BYTES = 32;
 const SESSION_DAYS = 30;
 

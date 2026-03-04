@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 type DashboardStatus = "diagnostika" | "aktivni" | "zakazka" | "archivovano";
 
 function mapClientProjectStatus(cp: ClientProjectRow): DashboardStatus {
+  if (cp.status === "done") return "archivovano";
   const expiresAt = cp.access_expires_at ? new Date(cp.access_expires_at).getTime() : 0;
   if (expiresAt > 0 && Date.now() > expiresAt) return "archivovano";
   if (cp.payment_status === "paid") return "zakazka";

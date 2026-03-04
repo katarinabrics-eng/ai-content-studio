@@ -263,6 +263,35 @@ export default function AdminProjectsPage() {
                         minute: "2-digit",
                       })}
                     </p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {p.status !== "CLOSED" && p.status !== "DONE" && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const res = await fetch(`/api/admin/projects/${p.id}`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ archive: true }),
+                            });
+                            if (res.ok) fetchProjects();
+                          }}
+                          className="rounded border border-white/20 bg-white/5 px-2.5 py-1 text-xs text-zinc-400 hover:bg-white/10"
+                        >
+                          Archivovat
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!confirm("Opravdu smazat tento projekt? Tuto akci nelze vrátit.")) return;
+                          const res = await fetch(`/api/admin/projects/${p.id}`, { method: "DELETE" });
+                          if (res.ok) fetchProjects();
+                        }}
+                        className="rounded border border-red-500/40 bg-red-500/10 px-2.5 py-1 text-xs text-red-300 hover:bg-red-500/20"
+                      >
+                        Smazat
+                      </button>
+                    </div>
                   </div>
                 </li>
               );

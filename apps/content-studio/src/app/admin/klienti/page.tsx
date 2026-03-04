@@ -189,17 +189,24 @@ function ProjectDetail({
   clientBrand,
   clientEmail,
   onNotesSaved,
+  onArchive,
+  onDelete,
 }: {
   project: ProjectItem & { clientName: string; clientEmail: string; clientBrand: string };
   clientName: string;
   clientBrand: string;
   clientEmail: string;
   onNotesSaved?: () => void;
+  onArchive?: () => Promise<void>;
+  onDelete?: () => Promise<void>;
 }) {
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState(project.notes ?? "");
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesSaved, setNotesSaved] = useState(false);
+  const [archiving, setArchiving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const isArchived = project.status === "archivovano";
 
   const validity =
     project.expires != null && project.expires !== ""
@@ -259,6 +266,50 @@ function ProjectDetail({
           >
             Otevřít projekt
           </Link>
+        </div>
+      )}
+
+      {/* Archivovat / Smazat */}
+      {(project.clientProjectId || project.projectId) && (
+        <div className="mb-5 p-4 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[#555] mb-3">Akce</div>
+          <div className="flex flex-wrap gap-2">
+            {!isArchived && onArchive && (
+              <button
+                type="button"
+                disabled={archiving}
+                onClick={async () => {
+                  setArchiving(true);
+                  try {
+                    await onArchive();
+                  } finally {
+                    setArchiving(false);
+                  }
+                }}
+                className="px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-sm text-[#C0C0C0] hover:bg-white/10 disabled:opacity-50"
+              >
+                {archiving ? "Archivuji…" : "Archivovat"}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={async () => {
+                  if (!confirm("Opravdu smazat tento záznam? Tuto akci nelze vrátit.")) return;
+                  setDeleting(true);
+                  try {
+                    await onDelete();
+                  } finally {
+                    setDeleting(false);
+                  }
+                }}
+                className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-500/10 text-sm text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+              >
+                {deleting ? "Mažu…" : "Smazat"}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -680,6 +731,56 @@ export default function AdminKlientiPage() {
             clientBrand={selectedClient.brand}
             clientEmail={selectedClient.email}
             onNotesSaved={fetchDashboard}
+            onArchive={
+              selectedProject.source === "client_project" && selectedProject.clientProjectId
+                ? async () => {
+                    const res = await fetch(`/api/admin/client-projects/${selectedProject.clientProjectId}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ archive: true }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                    fetchDashboard();
+                  }
+                : selectedProject.source === "project" && selectedProject.projectId
+                  ? async () => {
+                      const res = await fetch(`/api/admin/projects/${selectedProject.projectId}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ archive: true }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                      fetchDashboard();
+                    }
+                  : undefined
+            }
+            onDelete={
+              selectedProject.source === "client_project" && selectedProject.clientProjectId
+                ? async () => {
+                    const res = await fetch(`/api/admin/client-projects/${selectedProject.clientProjectId}`, {
+                      method: "DELETE",
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                    setSelectedProject(null);
+                    setSelectedClientId(null);
+                    fetchDashboard();
+                  }
+                : selectedProject.source === "project" && selectedProject.projectId
+                  ? async () => {
+                      const res = await fetch(`/api/admin/projects/${selectedProject.projectId}`, {
+                        method: "DELETE",
+                      });
+                      const data = await res.json();
+                      if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                      setSelectedProject(null);
+                      setSelectedClientId(null);
+                      fetchDashboard();
+                    }
+                  : undefined
+            }
           />
         ) : (
           <EmptyState />
