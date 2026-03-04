@@ -1072,7 +1072,18 @@ export default function AdminKlientiPage() {
                       if (!res.ok) throw new Error(data?.error ?? "Chyba");
                       fetchDashboard();
                     }
-                  : undefined
+                  : selectedProject.source === "diagnostic_project" && selectedProject.diagnosticProjectId
+                    ? async () => {
+                        const res = await fetch(`/api/admin/diagnostic-projects/${selectedProject.diagnosticProjectId}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ archive: true }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                        fetchDashboard();
+                      }
+                    : undefined
             }
             onDelete={
               selectedProject.source === "client_project" && selectedProject.clientProjectId
@@ -1097,7 +1108,18 @@ export default function AdminKlientiPage() {
                       setSelectedClientId(null);
                       fetchDashboard();
                     }
-                  : undefined
+                  : selectedProject.source === "diagnostic_project" && selectedProject.diagnosticProjectId
+                    ? async () => {
+                        const res = await fetch(`/api/admin/diagnostic-projects/${selectedProject.diagnosticProjectId}`, {
+                          method: "DELETE",
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                        setSelectedProject(null);
+                        setSelectedClientId(null);
+                        fetchDashboard();
+                      }
+                    : undefined
             }
           />
         ) : (
