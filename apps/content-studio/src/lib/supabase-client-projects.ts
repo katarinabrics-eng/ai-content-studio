@@ -127,6 +127,28 @@ export async function updateClientProjectEmail(projectId: string, email: string)
   if (error) throw error;
 }
 
+/** Aktualizuje scan_result (a volitelně web_url, manual_input) u existujícího záznamu. Používá se při druhém uložení v diagnostice (po refine). */
+export async function updateClientProjectScanResult(
+  projectId: string,
+  updates: { scan_result: Record<string, unknown>; web_url?: string | null; manual_input?: string | null }
+): Promise<ClientProjectRow | null> {
+  const supabase = getSupabaseClient();
+  const payload: Record<string, unknown> = {
+    scan_result: updates.scan_result,
+    updated_at: new Date().toISOString(),
+  };
+  if (updates.web_url !== undefined) payload.web_url = updates.web_url;
+  if (updates.manual_input !== undefined) payload.manual_input = updates.manual_input;
+  const { data, error } = await supabase
+    .from("client_projects")
+    .update(payload)
+    .eq("id", projectId)
+    .select()
+    .single();
+  if (error) return null;
+  return data as ClientProjectRow;
+}
+
 /** Aktualizuje editovatelná pole záznamu diagnostiky (admin i klient). */
 export async function updateClientProject(
   projectId: string,

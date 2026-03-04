@@ -321,13 +321,14 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              projectId: projectId ?? undefined,
               webUrl: mode === "web" ? url.trim() : undefined,
               manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
               result: updatedResult,
             }),
           });
           const saveData = await saveRes.json();
-          if (saveData.id) setProjectId(saveData.id);
+          if (saveData?.id) setProjectId(saveData.id);
         } catch { /* ignore */ }
       }
     } catch {
