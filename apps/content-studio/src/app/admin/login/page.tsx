@@ -29,8 +29,8 @@ export default function AdminLogin() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 40, width: 360 }}>
-        <div style={{ fontSize: 28, fontWeight: 700, color: "#A8EB12", marginBottom: 8 }}>Lucifera</div>
-        <div style={{ color: "#666", marginBottom: 32 }}>Admin</div>
+        <img src="/placeholders/LUCIFERA-Logo-Left-Neg.webp" alt="Lucifera" style={{ height: 40, width: "auto", marginBottom: 8, display: "block" }} />
+        <div style={{ color: "#666", marginBottom: 32, fontSize: 14, letterSpacing: "0.05em" }}>Admin</div>
         <form onSubmit={handleSubmit}>
           <input
             type="password"

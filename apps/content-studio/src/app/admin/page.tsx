@@ -54,7 +54,8 @@ export default function AdminDashboard() {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "system-ui, sans-serif" }}>
       {/* Header */}
       <div style={{ background: "#111", borderBottom: "1px solid #222", padding: "16px 32px", display: "flex", alignItems: "center", gap: 24 }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: "#A8EB12" }}>Lucifera Admin</span>
+        <img src="/placeholders/LUCIFERA-Logo-Left-Neg.webp" alt="Lucifera" style={{ height: 32, width: "auto", display: "block" }} />
+        <span style={{ fontSize: 14, fontWeight: 600, color: "#888", letterSpacing: "0.05em" }}>Admin</span>
         <a href="/diagnostika" style={{ color: "#888", textDecoration: "none", fontSize: 14 }}>+ Nová diagnostika</a>
         <button
           onClick={async () => { await fetch("/api/admin/logout", { method: "POST" }); router.push("/admin/login"); }}
