@@ -216,7 +216,9 @@ export function ScanResultScrollExperience({
       analysis &&
       (analysis.observed?.length ||
         analysis.notObserved?.length ||
-        analysis.reasoning ||
+        analysis.reasoning?.trim() ||
+        analysis.interpretation?.trim() ||
+        analysis.strategicOpportunity?.trim() ||
         (showTrustMethodology && id === "trust"));
     const isOpen = openPillar === id;
 
@@ -277,10 +279,24 @@ export function ScanResultScrollExperience({
                         </div>
                       </div>
                     )}
-                    {analysis?.reasoning && (
+                    {analysis?.reasoning?.trim() && (
                       <div>
                         <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
                         <p className="text-zinc-300 leading-relaxed">{analysis.reasoning}</p>
+                      </div>
+                    )}
+                    {(!analysis?.observed?.length && !analysis?.notObserved?.length && !analysis?.reasoning?.trim()) &&
+                      (analysis?.interpretation?.trim() || analysis?.strategicOpportunity?.trim()) && (
+                      <div className="space-y-2">
+                        {analysis.interpretation?.trim() && (
+                          <p className="text-zinc-300 leading-relaxed">{analysis.interpretation}</p>
+                        )}
+                        {analysis.strategicOpportunity?.trim() && (
+                          <p className="text-[#A8EB12]/90 text-sm">
+                            <span className="text-zinc-500 uppercase tracking-wider text-xs block mb-1">Doporučený směr</span>
+                            {analysis.strategicOpportunity}
+                          </p>
+                        )}
                       </div>
                     )}
                   </>

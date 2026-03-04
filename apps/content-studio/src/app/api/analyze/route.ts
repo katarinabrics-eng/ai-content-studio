@@ -100,28 +100,29 @@ Vrať čistý text (ne JSON), oddělené sekce:
 
 const PILLAR_ANALYSIS_SCHEMA = `
   "pillarAnalysis": {
-    "light": { "score": 0-10, "interpretation": "3-4 věty pro veřejnou část: stručně a profesionálně, co značka v tomto pilíři dělá a co jí chybí.", "observed": ["konkrétní nález 1"], "notObserved": ["co chybí 1"], "reasoning": "Proč to ovlivnilo skóre – 2-4 věty.", "strategicOpportunity": "jedna věta" },
-    "energy": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" },
-    "architecture": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" },
-    "identity": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" },
-    "trust": { "score": 0-10, "interpretation": "", "observed": [], "notObserved": [], "reasoning": "", "strategicOpportunity": "" }
+    "light": { "score": 0-10, "interpretation": "3-4 věty", "observed": ["nález 1"], "notObserved": ["co chybí 1"], "reasoning": "2-4 věty proč", "strategicOpportunity": "jedna věta" },
+    "energy": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
+    "architecture": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
+    "identity": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
+    "trust": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." }
   }
 `;
 
 const DIAGNOSTIKA_METHODOLOGY = `
-You are a senior brand strategist. Generate output using this strict structure for EACH pillar:
+You are a senior brand strategist. Generate output using this strict structure for EACH pillar.
 
-PILÍŘ: [název]
-Skóre: X/10
-Interpretace: Max 4 concise analytical sentences.
-Jak jsme hodnotili: Co jsme zaznamenali | Co jsme nezaznamenali | Proč to ovlivnilo skóre. Pokud relevantní, vysvětli rozdíl mezi pojmy (např. portfolio vs reference vs case study).
+POVINNÉ u KAŽDÉHO pilíře (light, energy, architecture, identity, trust):
+- score: 0–10 (odpovídá tomu, co jste v observed/notObserved/reasoning popsali).
+- interpretation: 3–4 věty pro veřejnou část – stručně, profesionálně, co značka v pilíři dělá a co jí chybí.
+- observed: pole s min. 1 konkrétním nálezem (co jste na webu/v podkladech zaznamenali). Nikdy ne prázdné.
+- notObserved: pole s min. 1 položkou (co chybí nebo co by mohlo být lepší). Nikdy ne prázdné.
+- reasoning: 2–4 věty – proč jste dali toto skóre, z čeho jste vycházeli. Povinné. Bez reasoning není hodnocení kompletní.
+- strategicOpportunity: jedna věta – doporučený směr.
 
 Rules:
-- Be analytical, not judgmental. Explain logic clearly.
-- Avoid generic phrases. Use concrete findings.
-- interpretation = 3–4 věty pro veřejnou část: stručné, profesionální. Co v pilíři značka dělá a co jí chybí.
-- observed = konkrétní nálezy. notObserved = co chybí. reasoning = proč to ovlivnilo skóre.
-- DŮVĚRA: Pokud sekce obsahuje ukázky práce, ale ne reference/testimonials, klasifikuj ji jako portfolio (ne plnohodnotný sociální důkaz) a v reasoning vysvětli rozdíl: portfolio = ukázka práce, reference = hlas klienta, case study = důkaz výsledku.
+- Be analytical, not judgmental. Explain logic clearly. Avoid generic phrases; use concrete findings.
+- Skóre musí být zdůvodněno: observed + notObserved + reasoning musí odpovídat číslu. Nelze dát např. 10/10 bez vyplněného reasoning a konkrétních observed/notObserved.
+- DŮVĚRA (trust): Rozlišuj portfolio = ukázka práce, reference = hlas klienta, case study = důkaz výsledku. V reasoning to případně vysvětli.
 `;
 
 function buildDiagnostikaPromptFromText(sourceContent: string): string {
