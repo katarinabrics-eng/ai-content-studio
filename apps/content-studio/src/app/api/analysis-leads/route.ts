@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
+import { createClientProject } from "@/lib/supabase-client-projects";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,11 +27,14 @@ export async function POST(request: Request) {
     }
 
     const supabase = getSupabaseClient();
+    const rawResult = typeof result === "object" && result !== null ? result : {};
+    const rawScrapedMeta = typeof scrapedMeta === "object" && scrapedMeta !== null ? scrapedMeta : {};
+
     const { error } = await supabase.from("analysis_leads").insert({
       email,
       analyzed_url: analyzedUrl || "",
-      result: typeof result === "object" && result !== null ? result : {},
-      scraped_meta: typeof scrapedMeta === "object" && scrapedMeta !== null ? scrapedMeta : {},
+      result: rawResult,
+      scraped_meta: rawScrapedMeta,
     });
 
     if (error) {
@@ -39,6 +43,21 @@ export async function POST(request: Request) {
         { ok: false, error: "Nepodařilo se uložit. Zkuste to později." },
         { status: 500 }
       );
+    }
+
+    const scanResult: Record<string, unknown> = {
+      ...(typeof rawResult === "object" && rawResult !== null ? rawResult : {}),
+      _source: "start_lead",
+    };
+    try {
+      await createClientProject({
+        email,
+        web_url: analyzedUrl || null,
+        scan_result: scanResult,
+        workflow_status: "DIAG_LEAD_NEREALIZOVANY",
+      });
+    } catch (e) {
+      console.error("[analysis-leads] client_projects create (non-fatal):", e);
     }
 
     return NextResponse.json({ ok: true, message: "Děkujeme, budeme vás kontaktovat." });

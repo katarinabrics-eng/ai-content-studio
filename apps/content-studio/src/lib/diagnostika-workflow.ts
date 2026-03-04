@@ -10,6 +10,7 @@ export const DIAG_WORKFLOW_STATUSES = [
   "DIAG_CLIENT_FEEDBACK",
   "DIAG_SENT_TO_CLIENT",
   "DIAG_DELIVERED",
+  "DIAG_LEAD_NEREALIZOVANY",
 ] as const;
 
 export type DiagWorkflowStatus = (typeof DIAG_WORKFLOW_STATUSES)[number];
@@ -22,6 +23,7 @@ export const DIAG_WORKFLOW_LABELS: Record<DiagWorkflowStatus, string> = {
   DIAG_CLIENT_FEEDBACK: "Klient vrací připomínky",
   DIAG_SENT_TO_CLIENT: "Zasláno",
   DIAG_DELIVERED: "Odevzdáno – hotovo",
+  DIAG_LEAD_NEREALIZOVANY: "Nerealizovaný – jen diagnostika (kontaktovat)",
 };
 
 /** Kdo je na tahu. */
@@ -38,6 +40,7 @@ export const DIAG_CURRENT_ACTION: Record<DiagWorkflowStatus, string> = {
   DIAG_CLIENT_FEEDBACK: "Klient vrátil připomínky; AI je zapracuje, pak znovu vyzve vás ke kurátorskému dohledu.",
   DIAG_SENT_TO_CLIENT: "Odesláno klientovi ke schválení a stažení.",
   DIAG_DELIVERED: "Klient potvrdil změny, schválil a stáhl. Hotovo.",
+  DIAG_LEAD_NEREALIZOVANY: "Jen diagnostika – zatím nerealizovaný projekt. Budeme kontaktovat.",
 };
 
 export const DIAG_BADGE_BY_STATUS: Record<DiagWorkflowStatus, DiagBadgeVariant> = {
@@ -47,6 +50,7 @@ export const DIAG_BADGE_BY_STATUS: Record<DiagWorkflowStatus, DiagBadgeVariant> 
   DIAG_CLIENT_FEEDBACK: "orange",
   DIAG_SENT_TO_CLIENT: "green",
   DIAG_DELIVERED: "green",
+  DIAG_LEAD_NEREALIZOVANY: "gray",
 };
 
 export const DIAG_WHO_BY_STATUS: Record<DiagWorkflowStatus, DiagWhoIsOnMove> = {
@@ -56,6 +60,7 @@ export const DIAG_WHO_BY_STATUS: Record<DiagWorkflowStatus, DiagWhoIsOnMove> = {
   DIAG_CLIENT_FEEDBACK: "Vy",
   DIAG_SENT_TO_CLIENT: "Klient",
   DIAG_DELIVERED: null,
+  DIAG_LEAD_NEREALIZOVANY: "Vy",
 };
 
 /** Krok v pořadí 1–6 (pro zobrazení Krok X/6). */
@@ -66,6 +71,7 @@ export const DIAG_STEP_BY_STATUS: Record<DiagWorkflowStatus, number> = {
   DIAG_CLIENT_FEEDBACK: 4,
   DIAG_SENT_TO_CLIENT: 5,
   DIAG_DELIVERED: 6,
+  DIAG_LEAD_NEREALIZOVANY: 0,
 };
 
 const TOTAL_STEPS = 6;
@@ -128,6 +134,7 @@ export function getDiagBadgeClassesDark(variant: DiagBadgeVariant): string {
 
 /** Povolené přechody (od -> na). */
 export const DIAG_ALLOWED_TRANSITIONS: Partial<Record<DiagWorkflowStatus, DiagWorkflowStatus[]>> = {
+  DIAG_LEAD_NEREALIZOVANY: ["DIAG_AWAITING_CURATOR"],
   DIAG_AWAITING_CURATOR: ["DIAG_READY_FOR_CLIENT"],
   DIAG_READY_FOR_CLIENT: ["DIAG_CLIENT_FEEDBACK", "DIAG_SENT_TO_CLIENT"],
   DIAG_CLIENT_FEEDBACK: ["DIAG_AWAITING_CURATOR"],
@@ -151,4 +158,5 @@ export const DIAG_CLIENT_FACING_MESSAGE: Record<DiagWorkflowStatus, string> = {
   DIAG_CLIENT_FEEDBACK: "Zapracováváme vaše připomínky.",
   DIAG_SENT_TO_CLIENT: "Finální verze je připravena ke stažení.",
   DIAG_DELIVERED: "Děkujeme. Zakázka je dokončena.",
+  DIAG_LEAD_NEREALIZOVANY: "Děkujeme za zájem. Budeme vás kontaktovat.",
 };

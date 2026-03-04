@@ -54,11 +54,13 @@ export async function createClientProject(params: {
   scan_result: Record<string, unknown>;
   name?: string | null;
   email?: string | null;
+  workflow_status?: DiagWorkflowStatus;
 }): Promise<{ id: string }> {
   const supabase = getSupabaseClient();
   const access_token = generateAccessToken();
   const access_expires_at = getAccessExpiresAt();
   const short_code = generateShortCode();
+  const workflow_status = params.workflow_status ?? "DIAG_AWAITING_CURATOR";
   const { data, error } = await supabase
     .from("client_projects")
     .insert({
@@ -67,7 +69,7 @@ export async function createClientProject(params: {
       scan_result: params.scan_result ?? {},
       name: params.name ?? null,
       email: params.email ?? null,
-      workflow_status: "DIAG_AWAITING_CURATOR",
+      workflow_status,
       updated_at: new Date().toISOString(),
       access_token,
       access_expires_at,
