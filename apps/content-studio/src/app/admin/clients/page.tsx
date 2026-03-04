@@ -104,10 +104,10 @@ export default function AdminClientsPage() {
                 </p>
                 <p className="mt-3 text-sm font-medium text-white">Co udělat:</p>
                 <ol className="mt-1 text-sm text-amber-100/90 list-decimal list-inside space-y-1">
-                  <li>Vercel → vyber projekt, který obsluhuje <strong>tuto adresu</strong> (adresní řádek v prohlížeči).</li>
-                  <li>Settings → Environment Variables → <code className="bg-black/30 px-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code> musí být <code className="bg-black/30 px-1 rounded break-all">https://{EXPECTED_DB_REF}.supabase.co</code></li>
-                  <li>Deployments → u posledního Production deploymentu klikni na ⋮ → <strong>Redeploy</strong>.</li>
-                  <li>Po dokončení deploye obnov tuto stránku (F5). U „Databáze:“ by mělo být {EXPECTED_DB_REF} a záznamy (contentpro) se zobrazí.</li>
+                  <li>Vercel → Settings → Environment Variables. Přidej <code className="bg-black/30 px-1 rounded">CANONICAL_APP_URL</code> = <strong>vaše production adresa</strong> (např. <code className="break-all">https://ai-content-studio-omega.vercel.app</code>). Všechny návštěvy se pak přesměrují na tuto jednu adresu a jednu databázi.</li>
+                  <li><code className="bg-black/30 px-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code> = <code className="break-all">https://{EXPECTED_DB_REF}.supabase.co</code></li>
+                  <li>Deployments → Production → ⋮ → <strong>Redeploy</strong> (bez cache).</li>
+                  <li>Obnov stránku (F5). U „Databáze:“ má být {EXPECTED_DB_REF}, contentpro v tabulce.</li>
                 </ol>
               </div>
             )}

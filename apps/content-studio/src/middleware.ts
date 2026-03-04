@@ -15,7 +15,23 @@ function isProtectedPath(pathname: string): boolean {
 
 const AUTH_COOKIE = "admin_session";
 
+/** Pokud je nastaveno, všechny requesty přesměruj na tuto adresu – jedna DB, jeden zdroj pravdy. */
+const CANONICAL_APP_URL = process.env.CANONICAL_APP_URL?.trim();
+
 export function middleware(request: NextRequest) {
+  if (CANONICAL_APP_URL) {
+    try {
+      const canonical = new URL(CANONICAL_APP_URL);
+      const host = request.nextUrl.host;
+      if (host !== canonical.host) {
+        const target = new URL(request.nextUrl.pathname + request.nextUrl.search, CANONICAL_APP_URL);
+        return NextResponse.redirect(target, 307);
+      }
+    } catch {
+      /* ignore invalid URL */
+    }
+  }
+
   const { pathname } = request.nextUrl;
   
   if (!isProtectedPath(pathname)) {
