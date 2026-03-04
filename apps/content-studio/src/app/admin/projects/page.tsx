@@ -31,7 +31,7 @@ export default function AdminProjectsPage() {
   const [clearError, setClearError] = useState<string | null>(null);
 
   const fetchProjects = useCallback(() => {
-    fetch("/api/admin/projects")
+    fetch("/api/admin/projects", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         if (d.ok && Array.isArray(d.projects)) setProjects(d.projects);

@@ -7,23 +7,38 @@ import Link from "next/link";
 import { ScanResultScrollExperience } from "@/app/start/ScanResultScrollExperience";
 import type { ScanResult } from "@/app/start/ScanResultScrollExperience";
 
+type ProjectData = {
+  id: string;
+  scan_result: Record<string, unknown>;
+  access_expires_at: string | null;
+  name?: string | null;
+  email?: string | null;
+  web_url?: string | null;
+  manual_input?: string | null;
+};
 type AccessState =
   | { status: "loading" }
   | { status: "expired" }
   | { status: "not_found" }
-  | { status: "ok"; project: { id: string; scan_result: Record<string, unknown>; access_expires_at: string | null } };
+  | { status: "ok"; project: ProjectData };
 
 function DiagnostikaViewContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
   const [state, setState] = useState<AccessState>({ status: "loading" });
+  const [showEdit, setShowEdit] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editManualInput, setEditManualInput] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const fetchAccess = useCallback(async () => {
     if (!token.trim()) {
       setState({ status: "not_found" });
       return;
     }
-    const res = await fetch(`/api/diagnostika/access?token=${encodeURIComponent(token.trim())}`);
+    const res = await fetch(`/api/diagnostika/access?token=${encodeURIComponent(token.trim())}`, { cache: "no-store" });
     const data = await res.json();
     if (data.ok && data.project) {
       setState({ status: "ok", project: data.project });
@@ -83,8 +98,111 @@ function DiagnostikaViewContent() {
     );
   }
 
+  const project = state.project;
+  const syncEditFromProject = () => {
+    setEditName(project.name ?? "");
+    setEditEmail(project.email ?? "");
+    setEditManualInput(project.manual_input ?? "");
+  };
+
+  const saveInput = async () => {
+    setEditError(null);
+    setSaving(true);
+    try {
+      const res = await fetch("/api/diagnostika/update-input", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: token.trim(),
+          name: editName.trim() || null,
+          email: editEmail.trim() || null,
+          manual_input: editManualInput.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok && data.project) {
+        setState({
+          status: "ok",
+          project: {
+            ...project,
+            name: data.project.name ?? project.name,
+            email: data.project.email ?? project.email,
+            manual_input: data.project.manual_input ?? project.manual_input,
+          },
+        });
+        setShowEdit(false);
+      } else {
+        setEditError(data?.error ?? "Chyba při ukládání.");
+      }
+    } catch {
+      setEditError("Chyba připojení.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#0c0c14]">
+      <div className="border-b border-white/10 bg-[#0c0c14]/95 backdrop-blur sticky top-0 z-10 px-4 py-3">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+          <span className="text-sm text-zinc-400 truncate">
+            {project.name || project.email || "Diagnostika"}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setShowEdit((v) => !v);
+              if (!showEdit) syncEditFromProject();
+            }}
+            className="text-sm text-[#A8EB12] hover:underline shrink-0"
+          >
+            {showEdit ? "Zavřít úpravy" : "Upravit mé údaje"}
+          </button>
+        </div>
+        {showEdit && (
+          <div className="max-w-2xl mx-auto mt-4 p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">Jméno / firma</label>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 text-sm"
+                placeholder="Vaše jméno nebo firma"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">E-mail</label>
+              <input
+                type="email"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 text-sm"
+                placeholder="vas@email.cz"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">Popis / vstupní údaje o značce</label>
+              <textarea
+                value={editManualInput}
+                onChange={(e) => setEditManualInput(e.target.value)}
+                rows={3}
+                className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 text-sm resize-y"
+                placeholder="Text, který jste zadali při diagnostice (můžete upravit)"
+              />
+            </div>
+            {editError && <p className="text-sm text-red-400">{editError}</p>}
+            <button
+              type="button"
+              onClick={saveInput}
+              disabled={saving}
+              className="rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-[#b8f022] disabled:opacity-50"
+            >
+              {saving ? "Ukládám…" : "Uložit"}
+            </button>
+          </div>
+        )}
+      </div>
       <ScanResultScrollExperience
         result={result}
         projectId={state.project.id}

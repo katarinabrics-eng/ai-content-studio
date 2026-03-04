@@ -32,9 +32,16 @@ export default function AdminClientDetailPage() {
   const id = params.id as string;
   const [project, setProject] = useState<ClientProject | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editWebUrl, setEditWebUrl] = useState("");
+  const [editManualInput, setEditManualInput] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const fetchProject = useCallback(() => {
-    fetch(`/api/admin/client-projects/${id}`)
+    fetch(`/api/admin/client-projects/${id}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         if (d.ok) setProject(d.project);
@@ -60,6 +67,44 @@ export default function AdminClientDetailPage() {
   useEffect(() => {
     fetchProject();
   }, [fetchProject]);
+
+  useEffect(() => {
+    if (project) {
+      setEditName(project.name ?? "");
+      setEditEmail(project.email ?? "");
+      setEditWebUrl(project.web_url ?? "");
+      setEditManualInput(project.manual_input ?? "");
+    }
+  }, [project]);
+
+  const saveEdits = useCallback(async () => {
+    if (!id || saving) return;
+    setSaveError(null);
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/client-projects/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName.trim() || null,
+          email: editEmail.trim() || null,
+          web_url: editWebUrl.trim() || null,
+          manual_input: editManualInput.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok && data.project) {
+        setProject(data.project);
+        setEditing(false);
+      } else {
+        setSaveError(data?.error ?? "Chyba při ukládání.");
+      }
+    } catch {
+      setSaveError("Chyba připojení.");
+    } finally {
+      setSaving(false);
+    }
+  }, [id, editName, editEmail, editWebUrl, editManualInput, saving]);
 
   if (loading) {
     return (
@@ -158,10 +203,77 @@ export default function AdminClientDetailPage() {
           })()}
 
           <div className="mt-8 border-t border-white/10 pt-6">
-            <h2 className="text-sm font-semibold uppercase text-zinc-500">Vstup</h2>
-            {project.web_url && <p className="mt-2 text-zinc-300">Web: <a href={project.web_url} target="_blank" rel="noreferrer" className="text-[#A8EB12] underline">{project.web_url}</a></p>}
-            {project.manual_input && <div className="mt-2 rounded-lg bg-zinc-800/50 p-3 text-sm text-zinc-300 whitespace-pre-wrap">{project.manual_input}</div>}
-            {!project.web_url && !project.manual_input && <p className="mt-2 text-zinc-500">—</p>}
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold uppercase text-zinc-500">Vstupní údaje / vstup</h2>
+              <button
+                type="button"
+                onClick={() => setEditing((e) => !e)}
+                className="text-sm text-[#A8EB12] hover:underline"
+              >
+                {editing ? "Zrušit úpravu" : "Upravit"}
+              </button>
+            </div>
+            {editing ? (
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-xs text-zinc-500 mb-1">Jméno klienta</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 placeholder:text-zinc-500"
+                    placeholder="Jméno nebo firma"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-zinc-500 mb-1">E-mail</label>
+                  <input
+                    type="email"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 placeholder:text-zinc-500"
+                    placeholder="email@example.cz"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-zinc-500 mb-1">Web URL</label>
+                  <input
+                    type="url"
+                    value={editWebUrl}
+                    onChange={(e) => setEditWebUrl(e.target.value)}
+                    className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 placeholder:text-zinc-500"
+                    placeholder="https://…"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-zinc-500 mb-1">Manuální vstup / popis (text o značce)</label>
+                  <textarea
+                    value={editManualInput}
+                    onChange={(e) => setEditManualInput(e.target.value)}
+                    rows={5}
+                    className="w-full rounded-lg bg-zinc-800 border border-white/10 px-3 py-2 text-zinc-200 placeholder:text-zinc-500 resize-y"
+                    placeholder="Text z manuální diagnostiky (Nemám web)…"
+                  />
+                </div>
+                {saveError && <p className="text-sm text-red-400">{saveError}</p>}
+                <button
+                  type="button"
+                  onClick={saveEdits}
+                  disabled={saving}
+                  className="rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-[#b8f022] disabled:opacity-50"
+                >
+                  {saving ? "Ukládám…" : "Uložit změny"}
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="mt-2 text-zinc-300">{project.name ? `Jméno: ${project.name}` : ""}</p>
+                <p className="mt-1 text-zinc-300">{project.email ? `E-mail: ${project.email}` : ""}</p>
+                {project.web_url && <p className="mt-2 text-zinc-300">Web: <a href={project.web_url} target="_blank" rel="noreferrer" className="text-[#A8EB12] underline">{project.web_url}</a></p>}
+                {project.manual_input && <div className="mt-2 rounded-lg bg-zinc-800/50 p-3 text-sm text-zinc-300 whitespace-pre-wrap">{project.manual_input}</div>}
+                {!project.web_url && !project.manual_input && !project.name && !project.email && <p className="mt-2 text-zinc-500">—</p>}
+              </>
+            )}
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-6">

@@ -125,6 +125,27 @@ export async function updateClientProjectEmail(projectId: string, email: string)
   if (error) throw error;
 }
 
+/** Aktualizuje editovatelná pole záznamu diagnostiky (admin i klient). */
+export async function updateClientProject(
+  projectId: string,
+  updates: { name?: string | null; email?: string | null; web_url?: string | null; manual_input?: string | null }
+): Promise<ClientProjectRow | null> {
+  const supabase = getSupabaseClient();
+  const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (updates.name !== undefined) payload.name = updates.name;
+  if (updates.email !== undefined) payload.email = updates.email;
+  if (updates.web_url !== undefined) payload.web_url = updates.web_url;
+  if (updates.manual_input !== undefined) payload.manual_input = updates.manual_input;
+  const { data, error } = await supabase
+    .from("client_projects")
+    .update(payload)
+    .eq("id", projectId)
+    .select()
+    .single();
+  if (error) return null;
+  return data as ClientProjectRow;
+}
+
 export async function setClientProjectPaidFromBooking(bookingId: string): Promise<void> {
   const supabase = getSupabaseClient();
   const { data: booking, error: bookErr } = await supabase

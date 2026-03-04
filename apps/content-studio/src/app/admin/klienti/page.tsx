@@ -721,7 +721,7 @@ export default function AdminKlientiPage() {
   const fetchDashboard = useCallback(() => {
     setLoading(true);
     setFetchError(null);
-    fetch("/api/admin/klienti-dashboard")
+    fetch("/api/admin/klienti-dashboard", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         if (d.ok && Array.isArray(d.clients)) {
