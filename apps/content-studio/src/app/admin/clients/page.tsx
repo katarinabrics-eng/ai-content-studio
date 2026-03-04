@@ -9,6 +9,9 @@ import {
   type DiagWorkflowStatus,
 } from "@/lib/diagnostika-workflow";
 
+/** Databáze, do které diagnostika ukládá (contentpro atd.). Admin musí číst odsud. */
+const EXPECTED_DB_REF = "eiotchncewazllcvwfge";
+
 type ClientProject = {
   id: string;
   created_at: string;
@@ -93,11 +96,24 @@ export default function AdminClientsPage() {
                 </span>
               )}
             </p>
-            {!loading && projects.length === 0 && backendRef && (
+            {!loading && backendRef && backendRef !== EXPECTED_DB_REF && (
+              <div className="mt-4 p-4 rounded-xl border-2 border-amber-500/50 bg-amber-500/10">
+                <p className="font-semibold text-amber-200">Contentpro a další diagnostiky se tu neobjeví – admin čte z jiné databáze</p>
+                <p className="mt-2 text-sm text-amber-100/90">
+                  Diagnostiky (včetně contentpro.cz) jsou uložené v databázi <strong>{EXPECTED_DB_REF}</strong>. Tato stránka teď čte z databáze <strong>{backendRef}</strong>.
+                </p>
+                <p className="mt-3 text-sm font-medium text-white">Co udělat:</p>
+                <ol className="mt-1 text-sm text-amber-100/90 list-decimal list-inside space-y-1">
+                  <li>Vercel → vyber projekt, který obsluhuje <strong>tuto adresu</strong> (adresní řádek v prohlížeči).</li>
+                  <li>Settings → Environment Variables → <code className="bg-black/30 px-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code> musí být <code className="bg-black/30 px-1 rounded break-all">https://{EXPECTED_DB_REF}.supabase.co</code></li>
+                  <li>Deployments → u posledního Production deploymentu klikni na ⋮ → <strong>Redeploy</strong>.</li>
+                  <li>Po dokončení deploye obnov tuto stránku (F5). U „Databáze:“ by mělo být {EXPECTED_DB_REF} a záznamy (contentpro) se zobrazí.</li>
+                </ol>
+              </div>
+            )}
+            {!loading && projects.length === 0 && backendRef && backendRef === EXPECTED_DB_REF && (
               <p className="mt-2 text-xs text-zinc-500">
-                Záznamy z diagnostiky se ukládají do tabulky <strong>client_projects</strong> (odkaz /d/xxx i „Vstoupit do pracovní plochy“). Pokud zde vidíte 0, ale odkaz z e-mailu funguje, otevřete diagnostiku na této adrese a v konzoli zadejte:{" "}
-                <code className="bg-white/10 px-1 rounded">fetch(&quot;/api/diagnostika/backend-id&quot;).then(r=&gt;r.json()).then(console.log)</code>
-                {" "}– hodnota <strong>supabaseRef</strong> musí být stejná jako Databáze zde ({backendRef}).
+                Připojeno k databázi s contentpro. Zatím žádné záznamy – spusťte diagnostiku nebo obnovte stránku.
               </p>
             )}
           </div>
