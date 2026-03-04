@@ -8,7 +8,6 @@ const navItems = [
   { href: "/admin/styles", label: "Styly", icon: "🎨" },
   { href: "/admin/projects", label: "Projekty", icon: "📋" },
   { href: "/admin/kurator", label: "Schválení", icon: "✅" },
-  { href: "/admin/clients", label: "Výsledky diagnostik", icon: "📋" },
 ];
 
 export default function AdminLayout({
