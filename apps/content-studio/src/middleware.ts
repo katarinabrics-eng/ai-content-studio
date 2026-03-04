@@ -33,6 +33,10 @@ export function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
+
+  if (pathname === "/redakce" || pathname.startsWith("/redakce/")) {
+    return NextResponse.redirect(new URL("/admin/klienti", request.url), 307);
+  }
   
   if (!isProtectedPath(pathname)) {
     return NextResponse.next();
