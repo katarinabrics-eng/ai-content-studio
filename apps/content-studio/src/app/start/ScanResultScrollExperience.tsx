@@ -32,11 +32,20 @@ export type PillarAnalysisItem = {
   reasoning?: string;
   strategicOpportunity?: string;
 };
+export type SuggestedStrategistItem = {
+  id: string;
+  label: string;
+  tagline: string;
+  reason?: string;
+  fit_score?: number;
+};
+
 export type ScanResult = {
   brandScore?: BrandScore;
   brandDna?: BrandDna;
   summary?: string;
   pillarAnalysis?: Record<string, PillarAnalysisItem>;
+  suggested_strategists?: SuggestedStrategistItem[];
 };
 
 const PILLARS = [
@@ -486,6 +495,41 @@ export function ScanResultScrollExperience({
           </div>
         </div>
       </Section>
+
+      {/* 10b. Pro vaši značku doporučujeme (pouze pokud máme suggested_strategists) */}
+      {result.suggested_strategists && result.suggested_strategists.length > 0 && (
+        <Section>
+          <div className="max-w-xl mx-auto text-left">
+            <h2 className="text-2xl font-bold text-white mb-6">Pro vaši značku doporučujeme</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              {result.suggested_strategists.slice(0, 2).map((s) => (
+                <div
+                  key={s.id}
+                  className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
+                >
+                  <div className="font-semibold text-white">{s.label}</div>
+                  <div className="text-sm text-zinc-400 mt-1">{s.tagline}</div>
+                  {s.fit_score != null && (
+                    <div className="text-xs text-lime-400 mt-2">Fit: {s.fit_score} %</div>
+                  )}
+                  {s.reason && (
+                    <p className="text-sm text-zinc-300 mt-2">{s.reason}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-zinc-400 text-sm mb-4">
+              Pokud vás zajímá konkrétní strategický směr, můžeme ho probrat na strategickém hovoru.
+            </p>
+            <a
+              href="/rezervace"
+              className="inline-block rounded-xl bg-lime-400 text-black font-semibold px-6 py-3 hover:bg-lime-300 transition-all"
+            >
+              Rezervovat strategický hovor
+            </a>
+          </div>
+        </Section>
+      )}
 
       {/* 11. Finální dramatický blok */}
       <Section compact>

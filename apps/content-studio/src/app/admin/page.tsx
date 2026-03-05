@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { STRATEGISTS_META } from "@/lib/strategist-selector";
+import { StrategicPlanRenderer } from "@/components/StrategicPlanRenderer";
 
 type SavedStrategy = { id: string; name: string; content: string; created_at: string; strategist_id: string | null };
+
+type SuggestedStrategist = { id: string; label: string; tagline: string; reason?: string; fit_score?: number };
 
 type ScanResult = {
   brandScore?: { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
@@ -11,7 +15,8 @@ type ScanResult = {
   summary?: string;
   pillarAnalysis?: Record<string, { score?: number; interpretation?: string; observed?: string[]; notObserved?: string[]; reasoning?: string; strategicOpportunity?: string }>;
   admin_notes?: string | null;
-  strategic_plan?: string | null;
+  strategic_plan?: string | Record<string, unknown> | null;
+  suggested_strategists?: SuggestedStrategist[];
   saved_strategies?: SavedStrategy[];
   active_strategy_id?: string | null;
 };
@@ -40,7 +45,7 @@ export default function AdminDashboard() {
   const [editInternalNotes, setEditInternalNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [strategistLoading, setStrategistLoading] = useState(false);
-  const [strategistId, setStrategistId] = useState("lucifera");
+  const [strategistId, setStrategistId] = useState("the_architect");
   const [strategyName, setStrategyName] = useState("");
   const [saveStrategyLoading, setSaveStrategyLoading] = useState(false);
   const [accordion, setAccordion] = useState<Record<string, boolean>>({
@@ -808,6 +813,33 @@ export default function AdminDashboard() {
               </button>
               {accordion.strategie && (
               <div style={{ padding: 16, borderTop: "1px solid #222" }}>
+              {(selected.scan_result as ScanResult)?.suggested_strategists?.length ? (
+                <div style={{ marginBottom: 12, padding: 12, background: "#0d1f0d", border: "1px solid #1a3d1a", borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: "#6b8f6b", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>AI doporučuje</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                    {(selected.scan_result as ScanResult).suggested_strategists!.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setStrategistId(s.id)}
+                        style={{
+                          padding: "8px 12px",
+                          background: "#111",
+                          border: "1px solid #333",
+                          borderRadius: 8,
+                          color: "#fff",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          textAlign: "left",
+                        }}
+                      >
+                        <span style={{ fontWeight: 600 }}>{s.label}</span>
+                        <span style={{ marginLeft: 6, color: "#888" }}>→ Vybrat</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
               <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
                 <select
                   value={strategistId}
@@ -821,13 +853,9 @@ export default function AdminDashboard() {
                     fontSize: 13,
                   }}
                 >
-                  <option value="lucifera">Lucifera (8dílný plán)</option>
-                  <option value="hormozi">Alex Hormozi</option>
-                  <option value="garyvee">Gary Vee</option>
-                  <option value="tonyrobbins">Tony Robbins</option>
-                  <option value="donaldmiller">Donald Miller</option>
-                  <option value="sigrun">Sigrun</option>
-                  <option value="trend2026">Trend 2026</option>
+                  {STRATEGISTS_META.map((s) => (
+                    <option key={s.id} value={s.id}>{s.label} — {s.tagline}</option>
+                  ))}
                 </select>
                 <button
                   type="button"
@@ -847,11 +875,9 @@ export default function AdminDashboard() {
                   {strategistLoading ? "Generuji…" : "Spustit stratega"}
                 </button>
               </div>
-              {(selected.scan_result as ScanResult)?.strategic_plan && (
+              {(selected.scan_result as ScanResult)?.strategic_plan != null && (
                 <>
-                  <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 16, maxHeight: 400, overflow: "auto" }}>
-                    <pre style={{ margin: 0, fontSize: 13, color: "#bbb", whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{(selected.scan_result as ScanResult).strategic_plan}</pre>
-                  </div>
+                  <StrategicPlanRenderer plan={(selected.scan_result as ScanResult).strategic_plan!} />
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
                     <input
                       type="text"

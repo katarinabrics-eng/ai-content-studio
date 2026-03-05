@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { selectStrategists } from "@/lib/strategist-selector";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -332,12 +333,14 @@ export async function POST(request: Request) {
     if (formatDiagnostika) {
       try {
         const result = parseDiagnostikaResult(outputText);
+        const suggested = selectStrategists(result);
         return NextResponse.json({
           result: {
             brandScore: result.brandScore,
             brandDna: result.brandDna,
             summary: result.summary,
             pillarAnalysis: result.pillarAnalysis ?? undefined,
+            suggested_strategists: suggested,
           },
           scraped: scrapedPayload,
         });

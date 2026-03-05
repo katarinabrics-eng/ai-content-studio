@@ -64,14 +64,17 @@ export function projectToStrategistParams(project: ProjectWithBrief): Record<str
   };
 }
 
+const VALID_STRATEGIST_IDS: StrategistId[] = [
+  "the_architect",
+  "the_illuminator",
+  "the_pulse",
+  "the_catalyst",
+  "the_signal",
+  "the_pathfinder",
+  "the_luminary",
+  "the_horizon",
+];
+
 export function isValidStrategistId(id: string): id is StrategistId {
-  return [
-    "lucifera",
-    "hormozi",
-    "garyvee",
-    "tonyrobbins",
-    "donaldmiller",
-    "sigrun",
-    "trend2026",
-  ].includes(id);
+  return VALID_STRATEGIST_IDS.includes(id as StrategistId);
 }

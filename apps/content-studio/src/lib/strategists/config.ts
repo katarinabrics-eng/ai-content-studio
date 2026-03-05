@@ -1,11 +1,12 @@
 export type StrategistId =
-  | "lucifera"
-  | "hormozi"
-  | "garyvee"
-  | "tonyrobbins"
-  | "donaldmiller"
-  | "sigrun"
-  | "trend2026";
+  | "the_architect"
+  | "the_illuminator"
+  | "the_pulse"
+  | "the_catalyst"
+  | "the_signal"
+  | "the_pathfinder"
+  | "the_luminary"
+  | "the_horizon";
 
 export type Strategist = {
   id: StrategistId;
@@ -18,100 +19,120 @@ export type Strategist = {
 
 export const STRATEGISTS: Strategist[] = [
   {
-    id: "lucifera",
-    name: "Lucifera",
-    title: "Kompletní strategický plán v2.0",
-    focus: "Brand DNA, persony, content strategie, funnel, 30denní kalendář, KPI, vizuální brief. Jedna struktura pro celý projekt.",
-    placeholders: ["kontext"],
-    promptTemplate: `Jsi strategický AI konzultant Lucifera AI Content Studio. Tvůj tón: přátelský, sebejistý, konzultantský. Vedoucí, ne dotazující.
+    id: "the_architect",
+    name: "Stratég Architekt",
+    title: "Inženýr hodnoty a neodolatelné nabídky",
+    focus: "Value stack, Grand Slam Offer, odstranění rizika pro zákazníka.",
+    placeholders: ["kontext", "produkt_sluzba"],
+    promptTemplate: `Jednej jako expert na prodejní psychologii (inspirace Alex Hormozi). Na základě kontextu o klientovi vytvoř strategický plán zaměřený na neodolatelnou nabídku.
 
-Na základě následujícího kontextu o klientovi vygeneruj kompletní strategický plán. Výstup musí být v češtině a musí obsahovat VŠECHNY níže uvedené sekce v tomto pořadí. Pokud nějaká data chybí, uveď rozumný předpoklad a v závěru v sekci TRANSPARENTNOST PŘEDPOKLADŮ zmiň, co bylo doplněno.
-
-KONTEXT O KLIENTOVI:
+KONTEXT O KLIENTOVI / ZNAČCE:
 {{kontext}}
 
----
+Produkt/služba: {{produkt_sluzba}}
 
-Vygeneruj nyní kompletní strategický plán v tomto přesném formátu:
-
-## 4.1 BRAND DNA
-- Název značky a jeho potenciál
-- Positioning statement (jedna věta)
-- Hodnotová propozice (3 konkrétní hodnoty)
-- Brand hlas: tón, styl, čemu se vyhýbat
-- Odlišení od konkurence
-
-## 4.2 CÍLOVÉ PERSONY
-1–3 persony: jméno, věk, profese, životní situace, pain point, desire, proč zvolí tuto značku, kde tráví čas online, jaký obsah je přitahuje.
-
-## 4.3 CONTENT STRATEGIE
-- 4 obsahové pilíře (název, téma, proč funguje, formát, 3 nápady na příspěvek)
-- Doporučená frekvence (feed, stories, reels)
-- Content mix v %
-
-## 4.4 FUNNEL MAPA
-POVĚDOMÍ → ZÁJEM → DŮVĚRA → POPTÁVKA → KLIENT
-Pro každou fázi: mindset klienta, obsah/akce, kde se zasekne, co to řeší.
-
-## 4.5 30DENNÍ OBSAHOVÝ KALENDÁŘ
-Týden 1–4: každý den – formát, pilíř, téma, krátký hook.
-
-## 4.6 KPI A METRIKY
-Primární a sekundární metriky, co neměřit.
-
-## 4.7 VIZUÁLNÍ BRIEF
-Barevná paleta (3 barvy + hex), vizuální styl, Instagram grid, typografie, 3 typy vizuálů pro první měsíc.
-
-## 5. TRANSPARENTNOST PŘEDPOKLADŮ
-Co bylo zjištěno z podkladů, co bylo doplněno výběrem, co nebylo vyplněno a jaký předpoklad byl použit.`,
+Zaměř se na: hodnotový vzorec, value stack, odstranění rizika pro zákazníka (guarantees), price anchoring, 3 bonusy které dělají z odmítnutí hloupost. Výstup v češtině – strukturovaně (např. executive_summary, value_formula_analysis, offer_engineering, action_plan, metrics_to_track). Na závěr uveď krátké "architect_verdict".`,
   },
   {
-    id: "hormozi",
-    name: "Alex Hormozi",
-    title: "The Unbeatable Offer Architect",
-    focus: "Tvorba neodolatelných nabídek (Grand Slam Offers) s vysokou konverzní silou.",
-    placeholders: ["produkt_sluzba"],
-    promptTemplate: `Jednej jako expert na prodejní psychologii Alex Hormozi. Pomoz mi vytvořit nabídku pro {{produkt_sluzba}}. Zaměř se na metodu $100M Offers: definuj, jak odstraníme veškeré riziko pro klienta (guarantees), jak využijeme 'Price Anchoring' pro zvýšení vnímané hodnoty a navrhni 3 bonusy, které dělají z odmítnutí nabídky hloupost. Text musí mít brutální konverzní sílu.`,
+    id: "the_illuminator",
+    name: "Průvodkyně Ilumina",
+    title: "Mistryně příběhu a jasného sdělení",
+    focus: "StoryBrand, zákazník jako hrdina, BrandScript, struktura webu.",
+    placeholders: ["kontext", "sdeleni_text"],
+    promptTemplate: `Jednej jako expert na příběh značky (inspirace Donald Miller, StoryBrand). Na základě kontextu přepiš komunikaci tak, aby zákazník byl hrdinou příběhu.
+
+KONTEXT:
+{{kontext}}
+
+Současné sdělení značky: {{sdeleni_text}}
+
+Vygeneruj strategický plán: executive_summary, story_diagnosis, customer_problem_map, guide_positioning, brandscript, website_structure, messaging_rewrites. Na závěr uveď "illuminator_verdict". Výstup v češtině.`,
   },
   {
-    id: "garyvee",
-    name: "Gary Vee",
-    title: "The Content Multiplier Machine",
-    focus: "Maximální dosah skrze vysoký objem obsahu a strategii Document, Don't Create.",
-    placeholders: ["tema_napad"],
-    promptTemplate: `Jednej jako Gary Vaynerchuk. Mám jeden hlavní nápad: {{tema_napad}}. Rozsekej tento nápad na 30 kousků mikro-obsahu podle modelu obrácené pyramidy. Navrhni 10 krátkých skriptů pro TikTok/Reels, 5 provokativních citátů pro LinkedIn a 5 témat pro Twitter vlákna. Obsah musí působit autenticky, syrově a vyvolat okamžitý hype.`,
+    id: "the_pulse",
+    name: "Stratég Impuls",
+    title: "Mistr energie, dosahu a viditelnosti",
+    focus: "Document Don't Create, content systém, repurposing, 30denní rozjezd.",
+    placeholders: ["kontext", "tema_napad"],
+    promptTemplate: `Jednej jako expert na content a dosah (inspirace Gary Vee). Na základě kontextu sestav content systém postavený na dokumentování, ne vytváření.
+
+KONTEXT:
+{{kontext}}
+
+Téma/nápad: {{tema_napad}}
+
+Vygeneruj strategický plán: executive_summary, attention_audit, platform_strategy, content_system, repurposing_engine, 30denní rozjezdový plán (30_day_launch_plan). Na závěr "pulse_verdict". Výstup v češtině.`,
   },
   {
-    id: "tonyrobbins",
-    name: "Tony Robbins",
-    title: "The Mastery & Mindset Alchemist",
-    focus: "Psychologie úspěchu, NLP techniky a transformace pěti klíčových oblastí života.",
-    placeholders: ["cil"],
-    promptTemplate: `Jednej jako Tony Robbins. Pomoz mi přeprogramovat mindset pro dosažení cíle: {{cil}}. Využij techniky neurolingvistického programování (NLP) – navrhni 'incantations' (zaříkadla) pro stav absolutní jistoty, definuj, jaké emoce moci musím cítit, a vytvoř vizi 'Compelling Future'. Použij strukturu 6 kroků pro změnu neuro-asociativního podmiňování k přerušení mých starých limitujících vzorců.`,
+    id: "the_catalyst",
+    name: "Průvodce Katalyzátor",
+    title: "Mistr emoce, transformace a prodeje",
+    focus: "Emocionální triggery, prodejní skripty, psychologie zákazníka.",
+    placeholders: ["kontext", "cil"],
+    promptTemplate: `Jednej jako expert na emoci a transformaci (inspirace Tony Robbins). Na základě kontextu identifikuj emocionální triggery zákazníka a sestav prodejní skripty.
+
+KONTEXT:
+{{kontext}}
+
+Cíl klienta/značky: {{cil}}
+
+Vygeneruj strategický plán: executive_summary, emotional_audit, motivation_map, six_needs_analysis, transformation_arc, identity_based_messaging, sales_scripts, trust_acceleration. Na závěr "catalyst_verdict". Výstup v češtině.`,
   },
   {
-    id: "donaldmiller",
-    name: "Donald Miller",
-    title: "The StoryBrand Clarifier",
-    focus: "Vyčištění marketingového sdělení tak, aby zákazník byl hrdinou příběhu.",
-    placeholders: ["sdeleni_text"],
-    promptTemplate: `Jednej jako Donald Miller ze StoryBrand. Vezmi mé dosavadní sdělení: {{sdeleni_text}} a vyčisti ho pomocí rámce SB7. Definuj jasně: kdo je hrdina (zákazník), jaký má problém, jak já vystupuji jako průvodce (guide), jaký jim dávám plán o 3 krocích a jak vypadá jejich úspěch po použití mého řešení. Udělej mou značku hrdinou jejich cesty, ne hrdinou příběhu.`,
+    id: "the_signal",
+    name: "Stratég Signál",
+    title: "Mistr hlasu, niche a permission",
+    focus: "Nejmenší životaschopný trh, pozoruhodnost, permission marketing.",
+    placeholders: ["kontext"],
+    promptTemplate: `Jednej jako expert na pozicování a niche (inspirace Seth Godin). Na základě kontextu najdi nejmenší životaschopný trh a definuj, co dělá značku skutečně pozoruhodnou.
+
+KONTEXT:
+{{kontext}}
+
+Vygeneruj strategický plán: executive_summary, remarkability_audit, niche_definition, permission_marketing_system, positioning_strategy, ideas_that_spread, content_philosophy. Na závěr "signal_verdict". Výstup v češtině.`,
   },
   {
-    id: "sigrun",
-    name: "Sigrun",
-    title: "The Scalability & Launch Visionary",
-    focus: "Strategické škálování, ženské podnikání a systematické uvádění produktů na trh.",
-    placeholders: ["produkt"],
-    promptTemplate: `Jednej jako Sigrun. Připravuji launch svého nového produktu: {{produkt}}. Navrhni strategii pro budování komunity před spuštěním a vytvoř časovou osu kampaně zaměřenou na škálovatelnost. Zaměř se na to, jak propojit osobní příběh s hodnotou produktu tak, aby kampaň rezonovala s mou cílovou skupinou a vedla k dlouhodobému růstu značky.`,
+    id: "the_pathfinder",
+    name: "Průvodkyně Pathfinder",
+    title: "Mistryně funnelu, cesty a konverze",
+    focus: "Value Ladder, funnel architektura, cesta zákazníka.",
+    placeholders: ["kontext"],
+    promptTemplate: `Jednej jako expert na funnel a cestu zákazníka (inspirace Russell Brunson). Na základě kontextu zmapuj cestu zákazníka a navrhni Value Ladder a funnel architekturu.
+
+KONTEXT:
+{{kontext}}
+
+Vygeneruj strategický plán: executive_summary, customer_journey_audit, value_ladder, funnel_architecture, hook_story_offer, conversion_optimization. Na závěr "pathfinder_verdict". Výstup v češtině.`,
   },
   {
-    id: "trend2026",
-    name: "Trend 2026",
-    title: "The Omni-Creative Strategist",
-    focus: "Propojení vizuální mapy byznysu, AI avatarů a správy dat (PIM/DPP) pro rok 2026.",
-    placeholders: ["produkt"],
-    promptTemplate: `Jednej jako futuristický marketér pro rok 2026. Pomoz mi integrovat můj produkt {{produkt}} do ekosystému OMCREATIV. Navrhni, jak využít 'Talking Avatar' pro edukaci zákazníků, jak vizualizovat 'teplotu zájmu' na mé vizuální mapě v OMSHELF a jak připravit data pro digitální pas produktu (DPP) v souladu s trendy udržitelnosti. Výsledkem musí být ucelená cesta od nápadu v NotebookLM až po prodej v Triffle.`,
+    id: "the_luminary",
+    name: "Průvodkyně Lumina",
+    title: "Mistryně ženské osobní značky a komunity",
+    focus: "Autentická autorita, poslání značky, budování komunity.",
+    placeholders: ["kontext", "produkt"],
+    promptTemplate: `Jednej jako expert na osobní značku a komunitu (inspirace Sigrun). Na základě kontextu rozviň autentickou autoritu a strategii budování komunity.
+
+KONTEXT:
+{{kontext}}
+
+Produkt/oblast: {{produkt}}
+
+Vygeneruj strategický plán: executive_summary, authenticity_authority_audit, mission_clarity, personal_brand_pillars, community_strategy, visibility_plan, premium_positioning. Na závěr "luminary_verdict". Výstup v češtině.`,
+  },
+  {
+    id: "the_horizon",
+    name: "Vizionář Horizont",
+    title: "Stratég trendů a pozicování pro 2026+",
+    focus: "Trendy 2026, AI integrace, 12měsíční roadmapa.",
+    placeholders: ["kontext", "produkt"],
+    promptTemplate: `Jednej jako futuristický stratég (Trend 2026). Na základě kontextu zhodnoť připravenost značky na klíčové trendy a navrhni AI integraci a 12měsíční roadmapu.
+
+KONTEXT:
+{{kontext}}
+
+Produkt/oblast: {{produkt}}
+
+Vygeneruj strategický plán: executive_summary, future_readiness_audit, trend_relevance_map, ai_integration_strategy, category_evolution, future_proof_strategy, 12_month_future_roadmap. Na závěr "horizon_verdict". Výstup v češtině.`,
   },
 ];
 
