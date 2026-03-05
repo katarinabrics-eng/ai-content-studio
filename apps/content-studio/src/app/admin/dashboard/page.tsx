@@ -77,6 +77,8 @@ type Client = {
   status: PipelineStatus;
   aiStatus: PipelineStatus;
   aiReason: string;
+  /** Krátký popis projektu / čemu se firma věnuje (z Brand DNA). */
+  projectDescription: string;
   score: number;
   created: string;
   tags: string[];
@@ -163,6 +165,16 @@ function mapRowToClient(row: ApiRow): Client {
   });
   const created = row.created_at ? new Date(row.created_at).toLocaleDateString("cs-CZ") : "—";
 
+  const d = scan.brandDna;
+  const projectDescriptionParts: string[] = [];
+  if (d?.name?.trim()) projectDescriptionParts.push(d.name.trim());
+  if (d?.positioning?.trim()) projectDescriptionParts.push(d.positioning.trim());
+  if (d?.targetAudience?.trim()) projectDescriptionParts.push(`Cílová skupina: ${d.targetAudience.trim()}`);
+  if (d?.uniqueValue?.trim()) projectDescriptionParts.push(d.uniqueValue.trim());
+  const projectDescription = projectDescriptionParts.length > 0
+    ? projectDescriptionParts.join(". ")
+    : (scan.summary?.slice(0, 200) || "Diagnostika dokončena. Zkontrolujte pilíře a doporučené stratégy.");
+
   return {
     id: row.id,
     name,
@@ -171,6 +183,7 @@ function mapRowToClient(row: ApiRow): Client {
     status,
     aiStatus: status,
     aiReason: scan.summary?.slice(0, 200) || "Diagnostika dokončena. Zkontrolujte pilíře a doporučené stratégy.",
+    projectDescription,
     score: Math.min(100, Math.max(0, scan.brandScore?.total ?? 0)),
     created,
     tags: scan.brandDna?.contentPillars ?? [],
@@ -453,7 +466,7 @@ function PipelineSection({
           <div style={{ fontSize: 9, color: C.purple, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 3 }}>
             AI HODNOCENÍ {aiDiffers && <span style={{ color: C.yellow }}>· navrhuje: {getS(client.aiStatus).label}</span>}
           </div>
-          <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5 }}>{client.aiReason}</div>
+          <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5 }}>{client.projectDescription}</div>
           {aiDiffers && (
             <button
               onClick={() => onChangeStatus(client.aiStatus)}
