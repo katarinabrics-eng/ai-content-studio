@@ -21,13 +21,13 @@ const C = {
   faint: "#444",
 };
 
-const PIPELINE = [
+const PIPELINE: { id: PipelineStatus; label: string; short: string; color: string; bg: string; icon: string; step: number }[] = [
   { id: "LEAD", label: "Nový lead", short: "Lead", color: "#888", bg: "#1a1a1a", icon: "◉", step: 1 },
   { id: "HOVOR", label: "Před hovorem", short: "Hovor", color: C.lilac, bg: "#16101e", icon: "◎", step: 2 },
   { id: "AKTIVNI", label: "Aktivní zakázka", short: "Aktivní", color: C.lime, bg: "#0f1a00", icon: "◈", step: 3 },
   { id: "HOTOVO", label: "Hotovo", short: "Hotovo", color: C.purple, bg: "#160f22", icon: "✦", step: 4 },
 ];
-const SPECIAL = [
+const SPECIAL: { id: PipelineStatus; label: string; color: string; bg: string; icon: string }[] = [
   { id: "SUPLIK", label: "Šuplík", color: C.yellow, bg: "#1a1600", icon: "⊡" },
   { id: "ARCHIV", label: "Archiv", color: C.faint, bg: "#111", icon: "◫" },
 ];
