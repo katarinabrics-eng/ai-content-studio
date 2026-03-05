@@ -311,6 +311,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              name: data.scraped?.title || (resData?.brandDna as { name?: string } | undefined)?.name || undefined,
               webUrl: mode === "web" ? url.trim() : undefined,
               manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
               result: resData,

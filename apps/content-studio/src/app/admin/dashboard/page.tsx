@@ -59,7 +59,7 @@ type ApiRow = {
       contentPillars?: string[];
     };
     summary?: string;
-    pillarAnalysis?: Record<string, { score?: number; interpretation?: string; strategicOpportunity?: string }>;
+    pillarAnalysis?: Record<string, { score?: number; interpretation?: string; strategicOpportunity?: string; observed?: string[]; notObserved?: string[]; reasoning?: string }>;
     admin_notes?: string | null;
     notes_ai_enabled?: boolean;
     suggested_strategists?: Array<{ id: string; label: string; tagline?: string; reason?: string; fit_score?: number }>;
@@ -881,27 +881,87 @@ export default function PipelineDashboardPage() {
             </div>
           )}
 
-          {activeTab === "diagnostika" && (
-            <Section title="SKÓRE PILÍŘŮ" accent={C.purple}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {client.pillars.map((p) => {
-                  const col = scoreColor(p.score);
-                  return (
-                    <div key={p.key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{ width: 28, fontSize: 17 }}>{p.icon}</div>
-                      <div style={{ width: 84, fontSize: 11, color: C.muted }}>{p.label}</div>
-                      <div style={{ flex: 1, height: 6, borderRadius: 3, background: C.bg3, overflow: "hidden" }}>
-                        <div style={{ height: "100%", width: `${p.score * 10}%`, background: `linear-gradient(90deg, ${col}88, ${col})`, borderRadius: 3 }} />
-                      </div>
-                      <div style={{ width: 20, fontSize: 13, fontWeight: 800, color: col, textAlign: "right" }}>{p.score}</div>
-                      <Tag color={col}>{scoreLabel(p.score)}</Tag>
-                      <div style={{ fontSize: 10, color: C.faint, width: 170 }}>{p.note}</div>
-                    </div>
-                  );
-                })}
+          {activeTab === "diagnostika" && (() => {
+            const activeRow = rows.find((r) => r.id === activeId);
+            const scan = activeRow?.scan_result ?? {};
+            const total = Math.min(100, Math.max(0, (scan as { brandScore?: { total?: number } }).brandScore?.total ?? 0));
+            const summary = (scan as { summary?: string }).summary?.trim() ?? "";
+            const pillarAnalysis = (scan as { pillarAnalysis?: Record<string, { score?: number; interpretation?: string; strategicOpportunity?: string; observed?: string[]; notObserved?: string[]; reasoning?: string }> }).pillarAnalysis ?? {};
+            const diagPillarKeys = [
+              { key: "light", label: "Světlo", icon: "💡" },
+              { key: "energy", label: "Energie", icon: "⚡" },
+              { key: "architecture", label: "Architektura", icon: "🏗️" },
+              { key: "identity", label: "Identita", icon: "🎯" },
+              { key: "trust", label: "Důvěra", icon: "🤝" },
+            ];
+            const riskPillars = diagPillarKeys.filter((p) => (pillarAnalysis[p.key]?.score ?? 5) < 6);
+            const totalComment = total >= 65 ? "Vaše značka má solidní základ. Největší prostor je v důvěře a diferenciaci." : total >= 45 ? "Vaše značka má potenciál růstu. Největší prostor je v oblasti důvěry a diferenciace." : "Vaše značka má potenciál. Největší prostor je v jasnosti nabídky a důvěře.";
+            return (
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <Section title="CELKOVÉ SKÓRE" accent={C.purple}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 36, fontWeight: 800, color: C.lime }}>{total}</span>
+                    <span style={{ fontSize: 14, color: C.muted }}>/ 100</span>
+                    <p style={{ fontSize: 12, color: C.text, lineHeight: 1.5, margin: 0, flex: "1 1 280px" }}>„{totalComment}"</p>
+                  </div>
+                </Section>
+                <Section title="PILÍŘE ZNAČKY — KOMPLETNÍ DIAGNOSTIKA" accent={C.purple}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {diagPillarKeys.map((p) => {
+                      const a = pillarAnalysis[p.key];
+                      const score = typeof a?.score === "number" ? a.score : 5;
+                      const col = scoreColor(score);
+                      return (
+                        <div key={p.key} style={{ padding: 14, borderRadius: 10, background: C.bg2, border: `1px solid ${col}28`, borderLeft: `4px solid ${col}` }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                            <span style={{ fontSize: 18 }}>{p.icon}</span>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{p.label}</span>
+                            <span style={{ fontSize: 18, fontWeight: 800, color: col }}>{score}/10</span>
+                            <Tag color={col}>{scoreLabel(score)}</Tag>
+                          </div>
+                          {a?.interpretation?.trim() && <p style={{ fontSize: 11, color: C.text, lineHeight: 1.5, margin: "0 0 8px 0" }}>{a.interpretation}</p>}
+                          {Array.isArray(a?.observed) && a.observed.length > 0 && (
+                            <div style={{ marginBottom: 6 }}>
+                              <span style={{ fontSize: 9, color: C.muted, letterSpacing: "0.06em" }}>CO JSME ZAZNAMENALI</span>
+                              <ul style={{ margin: "4px 0 0 0", paddingLeft: 16, fontSize: 11, color: C.text }}>
+                                {a.observed.map((x, i) => <li key={i}>{x}</li>)}
+                              </ul>
+                            </div>
+                          )}
+                          {Array.isArray(a?.notObserved) && a.notObserved.length > 0 && (
+                            <div style={{ marginBottom: 6 }}>
+                              <span style={{ fontSize: 9, color: C.muted, letterSpacing: "0.06em" }}>CO CHYBÍ / CO ZLEPŠIT</span>
+                              <ul style={{ margin: "4px 0 0 0", paddingLeft: 16, fontSize: 11, color: C.faint }}>
+                                {a.notObserved.map((x, i) => <li key={i}>{x}</li>)}
+                              </ul>
+                            </div>
+                          )}
+                          {a?.reasoning?.trim() && <p style={{ fontSize: 10, color: C.muted, lineHeight: 1.5, margin: "6px 0 0 0" }}><strong>Proč to ovlivnilo skóre:</strong> {a.reasoning}</p>}
+                          {a?.strategicOpportunity?.trim() && <p style={{ fontSize: 11, color: C.lime, marginTop: 8, marginBottom: 0 }}>Doporučený směr: {a.strategicOpportunity}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Section>
+                {riskPillars.length > 0 && (
+                  <Section title="KLÍČOVÁ RIZIKA / OKAMŽITÉ AKCE" accent={C.yellow}>
+                    <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: C.text, lineHeight: 1.6 }}>
+                      {riskPillars.map((p) => {
+                        const a = pillarAnalysis[p.key];
+                        const score = typeof a?.score === "number" ? a.score : 5;
+                        return <li key={p.key}><strong>{p.label}</strong> ({score}/10): {(a?.strategicOpportunity || a?.interpretation || "Zaměřit se na posílení tohoto pilíře.").slice(0, 120)}…</li>;
+                      })}
+                    </ul>
+                  </Section>
+                )}
+                {summary && (
+                  <Section title="DOPORUČENÝ STRATEGICKÝ POSUN" accent={C.lime}>
+                    <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>{summary}</p>
+                  </Section>
+                )}
               </div>
-            </Section>
-          )}
+            );
+          })()}
 
           {activeTab === "strategie" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
