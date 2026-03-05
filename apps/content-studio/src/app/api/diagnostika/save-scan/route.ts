@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClientProject, updateClientProjectScanResult, updateClientProject, getClientProjectById } from "@/lib/supabase-client-projects";
+import { createClientProject, updateClientProjectScanResult, updateClientProject, getClientProjectById, getClientProjectByEmail } from "@/lib/supabase-client-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,6 +53,26 @@ export async function POST(request: Request) {
         await updateClientProject(projectId, { name: name || null });
       }
       return NextResponse.json({ ok: true, id: projectId });
+    }
+
+    if (email?.trim()) {
+      const existingByEmail = await getClientProjectByEmail(email.trim());
+      if (existingByEmail) {
+        const existingScan = (existingByEmail.scan_result ?? {}) as Record<string, unknown>;
+        const mergedScan = mergeScanResult(existingScan, scanResult);
+        const updated = await updateClientProjectScanResult(existingByEmail.id, {
+          scan_result: mergedScan,
+          web_url: webUrl ?? undefined,
+          manual_input: manualInput ?? undefined,
+        });
+        if (!updated) {
+          return NextResponse.json({ error: "Nepodařilo se aktualizovat scan." }, { status: 500 });
+        }
+        if (name != null) {
+          await updateClientProject(existingByEmail.id, { name: name || null });
+        }
+        return NextResponse.json({ ok: true, id: existingByEmail.id });
+      }
     }
 
     const { id } = await createClientProject({

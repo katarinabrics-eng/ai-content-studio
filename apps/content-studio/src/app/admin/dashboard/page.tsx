@@ -473,15 +473,20 @@ function ClientCard({
   client,
   isActive,
   onClick,
+  onTrash,
 }: {
   client: Client;
   isActive: boolean;
   onClick: () => void;
+  onTrash?: (e: React.MouseEvent) => void;
 }) {
   const status = getS(client.status);
+  const [hover, setHover] = useState(false);
   return (
     <div
       onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
         margin: "0 8px 2px",
         padding: "10px 12px",
@@ -490,6 +495,7 @@ function ClientCard({
         border: isActive ? `1px solid ${status.color}30` : "1px solid transparent",
         borderLeft: `3px solid ${isActive ? status.color : "transparent"}`,
         cursor: "pointer",
+        position: "relative",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
@@ -516,7 +522,30 @@ function ClientCard({
           </div>
           <div style={{ fontSize: 9, color: C.faint }}>{client.sub}</div>
         </div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: status.color }}>{client.score}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: status.color }}>{client.score}</div>
+          {onTrash && (
+            <button
+              type="button"
+              aria-label="Smazat"
+              onClick={(e) => { e.stopPropagation(); onTrash(e); }}
+              style={{
+                padding: 2,
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                color: hover ? "#ff5577" : "#444",
+                fontSize: 14,
+                lineHeight: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              🗑
+            </button>
+          )}
+        </div>
       </div>
       <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
         <span style={{ padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, color: status.color, background: status.bg, letterSpacing: "0.05em" }}>
@@ -595,6 +624,7 @@ export default function PipelineDashboardPage() {
   const [compareMode, setCompareMode] = useState(false);
   const [selectedStrategyIds, setSelectedStrategyIds] = useState<string[]>([]);
   const [expandedStrategyId, setExpandedStrategyId] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; hard: boolean } | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -719,8 +749,88 @@ export default function PipelineDashboardPage() {
     );
   }
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm) return;
+    const { id, hard } = deleteConfirm;
+    try {
+      if (hard) {
+        const res = await fetch(`/api/admin/data?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Nepodařilo se smazat");
+        if (activeId === id) {
+          const rest = clients.filter((c) => c.id !== id);
+          setActiveId(rest[0]?.id ?? null);
+        }
+      } else {
+        await updateStatus(id, "ARCHIV");
+      }
+      setError(null);
+      await fetchData();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Chyba při mazání");
+    } finally {
+      setDeleteConfirm(null);
+    }
+  };
+
   return (
     <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: C.bg0, minHeight: "100vh", color: C.text, display: "flex", flexDirection: "column" }}>
+      {deleteConfirm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setDeleteConfirm(null)}
+        >
+          <div
+            style={{
+              background: C.bg2,
+              border: `1px solid ${C.border}`,
+              borderRadius: 12,
+              padding: 20,
+              maxWidth: 360,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p style={{ fontSize: 13, color: C.text, margin: "0 0 16px 0", lineHeight: 1.5 }}>
+              {deleteConfirm.hard
+                ? `Opravdu smazat projekt ${deleteConfirm.name}? Tuto akci nelze vrátit.`
+                : `Opravdu přesunout projekt ${deleteConfirm.name} do Archivu?`}
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm(null)}
+                style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg3, color: C.text, fontSize: 12, cursor: "pointer" }}
+              >
+                Zrušit
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteConfirm}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: deleteConfirm.hard ? "#ff5577" : C.faint,
+                  color: "#fff",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {deleteConfirm.hard ? "Smazat natrvalo" : "Přesunout do Archivu"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div style={{ height: 48, background: C.bg1, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 20px", gap: 14, flexShrink: 0 }}>
         <span style={{ fontSize: 10, color: C.faint, letterSpacing: "0.14em" }}>PIPELINE</span>
         <div style={{ flex: 1 }} />
@@ -741,7 +851,16 @@ export default function PipelineDashboardPage() {
               </div>
             ) : (
               sectionClients.map((c) => (
-                <ClientCard key={c.id} client={c} isActive={c.id === activeId} onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }} />
+                <ClientCard
+                  key={c.id}
+                  client={c}
+                  isActive={c.id === activeId}
+                  onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }}
+                  onTrash={(e) => {
+                    e?.stopPropagation();
+                    setDeleteConfirm({ id: c.id, name: c.name, hard: navSection === "archiv" });
+                  }}
+                />
               ))
             )}
           </div>

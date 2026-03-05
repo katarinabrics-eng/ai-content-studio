@@ -238,6 +238,22 @@ export async function getClientProjectById(id: string): Promise<ClientProjectRow
   return data as ClientProjectRow | null;
 }
 
+/** Vrací nejnovější projekt s daným e-mailem (pro upsert při diagnostice). E-mail se porovnává case-insensitive. */
+export async function getClientProjectByEmail(email: string): Promise<ClientProjectRow | null> {
+  if (!email || typeof email !== "string" || !email.trim()) return null;
+  const supabase = getSupabaseClient();
+  const escaped = email.trim().replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+  const { data, error } = await supabase
+    .from("client_projects")
+    .select("*")
+    .ilike("email", escaped)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data as ClientProjectRow | null;
+}
+
 /** Vrací projekt při platném tokenu. Pokud token chybí nebo je po access_expires_at, vrací null. */
 export async function getClientProjectByAccessToken(token: string): Promise<ClientProjectRow | null> {
   if (!token?.trim()) return null;
