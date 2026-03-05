@@ -22,7 +22,7 @@ export default function ObchodniPodminkyPage() {
             Podrobné obchodní podmínky a pravidla spolupráce
           </h1>
           <p className="mt-2 font-medium text-stone-600">Studio Lucifera (Kreativní dvůr)</p>
-          <p className="mt-1 text-sm text-stone-500">Účinnost od: 1. dubna 2025</p>
+          <p className="mt-1 text-sm text-stone-500">Účinnost od: 1. března 2026</p>
         </header>
 
         <p className="mt-8 text-[17px] leading-[1.75] text-stone-700">
@@ -145,6 +145,28 @@ export default function ObchodniPodminkyPage() {
             <li className="flex gap-2">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A8EB12]" aria-hidden />
               <span><strong>5.3. Kritické storno (Méně než 7 dní před focením):</strong> Pokud dojde ke zrušení realizace v době kratší než 7 kalendářních dnů před domluveným termínem, <strong>celá první platba (50 % ceny) propadá</strong>. Termín již nelze obsadit jiným klientem a strategická příprava je v této fázi kompletně dokončena.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A8EB12]" aria-hidden />
+              <span>
+                <strong>5.4. Digitální služby — Brand Scan a Premium Brand hovor</strong>
+                <br /><br />
+                Brand Scan je bezplatná služba bez závazku. Výsledky diagnostiky jsou uloženy po dobu 30 dní od vytvoření. Bez zadání e-mailu jsou data smazána po ukončení session.
+                <br /><br />
+                Premium Brand strategický hovor (7 800 Kč): Studio Lucifera poskytuje garanci vrácení platby za podmínek prokazatelného pochybení na straně studia. Vrácení platby je možné v případě, že:
+                <br />
+                — výstupy hovoru byly prokazatelně irelevantní k zadanému oboru nebo cílové skupině klienta,
+                <br />
+                — strategie obsahovala věcné chyby nebo rozporuplná doporučení v přímém rozporu s dodanými podklady,
+                <br />
+                — hovor se neuskutečnil z důvodu na straně studia a nebyl nabídnut náhradní termín.
+                <br /><br />
+                Garance se nevztahuje na subjektivní nespokojenost s doporučeními, změnu záměru klienta po uskutečnění hovoru nebo pocitové odstoupení od služby.
+                <br /><br />
+                Veškerý obsah, strategie a vizuální board zůstávají klientovi bez ohledu na výsledek reklamace.
+                <br /><br />
+                Žádost o vrácení platby zasílejte na ahoj@studiolucifera.cz s uvedením data hovoru a konkrétním popisem pochybení. Studio posoudí reklamaci do 14 pracovních dnů.
+              </span>
             </li>
           </ul>
         </section>
