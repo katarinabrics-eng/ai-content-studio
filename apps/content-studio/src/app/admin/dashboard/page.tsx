@@ -865,6 +865,12 @@ export default function PipelineDashboardPage() {
   const [newBundleOutputType, setNewBundleOutputType] = useState<"GAMMA" | "CANVA" | "NOTEBOOKLM" | "CUSTOM">("GAMMA");
   const [bundleCreateLoading, setBundleCreateLoading] = useState(false);
   const [generatingBundleId, setGeneratingBundleId] = useState<string | null>(null);
+  const [notesDraft, setNotesDraft] = useState("");
+  const [notesSavedValue, setNotesSavedValue] = useState("");
+  const [notesSaveSuccess, setNotesSaveSuccess] = useState(false);
+  const [notesHistory, setNotesHistory] = useState<Array<{ at: string; preview: string; full: string }>>([]);
+  const [notesHistoryExpandedIndex, setNotesHistoryExpandedIndex] = useState<number | null>(null);
+  const [notesSaving, setNotesSaving] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -958,6 +964,18 @@ export default function PipelineDashboardPage() {
   }, [activeTab, activeId, loadBundles]);
 
   const clients = rows.map(mapRowToClient);
+  const lastNotesSyncIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    const c = clients.find((c) => c.id === activeId);
+    if (!activeId || !c) return;
+    if (lastNotesSyncIdRef.current === activeId) return;
+    lastNotesSyncIdRef.current = activeId;
+    setNotesDraft(c.notes ?? "");
+    setNotesSavedValue(c.notes ?? "");
+    setNotesHistory([]);
+    setNotesHistoryExpandedIndex(null);
+  }, [activeId, clients]);
+
   const pipelineClients = clients.filter((c) => c.status !== "SUPLIK" && c.status !== "ARCHIV");
   const suplikClients = clients.filter((c) => c.status === "SUPLIK");
   const archivClients = clients.filter((c) => c.status === "ARCHIV");
@@ -2240,7 +2258,7 @@ export default function PipelineDashboardPage() {
 
           {activeTab === "poznamky" && (
             <Section title="INTERNÍ POZNÁMKY" accent={C.yellow}>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, cursor: "pointer", fontSize: 12, color: client.notesAiEnabled ? C.purple : C.muted }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, cursor: "pointer", fontSize: 12, color: client.notesAiEnabled ? "#b57bee" : C.muted }}>
                 <input
                   type="checkbox"
                   checked={client.notesAiEnabled}
@@ -2258,13 +2276,83 @@ export default function PipelineDashboardPage() {
                       setError("Nepodařilo se uložit nastavení AI poznámek");
                     }
                   }}
-                  style={{ accentColor: C.purple }}
+                  style={{ accentColor: "#b57bee" }}
                 />
                 <span>◈ AI čerpá z těchto poznámek při tvorbě strategie a hodnocení stavu</span>
               </label>
-              <p style={{ fontSize: 11, color: C.faint, marginBottom: 8 }}>Poznámky upravíte v hlavní administraci.</p>
-              <div style={{ padding: 12, background: C.bg2, borderRadius: 8, fontSize: 12, color: "#ccc", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{client.notes || "—"}</div>
-              <Link href={`/admin?id=${client.id}`} style={{ display: "inline-block", marginTop: 10, padding: "6px 16px", borderRadius: 8, border: "none", background: C.yellow, color: "#000", fontWeight: 700, fontSize: 11, textDecoration: "none" }}>Upravit v administraci →</Link>
+              <textarea
+                value={notesDraft}
+                onChange={(e) => setNotesDraft(e.target.value)}
+                placeholder="Poznámky kurátora…"
+                style={{
+                  width: "100%", minHeight: 160, padding: 13, resize: "vertical", background: "#141414", border: "1px solid #1f1f1f", borderRadius: 8, color: "#ccc", fontSize: 12, lineHeight: 1.7, boxSizing: "border-box",
+                }}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                <button
+                  type="button"
+                  disabled={notesSaving}
+                  onClick={async () => {
+                    if (!client.id) return;
+                    setNotesSaving(true);
+                    try {
+                      const res = await fetch(`/api/admin/diagnostika/${client.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ internal_notes: notesDraft }),
+                      });
+                      if (!res.ok) throw new Error((await res.json()).error || "Nepodařilo se uložit");
+                      setNotesSavedValue(notesDraft);
+                      setNotesHistory((prev) => [
+                        { at: new Date().toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" }), preview: notesDraft.slice(0, 60) + (notesDraft.length > 60 ? "…" : ""), full: notesDraft },
+                        ...prev.slice(0, 4),
+                      ]);
+                      setNotesSaveSuccess(true);
+                      setTimeout(() => setNotesSaveSuccess(false), 2000);
+                      await fetchData();
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : "Nepodařilo se uložit poznámky");
+                    } finally {
+                      setNotesSaving(false);
+                    }
+                  }}
+                  style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: "#e8d44d", color: "#000", fontWeight: 700, fontSize: 12, cursor: notesSaving ? "not-allowed" : "pointer" }}
+                >
+                  Uložit poznámky
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNotesDraft(notesSavedValue)}
+                  style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer" }}
+                >
+                  Zrušit
+                </button>
+                {notesSaveSuccess && <span style={{ fontSize: 12, color: C.muted }}>✓ Uloženo</span>}
+              </div>
+              <div style={{ marginTop: 20 }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: "#e8d44d", letterSpacing: "0.1em", marginBottom: 10 }}>HISTORIE ZMĚN</div>
+                {notesHistory.length === 0 ? (
+                  <p style={{ fontSize: 11, color: C.faint }}>Zatím žádné záznamy (max. 5 posledních uložení).</p>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {notesHistory.map((entry, idx) => (
+                      <div
+                        key={idx}
+                        style={{ padding: 8, background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}`, cursor: "pointer" }}
+                        onClick={() => setNotesHistoryExpandedIndex(notesHistoryExpandedIndex === idx ? null : idx)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === "Enter" && setNotesHistoryExpandedIndex(notesHistoryExpandedIndex === idx ? null : idx)}
+                      >
+                        <div style={{ fontSize: 11, color: C.muted }}>{entry.at} · {entry.preview}</div>
+                        {notesHistoryExpandedIndex === idx && (
+                          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}`, fontSize: 12, color: "#ccc", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{entry.full || "—"}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </Section>
           )}
 
