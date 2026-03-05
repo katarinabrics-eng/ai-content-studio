@@ -27,9 +27,9 @@ const PIPELINE: { id: PipelineStatus; label: string; short: string; color: strin
   { id: "AKTIVNI", label: "Aktivní zakázka", short: "Aktivní", color: C.lime, bg: "#0f1a00", icon: "◈", step: 3 },
   { id: "HOTOVO", label: "Hotovo", short: "Hotovo", color: C.purple, bg: "#160f22", icon: "✦", step: 4 },
 ];
-const SPECIAL: { id: PipelineStatus; label: string; color: string; bg: string; icon: string }[] = [
-  { id: "SUPLIK", label: "Šuplík", color: C.yellow, bg: "#1a1600", icon: "⊡" },
-  { id: "ARCHIV", label: "Archiv", color: C.faint, bg: "#111", icon: "◫" },
+const SPECIAL: { id: PipelineStatus; label: string; short?: string; color: string; bg: string; icon: string }[] = [
+  { id: "SUPLIK", label: "Šuplík", short: "Šuplík", color: C.yellow, bg: "#1a1600", icon: "⊡" },
+  { id: "ARCHIV", label: "Archiv", short: "Archiv", color: C.faint, bg: "#111", icon: "◫" },
 ];
 const ALL = [...PIPELINE, ...SPECIAL];
 function getS(id: string) {
