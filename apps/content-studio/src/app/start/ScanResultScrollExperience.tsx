@@ -189,10 +189,11 @@ export function ScanResultScrollExperience({
   }) {
     return (
       <div className="mt-4">
+        <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Jak jsme hodnotili</p>
         <button
           type="button"
           onClick={onToggle}
-          className="text-sm text-white hover:text-lime-400 underline underline-offset-2 transition bg-transparent border-0 cursor-pointer p-0"
+          className="text-sm font-medium text-lime-400 hover:text-lime-300 underline underline-offset-2 transition bg-transparent border-0 cursor-pointer p-0"
         >
           {isOpen ? "− Skrýt metodiku" : "Zjistit, jak jsme hodnotili →"}
         </button>
@@ -310,7 +311,10 @@ export function ScanResultScrollExperience({
                     )}
                   </>
                 ) : (
-                  <p className="text-zinc-500 text-sm">Pro tento pilíř není k dispozici rozepsaná metodika hodnocení.</p>
+                  <div className="space-y-2">
+                    <p className="text-zinc-500 text-sm">Pro tento pilíř není k dispozici rozepsaná metodika hodnocení.</p>
+                    <p className="text-zinc-600 text-xs">Skóre vychází z analýzy obsahu webu a zadaných podkladů.</p>
+                  </div>
                 )}
               </div>
             </Collapsible>

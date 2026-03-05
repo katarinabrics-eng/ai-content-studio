@@ -74,7 +74,13 @@ type BrandDna = {
   name?: string; positioning?: string; tone?: string; targetAudience?: string; communicationStyle?: string;
   contentPillars?: string[]; uniqueValue?: string; missingElements?: string[]; visualStyle?: VisualStyle;
 };
-type Result = { brandScore?: BrandScore; brandDna?: BrandDna; summary?: string };
+type Result = {
+  brandScore?: BrandScore;
+  brandDna?: BrandDna;
+  summary?: string;
+  pillarAnalysis?: Record<string, { score?: number; interpretation?: string; observed?: string[]; notObserved?: string[]; reasoning?: string; strategicOpportunity?: string }>;
+  suggested_strategists?: Array<{ id: string; label: string; tagline?: string; reason?: string; fit_score?: number }>;
+};
 type Scraped = { markdown?: string; screenshot?: string | null; url?: string; title?: string; description?: string };
 
 type TeaserData = {
@@ -362,7 +368,17 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Chyba");
       const updatedResult = data.result;
-      if (updatedResult) setResult(updatedResult);
+      if (updatedResult) {
+        const next = updatedResult as Result;
+        setResult((prev) => {
+          if (!prev) return next;
+          return {
+            ...next,
+            pillarAnalysis: next.pillarAnalysis && Object.keys(next.pillarAnalysis).length > 0 ? next.pillarAnalysis : prev.pillarAnalysis,
+            suggested_strategists: Array.isArray(next.suggested_strategists) && next.suggested_strategists.length > 0 ? next.suggested_strategists : prev.suggested_strategists,
+          };
+        });
+      }
       if (diagnostika && updatedResult) {
         try {
           const saveRes = await fetch("/api/diagnostika/save-scan", {
