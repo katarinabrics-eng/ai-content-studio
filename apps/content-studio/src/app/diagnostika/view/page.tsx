@@ -15,6 +15,7 @@ type ProjectData = {
   email?: string | null;
   web_url?: string | null;
   manual_input?: string | null;
+  outputs_activated?: boolean;
 };
 type AccessState =
   | { status: "loading" }
@@ -99,6 +100,7 @@ function DiagnostikaViewContent() {
   }
 
   const project = state.project;
+  const outputsActivated = project.outputs_activated ?? false;
   const syncEditFromProject = () => {
     setEditName(project.name ?? "");
     setEditEmail(project.email ?? "");
@@ -203,14 +205,23 @@ function DiagnostikaViewContent() {
           </div>
         )}
       </div>
-      <ScanResultScrollExperience
-        result={result}
-        projectId={state.project.id}
-        displayName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
-        displayWeb={project.web_url ?? ""}
-        accessToken={token || undefined}
-        onEnterWorkspace={undefined}
-      />
+      {!outputsActivated ? (
+        <div className="max-w-xl mx-auto px-4 py-16 text-center">
+          <p className="text-lg text-zinc-300 mb-2">Výstupy pro vás ještě nejsou připraveny.</p>
+          <p className="text-sm text-zinc-500">
+            Kurátor je aktivuje po dokončení příprav. Zkuste stránku obnovit později.
+          </p>
+        </div>
+      ) : (
+        <ScanResultScrollExperience
+          result={result}
+          projectId={state.project.id}
+          displayName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
+          displayWeb={project.web_url ?? ""}
+          accessToken={token || undefined}
+          onEnterWorkspace={undefined}
+        />
+      )}
     </main>
   );
 }

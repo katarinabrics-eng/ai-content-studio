@@ -41,6 +41,7 @@ export async function GET(request: Request) {
       email: project.email,
       web_url: project.web_url,
       manual_input: project.manual_input,
+      outputs_activated: (project as { outputs_activated?: boolean }).outputs_activated ?? false,
     },
   });
 }
