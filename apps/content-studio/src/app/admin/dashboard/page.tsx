@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toPipelineStatus, PIPELINE_TO_WORKFLOW, type PipelineStatus } from "./pipeline-map";
+import { STRATEGISTS_META } from "@/lib/strategist-selector";
 
 const C = {
   lime: "#c8ff00",
@@ -557,6 +558,8 @@ export default function PipelineDashboardPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [navSection, setNavSection] = useState<"pipeline" | "suplik" | "archiv">("pipeline");
   const [activeTab, setActiveTab] = useState("prehled");
+  const [strategistId, setStrategistId] = useState(STRATEGISTS_META[0]?.id ?? "the_architect");
+  const [strategistLoading, setStrategistLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -865,27 +868,67 @@ export default function PipelineDashboardPage() {
           )}
 
           {activeTab === "strategie" && (
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                <div style={{ flex: 1, fontSize: 11, color: C.faint }}>{client.strategies.length} uložených strategií</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {client.strategies.length === 0 && (
-                  <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga v administraci.</div>
-                )}
-                {client.strategies.map((s) => (
-                  <div key={s.id} style={{ padding: "12px 15px", borderRadius: 9, border: `1px solid ${s.active ? C.lime + "50" : C.border}`, background: s.active ? C.lime + "07" : C.bg2, display: "flex", alignItems: "center", gap: 10 }}>
-                    {s.active && <div style={{ width: 3, height: 28, borderRadius: 2, background: C.lime, flexShrink: 0 }} />}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
-                        {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                  <div style={{ flex: 1, fontSize: 11, color: C.faint }}>{client.strategies.length} uložených strategií</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {client.strategies.length === 0 && (
+                    <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga níže.</div>
+                  )}
+                  {client.strategies.map((s) => (
+                    <div key={s.id} style={{ padding: "12px 15px", borderRadius: 9, border: `1px solid ${s.active ? C.lime + "50" : C.border}`, background: s.active ? C.lime + "07" : C.bg2, display: "flex", alignItems: "center", gap: 10 }}>
+                      {s.active && <div style={{ width: 3, height: 28, borderRadius: 2, background: C.lime, flexShrink: 0 }} />}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                          {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                        </div>
+                        <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
                       </div>
-                      <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
+                      <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
                     </div>
-                    <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+              <div style={{ padding: "14px 16px", borderRadius: 10, border: `1px solid ${C.purple}33`, background: C.bg2, borderLeft: `4px solid ${C.purple}` }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", marginBottom: 12 }}>SPUSTIT NOVÉHO STRATÉGA</div>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                  <select
+                    value={strategistId}
+                    onChange={(e) => setStrategistId(e.target.value)}
+                    style={{ padding: "10px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, color: "#fff", fontSize: 13, minWidth: 280 }}
+                  >
+                    {STRATEGISTS_META.map((s) => (
+                      <option key={s.id} value={s.id}>{s.label} – {s.tagline}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    disabled={strategistLoading}
+                    onClick={async () => {
+                      setStrategistLoading(true);
+                      try {
+                        const res = await fetch(`/api/admin/diagnostika/${client.id}/run-strategist`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ strategistId }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                        await fetchData();
+                      } catch (e) {
+                        alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
+                      } finally {
+                        setStrategistLoading(false);
+                      }
+                    }}
+                    style={{ padding: "10px 18px", borderRadius: 8, border: "none", background: C.purple, color: "#fff", fontWeight: 700, fontSize: 12, cursor: strategistLoading ? "not-allowed" : "pointer" }}
+                  >
+                    {strategistLoading ? "Spouštím…" : "Spustit →"}
+                  </button>
+                </div>
               </div>
             </div>
           )}
