@@ -410,7 +410,7 @@ export function StartAnalyzer({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               projectId: projectId ?? undefined,
-              webUrl: mode === "web" ? urlToUse : undefined,
+              webUrl: mode === "web" ? url.trim() : undefined,
               manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
               result: updatedResult,
             }),
