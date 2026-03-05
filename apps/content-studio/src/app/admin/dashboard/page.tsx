@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toPipelineStatus, PIPELINE_TO_WORKFLOW, type PipelineStatus } from "./pipeline-map";
 import { STRATEGISTS_META } from "@/lib/strategist-selector";
 import type { StrategistId } from "@/lib/strategists/config";
+import AIDoporuceni from "@/components/AIDoporuceni";
 
 const C = {
   lime: "#c8ff00",
@@ -820,22 +821,27 @@ export default function PipelineDashboardPage() {
 
           {activeTab === "prehled" && (
             <div>
-              <Section title="AI DOPORUČUJE STRATÉGA" accent={C.purple}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  {client.strategists.length === 0 ? (
-                    <div style={{ fontSize: 11, color: C.faint }}>Žádné doporučení. Spusťte diagnostiku.</div>
-                  ) : (
-                    client.strategists.map((s) => (
-                      <div key={s.id} style={{ padding: 13, borderRadius: 10, background: C.bg2, border: `1px solid ${s.color}28`, position: "relative", overflow: "hidden" }}>
-                        <div style={{ position: "absolute", top: 0, right: 0, background: s.color, color: "#fff", fontSize: 9, fontWeight: 800, padding: "3px 9px", borderBottomLeftRadius: 7 }}>{s.fit}% shoda</div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 4, paddingRight: 58 }}>{s.label}</div>
-                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}>{s.reason}</div>
-                        <Link href={`/admin?id=${client.id}`} style={{ padding: "3px 12px", borderRadius: 6, border: `1px solid ${s.color}55`, background: "transparent", color: s.color, fontSize: 10, cursor: "pointer", fontWeight: 600, textDecoration: "none" }}>Spustit →</Link>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </Section>
+              <AIDoporuceni
+                strategists={client.strategists}
+                loading={strategistLoading}
+                onSpustit={async (strategistId) => {
+                  setStrategistLoading(true);
+                  try {
+                    const res = await fetch(`/api/admin/diagnostika/${client.id}/run-strategist`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ strategistId }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                    await fetchData();
+                  } catch (e) {
+                    alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
+                  } finally {
+                    setStrategistLoading(false);
+                  }
+                }}
+              />
               <Section title="PILÍŘE ZNAČKY" accent={C.lime}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
                   {client.pillars.map((p) => {
