@@ -68,11 +68,11 @@ export default function AdminLayout({
             const style: React.CSSProperties = {
               display: "block",
               padding: "10px 20px",
-              color: isActive ? "#A8EB12" : "#888",
+              color: isActive ? "#c8ff00" : "#888",
               textDecoration: "none",
               fontSize: 14,
-              borderLeft: isActive ? "3px solid #A8EB12" : "3px solid transparent",
-              background: isActive ? "rgba(168,235,18,0.06)" : "transparent",
+              borderLeft: isActive ? "3px solid #c8ff00" : "3px solid transparent",
+              background: isActive ? "rgba(200,255,0,0.06)" : "transparent",
             };
             if (item.external) {
               return (

@@ -49,7 +49,7 @@ export default function AdminLogin() {
             type="submit"
             disabled={loading}
             style={{
-              width: "100%", padding: "12px 16px", background: "#A8EB12",
+              width: "100%", padding: "12px 16px", background: "#c8ff00",
               border: "none", borderRadius: 8, color: "#000",
               fontSize: 16, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer"
             }}

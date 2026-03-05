@@ -117,10 +117,12 @@ export default function AdminDashboard() {
     return s;
   }
 
+  // Paleta: fialová AI/Strategie, růžová identita, limetková akce/Přehled, žlutá skóre/poznámky, lilac tagy
+  const COLORS = { purple: "#b57bee", pink: "#f06ba8", lime: "#c8ff00", yellow: "#e8d44d", lilac: "#d4b8f0" } as const;
   function statusColor(s: string | null) {
     if (!s) return "#555";
-    if (s === "paid") return "#A8EB12";
-    if (s.includes("SENT") || s.includes("DELIVERED")) return "#4ea8de";
+    if (s === "paid") return COLORS.lime;
+    if (s.includes("SENT") || s.includes("DELIVERED")) return COLORS.lime;
     return "#888";
   }
 
@@ -250,7 +252,8 @@ export default function AdminDashboard() {
   }
 
   const [activeTab, setActiveTab] = useState<"prehled" | "diagnostika" | "strategie" | "vystup" | "poznamky">("prehled");
-  const scoreColor = (s: number) => (s >= 8 ? "#22c55e" : s >= 6 ? "#f59e0b" : s >= 4 ? "#f97316" : "#ef4444");
+  const TAB_COLORS: Record<"prehled" | "diagnostika" | "strategie" | "vystup" | "poznamky", string> = { prehled: COLORS.lime, diagnostika: COLORS.purple, strategie: COLORS.purple, vystup: COLORS.pink, poznamky: COLORS.yellow };
+  const scoreColor = (s: number) => (s >= 8 ? "#22c55e" : s >= 6 ? COLORS.yellow : s >= 4 ? "#f97316" : "#ef4444");
   const scoreLabel = (s: number) => (s >= 8 ? "Silné" : s >= 6 ? "Dobré" : s >= 4 ? "Slabé" : "Kritické");
   const PILLARS = [
     { id: "light", label: "Světlo", icon: "💡" },
@@ -264,7 +267,7 @@ export default function AdminDashboard() {
     <div style={{ display: "flex", flex: 1, minHeight: "100vh", minWidth: 0, flexDirection: "column" }}>
       {/* Top bar */}
       <div style={{ borderBottom: "1px solid #1a1a1a", padding: "0 24px", display: "flex", alignItems: "center", gap: 16, height: 52, background: "#0d0d0d", flexShrink: 0 }}>
-        <div style={{ color: "#c8ff00", fontWeight: 700, fontSize: 15, letterSpacing: "0.05em" }}>◈ LUCIFERA</div>
+        <div style={{ fontWeight: 700, fontSize: 15, letterSpacing: "0.05em", background: "linear-gradient(90deg, #c8ff00, #b57bee)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>◈ LUCIFERA</div>
         <div style={{ width: 1, height: 20, background: "#222" }} />
         <div style={{ fontSize: 12, color: "#555", letterSpacing: "0.08em" }}>ADMIN</div>
         <div style={{ flex: 1 }} />
@@ -293,7 +296,7 @@ export default function AdminDashboard() {
             {loading && <div style={{ color: "#666", padding: 24, textAlign: "center", fontSize: 13 }}>Načítávám…</div>}
             {!loading && filtered.length === 0 && (
               <div style={{ color: "#555", padding: 24, textAlign: "center", fontSize: 13 }}>
-                Žádné záznamy. <a href="/diagnostika" style={{ color: "#A8EB12" }}>+ Nová diagnostika</a>
+                Žádné záznamy. <a href="/diagnostika" style={{ color: COLORS.lime }}>+ Nová diagnostika</a>
               </div>
             )}
             {!loading && filtered.map((row) => (
@@ -308,7 +311,7 @@ export default function AdminDashboard() {
                   padding: "10px 12px",
                   borderRadius: 8,
                   background: selectedId === row.id ? "#151515" : "transparent",
-                  border: selectedId === row.id ? "1px solid #c8ff00" : "1px solid transparent",
+                  border: selectedId === row.id ? `1px solid ${COLORS.lime}` : "1px solid transparent",
                   cursor: "pointer",
                 }}
               >
@@ -342,7 +345,7 @@ export default function AdminDashboard() {
                   </div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {(selected.scan_result as ScanResult)?.brandDna?.contentPillars?.map((t) => (
-                      <span key={t} style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, fontWeight: 600, color: "#4a9eff", background: "#0d1525", border: "1px solid #4a9eff22" }}>#{t}</span>
+                      <span key={t} style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, fontWeight: 600, color: COLORS.lilac, background: "rgba(212,184,240,0.1)", border: `1px solid ${COLORS.lilac}44` }}>#{t}</span>
                     )) ?? null}
                     <span style={{ padding: "2px 7px", borderRadius: 5, fontSize: 10, color: "#555" }}>{formatDate(selected.created_at)}</span>
                   </div>
@@ -350,7 +353,7 @@ export default function AdminDashboard() {
                 <div style={{ position: "relative", width: 60, height: 60, flexShrink: 0 }}>
                   <svg width="60" height="60" style={{ transform: "rotate(-90deg)" }}>
                     <circle cx="30" cy="30" r={22} fill="none" stroke="#1a1a1a" strokeWidth="4" />
-                    <circle cx="30" cy="30" r={22} fill="none" stroke={((selected.scan_result as ScanResult)?.brandScore?.total ?? 0) >= 70 ? "#22c55e" : ((selected.scan_result as ScanResult)?.brandScore?.total ?? 0) >= 50 ? "#f59e0b" : "#ef4444"} strokeWidth="4" strokeDasharray={`${(((selected.scan_result as ScanResult)?.brandScore?.total ?? 0) / 100) * 2 * Math.PI * 22} ${2 * Math.PI * 22}`} strokeLinecap="round" />
+                    <circle cx="30" cy="30" r={22} fill="none" stroke={((selected.scan_result as ScanResult)?.brandScore?.total ?? 0) >= 70 ? "#22c55e" : ((selected.scan_result as ScanResult)?.brandScore?.total ?? 0) >= 50 ? COLORS.yellow : "#ef4444"} strokeWidth="4" strokeDasharray={`${(((selected.scan_result as ScanResult)?.brandScore?.total ?? 0) / 100) * 2 * Math.PI * 22} ${2 * Math.PI * 22}`} strokeLinecap="round" />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: "#e5e5e5", lineHeight: 1 }}>{(selected.scan_result as ScanResult)?.brandScore?.total ?? "—"}</div>
@@ -376,7 +379,7 @@ export default function AdminDashboard() {
                       fontSize: 12,
                       fontWeight: activeTab === tab ? 600 : 400,
                       cursor: "pointer",
-                      borderBottom: activeTab === tab ? "2px solid #c8ff00" : "2px solid transparent",
+                      borderBottom: activeTab === tab ? `2px solid ${TAB_COLORS[tab]}` : "2px solid transparent",
                     }}
                   >
                     {tab === "prehled" && "📊 Přehled"}
@@ -394,16 +397,16 @@ export default function AdminDashboard() {
                   {(selected.scan_result as ScanResult)?.suggested_strategists?.length ? (
                     <div style={{ borderRadius: 12, border: "1px solid #1a1a1a", overflow: "hidden" }}>
                       <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 3, height: 14, borderRadius: 2, background: "#c8ff00" }} />
+                        <div style={{ width: 3, height: 14, borderRadius: 2, background: COLORS.purple }} />
                         <span style={{ fontSize: 12, fontWeight: 600, color: "#bbb", letterSpacing: "0.05em" }}>🤖 AI doporučuje pro tuto značku</span>
                       </div>
                       <div style={{ padding: 16, background: "#0a0a0a", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                         {(selected.scan_result as ScanResult).suggested_strategists!.map((s) => (
                           <div key={s.id} style={{ padding: 14, borderRadius: 10, background: "#0d0d0d", border: "1px solid #1e1e1e", position: "relative" }}>
-                            <div style={{ position: "absolute", top: 0, right: 0, background: "#c8ff00", color: "#000", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderBottomLeftRadius: 8 }}>{s.fit_score ?? 0}% shoda</div>
+                            <div style={{ position: "absolute", top: 0, right: 0, background: COLORS.purple, color: "#000", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderBottomLeftRadius: 8 }}>{s.fit_score ?? 0}% shoda</div>
                             <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 4, paddingRight: 60 }}>{s.label}</div>
                             <div style={{ fontSize: 12, color: "#777", lineHeight: 1.5 }}>{s.reason ?? ""}</div>
-                            <button type="button" onClick={() => setStrategistId(s.id)} style={{ marginTop: 10, padding: "4px 12px", borderRadius: 6, border: "1px solid #333", background: "transparent", color: "#aaa", fontSize: 11, cursor: "pointer" }}>Spustit →</button>
+                            <button type="button" onClick={() => setStrategistId(s.id)} style={{ marginTop: 10, padding: "4px 12px", borderRadius: 6, border: `1px solid ${COLORS.lime}`, background: COLORS.lime, color: "#000", fontSize: 11, cursor: "pointer", fontWeight: 600 }}>Spustit →</button>
                           </div>
                         ))}
                       </div>
@@ -411,7 +414,7 @@ export default function AdminDashboard() {
                   ) : null}
                   <div style={{ borderRadius: 12, border: "1px solid #1a1a1a", overflow: "hidden" }}>
                     <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 3, height: 14, borderRadius: 2, background: "#4a9eff" }} />
+                      <div style={{ width: 3, height: 14, borderRadius: 2, background: COLORS.purple }} />
                       <span style={{ fontSize: 12, fontWeight: 600, color: "#bbb", letterSpacing: "0.05em" }}>📐 Pilíře značky</span>
                     </div>
                     <div style={{ padding: 16, background: "#0a0a0a", display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
@@ -434,15 +437,16 @@ export default function AdminDashboard() {
                   </div>
                   <div style={{ borderRadius: 12, border: "1px solid #1a1a1a", overflow: "hidden" }}>
                     <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 3, height: 14, borderRadius: 2, background: "#a855f7" }} />
+                      <div style={{ width: 3, height: 14, borderRadius: 2, background: COLORS.purple }} />
                       <span style={{ fontSize: 12, fontWeight: 600, color: "#bbb", letterSpacing: "0.05em" }}>🧬 Brand DNA</span>
                     </div>
                     <div style={{ padding: 16, background: "#0a0a0a", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                      {["positioning", "tone", "uniqueValue", "targetAudience"].map((key) => {
+                      {(["positioning", "tone", "uniqueValue", "targetAudience"] as const).map((key) => {
                         const labels: Record<string, string> = { positioning: "Positioning", tone: "Tón komunikace", uniqueValue: "Jedinečná hodnota", targetAudience: "Cílová skupina" };
-                        const val = (selected.scan_result as ScanResult)?.brandDna?.[key as keyof NonNullable<ScanResult["brandDna"]>];
+                        const dnaColors: Record<string, string> = { positioning: COLORS.purple, tone: COLORS.pink, uniqueValue: COLORS.lime, targetAudience: COLORS.lilac };
+                        const val = (selected.scan_result as ScanResult)?.brandDna?.[key];
                         return (
-                          <div key={key} style={{ padding: "10px 14px", borderRadius: 8, background: "#0d0d0d", border: "1px solid #1a1a1a" }}>
+                          <div key={key} style={{ padding: "10px 14px", borderRadius: 8, background: "#0d0d0d", border: "1px solid #1a1a1a", borderLeft: `4px solid ${dnaColors[key]}` }}>
                             <div style={{ fontSize: 10, color: "#555", letterSpacing: "0.08em", marginBottom: 4 }}>{labels[key]}</div>
                             <div style={{ fontSize: 13, color: "#ccc", lineHeight: 1.4 }}>{typeof val === "string" ? val : "—"}</div>
                           </div>
@@ -457,7 +461,7 @@ export default function AdminDashboard() {
               {activeTab === "diagnostika" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   <div style={{ borderRadius: 12, border: "1px solid #1a1a1a", overflow: "hidden" }}>
-                    <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a" }}><div style={{ width: 3, height: 14, borderRadius: 2, background: "#4a9eff", display: "inline-block", marginRight: 8 }} /><span style={{ fontSize: 12, fontWeight: 600, color: "#bbb" }}>📊 Skóre pilířů</span></div>
+                    <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a" }}><div style={{ width: 3, height: 14, borderRadius: 2, background: COLORS.purple, display: "inline-block", marginRight: 8 }} /><span style={{ fontSize: 12, fontWeight: 600, color: "#bbb" }}>📊 Skóre pilířů</span></div>
                     <div style={{ padding: 16, background: "#0a0a0a", display: "flex", flexDirection: "column", gap: 8 }}>
                       {PILLARS.map((p) => {
                         const val = (selected.scan_result as ScanResult)?.pillarAnalysis?.[p.id];
@@ -499,7 +503,7 @@ export default function AdminDashboard() {
                     <select value={strategistId} onChange={(e) => setStrategistId(e.target.value)} style={{ padding: "8px 12px", background: "#111", border: "1px solid #333", borderRadius: 8, color: "#fff", fontSize: 13, minWidth: 200 }}>
                       {STRATEGISTS_META.map((s) => <option key={s.id} value={s.id}>{s.label} — {s.tagline}</option>)}
                     </select>
-                    <button type="button" onClick={runStrategist} disabled={strategistLoading} style={{ padding: "10px 18px", background: "#A8EB12", color: "#000", border: "none", borderRadius: 8, cursor: strategistLoading ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 13 }}>{strategistLoading ? "Generuji…" : "Spustit stratega"}</button>
+                    <button type="button" onClick={runStrategist} disabled={strategistLoading} style={{ padding: "10px 18px", background: COLORS.lime, color: "#000", border: "none", borderRadius: 8, cursor: strategistLoading ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 13 }}>{strategistLoading ? "Generuji…" : "Spustit stratega"}</button>
                   </div>
                   {(selected.scan_result as ScanResult)?.strategic_plan != null && (
                     <>
@@ -514,9 +518,9 @@ export default function AdminDashboard() {
                     <div style={{ marginTop: 16 }}>
                       <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Uložené strategie</div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>{(selected.scan_result as ScanResult).saved_strategies!.map((s) => (
-                        <div key={s.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "10px 12px", background: "#111", border: "1px solid #222", borderRadius: 8, borderLeft: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "4px solid #A8EB12" : "4px solid transparent" }}>
+                        <div key={s.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "10px 12px", background: "#111", border: "1px solid #222", borderRadius: 8, borderLeft: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? `4px solid ${COLORS.lime}` : "4px solid transparent" }}>
                           <div><span style={{ fontWeight: 600, fontSize: 13 }}>{s.name}</span> <span style={{ marginLeft: 8, fontSize: 12, color: "#666" }}>{new Date(s.created_at).toLocaleDateString("cs-CZ")}</span></div>
-                          <button type="button" onClick={() => setActiveStrategy((selected.scan_result as ScanResult)?.active_strategy_id === s.id ? null : s.id)} style={{ padding: "6px 12px", background: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "#333" : "#A8EB12", color: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "#888" : "#000", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600 }}>{(selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "Zrušit" : "Použít pro příspěvky"}</button>
+                          <button type="button" onClick={() => setActiveStrategy((selected.scan_result as ScanResult)?.active_strategy_id === s.id ? null : s.id)} style={{ padding: "6px 12px", background: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "#333" : COLORS.lime, color: (selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "#888" : "#000", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600 }}>{(selected.scan_result as ScanResult)?.active_strategy_id === s.id ? "Zrušit" : "Použít pro příspěvky"}</button>
                         </div>
                       ))}</div>
                     </div>
@@ -531,9 +535,9 @@ export default function AdminDashboard() {
                     <div style={{ fontSize: 28 }}>🎨</div>
                     <div style={{ flex: 1 }}><div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 2 }}>Gamma prezentace</div><div style={{ fontSize: 12, color: "#666" }}>Prezentace strategie — PDF + sdílený odkaz</div></div>
                     {(selected.scan_result as ScanResult)?.gamma_presentation_url ? (
-                      <a href={(selected.scan_result as ScanResult).gamma_presentation_url!} target="_blank" rel="noreferrer" style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: "#c8ff00", color: "#000", fontWeight: 700, fontSize: 12, textDecoration: "none" }}>Otevřít →</a>
+                      <a href={(selected.scan_result as ScanResult).gamma_presentation_url!} target="_blank" rel="noreferrer" style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: COLORS.lime, color: "#000", fontWeight: 700, fontSize: 12, textDecoration: "none" }}>Otevřít →</a>
                     ) : (
-                      <button type="button" onClick={async () => { if (!selected.id) return; setGammaStatus("loading"); setGammaResult(null); try { const res = await fetch(`/api/admin/diagnostika/${selected.id}/generate-presentation`, { method: "POST" }); const data = await res.json(); setGammaResult(data); setGammaStatus(data.mode === "api" ? "done" : "manual"); if (data.mode === "api" && data.gammaUrl) setRows((prev) => prev.map((r) => r.id !== selected.id ? r : { ...r, scan_result: { ...(r.scan_result ?? {}), gamma_presentation_url: data.gammaUrl } as ScanResult })); } catch { setGammaStatus("idle"); } }} disabled={!(selected.scan_result as ScanResult)?.strategic_plan || gammaStatus === "loading"} style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: "#c8ff00", color: "#000", fontWeight: 700, fontSize: 12, cursor: (selected.scan_result as ScanResult)?.strategic_plan && gammaStatus !== "loading" ? "pointer" : "not-allowed", opacity: (selected.scan_result as ScanResult)?.strategic_plan && gammaStatus !== "loading" ? 1 : 0.5 }}>{gammaStatus === "loading" ? "Generuji…" : "Generovat →"}</button>
+                      <button type="button" onClick={async () => { if (!selected.id) return; setGammaStatus("loading"); setGammaResult(null); try { const res = await fetch(`/api/admin/diagnostika/${selected.id}/generate-presentation`, { method: "POST" }); const data = await res.json(); setGammaResult(data); setGammaStatus(data.mode === "api" ? "done" : "manual"); if (data.mode === "api" && data.gammaUrl) setRows((prev) => prev.map((r) => r.id !== selected.id ? r : { ...r, scan_result: { ...(r.scan_result ?? {}), gamma_presentation_url: data.gammaUrl } as ScanResult })); } catch { setGammaStatus("idle"); } }} disabled={!(selected.scan_result as ScanResult)?.strategic_plan || gammaStatus === "loading"} style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: COLORS.lime, color: "#000", fontWeight: 700, fontSize: 12, cursor: (selected.scan_result as ScanResult)?.strategic_plan && gammaStatus !== "loading" ? "pointer" : "not-allowed", opacity: (selected.scan_result as ScanResult)?.strategic_plan && gammaStatus !== "loading" ? 1 : 0.5 }}>{gammaStatus === "loading" ? "Generuji…" : "Generovat →"}</button>
                     )}
                   </div>
                   {gammaStatus === "manual" && gammaResult && (gammaResult.gamma as { gammaInputText?: string })?.gammaInputText && (
@@ -542,7 +546,7 @@ export default function AdminDashboard() {
                   <div style={{ padding: 16, borderRadius: 10, border: "1px solid #1e1e1e", background: "#0d0d0d", display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ fontSize: 28 }}>🎧</div>
                     <div style={{ flex: 1 }}><div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 2 }}>NotebookLM průvodce</div><div style={{ fontSize: 12, color: "#666" }}>Audio přehled + AI chat pro klienta</div></div>
-                    <button type="button" onClick={async () => { if (!selected.id) return; setNotebookStatus("loading"); setNotebookResult(null); try { const res = await fetch(`/api/admin/diagnostika/${selected.id}/export-notebooklm`, { method: "POST" }); const data = await res.json(); setNotebookResult(data); setNotebookStatus("done"); } catch { setNotebookStatus("idle"); } }} disabled={!(selected.scan_result as ScanResult)?.strategic_plan || notebookStatus === "loading"} style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: "#4a9eff", color: "#000", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>{notebookStatus === "loading" ? "Připravuji…" : "Připravit →"}</button>
+                    <button type="button" onClick={async () => { if (!selected.id) return; setNotebookStatus("loading"); setNotebookResult(null); try { const res = await fetch(`/api/admin/diagnostika/${selected.id}/export-notebooklm`, { method: "POST" }); const data = await res.json(); setNotebookResult(data); setNotebookStatus("done"); } catch { setNotebookStatus("idle"); } }} disabled={!(selected.scan_result as ScanResult)?.strategic_plan || notebookStatus === "loading"} style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: COLORS.pink, color: "#000", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>{notebookStatus === "loading" ? "Připravuji…" : "Připravit →"}</button>
                   </div>
                   {notebookStatus === "done" && notebookResult && Array.isArray(notebookResult.sources) && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>{(notebookResult.sources as Array<{ order?: number; title?: string; content?: string }>).map((s) => (
@@ -556,12 +560,12 @@ export default function AdminDashboard() {
               {activeTab === "poznamky" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   <div style={{ borderRadius: 12, border: "1px solid #1a1a1a", overflow: "hidden" }}>
-                    <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a" }}><div style={{ width: 3, height: 14, borderRadius: 2, background: "#f59e0b", display: "inline-block", marginRight: 8 }} /><span style={{ fontSize: 12, fontWeight: 600, color: "#bbb" }}>📝 Interní poznámky a podklady</span></div>
+                    <div style={{ padding: "10px 16px", background: "#0d0d0d", borderBottom: "1px solid #1a1a1a" }}><div style={{ width: 3, height: 14, borderRadius: 2, background: COLORS.yellow, display: "inline-block", marginRight: 8 }} /><span style={{ fontSize: 12, fontWeight: 600, color: "#bbb" }}>📝 Interní poznámky a podklady</span></div>
                     <div style={{ padding: 16, background: "#0a0a0a" }}>
                       <div style={{ marginBottom: 12, fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em" }}>Název klienta</div>
                       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
                         <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Jméno nebo název projektu" style={{ flex: "1 1 200px", padding: "10px 14px", background: "#111", border: "1px solid #333", borderRadius: 8, color: "#fff", fontSize: 14, boxSizing: "border-box" }} />
-                        <button type="button" onClick={saveDetail} disabled={saving} style={{ padding: "10px 18px", background: "#A8EB12", color: "#000", border: "none", borderRadius: 8, cursor: saving ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 13 }}>{saving ? "Ukládám…" : "Uložit"}</button>
+                        <button type="button" onClick={saveDetail} disabled={saving} style={{ padding: "10px 18px", background: COLORS.lime, color: "#000", border: "none", borderRadius: 8, cursor: saving ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 13 }}>{saving ? "Ukládám…" : "Uložit"}</button>
                       </div>
                       <div style={{ fontSize: 11, color: "#555", marginBottom: 6 }}>Interní poznámky</div>
                       <textarea value={editInternalNotes} onChange={(e) => setEditInternalNotes(e.target.value)} placeholder="Poznámky kurátora…" rows={3} style={{ width: "100%", padding: "12px 14px", background: "#111", border: "1px solid #333", borderRadius: 8, color: "#fff", fontSize: 14, boxSizing: "border-box", resize: "vertical", marginBottom: 12 }} />
@@ -572,7 +576,7 @@ export default function AdminDashboard() {
                   </div>
                   <div style={{ padding: 16, borderRadius: 10, border: "1px solid #1e1e1e", background: "#0d0d0d" }}>
                     <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>Převést na zakázku</div>
-                    {selected.short_code ? <a href={`/d/${selected.short_code}`} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", background: "#A8EB12", color: "#000", fontWeight: 600, borderRadius: 8, textDecoration: "none", fontSize: 14, display: "inline-block" }}>Otevřít detail</a> : <span style={{ fontSize: 13, color: "#666" }}>Odkaz není k dispozici</span>}
+                    {selected.short_code ? <a href={`/d/${selected.short_code}`} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", background: COLORS.lime, color: "#000", fontWeight: 600, borderRadius: 8, textDecoration: "none", fontSize: 14, display: "inline-block" }}>Otevřít detail</a> : <span style={{ fontSize: 13, color: "#666" }}>Odkaz není k dispozici</span>}
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <div style={{ flex: 1, fontSize: 13, color: "#888" }}>Vytvořeno {formatDate(selected.created_at)} · {selected.email ?? "—"} · {selected.workflow_status ?? "—"} · {selected.payment_status ?? "—"}</div>
