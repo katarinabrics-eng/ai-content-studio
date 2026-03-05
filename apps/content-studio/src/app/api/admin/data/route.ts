@@ -20,10 +20,9 @@ export async function GET() {
   if (!isAuthed()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabase = getSupabase();
-  // client_name, project_name: přidej do select po spuštění migrace 20260308100000_client_projects_client_project_name.sql
   const { data, error } = await supabase
     .from("client_projects")
-    .select("id, created_at, email, web_url, name, workflow_status, payment_status, short_code, scan_result, manual_input, access_expires_at, access_type, last_contact_at")
+    .select("id, created_at, email, web_url, name, client_name, project_name, workflow_status, payment_status, short_code, scan_result, manual_input, access_expires_at, access_type, last_contact_at")
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
