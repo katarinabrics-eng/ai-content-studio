@@ -57,7 +57,7 @@ export function buildGammaInput(project: ClientProjectRow): string {
   const strategistLabel = getStrategistLabel(scan);
   const clientName = project.name ?? "Klient";
   const summary = typeof scan.summary === "string" ? scan.summary : "";
-  const mainMessage = summary || (dna.positioning as string) ?? "";
+  const mainMessage = (summary || (dna.positioning as string)) ?? "";
 
   const cards: string[] = [];
 
