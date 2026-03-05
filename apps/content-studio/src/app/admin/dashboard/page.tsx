@@ -103,6 +103,8 @@ type Client = {
   }>;
   notes: string;
   notesAiEnabled: boolean;
+  /** ID aktivní strategie (z scan_result.active_strategy_id). */
+  active_strategy_id: string | null;
   workflow_status: string | null;
   dashboard_section: string | null;
   access_expires_at: string | null;
@@ -217,6 +219,7 @@ function mapRowToClient(row: ApiRow): Client {
     strategies,
     notes: scan.admin_notes ?? "",
     notesAiEnabled: (scan as { notes_ai_enabled?: boolean }).notes_ai_enabled ?? false,
+    active_strategy_id: (scan.active_strategy_id as string) ?? null,
     workflow_status: row.workflow_status ?? null,
     dashboard_section: scan.dashboard_section ?? null,
     access_expires_at: row.access_expires_at ?? null,
