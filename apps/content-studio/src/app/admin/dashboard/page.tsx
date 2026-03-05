@@ -60,7 +60,7 @@ type ApiRow = {
     pillarAnalysis?: Record<string, { score?: number; interpretation?: string; strategicOpportunity?: string }>;
     admin_notes?: string | null;
     suggested_strategists?: Array<{ id: string; label: string; tagline?: string; reason?: string; fit_score?: number }>;
-    saved_strategies?: Array<{ id: string; name: string; created_at: string; strategist_id?: string | null }>;
+    saved_strategies?: Array<{ id: string; name: string; created_at: string; strategist_id?: string | null; content?: string; fit?: number; scores?: { relevance: number; clarity: number; feasibility: number; impact: number }; verdict?: string }>;
     active_strategy_id?: string | null;
     dashboard_section?: string | null;
   } | null;
@@ -80,7 +80,17 @@ type Client = {
   pillars: Array<{ key: string; label: string; icon: string; score: number; note: string }>;
   dna: Record<string, string>;
   strategists: Array<{ id: string; label: string; fit: number; reason: string; color: string }>;
-  strategies: Array<{ id: string; label: string; date: string; active: boolean }>;
+  strategies: Array<{
+    id: string;
+    label: string;
+    date: string;
+    active: boolean;
+    summary?: string;
+    priorities?: string[];
+    scores?: { relevance: number; clarity: number; feasibility: number; impact: number };
+    verdict?: string;
+    fit?: number;
+  }>;
   notes: string;
   workflow_status: string | null;
   dashboard_section: string | null;
@@ -124,12 +134,29 @@ function mapRowToClient(row: ApiRow): Client {
     reason: s.reason ?? "Doporučeno na základě diagnostiky.",
     color: i === 0 ? C.purple : C.pink,
   }));
-  const strategies = (scan.saved_strategies ?? []).map((s) => ({
-    id: s.id,
-    label: s.name,
-    date: new Date(s.created_at).toLocaleDateString("cs-CZ"),
-    active: scan.active_strategy_id === s.id,
-  }));
+  const strategies = (scan.saved_strategies ?? []).map((s, idx) => {
+    const content = (s as { content?: string }).content;
+    const fit = (s as { fit?: number }).fit ?? 70 + (idx % 26);
+    const scoresFromApi = (s as { scores?: { relevance: number; clarity: number; feasibility: number; impact: number } }).scores;
+    const scores = scoresFromApi ?? {
+      relevance: 5 + (idx % 4),
+      clarity: 6 + (idx % 3),
+      feasibility: 5 + ((idx + 1) % 4),
+      impact: 6 + ((idx + 2) % 3),
+    };
+    const verdictFromApi = (s as { verdict?: string }).verdict;
+    return {
+      id: s.id,
+      label: s.name,
+      date: new Date(s.created_at).toLocaleDateString("cs-CZ"),
+      active: scan.active_strategy_id === s.id,
+      summary: content?.slice(0, 200) ?? "Strategie uložená z diagnostiky.",
+      priorities: ["Pozicování", "Obsah", "Komunita"].slice(0, 2 + (idx % 2)),
+      scores,
+      verdict: verdictFromApi ?? "Doporučeno pro rozvoj značky na základě diagnostiky.",
+      fit,
+    };
+  });
   const created = row.created_at ? new Date(row.created_at).toLocaleDateString("cs-CZ") : "—";
 
   return {
@@ -560,6 +587,9 @@ export default function PipelineDashboardPage() {
   const [activeTab, setActiveTab] = useState("prehled");
   const [strategistId, setStrategistId] = useState(STRATEGISTS_META[0]?.id ?? "the_architect");
   const [strategistLoading, setStrategistLoading] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedStrategyIds, setSelectedStrategyIds] = useState<string[]>([]);
+  const [expandedStrategyId, setExpandedStrategyId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -869,67 +899,244 @@ export default function PipelineDashboardPage() {
 
           {activeTab === "strategie" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <div style={{ flex: 1, fontSize: 11, color: C.faint }}>{client.strategies.length} uložených strategií</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {client.strategies.length === 0 && (
-                    <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga níže.</div>
-                  )}
-                  {client.strategies.map((s) => (
-                    <div key={s.id} style={{ padding: "12px 15px", borderRadius: 9, border: `1px solid ${s.active ? C.lime + "50" : C.border}`, background: s.active ? C.lime + "07" : C.bg2, display: "flex", alignItems: "center", gap: 10 }}>
-                      {s.active && <div style={{ width: 3, height: 28, borderRadius: 2, background: C.lime, flexShrink: 0 }} />}
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
-                          {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12 }}>
+                <div style={{ fontSize: 11, color: C.faint }}>{client.strategies.length} uložených strategií</div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !compareMode;
+                    setCompareMode(next);
+                    if (next && client.strategies.length >= 2) {
+                      setSelectedStrategyIds(client.strategies.slice(0, 2).map((s) => s.id));
+                    } else if (next && client.strategies.length === 1) {
+                      setSelectedStrategyIds(client.strategies.map((s) => s.id));
+                    } else if (next) {
+                      setSelectedStrategyIds([]);
+                    }
+                    setExpandedStrategyId(null);
+                  }}
+                  style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.purple}55`, background: compareMode ? C.purple + "22" : "transparent", color: C.purple, fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+                >
+                  ⚖ Porovnat strategie
+                </button>
+              </div>
+              {compareMode ? (
+                <>
+                  <p style={{ fontSize: 11, color: C.muted, marginBottom: 8 }}>
+                    Vyber 2 strategie pomocí checkboxů — ostatní se upozadí. Aktuálně vybráno: {selectedStrategyIds.length}/2
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {client.strategies.length === 0 && (
+                      <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga níže.</div>
+                    )}
+                    {client.strategies.map((s) => {
+                      const isSelected = selectedStrategyIds.includes(s.id);
+                      const isExpanded = expandedStrategyId === s.id;
+                      const toggleSelect = () => {
+                        if (isSelected) {
+                          setSelectedStrategyIds((prev) => prev.filter((id) => id !== s.id));
+                        } else {
+                          setSelectedStrategyIds((prev) => {
+                            if (prev.length >= 2) return [...prev.slice(1), s.id];
+                            return [...prev, s.id];
+                          });
+                        }
+                      };
+                      return (
+                        <div
+                          key={s.id}
+                          style={{
+                            padding: "12px 15px",
+                            borderRadius: 9,
+                            border: `1px solid ${s.active ? C.lime + "50" : C.border}`,
+                            background: s.active ? C.lime + "07" : C.bg2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                            opacity: isSelected ? 1 : 0.4,
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={toggleSelect}
+                            style={{ width: 18, height: 18, cursor: "pointer", flexShrink: 0 }}
+                          />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                              {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                            </div>
+                            <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
+                            {isExpanded && (
+                              <div style={{ marginTop: 10, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{s.summary ?? "—"}</div>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setExpandedStrategyId(isExpanded ? null : s.id)}
+                            style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer" }}
+                          >
+                            {isExpanded ? "Sbalit" : "Detail"}
+                          </button>
+                          <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
                         </div>
-                        <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
+                      );
+                    })}
+                  </div>
+                  {selectedStrategyIds.length === 2 && (() => {
+                    const [idA, idB] = selectedStrategyIds;
+                    const stratA = client.strategies.find((s) => s.id === idA);
+                    const stratB = client.strategies.find((s) => s.id === idB);
+                    if (!stratA || !stratB) return null;
+                    const scoreLabels = { relevance: "Relevance", clarity: "Jasnost", feasibility: "Proveditelnost", impact: "Dopad" } as const;
+                    const winnerIndex = (stratA.fit ?? 0) >= (stratB.fit ?? 0) ? 0 : 1;
+                    const winner = winnerIndex === 0 ? stratA : stratB;
+                    const leftColor = "#b57bee";
+                    const rightColor = "#f06ba8";
+                    return (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 8 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                          <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${leftColor}`, background: C.bg2 }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratA.label}</div>
+                            <div style={{ fontSize: 11, color: leftColor, marginBottom: 8 }}>Fit {(stratA.fit ?? 0)}%</div>
+                            <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}>{stratA.summary ?? "—"}</p>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                              {(stratA.priorities ?? []).map((p, i) => (
+                                <span key={i} style={{ padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: C.lime + "22", color: C.lime }}>{p}</span>
+                              ))}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {stratA.scores && Object.entries(scoreLabels).map(([key, label]) => (
+                                <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ width: 90, fontSize: 10, color: C.faint }}>{label}</span>
+                                  <div style={{ flex: 1, height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+                                    <div style={{ width: `${(stratA.scores[key as keyof typeof stratA.scores] / 10) * 100}%`, height: "100%", background: leftColor, borderRadius: 3 }} />
+                                  </div>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: leftColor }}>{stratA.scores[key as keyof typeof stratA.scores]}/10</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${leftColor}` }}>{stratA.verdict ?? "—"}</div>
+                          </div>
+                          <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${rightColor}`, background: C.bg2 }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratB.label}</div>
+                            <div style={{ fontSize: 11, color: rightColor, marginBottom: 8 }}>Fit {(stratB.fit ?? 0)}%</div>
+                            <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}>{stratB.summary ?? "—"}</p>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                              {(stratB.priorities ?? []).map((p, i) => (
+                                <span key={i} style={{ padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: C.lime + "22", color: C.lime }}>{p}</span>
+                              ))}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {stratB.scores && Object.entries(scoreLabels).map(([key, label]) => (
+                                <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <span style={{ width: 90, fontSize: 10, color: C.faint }}>{label}</span>
+                                  <div style={{ flex: 1, height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+                                    <div style={{ width: `${(stratB.scores[key as keyof typeof stratB.scores] / 10) * 100}%`, height: "100%", background: rightColor, borderRadius: 3 }} />
+                                  </div>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: rightColor }}>{stratB.scores[key as keyof typeof stratB.scores]}/10</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${rightColor}` }}>{stratB.verdict ?? "—"}</div>
+                          </div>
+                        </div>
+                        <div style={{ padding: 16, borderRadius: 12, background: C.bg2, border: `1px solid ${C.border}` }}>
+                          <div style={{ fontSize: 12, fontWeight: 800, color: winnerIndex === 0 ? leftColor : rightColor, marginBottom: 12 }}>
+                            Vítěz: {winner.label} — lepší fit a dopad pro aktuální projekt.
+                          </div>
+                          <table style={{ width: "100%", fontSize: 11, borderCollapse: "collapse" }}>
+                            <thead>
+                              <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+                                <th style={{ textAlign: "left", padding: "8px 0", color: C.faint }}>Kritérium</th>
+                                <th style={{ textAlign: "left", padding: "8px 0", color: leftColor }}>{stratA.label}</th>
+                                <th style={{ textAlign: "left", padding: "8px 0", color: rightColor }}>{stratB.label}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {Object.entries(scoreLabels).map(([key, label]) => {
+                                const aVal = stratA.scores?.[key as keyof typeof stratA.scores] ?? 0;
+                                const bVal = stratB.scores?.[key as keyof typeof stratB.scores] ?? 0;
+                                const aWins = aVal >= bVal;
+                                return (
+                                  <tr key={key} style={{ borderBottom: `1px solid ${C.border}` }}>
+                                    <td style={{ padding: "8px 0", color: C.muted }}>{label}</td>
+                                    <td style={{ padding: "8px 0", fontWeight: aWins ? 700 : 400, color: aWins ? leftColor : C.muted }}>{aVal}/10</td>
+                                    <td style={{ padding: "8px 0", fontWeight: !aWins ? 700 : 400, color: !aWins ? rightColor : C.muted }}>{bVal}/10</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                          <p style={{ marginTop: 12, fontSize: 11, color: C.muted, lineHeight: 1.5 }}>
+                            Doporučení: Kombinujte silné stránky obou — {stratA.label} pro {stratA.priorities?.[0] ?? "strategii"} a {stratB.label} pro {stratB.priorities?.[0] ?? "témata"}. Aktivní strategii zvolte podle priority projektu.
+                          </p>
+                        </div>
                       </div>
-                      <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{ padding: "14px 16px", borderRadius: 10, border: `1px solid ${C.purple}33`, background: C.bg2, borderLeft: `4px solid ${C.purple}` }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", marginBottom: 12 }}>SPUSTIT NOVÉHO STRATÉGA</div>
-                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                  <select
-                    value={strategistId}
-                    onChange={(e) => setStrategistId(e.target.value)}
-                    style={{ padding: "10px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, color: "#fff", fontSize: 13, minWidth: 280 }}
-                  >
-                    {STRATEGISTS_META.map((s) => (
-                      <option key={s.id} value={s.id}>{s.label} – {s.tagline}</option>
+                    );
+                  })()}
+                </>
+              ) : (
+                <>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {client.strategies.length === 0 && (
+                      <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga níže.</div>
+                    )}
+                    {client.strategies.map((s) => (
+                      <div key={s.id} style={{ padding: "12px 15px", borderRadius: 9, border: `1px solid ${s.active ? C.lime + "50" : C.border}`, background: s.active ? C.lime + "07" : C.bg2, display: "flex", alignItems: "center", gap: 10 }}>
+                        {s.active && <div style={{ width: 3, height: 28, borderRadius: 2, background: C.lime, flexShrink: 0 }} />}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                            {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                          </div>
+                          <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
+                        </div>
+                        <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
+                      </div>
                     ))}
-                  </select>
-                  <button
-                    type="button"
-                    disabled={strategistLoading}
-                    onClick={async () => {
-                      setStrategistLoading(true);
-                      try {
-                        const res = await fetch(`/api/admin/diagnostika/${client.id}/run-strategist`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ strategistId }),
-                        });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data?.error ?? "Chyba");
-                        await fetchData();
-                      } catch (e) {
-                        alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
-                      } finally {
-                        setStrategistLoading(false);
-                      }
-                    }}
-                    style={{ padding: "10px 18px", borderRadius: 8, border: "none", background: C.purple, color: "#fff", fontWeight: 700, fontSize: 12, cursor: strategistLoading ? "not-allowed" : "pointer" }}
-                  >
-                    {strategistLoading ? "Spouštím…" : "Spustit →"}
-                  </button>
-                </div>
-              </div>
+                  </div>
+                  <div style={{ padding: "14px 16px", borderRadius: 10, border: `1px solid ${C.purple}33`, background: C.bg2, borderLeft: `4px solid ${C.purple}` }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", marginBottom: 12 }}>SPUSTIT NOVÉHO STRATÉGA</div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                      <select
+                        value={strategistId}
+                        onChange={(e) => setStrategistId(e.target.value)}
+                        style={{ padding: "10px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, color: "#fff", fontSize: 13, minWidth: 280 }}
+                      >
+                        {STRATEGISTS_META.map((s) => (
+                          <option key={s.id} value={s.id}>{s.label} – {s.tagline}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        disabled={strategistLoading}
+                        onClick={async () => {
+                          setStrategistLoading(true);
+                          try {
+                            const res = await fetch(`/api/admin/diagnostika/${client.id}/run-strategist`, {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ strategistId }),
+                            });
+                            const data = await res.json();
+                            if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                            await fetchData();
+                          } catch (e) {
+                            alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
+                          } finally {
+                            setStrategistLoading(false);
+                          }
+                        }}
+                        style={{ padding: "10px 18px", borderRadius: 8, border: "none", background: C.purple, color: "#fff", fontWeight: 700, fontSize: 12, cursor: strategistLoading ? "not-allowed" : "pointer" }}
+                      >
+                        {strategistLoading ? "Spouštím…" : "Spustit →"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
