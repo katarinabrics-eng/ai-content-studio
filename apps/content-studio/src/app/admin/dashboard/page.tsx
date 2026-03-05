@@ -821,6 +821,7 @@ export default function PipelineDashboardPage() {
   const [pendingVersion, setPendingVersion] = useState<{ id: string; scan_result: Record<string, unknown>; created_at: string } | null>(null);
   const [showCompareDiff, setShowCompareDiff] = useState(false);
   const [versionsActionLoading, setVersionsActionLoading] = useState(false);
+  const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -1230,33 +1231,7 @@ export default function PipelineDashboardPage() {
                   <button
                     type="button"
                     disabled={versionsActionLoading}
-                    onClick={async () => {
-                      setVersionsActionLoading(true);
-                      try {
-                        const res = await fetch(`/api/admin/diagnostika/${client.id}/versions`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ action: "accept", versionId: pendingVersion.id }),
-                        });
-                        if (!res.ok) {
-                          const data = await res.json().catch(() => ({}));
-                          throw new Error(data?.error ?? "Chyba");
-                        }
-                        await fetchData();
-                        const verRes = await fetch(`/api/admin/diagnostika/${client.id}/versions`);
-                        if (verRes.ok) {
-                          const vd = await verRes.json();
-                          setPendingVersion(vd.pending ?? null);
-                        } else {
-                          setPendingVersion(null);
-                        }
-                        setShowCompareDiff(false);
-                      } catch (e) {
-                        alert(e instanceof Error ? e.message : "Nepodařilo se přijmout verzi");
-                      } finally {
-                        setVersionsActionLoading(false);
-                      }
-                    }}
+                    onClick={() => setShowAcceptConfirm(true)}
                     style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 11, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
                   >
                     Přijmout novou verzi
@@ -1329,6 +1304,113 @@ export default function PipelineDashboardPage() {
                     </div>
                   );
                 })()}
+              </div>
+            )}
+
+            {showAcceptConfirm && pendingVersion && client && (
+              <div
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.7)",
+                  zIndex: 100,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 24,
+                }}
+                onClick={() => !versionsActionLoading && setShowAcceptConfirm(false)}
+              >
+                <div
+                  style={{
+                    background: C.bg1,
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 12,
+                    padding: 20,
+                    maxWidth: 560,
+                    width: "100%",
+                    maxHeight: "90vh",
+                    overflow: "auto",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 8 }}>Schválit přepsání diagnostiky</div>
+                  <p style={{ fontSize: 12, color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+                    Aktuální data diagnostiky budou nahrazena novou verzí od klienta. Níže vidíte, co se přepíše. Stará verze zůstane uložena v historii.
+                  </p>
+                  {(() => {
+                    const activeRow = rows.find((r) => r.id === activeId);
+                    const current = (activeRow?.scan_result ?? {}) as Record<string, unknown>;
+                    const next = pendingVersion.scan_result;
+                    const scoreCur = (current?.brandScore as { total?: number } | undefined)?.total ?? "—";
+                    const scoreNext = (next?.brandScore as { total?: number } | undefined)?.total ?? "—";
+                    const nameCur = (current?.brandDna as { name?: string } | undefined)?.name ?? (current?.client_name as string) ?? "—";
+                    const nameNext = (next?.brandDna as { name?: string } | undefined)?.name ?? (next?.client_name as string) ?? "—";
+                    const summaryCur = typeof current?.summary === "string" ? current.summary : "—";
+                    const summaryNext = typeof next?.summary === "string" ? next.summary : "—";
+                    return (
+                      <div style={{ marginBottom: 20, padding: 12, background: C.bg0, borderRadius: 8, border: `1px solid ${C.border}`, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, fontSize: 11 }}>
+                        <div>
+                          <div style={{ color: C.muted, marginBottom: 8, fontWeight: 700 }}>Aktuální (bude přepsáno)</div>
+                          <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Skóre:</span> {String(scoreCur)}</div>
+                          <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Název:</span> {String(nameCur)}</div>
+                          <div style={{ color: C.text, lineHeight: 1.5 }}><span style={{ color: C.faint }}>Shrnutí:</span> {(String(summaryCur)).slice(0, 180)}{(String(summaryCur)).length > 180 ? "…" : ""}</div>
+                        </div>
+                        <div>
+                          <div style={{ color: C.lime, marginBottom: 8, fontWeight: 700 }}>Nová verze (od klienta)</div>
+                          <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Skóre:</span> {String(scoreNext)}</div>
+                          <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Název:</span> {String(nameNext)}</div>
+                          <div style={{ color: C.text, lineHeight: 1.5 }}><span style={{ color: C.faint }}>Shrnutí:</span> {(String(summaryNext)).slice(0, 180)}{(String(summaryNext)).length > 180 ? "…" : ""}</div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                    <button
+                      type="button"
+                      disabled={versionsActionLoading}
+                      onClick={() => setShowAcceptConfirm(false)}
+                      style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
+                    >
+                      Zrušit
+                    </button>
+                    <button
+                      type="button"
+                      disabled={versionsActionLoading}
+                      onClick={async () => {
+                        setVersionsActionLoading(true);
+                        try {
+                          const res = await fetch(`/api/admin/diagnostika/${client.id}/versions`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "accept", versionId: pendingVersion.id }),
+                          });
+                          if (!res.ok) {
+                            const data = await res.json().catch(() => ({}));
+                            throw new Error(data?.error ?? "Chyba");
+                          }
+                          setShowAcceptConfirm(false);
+                          await fetchData();
+                          const verRes = await fetch(`/api/admin/diagnostika/${client.id}/versions`);
+                          if (verRes.ok) {
+                            const vd = await verRes.json();
+                            setPendingVersion(vd.pending ?? null);
+                          } else {
+                            setPendingVersion(null);
+                          }
+                          setShowCompareDiff(false);
+                        } catch (e) {
+                          alert(e instanceof Error ? e.message : "Nepodařilo se přijmout verzi");
+                        } finally {
+                          setVersionsActionLoading(false);
+                        }
+                      }}
+                      style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 12, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
+                    >
+                      {versionsActionLoading ? "Ukládám…" : "Schválit přepsání"}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
