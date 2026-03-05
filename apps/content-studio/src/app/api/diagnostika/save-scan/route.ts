@@ -43,10 +43,10 @@ export async function POST(request: Request) {
       if (host) baseUrl = `${scheme}://${host}`;
     }
 
-    function viewUrlFor(project: { access_token: string | null } | null): string | undefined {
+    const viewUrlFor = (project: { access_token: string | null } | null): string | undefined => {
       if (!baseUrl || !project?.access_token) return undefined;
       return `${baseUrl}/diagnostika/view?token=${encodeURIComponent(project.access_token)}`;
-    }
+    };
 
     if (projectId) {
       const existing = await getClientProjectById(projectId);

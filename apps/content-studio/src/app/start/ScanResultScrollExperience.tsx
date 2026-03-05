@@ -35,7 +35,7 @@ export type PillarAnalysisItem = {
 export type SuggestedStrategistItem = {
   id: string;
   label: string;
-  tagline: string;
+  tagline?: string;
   reason?: string;
   fit_score?: number;
 };
@@ -513,7 +513,7 @@ export function ScanResultScrollExperience({
                   className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
                 >
                   <div className="font-semibold text-white">{s.label}</div>
-                  <div className="text-sm text-zinc-400 mt-1">{s.tagline}</div>
+                  {s.tagline && <div className="text-sm text-zinc-400 mt-1">{s.tagline}</div>}
                   {s.fit_score != null && (
                     <div className="text-xs text-lime-400 mt-2">Fit: {s.fit_score} %</div>
                   )}
