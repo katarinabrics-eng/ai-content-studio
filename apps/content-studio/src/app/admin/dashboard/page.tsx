@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toPipelineStatus, PIPELINE_TO_WORKFLOW, type PipelineStatus } from "./pipeline-map";
@@ -758,6 +758,7 @@ const TABS = [
   { id: "strategie", label: "Strategie", icon: "◇", accent: C.purple },
   { id: "vystup", label: "Výstup", icon: "◉", accent: C.pink },
   { id: "poznamky", label: "Poznámky", icon: "◻", accent: C.yellow },
+  { id: "podklady", label: "Podklady", icon: "◫", accent: "#b57bee" },
 ];
 
 const scoreColor = (s: number) => (s >= 8 ? C.lime : s >= 6 ? C.yellow : s >= 4 ? C.pink : "#ff5577");
@@ -822,6 +823,13 @@ export default function PipelineDashboardPage() {
   const [showCompareDiff, setShowCompareDiff] = useState(false);
   const [versionsActionLoading, setVersionsActionLoading] = useState(false);
   const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
+  const [assetsList, setAssetsList] = useState<Array<{ id: string; filename: string; storage_path: string; file_type: string; file_size: number; category: string; created_at: string; url: string }>>([]);
+  const [assetsLoading, setAssetsLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [dragOverPodklady, setDragOverPodklady] = useState(false);
+  const podkladyFileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -876,6 +884,25 @@ export default function PipelineDashboardPage() {
     return () => { cancelled = true; };
   }, [activeId]);
 
+  const loadAssets = useCallback(async () => {
+    if (!activeId) return;
+    setAssetsLoading(true);
+    try {
+      const r = await fetch(`/api/admin/projects/${activeId}/assets`);
+      const d = await r.json();
+      if (d.assets) setAssetsList(d.assets);
+      else setAssetsList([]);
+    } catch {
+      setAssetsList([]);
+    } finally {
+      setAssetsLoading(false);
+    }
+  }, [activeId]);
+
+  useEffect(() => {
+    if (activeTab === "podklady" && activeId) loadAssets();
+  }, [activeTab, activeId, loadAssets]);
+
   const clients = rows.map(mapRowToClient);
   const pipelineClients = clients.filter((c) => c.status !== "SUPLIK" && c.status !== "ARCHIV");
   const suplikClients = clients.filter((c) => c.status === "SUPLIK");
@@ -894,6 +921,55 @@ export default function PipelineDashboardPage() {
       })
     : filteredByUrgent;
   const client = clients.find((c) => c.id === activeId);
+
+  const PODKLADY_ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "application/pdf"];
+  const categoryByMime = (mime: string): string => {
+    if (mime === "application/pdf") return "inspiration";
+    if (mime === "image/svg+xml") return "logos";
+    if (mime.startsWith("image/")) return "photos";
+    return "photos";
+  };
+  const handlePodkladyFiles = async (files: FileList | null) => {
+    if (!files?.length || !client?.id) return;
+    const MAX_MB = 10;
+    setUploadError(null);
+    setUploadStatus("uploading");
+    setUploadProgress(0);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > MAX_MB * 1024 * 1024) {
+        setUploadError(`Soubor ${file.name} přesahuje ${MAX_MB} MB`);
+        setUploadStatus("error");
+        return;
+      }
+      if (!PODKLADY_ALLOWED_MIME.includes(file.type)) {
+        setUploadError(`Typ ${file.name} není podporován (JPG, PNG, PDF, SVG, WEBP)`);
+        setUploadStatus("error");
+        return;
+      }
+      const form = new FormData();
+      form.append("file", file);
+      form.append("category", categoryByMime(file.type));
+      setUploadProgress(Math.round(((i + 0.5) / files.length) * 100));
+      try {
+        const res = await fetch(`/api/admin/projects/${client.id}/assets`, { method: "POST", body: form });
+        const data = await res.json();
+        if (!res.ok) {
+          setUploadError(data?.error ?? "Chyba uploadu");
+          setUploadStatus("error");
+          return;
+        }
+      } catch {
+        setUploadError("Chyba uploadu — zkuste znovu");
+        setUploadStatus("error");
+        return;
+      }
+    }
+    setUploadProgress(100);
+    setUploadStatus("success");
+    loadAssets();
+    setTimeout(() => { setUploadStatus("idle"); }, 2000);
+  };
 
   const updateStatus = async (id: string, newStatus: PipelineStatus) => {
     const row = rows.find((r) => r.id === id);
@@ -1887,6 +1963,122 @@ export default function PipelineDashboardPage() {
               <Link href={`/admin?id=${client.id}`} style={{ display: "inline-block", marginTop: 10, padding: "6px 16px", borderRadius: 8, border: "none", background: C.yellow, color: "#000", fontWeight: 700, fontSize: 11, textDecoration: "none" }}>Upravit v administraci →</Link>
             </Section>
           )}
+
+          {activeTab === "podklady" && (() => {
+            const PODKLADY_ACCENT = "#b57bee";
+            const categoryLabels: Record<string, string> = { photos: "📷 Fotky klienta", logos: "🎨 Loga a grafika", inspiration: "💡 Inspirace a moodboard" };
+            return (
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <Section title="PODKLADY" accent={PODKLADY_ACCENT}>
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOverPodklady(true); }}
+                    onDragLeave={() => setDragOverPodklady(false)}
+                    onDrop={(e) => { e.preventDefault(); setDragOverPodklady(false); handlePodkladyFiles(e.dataTransfer.files); }}
+                    onClick={() => podkladyFileInputRef.current?.click()}
+                    style={{
+                      padding: "28px 20px",
+                      background: "#141414",
+                      border: `2px dashed ${dragOverPodklady ? PODKLADY_ACCENT : C.border}`,
+                      borderRadius: 12,
+                      textAlign: "center",
+                      cursor: "pointer",
+                      transition: "border-color 0.15s ease",
+                    }}
+                  >
+                    <input
+                      ref={podkladyFileInputRef}
+                      type="file"
+                      multiple
+                      accept=".jpg,.jpeg,.png,.webp,.svg,.pdf,image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"
+                      onChange={(e) => { handlePodkladyFiles(e.target.files); e.target.value = ""; }}
+                      style={{ display: "none" }}
+                    />
+                    <p style={{ fontSize: 13, color: C.text, margin: "0 0 6px 0" }}>Přetáhněte soubory sem nebo klikněte pro výběr</p>
+                    <p style={{ fontSize: 11, color: C.faint, margin: 0 }}>JPG, PNG, PDF, SVG, WEBP · max 10 MB</p>
+                  </div>
+                  {uploadStatus === "uploading" && (
+                    <div style={{ marginTop: 12 }}>
+                      <div style={{ height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
+                        <div style={{ width: `${uploadProgress}%`, height: "100%", background: PODKLADY_ACCENT, borderRadius: 3, transition: "width 0.2s" }} />
+                      </div>
+                      <p style={{ fontSize: 11, color: C.muted, marginTop: 6, marginBottom: 0 }}>Nahrávám…</p>
+                    </div>
+                  )}
+                  {uploadStatus === "success" && (
+                    <p style={{ fontSize: 11, color: C.lime, marginTop: 12, marginBottom: 0 }}><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: C.lime, marginRight: 6, verticalAlign: "middle" }} /> Uloženo</p>
+                  )}
+                  {uploadStatus === "error" && uploadError && (
+                    <p style={{ fontSize: 11, color: "#ff5577", marginTop: 12, marginBottom: 0 }}>Chyba uploadu — zkuste znovu. {uploadError}</p>
+                  )}
+                </Section>
+                {assetsLoading ? (
+                  <p style={{ fontSize: 12, color: C.muted }}>Načítám podklady…</p>
+                ) : assetsList.length === 0 ? (
+                  <p style={{ fontSize: 12, color: C.faint, textAlign: "center", padding: 24 }}>Zatím žádné podklady. Nahrajte fotky, loga nebo inspiraci pro tvorbu vizuálního boardu.</p>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                    {assetsList.map((a) => {
+                      const isPdf = a.file_type === "application/pdf";
+                      const dateStr = new Date(a.created_at).toLocaleDateString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric" });
+                      const nameShort = a.filename.length > 20 ? a.filename.slice(0, 17) + "…" : a.filename;
+                      return (
+                        <div
+                          key={a.id}
+                          style={{
+                            background: C.bg2,
+                            border: `1px solid ${C.border}`,
+                            borderRadius: 10,
+                            overflow: "hidden",
+                            position: "relative",
+                          }}
+                          onMouseEnter={(e) => {
+                            const el = e.currentTarget.querySelector(".podklady-card-actions") as HTMLElement | null;
+                            if (el) el.style.opacity = "1";
+                          }}
+                          onMouseLeave={(e) => {
+                            const el = e.currentTarget.querySelector(".podklady-card-actions") as HTMLElement | null;
+                            if (el) el.style.opacity = "0";
+                          }}
+                        >
+                          <a
+                            href={a.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: "block", textDecoration: "none", color: "inherit" }}
+                          >
+                            <div style={{ aspectRatio: "1", background: C.bg0, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 100 }}>
+                              {isPdf ? (
+                                <span style={{ fontSize: 36, color: C.muted }}>📄</span>
+                              ) : (
+                                <img src={a.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              )}
+                            </div>
+                          </a>
+                          <div style={{ padding: "8px 10px" }}>
+                            <div style={{ fontSize: 11, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 4 }} title={a.filename}>{nameShort}</div>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, flexWrap: "wrap" }}>
+                              <span style={{ fontSize: 9, color: C.faint }}>{dateStr}</span>
+                              <span style={{ fontSize: 9, color: PODKLADY_ACCENT, background: PODKLADY_ACCENT + "22", padding: "2px 6px", borderRadius: 4 }}>{categoryLabels[a.category] ?? a.category}</span>
+                            </div>
+                          </div>
+                          <div className="podklady-card-actions" style={{ position: "absolute", top: 6, right: 6, display: "flex", gap: 4, opacity: 0, transition: "opacity 0.15s" }}>
+                            <a href={a.url} target="_blank" rel="noopener noreferrer" style={{ padding: "4px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: C.muted, fontSize: 10, textDecoration: "none" }}>↗</a>
+                            <button
+                              type="button"
+                              onClick={async (e) => { e.preventDefault(); e.stopPropagation(); if (!confirm("Smazat tento podklad?")) return; try { await fetch(`/api/admin/projects/${client.id}/assets/${a.id}`, { method: "DELETE" }); loadAssets(); } catch {} }}
+                              style={{ padding: "4px 8px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 6, color: "#ff5577", fontSize: 10, cursor: "pointer" }}
+                            >
+                              🗑
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           </div>
         </div>
       </div>
