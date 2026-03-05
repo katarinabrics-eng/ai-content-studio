@@ -54,6 +54,10 @@ type ApiRow = {
   access_expires_at: string | null;
   access_type: string | null;
   last_contact_at: string | null;
+  outputs_activated?: boolean;
+  outputs_activated_at?: string | null;
+  access_sent_at?: string | null;
+  brief_submitted_at?: string | null;
   scan_result?: {
     brandScore?: { total?: number };
     brandDna?: {
@@ -124,6 +128,10 @@ type Client = {
   projectDisplayName: string;
   /** Iniciála pro avatar na úrovni klienta (clientDisplayName nebo email). */
   clientAvatar: string;
+  outputsActivated: boolean;
+  outputsActivatedAt: string | null;
+  accessSentAt: string | null;
+  briefSubmittedAt: string | null;
 };
 
 const PILLAR_KEYS = [
@@ -234,6 +242,10 @@ function mapRowToClient(row: ApiRow): Client {
     clientDisplayName,
     projectDisplayName,
     clientAvatar,
+    outputsActivated: row.outputs_activated ?? false,
+    outputsActivatedAt: row.outputs_activated_at ?? null,
+    accessSentAt: row.access_sent_at ?? null,
+    briefSubmittedAt: row.brief_submitted_at ?? null,
   };
 }
 
@@ -308,13 +320,123 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
+function SendAccessBlock({ client, onSent }: { client: Client; onSent: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => {
+    if (!success) return;
+    const t = setTimeout(() => setSuccess(null), 3000);
+    return () => clearTimeout(t);
+  }, [success]);
+  return (
+    <div style={{ marginTop: 8 }}>
+      <button
+        type="button"
+        disabled={loading}
+        onClick={async () => {
+          setErr(null);
+          setLoading(true);
+          try {
+            const res = await fetch(`/api/admin/projects/${client.id}/send-access`, { method: "POST" });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              setErr(data.error ?? "Chyba odeslání");
+              return;
+            }
+            setSuccess(`✓ Odkaz odeslán na ${data.email ?? client.email}`);
+            onSent();
+          } finally {
+            setLoading(false);
+          }
+        }}
+        style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 11, cursor: loading ? "not-allowed" : "pointer" }}
+      >
+        {loading ? "Odesílám…" : "✉ Poslat přístup klientovi"}
+      </button>
+      {client.accessSentAt && (
+        <div style={{ fontSize: 10, color: C.muted, marginTop: 4 }}>Naposledy odesláno: {new Date(client.accessSentAt).toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" })}</div>
+      )}
+      {success && <div style={{ fontSize: 11, color: C.lime, marginTop: 4 }}>{success}</div>}
+      {err && <div style={{ fontSize: 11, color: "#e88", marginTop: 4 }}>{err}</div>}
+    </div>
+  );
+}
+
+function PipelineOutputsBlock({
+  client,
+  onRefresh,
+  updating,
+}: {
+  client: Client;
+  onRefresh: () => void;
+  updating: boolean;
+}) {
+  const [loading, setLoading] = useState(false);
+  if (client.outputsActivated) {
+    return (
+      <div style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 12, color: "#c8ff00", marginBottom: 4 }}>
+          ✓ Výstupy aktivovány {client.outputsActivatedAt ? new Date(client.outputsActivatedAt).toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" }) : ""}
+        </div>
+        <button
+          type="button"
+          onClick={async () => {
+            if (loading) return;
+            setLoading(true);
+            try {
+              const res = await fetch(`/api/admin/diagnostika/${client.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ outputs_activated: false }),
+              });
+              if (res.ok) onRefresh();
+            } finally {
+              setLoading(false);
+            }
+          }}
+          style={{ fontSize: 10, color: C.muted, background: "none", border: "none", cursor: "pointer", padding: 0, textDecoration: "underline" }}
+        >
+          Deaktivovat
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div style={{ marginTop: 12 }}>
+      <button
+        type="button"
+        disabled={updating || loading}
+        onClick={async () => {
+          setLoading(true);
+          try {
+            const res = await fetch(`/api/admin/diagnostika/${client.id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ outputs_activated: true, outputs_activated_at: new Date().toISOString() }),
+            });
+            if (res.ok) onRefresh();
+          } finally {
+            setLoading(false);
+          }
+        }}
+        style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: "#c8ff00", color: "#000", fontWeight: 700, fontSize: 12, cursor: updating || loading ? "not-allowed" : "pointer" }}
+      >
+        {loading ? "Aktivuji…" : "⚡ Aktivovat výstupy pro klienta"}
+      </button>
+    </div>
+  );
+}
+
 function PipelineSection({
   client,
   onChangeStatus,
+  onRefresh,
   updating,
 }: {
   client: Client;
   onChangeStatus: (s: PipelineStatus) => void;
+  onRefresh?: () => void;
   updating: boolean;
 }) {
   const [dropOpen, setDropOpen] = useState(false);
@@ -517,6 +639,14 @@ function PipelineSection({
           )}
         </div>
       </div>
+
+      {(client.status === "HOVOR" || client.status === "AKTIVNI") && (
+        <PipelineOutputsBlock
+          client={client}
+          onRefresh={() => onRefresh?.()}
+          updating={updating}
+        />
+      )}
     </Section>
   );
 }
@@ -534,6 +664,8 @@ function ClientCard({
   quickActionsLoading,
   displayTitle,
   style: cardStyle,
+  activityUnreadCount = 0,
+  activityTooltip,
 }: {
   client: Client;
   isActive: boolean;
@@ -543,9 +675,10 @@ function ClientCard({
   onQuickNote?: (id: string, notes: string) => void;
   onRunStrategist?: (id: string, strategistId: string) => void;
   quickActionsLoading?: boolean;
-  /** Přepsat hlavní řádek (např. projectDisplayName v hierarchii). */
   displayTitle?: string;
   style?: React.CSSProperties;
+  activityUnreadCount?: number;
+  activityTooltip?: string;
 }) {
   const status = getS(client.status);
   const [hover, setHover] = useState(false);
@@ -572,6 +705,9 @@ function ClientCard({
         ...cardStyle,
       }}
     >
+      {activityUnreadCount > 0 && (
+        <div title={activityTooltip ?? (activityUnreadCount === 1 ? "Nová aktivita" : `${activityUnreadCount} nových aktivit`)} style={{ position: "absolute", top: 6, right: 6, width: 6, height: 6, borderRadius: "50%", background: "#fff", zIndex: 1 }} />
+      )}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
         <div style={{ position: "relative", flexShrink: 0 }}>
           <div
@@ -875,6 +1011,9 @@ export default function PipelineDashboardPage() {
   const [notesHistory, setNotesHistory] = useState<Array<{ at: string; preview: string; full: string }>>([]);
   const [notesHistoryExpandedIndex, setNotesHistoryExpandedIndex] = useState<number | null>(null);
   const [notesSaving, setNotesSaving] = useState(false);
+  const [prehledActivities, setPrehledActivities] = useState<Array<{ id: string; type: string; message: string | null; seen_at: string | null; created_at: string }>>([]);
+  const [prehledActivitiesLoading, setPrehledActivitiesLoading] = useState(false);
+  const [activityUnreadByProject, setActivityUnreadByProject] = useState<Record<string, number>>({});
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -966,6 +1105,37 @@ export default function PipelineDashboardPage() {
   useEffect(() => {
     if (activeTab === "vystup" && activeId) loadBundles();
   }, [activeTab, activeId, loadBundles]);
+
+  const loadPrehledActivities = useCallback(async () => {
+    if (!activeId) return;
+    setPrehledActivitiesLoading(true);
+    try {
+      const [listRes, patchRes] = await Promise.all([
+        fetch(`/api/admin/projects/${activeId}/activity`),
+        fetch(`/api/admin/projects/${activeId}/activity`, { method: "PATCH" }),
+      ]);
+      if (listRes.ok) {
+        const d = await listRes.json();
+        setPrehledActivities(d.activities ?? []);
+      }
+    } finally {
+      setPrehledActivitiesLoading(false);
+    }
+  }, [activeId]);
+
+  useEffect(() => {
+    if (activeTab === "prehled" && activeId) loadPrehledActivities();
+  }, [activeTab, activeId, loadPrehledActivities]);
+
+  useEffect(() => {
+    if (rows.length === 0) return;
+    fetch("/api/admin/activity-unread-counts")
+      .then((r) => r.json())
+      .then((d) => setActivityUnreadByProject(d.byProject ?? {}))
+      .catch(() => setActivityUnreadByProject({}));
+  }, [rows.length]);
+
+  const totalUnreadActivities = Object.values(activityUnreadByProject).reduce((a, b) => a + b, 0);
 
   const clients = rows.map(mapRowToClient);
   const lastNotesSyncIdRef = useRef<string | null>(null);
@@ -1281,7 +1451,7 @@ export default function PipelineDashboardPage() {
               )}
             </div>
           </div>
-          {urgentCount > 0 && (
+          {(urgentCount > 0 || totalUnreadActivities > 0) && (
             <button
               type="button"
               onClick={() => setShowOnlyUrgent((v) => !v)}
@@ -1298,7 +1468,9 @@ export default function PipelineDashboardPage() {
                 width: "calc(100% - 16px)",
               }}
             >
-              ● {urgentCount} vyžadují pozornost
+              {urgentCount > 0 && `● ${urgentCount} urgentní`}
+              {urgentCount > 0 && totalUnreadActivities > 0 && " · "}
+              {totalUnreadActivities > 0 && (urgentCount > 0 ? `${totalUnreadActivities} nové aktivity` : `● ${totalUnreadActivities} nové aktivity`)}
             </button>
           )}
           <div style={{ flex: 1, overflow: "auto", padding: "8px 0" }}>
@@ -1366,6 +1538,7 @@ export default function PipelineDashboardPage() {
                           onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }}
                           displayTitle={c.projectDisplayName}
                           style={{ marginLeft: 12 }}
+                          activityUnreadCount={activityUnreadByProject[c.id] ?? 0}
                           onTrash={(e) => {
                             e?.stopPropagation();
                             setDeleteConfirm({ id: c.id, name: c.projectDisplayName || c.name, hard: navSection === "archiv" });
@@ -1443,10 +1616,11 @@ export default function PipelineDashboardPage() {
                   ))}
                   <Tag color={C.faint}>{client.created}</Tag>
                 </div>
+                <SendAccessBlock client={client} onSent={fetchData} />
               </div>
               <ScoreRing score={client.score} />
             </div>
-            <PipelineSection client={client} onChangeStatus={(s) => updateStatus(client.id, s)} updating={statusUpdating === client.id} />
+            <PipelineSection client={client} onChangeStatus={(s) => updateStatus(client.id, s)} onRefresh={fetchData} updating={statusUpdating === client.id} />
             {(() => {
               const access = getAccessDisplay(client);
               return (
@@ -1736,6 +1910,70 @@ export default function PipelineDashboardPage() {
                     );
                   })}
                 </div>
+              </Section>
+
+              <Section title="BRIEF" accent={C.yellow}>
+                {!client.briefSubmittedAt ? (
+                  <div style={{ padding: 14, borderRadius: 10, border: "1px solid #1f1f1f", background: "#111" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 4 }}>📋 Brief nebyl odeslán</div>
+                    <div style={{ fontSize: 11, color: C.muted, marginBottom: 10 }}>Klient zatím nevyplnil dotazník o značce.</div>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await fetch(`/api/admin/projects/${client.id}/send-access`, { method: "POST" });
+                          await fetchData();
+                        } catch {
+                          setError("Nepodařilo se odeslat výzvu");
+                        }
+                      }}
+                      style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer" }}
+                    >
+                      Poslat výzvu →
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ padding: 14, borderRadius: 10, border: "2px solid #c8ff00", background: C.bg2 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#c8ff00", marginBottom: 4 }}>✓ Brief odeslán {new Date(client.briefSubmittedAt).toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" })}</div>
+                    {client.short_code ? (
+                      <a href={`/client/${encodeURIComponent(client.short_code)}/brief`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 8, padding: "8px 14px", borderRadius: 8, border: "1px solid #c8ff00", background: "transparent", color: "#c8ff00", fontSize: 12, textDecoration: "none", cursor: "pointer" }}>
+                        Zobrazit brief →
+                      </a>
+                    ) : (
+                      <span style={{ fontSize: 11, color: C.muted }}>Odkaz na brief není k dispozici.</span>
+                    )}
+                  </div>
+                )}
+              </Section>
+
+              <Section title="AKTIVITA" accent={C.lime}>
+                {prehledActivitiesLoading ? (
+                  <div style={{ fontSize: 11, color: C.muted }}>Načítám…</div>
+                ) : prehledActivities.length === 0 ? (
+                  <div style={{ fontSize: 11, color: C.faint }}>Zatím žádná aktivita.</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {prehledActivities.slice(0, 10).map((a) => {
+                      const icon = a.type === "brief_submitted" ? "📋" : a.type === "content_approved" ? "✓" : a.type === "content_feedback" ? "✎" : "●";
+                      const label = a.type === "brief_submitted" ? "brief" : a.type === "content_approved" ? "schválení" : a.type === "content_feedback" ? "připomínky" : a.type;
+                      const created = new Date(a.created_at);
+                      const now = new Date();
+                      const diffMs = now.getTime() - created.getTime();
+                      const diffM = Math.floor(diffMs / 60000);
+                      const diffH = Math.floor(diffMs / 3600000);
+                      const diffD = Math.floor(diffMs / 86400000);
+                      const relTime = diffM < 60 ? `před ${diffM} min` : diffH < 24 ? `před ${diffH} h` : `před ${diffD} dny`;
+                      return (
+                        <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}` }}>
+                          <span style={{ fontSize: 14 }}>{icon}</span>
+                          <span style={{ fontSize: 11, color: C.muted }}>{label}</span>
+                          <span style={{ fontSize: 11, color: "#ccc", flex: 1 }}>{a.message ?? "—"}</span>
+                          <span style={{ fontSize: 10, color: C.faint }}>{relTime}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </Section>
             </div>
           )}

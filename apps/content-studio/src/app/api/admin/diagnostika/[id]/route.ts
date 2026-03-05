@@ -82,6 +82,14 @@ export async function PATCH(
     }
   }
 
+  if (body.outputs_activated !== undefined) {
+    const now = new Date().toISOString();
+    await updateClientProject(id, {
+      outputs_activated: body.outputs_activated === true,
+      outputs_activated_at: body.outputs_activated === true ? now : null,
+    });
+  }
+
   const fresh = await getClientProjectById(id);
   const sr = fresh?.scan_result as Record<string, unknown> | null | undefined;
   return NextResponse.json({

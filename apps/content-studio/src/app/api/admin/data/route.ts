@@ -22,7 +22,7 @@ export async function GET() {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("client_projects")
-    .select("id, created_at, email, web_url, name, client_name, project_name, workflow_status, payment_status, short_code, scan_result, manual_input, access_expires_at, access_type, last_contact_at")
+    .select("id, created_at, email, web_url, name, client_name, project_name, workflow_status, payment_status, short_code, scan_result, manual_input, access_expires_at, access_type, last_contact_at, outputs_activated, outputs_activated_at, access_sent_at, brief_submitted_at")
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

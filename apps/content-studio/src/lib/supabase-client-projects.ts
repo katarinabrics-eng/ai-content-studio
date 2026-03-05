@@ -53,6 +53,10 @@ export type ClientProjectRow = {
   access_type: AccessType | null;
   last_contact_at: string | null;
   short_code: string | null;
+  outputs_activated?: boolean;
+  outputs_activated_at?: string | null;
+  access_sent_at?: string | null;
+  brief_submitted_at?: string | null;
 };
 
 export async function createClientProject(params: {
@@ -161,7 +165,19 @@ export async function updateClientProjectScanResult(
 /** Aktualizuje editovatelná pole záznamu diagnostiky (admin i klient). */
 export async function updateClientProject(
   projectId: string,
-  updates: { name?: string | null; email?: string | null; web_url?: string | null; manual_input?: string | null; last_contact_at?: string | null; access_type?: AccessType | null; access_expires_at?: string | null }
+  updates: {
+    name?: string | null;
+    email?: string | null;
+    web_url?: string | null;
+    manual_input?: string | null;
+    last_contact_at?: string | null;
+    access_type?: AccessType | null;
+    access_expires_at?: string | null;
+    outputs_activated?: boolean;
+    outputs_activated_at?: string | null;
+    access_sent_at?: string | null;
+    brief_submitted_at?: string | null;
+  }
 ): Promise<ClientProjectRow | null> {
   const supabase = getSupabaseClient();
   const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -172,6 +188,10 @@ export async function updateClientProject(
   if (updates.last_contact_at !== undefined) payload.last_contact_at = updates.last_contact_at;
   if (updates.access_type !== undefined) payload.access_type = updates.access_type;
   if (updates.access_expires_at !== undefined) payload.access_expires_at = updates.access_expires_at;
+  if (updates.outputs_activated !== undefined) payload.outputs_activated = updates.outputs_activated;
+  if (updates.outputs_activated_at !== undefined) payload.outputs_activated_at = updates.outputs_activated_at;
+  if (updates.access_sent_at !== undefined) payload.access_sent_at = updates.access_sent_at;
+  if (updates.brief_submitted_at !== undefined) payload.brief_submitted_at = updates.brief_submitted_at;
   const { data, error } = await supabase
     .from("client_projects")
     .update(payload)

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
+import { getClientProjectByShortCode, updateClientProject } from "@/lib/supabase-client-projects";
 import { normalizeStartForm, validateRequiredBrief } from "@/lib/brief-normalizer";
 
 export const runtime = "nodejs";
@@ -85,6 +86,21 @@ export async function PATCH(request: Request) {
         updated_at: new Date().toISOString(),
       })
       .eq("id", proj.id);
+
+    const now = new Date().toISOString();
+    try {
+      const clientProject = await getClientProjectByShortCode(code.trim());
+      if (clientProject) {
+        await updateClientProject(clientProject.id, { brief_submitted_at: now });
+        await supabase.from("project_activity").insert({
+          project_id: clientProject.id,
+          type: "brief_submitted",
+          message: "Klient odeslal brief",
+        });
+      }
+    } catch {
+      // client_projects / project_activity nemusí být pro tento projekt propojené
+    }
 
     return NextResponse.json({
       ok: true,
