@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import OpenAI from "openai";
@@ -74,12 +75,22 @@ export async function POST(
   });
 
   const output = completion.choices[0]?.message?.content?.trim() ?? "";
+  const now = new Date().toISOString();
   const scanResult = (project.scan_result ?? {}) as Record<string, unknown>;
+  const existingSaved = Array.isArray(scanResult.saved_strategies) ? scanResult.saved_strategies as Array<{ id: string; name?: string; created_at?: string; strategist_id?: string; content?: string }> : [];
+  const newEntry = {
+    id: randomUUID(),
+    name: strategist.name,
+    created_at: now,
+    strategist_id: strategistId,
+    content: output,
+  };
   const merged = {
     ...scanResult,
     strategic_plan: output,
     strategist_id: strategistId,
-    strategist_run_at: new Date().toISOString(),
+    strategist_run_at: now,
+    saved_strategies: [...existingSaved, newEntry],
   };
 
   const updated = await updateClientProjectScanResult(id, { scan_result: merged });

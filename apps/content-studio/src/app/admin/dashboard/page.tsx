@@ -2260,33 +2260,50 @@ export default function PipelineDashboardPage() {
                 </>
               ) : (
                 <>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {client.strategies.length === 0 && (
                       <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga níže.</div>
                     )}
                     {client.strategies.map((s) => (
-                      <div key={s.id} style={{ padding: "12px 15px", borderRadius: 9, border: `1px solid ${s.active ? C.lime + "50" : C.border}`, background: s.active ? C.lime + "07" : C.bg2, display: "flex", alignItems: "center", gap: 10 }}>
-                        {s.active && <div style={{ width: 3, height: 28, borderRadius: 2, background: C.lime, flexShrink: 0 }} />}
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
-                            {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                      <div
+                        key={s.id}
+                        style={{
+                          padding: "14px 16px",
+                          borderRadius: 10,
+                          border: `1px solid ${s.active ? C.lime + "50" : C.border}`,
+                          background: s.active ? C.lime + "07" : C.bg2,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 10,
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                              {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                            </div>
+                            <div style={{ fontSize: 10, color: C.faint }}>Datum spuštění: {s.date}</div>
                           </div>
-                          <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewBundleName(`${s.label} × Výstup`);
+                              setNewBundleOutputType("GAMMA");
+                              setActiveTab("vystup");
+                              setShowNewBundlePanel(true);
+                            }}
+                            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+                          >
+                            ⊡ Zabalit do balíčku →
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setNewBundleName(`${s.label} × Výstup`);
-                            setNewBundleOutputType("GAMMA");
-                            setActiveTab("vystup");
-                            setShowNewBundlePanel(true);
-                          }}
-                          style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer" }}
-                        >
-                          ⊡ Zabalit do balíčku →
-                        </button>
-                        <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
+                        {s.summary && (
+                          <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, padding: "8px 10px", background: C.bg0, borderRadius: 8, borderLeft: `3px solid ${C.purple}` }}>
+                            <div style={{ fontSize: 9, fontWeight: 700, color: C.faint, letterSpacing: "0.05em", marginBottom: 4 }}>KLÍČOVÉ BODY STRATEGIE</div>
+                            {s.summary}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
