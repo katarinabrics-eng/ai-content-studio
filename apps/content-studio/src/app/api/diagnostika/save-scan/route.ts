@@ -34,6 +34,20 @@ export async function POST(request: Request) {
 
     const scanResult = result as Record<string, unknown>;
 
+    let baseUrl = "";
+    try {
+      baseUrl = new URL(request.url).origin;
+    } catch {
+      const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+      const scheme = request.headers.get("x-forwarded-proto") || "https";
+      if (host) baseUrl = `${scheme}://${host}`;
+    }
+
+    function viewUrlFor(project: { access_token: string | null } | null): string | undefined {
+      if (!baseUrl || !project?.access_token) return undefined;
+      return `${baseUrl}/diagnostika/view?token=${encodeURIComponent(project.access_token)}`;
+    }
+
     if (projectId) {
       const existing = await getClientProjectById(projectId);
       if (!existing) {
@@ -52,7 +66,8 @@ export async function POST(request: Request) {
       if (name != null) {
         await updateClientProject(projectId, { name: name || null });
       }
-      return NextResponse.json({ ok: true, id: projectId });
+      const fresh = await getClientProjectById(projectId);
+      return NextResponse.json({ ok: true, id: projectId, viewUrl: viewUrlFor(fresh) });
     }
 
     if (email?.trim()) {
@@ -71,7 +86,8 @@ export async function POST(request: Request) {
         if (name != null) {
           await updateClientProject(existingByEmail.id, { name: name || null });
         }
-        return NextResponse.json({ ok: true, id: existingByEmail.id });
+        const fresh = await getClientProjectById(existingByEmail.id);
+        return NextResponse.json({ ok: true, id: existingByEmail.id, viewUrl: viewUrlFor(fresh) });
       }
     }
 
@@ -83,7 +99,8 @@ export async function POST(request: Request) {
       email: email ?? undefined,
     });
 
-    return NextResponse.json({ ok: true, id });
+    const fresh = await getClientProjectById(id);
+    return NextResponse.json({ ok: true, id, viewUrl: viewUrlFor(fresh) });
   } catch (e) {
     console.error("[diagnostika/save-scan]", e);
     return NextResponse.json(

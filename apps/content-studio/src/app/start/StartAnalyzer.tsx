@@ -327,6 +327,10 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           if (saveRes.ok && saveData?.id) {
             setProjectId(saveData.id);
             setSaveError(null);
+            if (typeof saveData?.viewUrl === "string" && saveData.viewUrl) {
+              window.location.href = saveData.viewUrl;
+              return;
+            }
           } else {
             setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit do projektu.");
           }
@@ -465,8 +469,15 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         }),
       });
       const saveData = await saveRes.json();
-      if (saveRes.ok && saveData?.id) setProjectId(saveData.id);
-      else setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit.");
+      if (saveRes.ok && saveData?.id) {
+        setProjectId(saveData.id);
+        if (typeof saveData?.viewUrl === "string" && saveData.viewUrl) {
+          window.location.href = saveData.viewUrl;
+          return;
+        }
+      } else {
+        setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit.");
+      }
     } catch {
       setSaveError("Výsledek se nepodařilo uložit. Zkuste to znovu.");
     }

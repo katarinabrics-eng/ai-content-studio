@@ -131,6 +131,7 @@ export function ScanResultScrollExperience({
   const [leadError, setLeadError] = useState<string | null>(null);
   const [leadSubmitting, setLeadSubmitting] = useState(false);
   const [accessUrl, setAccessUrl] = useState<string | null>(null);
+  const [secondaryCtaExpanded, setSecondaryCtaExpanded] = useState(false);
 
   async function handleSaveLead() {
     const trimmed = leadEmail.trim();
@@ -500,12 +501,12 @@ export function ScanResultScrollExperience({
         </div>
       </Section>
 
-      {/* 10b. Pro vaši značku doporučujeme (pouze pokud máme suggested_strategists) */}
+      {/* 10b. Pro vaši značku doporučujeme (pouze pokud máme suggested_strategists) – bez CTA tlačítka */}
       {result.suggested_strategists && result.suggested_strategists.length > 0 && (
         <Section>
           <div className="max-w-xl mx-auto text-left">
             <h2 className="text-2xl font-bold text-white mb-6">Pro vaši značku doporučujeme</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {result.suggested_strategists.slice(0, 2).map((s) => (
                 <div
                   key={s.id}
@@ -522,106 +523,91 @@ export function ScanResultScrollExperience({
                 </div>
               ))}
             </div>
-            <p className="text-zinc-400 text-sm mb-4">
-              Pokud vás zajímá konkrétní strategický směr, můžeme ho probrat na strategickém hovoru.
-            </p>
-            <a
-              href="/rezervace"
-              className="inline-block rounded-xl bg-lime-400 text-black font-semibold px-6 py-3 hover:bg-lime-300 transition-all"
-            >
-              Rezervovat strategický hovor
-            </a>
           </div>
         </Section>
       )}
 
-      {/* 11. Finální dramatický blok */}
+      {/* Info před CTA – dočasné uložení */}
       <Section compact>
-        <p className="text-2xl md:text-3xl font-semibold text-white max-w-lg mx-auto leading-relaxed">
-          Značka má potenciál.<br />Otázka je, zda ho chcete využít.
+        <p className="text-sm text-zinc-500 max-w-xl mx-auto text-center leading-relaxed">
+          Vaše výsledky jsou dočasně uloženy v této session. Zadejte email a uchováme je — až se vrátíte, vše bude na místě. Bez emailu data po zavření stránky zmizí.
         </p>
       </Section>
 
-      {/* 11b. E-mail pro novinky a uložení dat – nad cenou */}
-      <Section className="pb-8">
-        <div className="bg-[#0e0e0e] border border-white/10 rounded-2xl p-8 max-w-xl mx-auto shadow-2xl text-left">
-          <h3 className="text-lg font-semibold text-white mb-2">Nechte nám e-mail</h3>
-          <p className="text-zinc-400 text-sm mb-4">
-            Chcete dostávat novinky a nabídky služeb na míru? Zadejte e-mail – nebudeme vás spamovat.
+      {/* Primární CTA – jeden velký blok */}
+      <Section className="pb-6">
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-semibold text-white mb-6 leading-relaxed">
+            Značka má potenciál. Otázka je, zda ho chcete využít.
+          </h2>
+          <button
+            type="button"
+            onClick={() => setOpenCalendar(true)}
+            className="w-full max-w-md mx-auto bg-lime-400 text-black font-semibold py-4 px-8 rounded-xl hover:scale-[1.02] transition-all duration-300 text-lg"
+          >
+            Rezervovat strategický hovor
+          </button>
+          <p className="text-zinc-500 text-sm mt-3">
+            7 800 Kč · částka se odečte z celkové spolupráce
           </p>
-          <p className="text-zinc-500 text-sm mb-6">
-            Vaše zadaná data u nás zůstanou. Když se k nám jednou vrátíte, nic se vám neztratí.
-          </p>
+        </div>
+      </Section>
+
+      {/* Sekundární CTA – uložte výsledky (rozbalovací) */}
+      <Section className="pb-16">
+        <div className="max-w-xl mx-auto">
           {!leadSubmitted ? (
             <>
-              <div className="flex flex-wrap gap-3 items-end">
-                <input
-                  type="email"
-                  placeholder="vas@email.cz"
-                  value={leadEmail}
-                  onChange={(e) => setLeadEmail(e.target.value)}
-                  className="flex-1 min-w-[200px] rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
-                />
-                <button
-                  type="button"
-                  onClick={handleSaveLead}
-                  disabled={leadSubmitting || !leadEmail.trim()}
-                  className="rounded-xl bg-lime-400 text-black font-semibold px-6 py-3 hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {leadSubmitting ? "Odesílám…" : "Odeslat"}
-                </button>
-              </div>
-              {leadError && (
-                <p className="mt-3 text-sm text-red-400">{leadError}</p>
+              <button
+                type="button"
+                onClick={() => setSecondaryCtaExpanded((v) => !v)}
+                className="text-sm text-zinc-400 hover:text-zinc-300 underline underline-offset-2 transition"
+              >
+                {secondaryCtaExpanded ? "− Skrýt" : "Zatím nechci konzultaci — uložte moje výsledky."}
+              </button>
+              {secondaryCtaExpanded && (
+                <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 flex flex-wrap gap-3 items-end">
+                  <input
+                    type="email"
+                    placeholder="vas@email.cz"
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    className="flex-1 min-w-[200px] rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveLead}
+                    disabled={leadSubmitting || !leadEmail.trim()}
+                    className="rounded-lg bg-zinc-600 text-white font-medium px-5 py-2.5 hover:bg-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+                  >
+                    {leadSubmitting ? "Ukládám…" : "Uložit výsledky"}
+                  </button>
+                </div>
+              )}
+              {secondaryCtaExpanded && leadError && (
+                <p className="mt-2 text-sm text-red-400">{leadError}</p>
               )}
             </>
           ) : (
-            <div className="space-y-4">
-              <p className="text-lime-400 font-medium">Děkujeme. Budeme vás kontaktovat.</p>
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-sm text-zinc-300">
+                Výsledky jsou uloženy. Až budete připraveni pokračovat, napište nám na{" "}
+                <a href="mailto:hello@lucifera.studio" className="text-lime-400 underline">hello@lucifera.studio</a>
+                {" "}— aktivujeme váš účet.
+              </p>
               {accessUrl && (
-                <p className="text-sm text-zinc-400">
-                  Váš odkaz pro návrat k výsledkům (platný 7 dní):{" "}
+                <p className="text-xs text-zinc-500 mt-2">
+                  Odkaz pro návrat k výsledkům (7 dní):{" "}
                   <a href={accessUrl} className="text-lime-400 underline break-all" target="_blank" rel="noreferrer">{accessUrl}</a>
                 </p>
-              )}
-              {onEnterWorkspace && (
-                <button
-                  type="button"
-                  onClick={onEnterWorkspace}
-                  className="rounded-xl bg-lime-400 text-black font-semibold px-6 py-3 hover:bg-lime-300 transition-all"
-                >
-                  Vstoupit do pracovní plochy
-                </button>
               )}
             </div>
           )}
         </div>
       </Section>
 
-      {/* 12. CTA blok */}
-      <Section className="pb-16">
-        <div className="bg-[#0e0e0e] border border-white/10 rounded-2xl p-10 max-w-xl mx-auto shadow-2xl text-left">
-          <h3 className="text-4xl font-bold text-white mb-4">7 800 Kč</h3>
-          <p className="text-zinc-400 text-sm mb-2">Výběr termínu zavazuje k úhradě strategického Visual Boardu</p>
-          <p className="text-zinc-500 text-sm mb-4">Částka bude odečtena z celkové spolupráce.</p>
-          <p className="text-zinc-300 text-sm mb-2">Získáte:</p>
-          <ul className="space-y-2 text-sm text-zinc-300 mb-6">
-            <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Kompletní strategii značky</li>
-            <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Vizuální směr</li>
-            <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Obsahový rámec</li>
-            <li className="flex items-center gap-2"><span className="text-lime-400">✔</span> Směr kampaně</li>
-          </ul>
-          <button
-            type="button"
-            onClick={() => setOpenCalendar(true)}
-            className="mt-6 w-full bg-lime-400 text-black font-semibold py-4 rounded-xl hover:scale-[1.02] transition-all duration-300"
-          >
-            Rezervovat termín
-          </button>
-        </div>
-
-        {/* DARK MODAL – kalendář */}
-        {openCalendar && !openConfirmation && (
+      {/* DARK MODAL – kalendář */}
+      {openCalendar && !openConfirmation && (
           <div
             className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6"
             onClick={() => setOpenCalendar(false)}
@@ -678,7 +664,6 @@ export function ScanResultScrollExperience({
             </div>
           </div>
         )}
-      </Section>
 
       <Section compact>
         <p className="text-xs text-zinc-600 max-w-md mx-auto text-center leading-relaxed">
