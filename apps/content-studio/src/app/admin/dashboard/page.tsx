@@ -1021,7 +1021,7 @@ export default function PipelineDashboardPage() {
                   <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
                     <span style={{ fontSize: 36, fontWeight: 800, color: C.lime }}>{total}</span>
                     <span style={{ fontSize: 14, color: C.muted }}>/ 100</span>
-                    <p style={{ fontSize: 12, color: C.text, lineHeight: 1.5, margin: 0, flex: "1 1 280px" }}>„{totalComment}"</p>
+                    <p style={{ fontSize: 12, color: C.text, lineHeight: 1.5, margin: 0, flex: "1 1 280px" }}>„{totalComment}{'"'}</p>
                   </div>
                 </Section>
                 <Section title="PILÍŘE ZNAČKY — KOMPLETNÍ DIAGNOSTIKA" accent={C.purple}>
