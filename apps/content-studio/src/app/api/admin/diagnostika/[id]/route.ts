@@ -51,6 +51,15 @@ export async function PATCH(
     if (!updatedScan) return NextResponse.json({ error: "Nepodařilo se uložit aktivní strategii" }, { status: 500 });
   }
 
+  if (body.dashboard_section !== undefined) {
+    const section = typeof body.dashboard_section === "string" ? body.dashboard_section : null;
+    const freshForSection = await getClientProjectById(id);
+    const scanResult = (freshForSection?.scan_result ?? project.scan_result ?? {}) as Record<string, unknown>;
+    const merged = { ...scanResult, dashboard_section: section };
+    const updatedScan = await updateClientProjectScanResult(id, { scan_result: merged });
+    if (!updatedScan) return NextResponse.json({ error: "Nepodařilo se uložit sekci" }, { status: 500 });
+  }
+
   const fresh = await getClientProjectById(id);
   return NextResponse.json({
     ok: true,

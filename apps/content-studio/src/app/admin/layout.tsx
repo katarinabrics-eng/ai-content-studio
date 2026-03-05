@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 const SIDEBAR_WIDTH = 240;
 const NAV_ITEMS = [
   { href: "/admin", label: "Diagnostika" },
+  { href: "/admin/dashboard", label: "Pipeline" },
   { href: "/diagnostika", label: "+ Nová diagnostika", external: true },
   { href: "/admin", label: "Klienti" },
   { href: "/admin", label: "Nastavení" },
