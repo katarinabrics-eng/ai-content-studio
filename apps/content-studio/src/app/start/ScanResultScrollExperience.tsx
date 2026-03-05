@@ -662,7 +662,7 @@ export function ScanResultScrollExperience({
             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
               <p className="text-sm text-zinc-300">
                 Výsledky jsou uloženy. Až budete připraveni pokračovat, napište nám na{" "}
-                <a href="mailto:hello@lucifera.studio" className="text-lime-400 underline">hello@lucifera.studio</a>
+                <a href="mailto:ahoj@studiolucifera.cz" className="text-lime-400 underline">ahoj@studiolucifera.cz</a>
                 {" "}— aktivujeme váš účet.
               </p>
               {accessUrl && (
