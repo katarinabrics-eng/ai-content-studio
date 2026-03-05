@@ -1,4 +1,15 @@
 -- Kurátorské nástroje: aktivace výstupů, odeslání přístupu, brief, aktivita.
+-- Zároveň doplní access_type a last_contact_at, pokud ještě neexistují (starší migrace).
+
+-- client_projects: access_type a last_contact_at (pokud chybí)
+alter table client_projects
+  add column if not exists last_contact_at timestamptz,
+  add column if not exists access_type text default 'FREE'
+    check (access_type in ('FREE', 'PAID', 'ACTIVE'));
+
+comment on column client_projects.last_contact_at is 'Datum posledního hovoru nebo kontaktu.';
+comment on column client_projects.access_type is 'FREE = 3 dny, PAID = 14 dní, ACTIVE = bez expirace.';
+update client_projects set access_type = 'FREE' where access_type is null;
 
 -- client_projects: výstupy a přístup
 alter table client_projects
