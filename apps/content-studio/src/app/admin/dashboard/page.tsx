@@ -45,6 +45,8 @@ type ApiRow = {
   email: string | null;
   web_url: string | null;
   name: string | null;
+  client_name: string | null;
+  project_name: string | null;
   workflow_status: string | null;
   payment_status: string | null;
   short_code: string | null;
@@ -109,6 +111,16 @@ type Client = {
   created_at: string;
   projectName: string;
   clientName: string;
+  /** Email (pro skupování v sidebaru). */
+  email: string;
+  /** Web URL projektu. */
+  web_url: string;
+  /** Hlavní nadpis klienta: client_name → email. */
+  clientDisplayName: string;
+  /** Název projektu pod klientem a v hlavičce detailu: project_name → name → web_url. */
+  projectDisplayName: string;
+  /** Iniciála pro avatar na úrovni klienta (clientDisplayName nebo email). */
+  clientAvatar: string;
 };
 
 const PILLAR_KEYS = [
@@ -122,9 +134,12 @@ const PILLAR_KEYS = [
 function mapRowToClient(row: ApiRow): Client {
   const scan = row.scan_result ?? {};
   const status = toPipelineStatus(row.workflow_status, scan.dashboard_section);
+  const clientDisplayName = (row.client_name ?? row.email ?? "—").toString().trim() || "—";
+  const projectDisplayName = (row.project_name ?? row.name ?? row.web_url ?? "—").toString().trim() || "—";
   const name = row.name?.trim() || row.email?.trim() || `Projekt ${row.id.slice(0, 8)}`;
   const sub = row.name ? (row.email || row.web_url || "—") : row.email || row.web_url || "—";
   const avatar = (name || "?").charAt(0).toUpperCase();
+  const clientAvatar = (clientDisplayName !== "—" ? clientDisplayName : row.email ?? "?").charAt(0).toUpperCase();
   const pillars = PILLAR_KEYS.map((p) => {
     const val = scan.pillarAnalysis?.[p.key];
     const score = typeof val?.score === "number" ? val.score : 5;
@@ -208,8 +223,13 @@ function mapRowToClient(row: ApiRow): Client {
     access_type: (row.access_type as "FREE" | "PAID" | "ACTIVE") ?? "FREE",
     last_contact_at: row.last_contact_at ?? null,
     created_at: row.created_at ?? "",
-    projectName: row.name?.trim() ?? "",
-    clientName: (scan as { client_name?: string }).client_name?.trim() ?? "",
+    projectName: (row.project_name ?? row.name)?.trim() ?? "",
+    clientName: (row.client_name ?? (scan as { client_name?: string }).client_name)?.trim() ?? "",
+    email: row.email ?? "",
+    web_url: row.web_url ?? "",
+    clientDisplayName,
+    projectDisplayName,
+    clientAvatar,
   };
 }
 
@@ -508,6 +528,8 @@ function ClientCard({
   onQuickNote,
   onRunStrategist,
   quickActionsLoading,
+  displayTitle,
+  style: cardStyle,
 }: {
   client: Client;
   isActive: boolean;
@@ -517,6 +539,9 @@ function ClientCard({
   onQuickNote?: (id: string, notes: string) => void;
   onRunStrategist?: (id: string, strategistId: string) => void;
   quickActionsLoading?: boolean;
+  /** Přepsat hlavní řádek (např. projectDisplayName v hierarchii). */
+  displayTitle?: string;
+  style?: React.CSSProperties;
 }) {
   const status = getS(client.status);
   const [hover, setHover] = useState(false);
@@ -525,6 +550,7 @@ function ClientCard({
   const urgency = getUrgency(client);
   const dotColor = URGENCY_COLORS[urgency];
   const showQuickActions = hover && (onUpdateStatus || onQuickNote || onRunStrategist);
+  const title = displayTitle ?? client.name;
   return (
     <div
       onClick={onClick}
@@ -539,6 +565,7 @@ function ClientCard({
         borderLeft: `3px solid ${isActive ? status.color : "transparent"}`,
         cursor: "pointer",
         position: "relative",
+        ...cardStyle,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
@@ -574,9 +601,9 @@ function ClientCard({
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? "#fff" : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {client.name}
+            {title}
           </div>
-          <div style={{ fontSize: 9, color: C.faint }}>{client.sub}</div>
+          {displayTitle == null && <div style={{ fontSize: 9, color: C.faint }}>{client.sub}</div>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           {showQuickActions && (
@@ -830,6 +857,7 @@ export default function PipelineDashboardPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragOverPodklady, setDragOverPodklady] = useState(false);
   const podkladyFileInputRef = useRef<HTMLInputElement>(null);
+  const [collapsedClientEmails, setCollapsedClientEmails] = useState<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -917,9 +945,32 @@ export default function PipelineDashboardPage() {
         const sub = (c.sub || "").toLowerCase();
         const projectName = (c.projectName || "").toLowerCase();
         const clientName = (c.clientName || "").toLowerCase();
-        return name.includes(searchQ) || sub.includes(searchQ) || projectName.includes(searchQ) || clientName.includes(searchQ);
+        const clientD = (c.clientDisplayName || "").toLowerCase();
+        const projectD = (c.projectDisplayName || "").toLowerCase();
+        const email = (c.email || "").toLowerCase();
+        return name.includes(searchQ) || sub.includes(searchQ) || projectName.includes(searchQ) || clientName.includes(searchQ) || clientD.includes(searchQ) || projectD.includes(searchQ) || email.includes(searchQ);
       })
     : filteredByUrgent;
+
+  const clientGroups = (() => {
+    const byEmail = new Map<string, Client[]>();
+    for (const c of displayedClients) {
+      const key = c.email || "__no_email__";
+      if (!byEmail.has(key)) byEmail.set(key, []);
+      byEmail.get(key)!.push(c);
+    }
+    for (const arr of byEmail.values()) {
+      arr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+    const groups = Array.from(byEmail.entries()).map(([emailKey, list]) => ({
+      emailKey,
+      clients: list,
+      newestAt: Math.max(...list.map((c) => new Date(c.created_at).getTime())),
+    }));
+    groups.sort((a, b) => b.newestAt - a.newestAt);
+    return groups.map(({ emailKey, clients }) => ({ emailKey, clients }));
+  })();
+
   const client = clients.find((c) => c.id === activeId);
 
   const PODKLADY_ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "application/pdf"];
@@ -1208,41 +1259,97 @@ export default function PipelineDashboardPage() {
                 {searchQ ? "Žádný klient nenalezen" : showOnlyUrgent ? "Žádné urgentní" : navSection === "suplik" ? "Šuplík je prázdný" : navSection === "archiv" ? "Archiv je prázdný" : "Žádní klienti"}
               </div>
             ) : (
-              displayedClients.map((c) => (
-                <ClientCard
-                  key={c.id}
-                  client={c}
-                  isActive={c.id === activeId}
-                  onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }}
-                  onTrash={(e) => {
-                    e?.stopPropagation();
-                    setDeleteConfirm({ id: c.id, name: c.name, hard: navSection === "archiv" });
-                  }}
-                  onUpdateStatus={(id, s) => updateStatus(id, s)}
-                  onQuickNote={async (id, notes) => {
-                    const res = await fetch(`/api/admin/diagnostika/${id}`, {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ internal_notes: notes }),
-                    });
-                    if (res.ok) await fetchData();
-                  }}
-                  onRunStrategist={async (id, strategistId) => {
-                    setStrategistLoading(true);
-                    try {
-                      const res = await fetch(`/api/admin/diagnostika/${id}/run-strategist`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ strategistId }),
-                      });
-                      if (res.ok) await fetchData();
-                    } finally {
-                      setStrategistLoading(false);
-                    }
-                  }}
-                  quickActionsLoading={strategistLoading}
-                />
-              ))
+              clientGroups.map(({ emailKey, clients: groupClients }) => {
+                const first = groupClients[0]!;
+                const clientLabel = first.clientDisplayName + (groupClients.length > 1 ? ` (${groupClients.length})` : "");
+                const groupUrgency = groupClients.reduce<Urgency>((acc, c) => {
+                  const u = getUrgency(c);
+                  if (u === "red") return "red";
+                  if (u === "yellow" && acc !== "red") return "yellow";
+                  if (u === "green" && acc !== "red" && acc !== "yellow") return "green";
+                  return acc;
+                }, "gray");
+                const hasActiveInGroup = groupClients.some((c) => c.id === activeId);
+                const isCollapsed = collapsedClientEmails.has(emailKey);
+                const dotColor = URGENCY_COLORS[groupUrgency];
+                return (
+                  <div key={emailKey} style={{ marginBottom: 4 }}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setCollapsedClientEmails((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(emailKey)) next.delete(emailKey);
+                        else next.add(emailKey);
+                        return next;
+                      })}
+                      onKeyDown={(e) => e.key === "Enter" && setCollapsedClientEmails((prev) => { const next = new Set(prev); if (next.has(emailKey)) next.delete(emailKey); else next.add(emailKey); return next; })}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "8px 12px",
+                        margin: "0 8px 2px",
+                        borderRadius: 9,
+                        cursor: "pointer",
+                        background: hasActiveInGroup ? C.bg2 : "transparent",
+                        borderLeft: `3px solid ${hasActiveInGroup ? C.lime : "transparent"}`,
+                      }}
+                    >
+                      <div style={{ position: "relative", flexShrink: 0 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 7, background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: C.lilac }}>
+                          {first.clientAvatar}
+                        </div>
+                        <div style={{ position: "absolute", top: -2, right: -2, width: 8, height: 8, borderRadius: "50%", background: dotColor, border: "1px solid #0a0a0a" }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: hasActiveInGroup ? 700 : 500, color: hasActiveInGroup ? "#fff" : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {clientLabel}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 10, color: C.faint }}>{isCollapsed ? "▸" : "▾"}</span>
+                    </div>
+                    {!isCollapsed &&
+                      groupClients.map((c) => (
+                        <ClientCard
+                          key={c.id}
+                          client={c}
+                          isActive={c.id === activeId}
+                          onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }}
+                          displayTitle={c.projectDisplayName}
+                          style={{ marginLeft: 12 }}
+                          onTrash={(e) => {
+                            e?.stopPropagation();
+                            setDeleteConfirm({ id: c.id, name: c.projectDisplayName || c.name, hard: navSection === "archiv" });
+                          }}
+                          onUpdateStatus={(id, s) => updateStatus(id, s)}
+                          onQuickNote={async (id, notes) => {
+                            const res = await fetch(`/api/admin/diagnostika/${id}`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ internal_notes: notes }),
+                            });
+                            if (res.ok) await fetchData();
+                          }}
+                          onRunStrategist={async (id, strategistId) => {
+                            setStrategistLoading(true);
+                            try {
+                              const res = await fetch(`/api/admin/diagnostika/${id}/run-strategist`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ strategistId }),
+                              });
+                              if (res.ok) await fetchData();
+                            } finally {
+                              setStrategistLoading(false);
+                            }
+                          }}
+                          quickActionsLoading={strategistLoading}
+                        />
+                      ))}
+                  </div>
+                );
+              })
             )}
           </div>
           <div style={{ padding: "8px" }}>
@@ -1278,7 +1385,10 @@ export default function PipelineDashboardPage() {
                 {client.avatar}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 5 }}>{client.name}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{client.projectDisplayName || client.name}</div>
+                <div style={{ fontSize: 12, color: C.muted, marginBottom: 6 }}>
+                  {[client.clientDisplayName !== "—" && client.clientDisplayName, client.email, client.web_url].filter(Boolean).join(" · ") || "—"}
+                </div>
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
                   {client.tags.map((t) => (
                     <Tag key={t} color={C.lilac}>#{t}</Tag>
