@@ -718,10 +718,6 @@ export default function PipelineDashboardPage() {
   return (
     <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: C.bg0, minHeight: "100vh", color: C.text, display: "flex", flexDirection: "column" }}>
       <div style={{ height: 48, background: C.bg1, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 20px", gap: 14, flexShrink: 0 }}>
-        <Link href="/admin" style={{ fontWeight: 800, fontSize: 13, letterSpacing: "0.1em", background: `linear-gradient(90deg, ${C.lime}, ${C.purple})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", textDecoration: "none" }}>
-          ◈ LUCIFERA
-        </Link>
-        <div style={{ width: 1, height: 16, background: C.border }} />
         <span style={{ fontSize: 10, color: C.faint, letterSpacing: "0.14em" }}>PIPELINE</span>
         <div style={{ flex: 1 }} />
         {error && <span style={{ fontSize: 11, color: C.pink }}>{error}</span>}

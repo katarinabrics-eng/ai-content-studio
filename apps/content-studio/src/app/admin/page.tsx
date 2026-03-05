@@ -64,6 +64,10 @@ export default function AdminDashboard() {
   const [notebookResult, setNotebookResult] = useState<Record<string, unknown> | null>(null);
   const router = useRouter();
 
+  useEffect(() => {
+    router.replace("/admin/dashboard");
+  }, [router]);
+
   function toggleAccordion(id: string) {
     setAccordion((prev) => ({ ...prev, [id]: !prev[id] }));
   }

@@ -1,22 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-
-const SIDEBAR_WIDTH = 240;
-const NAV_ITEMS = [
-  { href: "/admin/dashboard", label: "Pipeline" },
-  { href: "/diagnostika", label: "+ Nová diagnostika", external: true },
-  { href: "/admin", label: "Klienti" },
-  { href: "/admin", label: "Nastavení" },
-];
+import { useRouter } from "next/navigation";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const router = useRouter();
 
   return (
@@ -27,67 +18,31 @@ export default function AdminLayout({
         color: "#fff",
         fontFamily: "system-ui, sans-serif",
         display: "flex",
+        flexDirection: "column",
       }}
     >
-      {/* Sidebar */}
-      <aside
+      {/* Jediný sloupec: horní lišta s LUCIFERA (jednou) + Odhlásit */}
+      <header
         style={{
-          width: SIDEBAR_WIDTH,
-          minWidth: SIDEBAR_WIDTH,
-          background: "#111",
-          borderRight: "1px solid #222",
+          height: 52,
+          flexShrink: 0,
+          background: "#0d0d0d",
+          borderBottom: "1px solid #1a1a1a",
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 24px",
         }}
       >
-        <div style={{ padding: "20px 16px", borderBottom: "1px solid #222" }}>
-          <Link href="/admin" style={{ display: "block", textDecoration: "none" }}>
-            <img
-              src="/placeholders/LUCIFERA-Logo-Left-Neg.webp"
-              alt="Lucifera"
-              style={{ height: 36, width: "auto", display: "block" }}
-            />
-          </Link>
-          <span
-            style={{
-              display: "block",
-              fontSize: 11,
-              fontWeight: 600,
-              color: "#555",
-              letterSpacing: "0.1em",
-              marginTop: 6,
-            }}
-          >
-            Admin
-          </span>
-        </div>
-        <nav style={{ flex: 1, padding: "16px 0" }}>
-          {NAV_ITEMS.map((item, i) => {
-            const isActive = !item.external && pathname === item.href;
-            const style: React.CSSProperties = {
-              display: "block",
-              padding: "10px 20px",
-              color: isActive ? "#c8ff00" : "#888",
-              textDecoration: "none",
-              fontSize: 14,
-              borderLeft: isActive ? "3px solid #c8ff00" : "3px solid transparent",
-              background: isActive ? "rgba(200,255,0,0.06)" : "transparent",
-            };
-            if (item.external) {
-              return (
-                <a key={i} href={item.href} style={{ ...style, borderLeft: "3px solid transparent", background: "transparent" }}>
-                  {item.label}
-                </a>
-              );
-            }
-            return (
-              <Link key={i} href={item.href} style={style}>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div style={{ padding: "16px 20px", borderTop: "1px solid #222" }}>
+        <Link href="/admin/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <img
+            src="/placeholders/LUCIFERA-Logo-Left-Neg.webp"
+            alt="Lucifera"
+            style={{ height: 32, width: "auto", display: "block" }}
+          />
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <a href="/diagnostika" style={{ fontSize: 12, color: "#888", textDecoration: "none" }}>+ Nová diagnostika</a>
           <button
             type="button"
             onClick={async () => {
@@ -95,22 +50,20 @@ export default function AdminLayout({
               router.push("/admin/login");
             }}
             style={{
-              width: "100%",
-              padding: "10px 16px",
+              padding: "8px 14px",
               background: "transparent",
               border: "1px solid #333",
-              color: "#666",
+              color: "#888",
               borderRadius: 8,
               cursor: "pointer",
-              fontSize: 13,
+              fontSize: 12,
             }}
           >
             Odhlásit
           </button>
         </div>
-      </aside>
+      </header>
 
-      {/* Main content */}
       <main style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {children}
       </main>
