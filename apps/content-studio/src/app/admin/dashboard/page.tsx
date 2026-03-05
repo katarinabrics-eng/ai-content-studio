@@ -888,6 +888,7 @@ export default function PipelineDashboardPage() {
         </div>
 
         <div style={{ flex: 1, overflow: "auto", padding: "20px 24px" }}>
+          <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
               <div
@@ -1394,6 +1395,7 @@ export default function PipelineDashboardPage() {
               <Link href={`/admin?id=${client.id}`} style={{ display: "inline-block", marginTop: 10, padding: "6px 16px", borderRadius: 8, border: "none", background: C.yellow, color: "#000", fontWeight: 700, fontSize: 11, textDecoration: "none" }}>Upravit v administraci →</Link>
             </Section>
           )}
+          </div>
         </div>
       </div>
     </div>
