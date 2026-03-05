@@ -1008,15 +1008,18 @@ export default function PipelineDashboardPage() {
                               ))}
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {stratA.scores && Object.entries(scoreLabels).map(([key, label]) => (
+                              {stratA.scores && Object.entries(scoreLabels).map(([key, label]) => {
+                                const val = stratA.scores?.[key as keyof typeof stratA.scores] ?? 0;
+                                return (
                                 <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <span style={{ width: 90, fontSize: 10, color: C.faint }}>{label}</span>
                                   <div style={{ flex: 1, height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-                                    <div style={{ width: `${(stratA.scores[key as keyof typeof stratA.scores] / 10) * 100}%`, height: "100%", background: leftColor, borderRadius: 3 }} />
+                                    <div style={{ width: `${(val / 10) * 100}%`, height: "100%", background: leftColor, borderRadius: 3 }} />
                                   </div>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: leftColor }}>{stratA.scores[key as keyof typeof stratA.scores]}/10</span>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: leftColor }}>{val}/10</span>
                                 </div>
-                              ))}
+                                );
+                              })}
                             </div>
                             <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${leftColor}` }}>{stratA.verdict ?? "—"}</div>
                           </div>
@@ -1030,15 +1033,18 @@ export default function PipelineDashboardPage() {
                               ))}
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {stratB.scores && Object.entries(scoreLabels).map(([key, label]) => (
+                              {stratB.scores && Object.entries(scoreLabels).map(([key, label]) => {
+                                const val = stratB.scores?.[key as keyof typeof stratB.scores] ?? 0;
+                                return (
                                 <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <span style={{ width: 90, fontSize: 10, color: C.faint }}>{label}</span>
                                   <div style={{ flex: 1, height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
-                                    <div style={{ width: `${(stratB.scores[key as keyof typeof stratB.scores] / 10) * 100}%`, height: "100%", background: rightColor, borderRadius: 3 }} />
+                                    <div style={{ width: `${(val / 10) * 100}%`, height: "100%", background: rightColor, borderRadius: 3 }} />
                                   </div>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: rightColor }}>{stratB.scores[key as keyof typeof stratB.scores]}/10</span>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: rightColor }}>{val}/10</span>
                                 </div>
-                              ))}
+                                );
+                              })}
                             </div>
                             <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${rightColor}` }}>{stratB.verdict ?? "—"}</div>
                           </div>
