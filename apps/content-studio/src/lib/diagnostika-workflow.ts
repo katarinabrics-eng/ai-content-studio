@@ -132,13 +132,15 @@ export function getDiagBadgeClassesDark(variant: DiagBadgeVariant): string {
   }
 }
 
-/** Povolené přechody (od -> na). */
+/** Povolené přechody (od -> na). Návrat na Lead (DIAG_AWAITING_CURATOR) je povolen ze všech stavů. */
 export const DIAG_ALLOWED_TRANSITIONS: Partial<Record<DiagWorkflowStatus, DiagWorkflowStatus[]>> = {
+  DIAG_AI_PROCESSING: ["DIAG_AWAITING_CURATOR"],
   DIAG_LEAD_NEREALIZOVANY: ["DIAG_AWAITING_CURATOR"],
   DIAG_AWAITING_CURATOR: ["DIAG_READY_FOR_CLIENT"],
-  DIAG_READY_FOR_CLIENT: ["DIAG_CLIENT_FEEDBACK", "DIAG_SENT_TO_CLIENT"],
+  DIAG_READY_FOR_CLIENT: ["DIAG_AWAITING_CURATOR", "DIAG_CLIENT_FEEDBACK", "DIAG_SENT_TO_CLIENT"],
   DIAG_CLIENT_FEEDBACK: ["DIAG_AWAITING_CURATOR"],
-  DIAG_SENT_TO_CLIENT: ["DIAG_DELIVERED"],
+  DIAG_SENT_TO_CLIENT: ["DIAG_AWAITING_CURATOR", "DIAG_DELIVERED"],
+  DIAG_DELIVERED: ["DIAG_AWAITING_CURATOR"],
 };
 
 export function canDiagTransition(
