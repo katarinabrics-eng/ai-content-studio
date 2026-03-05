@@ -236,6 +236,7 @@ function PipelineSection({
   const current = getS(client.status);
   const isSpecial = SPECIAL.some((s) => s.id === client.status);
   const aiDiffers = client.aiStatus !== client.status;
+  const currentStepNum = PIPELINE.find((s) => s.id === client.status)?.step ?? 0;
 
   const handleStatus = (s: PipelineStatus) => {
     onChangeStatus(s);
@@ -337,7 +338,7 @@ function PipelineSection({
       {!isSpecial && (
         <div style={{ display: "flex", alignItems: "flex-start", marginBottom: 14 }}>
           {PIPELINE.map((step, i) => {
-            const isDone = step.step < current.step;
+            const isDone = step.step < currentStepNum;
             const isActive = step.id === client.status;
             const isAI = step.id === client.aiStatus && !isActive;
             return (
