@@ -19,6 +19,7 @@ type ScanResult = {
   suggested_strategists?: SuggestedStrategist[];
   saved_strategies?: SavedStrategy[];
   active_strategy_id?: string | null;
+  gamma_presentation_url?: string | null;
 };
 
 type DiagRow = {
@@ -57,6 +58,10 @@ export default function AdminDashboard() {
     poznamky: true,
     strategie: true,
   });
+  const [gammaStatus, setGammaStatus] = useState<"idle" | "loading" | "done" | "manual">("idle");
+  const [gammaResult, setGammaResult] = useState<Record<string, unknown> | null>(null);
+  const [notebookStatus, setNotebookStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [notebookResult, setNotebookResult] = useState<Record<string, unknown> | null>(null);
   const router = useRouter();
 
   function toggleAccordion(id: string) {
@@ -960,6 +965,143 @@ export default function AdminDashboard() {
               )}
               </div>
               )}
+
+              {/* Klientský výstup — Gamma prezentace + NotebookLM */}
+              <div style={{ marginTop: 24, padding: 16, border: "1px solid #2a2a2a", borderRadius: 12 }}>
+                <div style={{ fontSize: 11, color: "#555", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>Klientský výstup</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, flexWrap: "wrap" }}>
+                  <div style={{ background: "#111", border: "1px solid #333", borderRadius: 8, padding: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <span style={{ fontSize: 18 }}>🎨</span>
+                      <span style={{ fontWeight: 600, color: "#fff" }}>Gamma prezentace</span>
+                    </div>
+                    <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#888" }}>Prezentace strategie pro klienta — PDF + sdílený odkaz</p>
+                    {(selected.scan_result as ScanResult)?.gamma_presentation_url ? (
+                      <a
+                        href={(selected.scan_result as ScanResult).gamma_presentation_url!}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#A8EB12",
+                          color: "#000",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          padding: "10px 16px",
+                          borderRadius: 8,
+                          textDecoration: "none",
+                          marginBottom: 8,
+                        }}
+                      >
+                        Otevřít prezentaci →
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!selected.id) return;
+                          setGammaStatus("loading");
+                          setGammaResult(null);
+                          try {
+                            const res = await fetch(`/api/admin/diagnostika/${selected.id}/generate-presentation`, { method: "POST" });
+                            const data = await res.json();
+                            setGammaResult(data);
+                            setGammaStatus(data.mode === "api" ? "done" : "manual");
+                            if (data.mode === "api" && data.gammaUrl) {
+                              setRows((prev) => prev.map((r) => r.id !== selected.id ? r : { ...r, scan_result: { ...(r.scan_result ?? {}), gamma_presentation_url: data.gammaUrl } as ScanResult }));
+                            }
+                          } catch {
+                            setGammaStatus("idle");
+                          }
+                        }}
+                        disabled={!(selected.scan_result as ScanResult)?.strategic_plan || gammaStatus === "loading"}
+                        style={{
+                          width: "100%",
+                          background: "#A8EB12",
+                          color: "#000",
+                          border: "none",
+                          borderRadius: 8,
+                          padding: "10px 16px",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: (selected.scan_result as ScanResult)?.strategic_plan && gammaStatus !== "loading" ? "pointer" : "not-allowed",
+                          opacity: (selected.scan_result as ScanResult)?.strategic_plan && gammaStatus !== "loading" ? 1 : 0.5,
+                        }}
+                      >
+                        {gammaStatus === "loading" ? "Generuji…" : "Generovat prezentaci"}
+                      </button>
+                    )}
+                    {gammaStatus === "manual" && gammaResult && (gammaResult.gamma as { instruction?: string; gammaInputText?: string })?.gammaInputText && (
+                      <div style={{ marginTop: 12, padding: 12, background: "#1a1a1a", borderRadius: 8, fontSize: 12, color: "#ccc" }}>
+                        <div style={{ fontWeight: 600, color: "#d4a800", marginBottom: 6 }}>✋ Ruční export — API klíč není nastaven</div>
+                        <p style={{ margin: "0 0 8px 0" }}>{(gammaResult.gamma as { instruction?: string }).instruction}</p>
+                        <button
+                          type="button"
+                          onClick={() => navigator.clipboard.writeText((gammaResult.gamma as { gammaInputText?: string }).gammaInputText ?? "")}
+                          style={{ background: "#333", color: "#fff", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}
+                        >
+                          Kopírovat obsah pro Gamma →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ background: "#111", border: "1px solid #333", borderRadius: 8, padding: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <span style={{ fontSize: 18 }}>🎧</span>
+                      <span style={{ fontWeight: 600, color: "#fff" }}>NotebookLM průvodce</span>
+                    </div>
+                    <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#888" }}>AI průvodce + audio přehled strategie pro klienta</p>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!selected.id) return;
+                        setNotebookStatus("loading");
+                        setNotebookResult(null);
+                        try {
+                          const res = await fetch(`/api/admin/diagnostika/${selected.id}/export-notebooklm`, { method: "POST" });
+                          const data = await res.json();
+                          setNotebookResult(data);
+                          setNotebookStatus("done");
+                        } catch {
+                          setNotebookStatus("idle");
+                        }
+                      }}
+                      disabled={!(selected.scan_result as ScanResult)?.strategic_plan || notebookStatus === "loading"}
+                      style={{
+                        width: "100%",
+                        background: "#4a9eff",
+                        color: "#000",
+                        border: "none",
+                        borderRadius: 8,
+                        padding: "10px 16px",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: (selected.scan_result as ScanResult)?.strategic_plan && notebookStatus !== "loading" ? "pointer" : "not-allowed",
+                        opacity: (selected.scan_result as ScanResult)?.strategic_plan && notebookStatus !== "loading" ? 1 : 0.5,
+                      }}
+                    >
+                      {notebookStatus === "loading" ? "Připravuji…" : "Připravit zdroje"}
+                    </button>
+                    {notebookStatus === "done" && notebookResult && Array.isArray(notebookResult.sources) && (
+                      <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                        {(notebookResult.sources as Array<{ order?: number; title?: string; content?: string }>).map((s) => (
+                          <div key={s.order ?? 0} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 8, background: "#1a1a1a", borderRadius: 6 }}>
+                            <span style={{ fontSize: 12, color: "#ccc" }}>{s.order}. {s.title}</span>
+                            <button
+                              type="button"
+                              onClick={() => navigator.clipboard.writeText(s.content ?? "")}
+                              style={{ fontSize: 12, color: "#888", background: "none", border: "none", cursor: "pointer" }}
+                            >
+                              Kopírovat
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </>
         )}
