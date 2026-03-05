@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClientProject, updateClientProjectScanResult, updateClientProject, getClientProjectById, getClientProjectByEmail } from "@/lib/supabase-client-projects";
+import { createClientProject, updateClientProjectScanResult, updateClientProject, getClientProjectById, getClientProjectByEmail, getClientProjectByEmailAndWeb, insertDiagnosticVersion } from "@/lib/supabase-client-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,6 +76,12 @@ export async function POST(request: Request) {
     }
 
     if (email?.trim()) {
+      const existingByEmailAndWeb = await getClientProjectByEmailAndWeb(email.trim(), webUrl ?? null);
+      if (existingByEmailAndWeb) {
+        await insertDiagnosticVersion(existingByEmailAndWeb.id, scanResult);
+        const fresh = await getClientProjectById(existingByEmailAndWeb.id);
+        return NextResponse.json({ ok: true, id: existingByEmailAndWeb.id, viewUrl: viewUrlFor(fresh), newVersionSaved: true });
+      }
       const existingByEmail = await getClientProjectByEmail(email.trim());
       if (existingByEmail) {
         const existingScan = (existingByEmail.scan_result ?? {}) as Record<string, unknown>;

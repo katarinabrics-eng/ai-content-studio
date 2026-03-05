@@ -261,6 +261,19 @@ export async function getClientProjectById(id: string): Promise<ClientProjectRow
   return data as ClientProjectRow | null;
 }
 
+/** Normalizuje web URL pro porovnání (lowercase, bez www, bez koncového lomítka). */
+export function normalizeWebUrl(url: string | null | undefined): string | null {
+  if (url == null || typeof url !== "string" || !url.trim()) return null;
+  try {
+    const u = new URL(url.trim().startsWith("http") ? url.trim() : `https://${url.trim()}`);
+    const host = u.hostname.toLowerCase().replace(/^www\./, "");
+    const path = u.pathname.replace(/\/+$/, "") || "/";
+    return `${u.protocol}//${host}${path}`;
+  } catch {
+    return null;
+  }
+}
+
 /** Vrací nejnovější projekt s daným e-mailem (pro upsert při diagnostice). E-mail se porovnává case-insensitive. */
 export async function getClientProjectByEmail(email: string): Promise<ClientProjectRow | null> {
   if (!email || typeof email !== "string" || !email.trim()) return null;
@@ -275,6 +288,116 @@ export async function getClientProjectByEmail(email: string): Promise<ClientProj
     .maybeSingle();
   if (error) throw error;
   return data as ClientProjectRow | null;
+}
+
+/** Vrací projekt se shodným e-mailem a webem (pro detekci duplicitní diagnostiky). Nepřepisujeme, ukládáme jako verzi. */
+export async function getClientProjectByEmailAndWeb(email: string, webUrl: string | null): Promise<ClientProjectRow | null> {
+  if (!email || typeof email !== "string" || !email.trim()) return null;
+  const supabase = getSupabaseClient();
+  const escaped = email.trim().replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+  const { data: rows, error } = await supabase
+    .from("client_projects")
+    .select("*")
+    .ilike("email", escaped)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  const list = (rows ?? []) as ClientProjectRow[];
+  const want = normalizeWebUrl(webUrl);
+  for (const row of list) {
+    if (normalizeWebUrl(row.web_url) === want) return row;
+  }
+  return null;
+}
+
+export type DiagnosticVersionStatus = "pending" | "accepted" | "ignored";
+
+export type DiagnosticVersionRow = {
+  id: string;
+  project_id: string;
+  scan_result: Record<string, unknown>;
+  created_at: string;
+  status: DiagnosticVersionStatus;
+};
+
+/** Uloží novou verzi diagnostiky (bez přepisu projektu). */
+export async function insertDiagnosticVersion(projectId: string, scanResult: Record<string, unknown>): Promise<{ id: string }> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("diagnostic_versions")
+    .insert({ project_id: projectId, scan_result: scanResult ?? {}, status: "pending" })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return { id: (data as { id: string }).id };
+}
+
+/** Vrátí pending verzi pro projekt (nejnovější). */
+export async function getPendingDiagnosticVersion(projectId: string): Promise<DiagnosticVersionRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("diagnostic_versions")
+    .select("id, project_id, scan_result, created_at, status")
+    .eq("project_id", projectId)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data as DiagnosticVersionRow | null;
+}
+
+/** Všechny verze projektu (pro historii a porovnání). */
+export async function listDiagnosticVersions(projectId: string): Promise<DiagnosticVersionRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("diagnostic_versions")
+    .select("id, project_id, scan_result, created_at, status")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as DiagnosticVersionRow[];
+}
+
+/** Vrátí verzi podle id (pro ověření project_id). */
+export async function getDiagnosticVersionById(versionId: string): Promise<DiagnosticVersionRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("diagnostic_versions")
+    .select("id, project_id, scan_result, created_at, status")
+    .eq("id", versionId)
+    .single();
+  if (error || !data) return null;
+  return data as DiagnosticVersionRow;
+}
+
+/** Přijme verzi: zkopíruje scan_result do projektu a označí verzi jako accepted. */
+export async function acceptDiagnosticVersion(versionId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { data: version, error: fetchErr } = await supabase
+    .from("diagnostic_versions")
+    .select("project_id, scan_result, status")
+    .eq("id", versionId)
+    .single();
+  if (fetchErr || !version || (version as { status: string }).status !== "pending") return false;
+  const v = version as { project_id: string; scan_result: Record<string, unknown> };
+  const { error: updateProject } = await supabase
+    .from("client_projects")
+    .update({ scan_result: v.scan_result, updated_at: new Date().toISOString() })
+    .eq("id", v.project_id);
+  if (updateProject) return false;
+  const { error: updateVersion } = await supabase
+    .from("diagnostic_versions")
+    .update({ status: "accepted" })
+    .eq("id", versionId);
+  return !updateVersion;
+}
+
+/** Označí verzi jako ignorovanou. */
+export async function ignoreDiagnosticVersion(versionId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("diagnostic_versions").update({ status: "ignored" }).eq("id", versionId);
+  return !error;
 }
 
 /** Vrací projekt při platném tokenu. Pokud token chybí nebo je po access_expires_at, vrací null. */

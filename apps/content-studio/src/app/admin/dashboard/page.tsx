@@ -818,6 +818,9 @@ export default function PipelineDashboardPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; hard: boolean } | null>(null);
   const [showOnlyUrgent, setShowOnlyUrgent] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState("");
+  const [pendingVersion, setPendingVersion] = useState<{ id: string; scan_result: Record<string, unknown>; created_at: string } | null>(null);
+  const [showCompareDiff, setShowCompareDiff] = useState(false);
+  const [versionsActionLoading, setVersionsActionLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -849,6 +852,28 @@ export default function PipelineDashboardPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (!activeId) {
+      setPendingVersion(null);
+      setShowCompareDiff(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch(`/api/admin/diagnostika/${activeId}/versions`);
+        if (!r.ok || cancelled) return;
+        const d = await r.json();
+        if (cancelled) return;
+        setPendingVersion(d.pending ?? null);
+        if (!d.pending) setShowCompareDiff(false);
+      } catch {
+        if (!cancelled) setPendingVersion(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [activeId]);
 
   const clients = rows.map(mapRowToClient);
   const pipelineClients = clients.filter((c) => c.status !== "SUPLIK" && c.status !== "ARCHIV");
@@ -1195,6 +1220,117 @@ export default function PipelineDashboardPage() {
                 </div>
               );
             })()}
+
+            {pendingVersion && (
+              <div style={{ marginTop: 12, padding: 12, background: C.bg2, border: `1px solid ${C.yellow}`, borderRadius: 10 }}>
+                <div style={{ fontSize: 12, color: C.text, marginBottom: 10 }}>
+                  Klient znovu spustil diagnostiku {new Date(pendingVersion.created_at).toLocaleDateString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })} — zobrazit změny
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  <button
+                    type="button"
+                    disabled={versionsActionLoading}
+                    onClick={async () => {
+                      setVersionsActionLoading(true);
+                      try {
+                        const res = await fetch(`/api/admin/diagnostika/${client.id}/versions`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ action: "accept", versionId: pendingVersion.id }),
+                        });
+                        if (!res.ok) {
+                          const data = await res.json().catch(() => ({}));
+                          throw new Error(data?.error ?? "Chyba");
+                        }
+                        await fetchData();
+                        const verRes = await fetch(`/api/admin/diagnostika/${client.id}/versions`);
+                        if (verRes.ok) {
+                          const vd = await verRes.json();
+                          setPendingVersion(vd.pending ?? null);
+                        } else {
+                          setPendingVersion(null);
+                        }
+                        setShowCompareDiff(false);
+                      } catch (e) {
+                        alert(e instanceof Error ? e.message : "Nepodařilo se přijmout verzi");
+                      } finally {
+                        setVersionsActionLoading(false);
+                      }
+                    }}
+                    style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 11, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
+                  >
+                    Přijmout novou verzi
+                  </button>
+                  <button
+                    type="button"
+                    disabled={versionsActionLoading}
+                    onClick={async () => {
+                      setVersionsActionLoading(true);
+                      try {
+                        const res = await fetch(`/api/admin/diagnostika/${client.id}/versions`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ action: "ignore", versionId: pendingVersion.id }),
+                        });
+                        if (!res.ok) {
+                          const data = await res.json().catch(() => ({}));
+                          throw new Error(data?.error ?? "Chyba");
+                        }
+                        const verRes = await fetch(`/api/admin/diagnostika/${client.id}/versions`);
+                        if (verRes.ok) {
+                          const vd = await verRes.json();
+                          setPendingVersion(vd.pending ?? null);
+                        } else {
+                          setPendingVersion(null);
+                        }
+                        setShowCompareDiff(false);
+                      } catch (e) {
+                        alert(e instanceof Error ? e.message : "Nepodařilo se ignorovat");
+                      } finally {
+                        setVersionsActionLoading(false);
+                      }
+                    }}
+                    style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
+                  >
+                    Ignorovat
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCompareDiff((v) => !v)}
+                    style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${C.purple}`, background: showCompareDiff ? C.purple + "22" : "transparent", color: C.purple, fontSize: 11, cursor: "pointer" }}
+                  >
+                    {showCompareDiff ? "Skrýt porovnání" : "Porovnat rozdíly"}
+                  </button>
+                </div>
+                {showCompareDiff && (() => {
+                  const activeRow = rows.find((r) => r.id === activeId);
+                  const current = (activeRow?.scan_result ?? {}) as Record<string, unknown>;
+                  const next = pendingVersion.scan_result;
+                  const scoreCur = (current?.brandScore as { total?: number } | undefined)?.total ?? "—";
+                  const scoreNext = (next?.brandScore as { total?: number } | undefined)?.total ?? "—";
+                  const nameCur = (current?.brandDna as { name?: string } | undefined)?.name ?? (current?.client_name as string) ?? "—";
+                  const nameNext = (next?.brandDna as { name?: string } | undefined)?.name ?? (next?.client_name as string) ?? "—";
+                  const summaryCur = typeof current?.summary === "string" ? current.summary : "—";
+                  const summaryNext = typeof next?.summary === "string" ? next.summary : "—";
+                  return (
+                    <div style={{ marginTop: 14, padding: 12, background: C.bg0, borderRadius: 8, border: `1px solid ${C.border}`, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, fontSize: 11 }}>
+                      <div>
+                        <div style={{ color: C.muted, marginBottom: 8, fontWeight: 700 }}>Aktuální verze</div>
+                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Skóre:</span> {String(scoreCur)}</div>
+                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Název:</span> {String(nameCur)}</div>
+                        <div style={{ color: C.text, lineHeight: 1.5 }}><span style={{ color: C.faint }}>Shrnutí:</span> {(String(summaryCur)).slice(0, 200)}{(String(summaryCur)).length > 200 ? "…" : ""}</div>
+                      </div>
+                      <div>
+                        <div style={{ color: C.purple, marginBottom: 8, fontWeight: 700 }}>Nová verze (od klienta)</div>
+                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Skóre:</span> {String(scoreNext)}</div>
+                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Název:</span> {String(nameNext)}</div>
+                        <div style={{ color: C.text, lineHeight: 1.5 }}><span style={{ color: C.faint }}>Shrnutí:</span> {(String(summaryNext)).slice(0, 200)}{(String(summaryNext)).length > 200 ? "…" : ""}</div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
           </div>
 
           <div style={{ display: "flex", gap: 2, marginBottom: 18, background: C.bg1, borderRadius: 10, padding: 3, border: `1px solid ${C.border}` }}>
