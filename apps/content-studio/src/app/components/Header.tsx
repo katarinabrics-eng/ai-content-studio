@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 
 const navItems = [
+  { href: "/brand-scan", label: "Brand Scan" },
   { href: "/#sluzby", label: "Služby" },
   { href: "/portrety", label: "Portréty" },
   { href: "/premiova-vizualni-identita", label: "Prémiová identita" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ScoreRing } from "@/components/ScoreRing";
 import { ScoreCard } from "@/app/diagnostika/ScoreCard";
 import { GapQuestions } from "@/app/diagnostika/GapQuestions";
@@ -177,9 +177,18 @@ const C_FILL = {
   btn: { width: "100%", padding: 13, background: "#a8e063", color: "#000", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
 };
 
-export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }) {
+export function StartAnalyzer({
+  diagnostika = false,
+  initialUrl,
+  initialManualText,
+}: {
+  diagnostika?: boolean;
+  initialUrl?: string;
+  initialManualText?: string;
+}) {
   const [url, setUrl] = useState("");
   const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser" | "fillMissing" | "nameForm">("input");
+  const autoStartedRef = useRef(false);
   const [msg, setMsg] = useState("");
   const [scraped, setScraped] = useState<Scraped | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -238,8 +247,9 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
 
   const score = result?.brandScore?.total ?? 0;
 
-  const analyze = async () => {
-    if (mode === "web" && !url.trim()) return;
+  const analyze = async (overrideUrl?: string) => {
+    const urlToUse = (overrideUrl ?? url).trim();
+    if (mode === "web" && !urlToUse) return;
     if (diagnostika && mode === "manual" && !hasManualInput) return;
     setError("");
     setResult(null);
@@ -262,7 +272,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       const timeout = setTimeout(() => controller.abort(), 90_000);
       const body: Record<string, unknown> = diagnostika ? { format: "diagnostika" } : {};
       if (mode === "web") {
-        body.url = url.trim();
+        body.url = urlToUse;
       } else if (diagnostika) {
         body.manualData = mode === "manual" ? (buildManualData() || undefined) : undefined;
         if (brandFile) {
@@ -323,7 +333,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               name: data.scraped?.title || (resData?.brandDna as { name?: string } | undefined)?.name || undefined,
-              webUrl: mode === "web" ? url.trim() : undefined,
+              webUrl: mode === "web" ? urlToUse : undefined,
               manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
               result: resData,
             }),
@@ -332,19 +342,19 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           if (saveRes.ok && saveData?.id) {
             setProjectId(saveData.id);
             setSaveError(null);
-            setNameFormWeb(mode === "web" ? url.trim() : "");
+            setNameFormWeb(mode === "web" ? urlToUse : "");
             setNameFormName("");
             setNameFormError(null);
             setPhase(total < 60 ? "guidance" : "nameForm");
             return;
           } else {
             setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit do projektu.");
-            setNameFormWeb(mode === "web" ? url.trim() : "");
+            setNameFormWeb(mode === "web" ? urlToUse : "");
             setNameFormName("");
           }
         } catch {
           setSaveError("Výsledek se nepodařilo uložit do projektu. Zkuste to znovu nebo nás kontaktujte.");
-          setNameFormWeb(mode === "web" ? url.trim() : "");
+          setNameFormWeb(mode === "web" ? urlToUse : "");
           setNameFormName("");
         }
         setPhase(total < 60 ? "guidance" : "nameForm");
@@ -400,7 +410,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               projectId: projectId ?? undefined,
-              webUrl: mode === "web" ? url.trim() : undefined,
+              webUrl: mode === "web" ? urlToUse : undefined,
               manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
               result: updatedResult,
             }),
@@ -562,6 +572,31 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       setLeadSubmitting(false);
     }
   }
+
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    if (initialUrl && typeof initialUrl === "string" && initialUrl.trim()) {
+      autoStartedRef.current = true;
+      const u = initialUrl.trim().startsWith("http") ? initialUrl.trim() : `https://${initialUrl.trim()}`;
+      setUrl(u);
+      setMode("web");
+      analyze(u);
+    }
+  }, [initialUrl]);
+
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    if (initialManualText && typeof initialManualText === "string" && initialManualText.trim()) {
+      autoStartedRef.current = true;
+      setManualOptionalText(initialManualText.trim());
+      setBrandName("Značka");
+      setMode("manual");
+      const t = setTimeout(() => {
+        analyze();
+      }, 200);
+      return () => clearTimeout(t);
+    }
+  }, [initialManualText]);
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e7e7ef", fontFamily: "system-ui,sans-serif" }}>

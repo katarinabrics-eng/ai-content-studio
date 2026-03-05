@@ -180,14 +180,20 @@ export default function HomePage() {
             Čitelnost je otázka rozhodnutí.
           </h2>
           <a
-            href="/diagnostika"
+            href="/brand-scan"
             className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+          >
+            Spustit Brand Scan →
+          </a>
+          <p className="mt-4 text-[15px] text-stone-400">
+            Zdarma · Bez registrace · Zjistíte kde stojí vaše značka.
+          </p>
+          <a
+            href="/rezervace"
+            className="mt-6 inline-block text-[15px] text-stone-400 underline underline-offset-2 hover:text-stone-300"
           >
             Domluvit strategickou konzultaci
           </a>
-          <p className="mt-6 text-[15px] text-stone-400">
-            Konzultace trvá 20–30 minut. Pomůže vám ujasnit, zda je Lucifera správný krok právě teď.
-          </p>
         </div>
       </section>
 
