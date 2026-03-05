@@ -19,5 +19,5 @@ export const tokens = {
     pill: "9999px", // rounded-full
     input: "0.75rem", // 12px
   },
-  font: "var(--font-geist-sans), 'Inter', system-ui, sans-serif",
+  font: "var(--font-dm-sans), system-ui, sans-serif",
 } as const;

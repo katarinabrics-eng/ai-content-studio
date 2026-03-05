@@ -2,7 +2,7 @@ import { Header } from "./components/Header";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white light-theme">
       <Header />
 
       {/* BLOK 1: HERO – Background image, overlay, text vlevo. Zarovnáno s logem (jako prémiová). */}

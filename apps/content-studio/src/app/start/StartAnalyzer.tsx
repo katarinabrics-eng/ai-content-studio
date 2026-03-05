@@ -599,7 +599,7 @@ export function StartAnalyzer({
   }, [initialManualText]);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e7e7ef", fontFamily: "system-ui,sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#e7e7ef" }}>
       <style>{`
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}

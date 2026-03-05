@@ -27,7 +27,7 @@ function DiagnostikaContent() {
 
 export default function DiagnostikaPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
+    <main className="min-h-screen bg-[#0a0a0a] dark-theme">
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-zinc-500">Načítám…</div>}>
         <DiagnostikaContent />
       </Suspense>

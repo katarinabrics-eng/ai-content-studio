@@ -360,7 +360,7 @@ export function ScanResultScrollExperience({
   }
 
   return (
-    <div className="bg-[#0a0a0a] text-[#e7e7ef] animate-fade-in" style={{ fontFamily: "system-ui, sans-serif" }}>
+    <div className="bg-[#0a0a0a] text-[#e7e7ef] animate-fade-in">
       {onBack && (
         <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur">
           <div className="flex items-center gap-4">

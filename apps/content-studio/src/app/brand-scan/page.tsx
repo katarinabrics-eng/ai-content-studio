@@ -97,7 +97,7 @@ function BrandScanForm({ id }: { id?: string }) {
 
 export default function BrandScanPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white" style={{ background: BG_DARK }}>
+    <main className="min-h-screen bg-[#0a0a0a] text-white light-theme" style={{ background: BG_DARK }}>
       <div className="mx-auto max-w-[720px] px-6 py-12 md:py-20">
         {/* SEKCE 1 — HERO */}
         <section className="pt-8 pb-16">
@@ -114,7 +114,7 @@ export default function BrandScanPage() {
 
         {/* SEKCE 2 — PROBLÉM */}
         <section className="py-16 border-t border-white/10">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-10">
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-white mb-10">
             Máš značku. Ale nikdo to nevidí tak, jak ty.
           </h2>
           <div className="grid md:grid-cols-3 gap-6">

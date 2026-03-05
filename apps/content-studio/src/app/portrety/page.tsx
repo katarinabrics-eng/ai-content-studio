@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function PortretyPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white light-theme">
       <Header />
 
       {/* BLOK 1: HERO – Asymetrický, text vlevo, vizuál vpravo */}

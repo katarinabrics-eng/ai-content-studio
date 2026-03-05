@@ -35,10 +35,7 @@ export function ScanRitualLoading() {
   const displayNumber = COUNTER_VALUES[counterIndex];
 
   return (
-    <div
-      className="fixed inset-0 z-20 flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e7e7ef] px-6"
-      style={{ fontFamily: "system-ui, sans-serif" }}
-    >
+    <div className="fixed inset-0 z-20 flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e7e7ef] px-6">
       <div className="max-w-lg mx-auto text-center">
         <h2 className="text-2xl md:text-3xl font-semibold text-white mb-2">
           Lucifera analyzuje vaši značku

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ObchodniPodminkyPage() {
   return (
-    <main className="min-h-screen bg-stone-50">
+    <main className="min-h-screen bg-stone-50 light-theme">
       <div className="mx-auto max-w-[720px] px-6 py-16 md:py-24">
         <Link
           href="/"

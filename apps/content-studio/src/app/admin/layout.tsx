@@ -12,11 +12,11 @@ export default function AdminLayout({
 
   return (
     <div
+      className="dark-theme"
       style={{
         minHeight: "100vh",
         background: "#0a0a0a",
         color: "#fff",
-        fontFamily: "system-ui, sans-serif",
         display: "flex",
         flexDirection: "column",
       }}

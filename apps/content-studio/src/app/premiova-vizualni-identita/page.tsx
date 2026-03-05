@@ -19,7 +19,7 @@ const faqs = [
 
 export default function PremioveVizualniIdentitaPage() {
   return (
-    <main className="min-h-screen bg-stone-50">
+    <main className="min-h-screen bg-stone-50 light-theme">
       <Header />
 
       <section className="relative w-full min-h-[85vh] overflow-hidden bg-white">
