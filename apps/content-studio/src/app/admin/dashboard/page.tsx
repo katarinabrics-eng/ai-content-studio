@@ -858,6 +858,13 @@ export default function PipelineDashboardPage() {
   const [dragOverPodklady, setDragOverPodklady] = useState(false);
   const podkladyFileInputRef = useRef<HTMLInputElement>(null);
   const [collapsedClientEmails, setCollapsedClientEmails] = useState<Set<string>>(new Set());
+  const [bundlesList, setBundlesList] = useState<Array<{ id: string; name: string; output_type: string; status: string; strategy_label: string | null; created_at: string; output_url: string | null }>>([]);
+  const [bundlesLoading, setBundlesLoading] = useState(false);
+  const [showNewBundlePanel, setShowNewBundlePanel] = useState(false);
+  const [newBundleName, setNewBundleName] = useState("");
+  const [newBundleOutputType, setNewBundleOutputType] = useState<"GAMMA" | "CANVA" | "NOTEBOOKLM" | "CUSTOM">("GAMMA");
+  const [bundleCreateLoading, setBundleCreateLoading] = useState(false);
+  const [generatingBundleId, setGeneratingBundleId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -930,6 +937,25 @@ export default function PipelineDashboardPage() {
   useEffect(() => {
     if (activeTab === "podklady" && activeId) loadAssets();
   }, [activeTab, activeId, loadAssets]);
+
+  const loadBundles = useCallback(async () => {
+    if (!activeId) return;
+    setBundlesLoading(true);
+    try {
+      const r = await fetch(`/api/admin/projects/${activeId}/bundles`);
+      const d = await r.json();
+      if (d.bundles) setBundlesList(d.bundles);
+      else setBundlesList([]);
+    } catch {
+      setBundlesList([]);
+    } finally {
+      setBundlesLoading(false);
+    }
+  }, [activeId]);
+
+  useEffect(() => {
+    if (activeTab === "vystup" && activeId) loadBundles();
+  }, [activeTab, activeId, loadBundles]);
 
   const clients = rows.map(mapRowToClient);
   const pipelineClients = clients.filter((c) => c.status !== "SUPLIK" && c.status !== "ARCHIV");
@@ -1856,6 +1882,18 @@ export default function PipelineDashboardPage() {
                           >
                             {isExpanded ? "Sbalit" : "Detail"}
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewBundleName(`${s.label} × Výstup`);
+                              setNewBundleOutputType("GAMMA");
+                              setActiveTab("vystup");
+                              setShowNewBundlePanel(true);
+                            }}
+                            style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer" }}
+                          >
+                            ⊡ Zabalit do balíčku →
+                          </button>
                           <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
                         </div>
                       );
@@ -1976,6 +2014,18 @@ export default function PipelineDashboardPage() {
                           </div>
                           <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewBundleName(`${s.label} × Výstup`);
+                            setNewBundleOutputType("GAMMA");
+                            setActiveTab("vystup");
+                            setShowNewBundlePanel(true);
+                          }}
+                          style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer" }}
+                        >
+                          ⊡ Zabalit do balíčku →
+                        </button>
                         <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
                       </div>
                     ))}
@@ -2024,23 +2074,167 @@ export default function PipelineDashboardPage() {
           )}
 
           {activeTab === "vystup" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                { icon: "🎨", title: "Gamma prezentace", desc: "Prezentace strategie — PDF + sdílený odkaz", color: C.lime, textColor: "#000", path: "/admin" },
-                { icon: "🎧", title: "NotebookLM průvodce", desc: "Audio přehled + AI chat pro klienta", color: C.purple, textColor: "#fff", path: "/admin" },
-                { icon: "📱", title: "5 příspěvků + Canva", desc: "Texty s Canva šablonami k publikaci", color: C.pink, textColor: "#fff", path: "/admin" },
-              ].map((item, i) => (
-                <Link key={i} href={`${item.path}?id=${client.id}`} style={{ textDecoration: "none" }}>
-                  <div style={{ padding: "13px 16px", borderRadius: 11, background: C.bg2, border: `1px solid ${item.color}22`, display: "flex", alignItems: "center", gap: 12, borderLeft: `4px solid ${item.color}` }}>
-                    <div style={{ fontSize: 24 }}>{item.icon}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{item.title}</div>
-                      <div style={{ fontSize: 10, color: C.muted }}>{item.desc}</div>
-                    </div>
-                    <span style={{ padding: "6px 16px", borderRadius: 8, border: "none", background: item.color, color: item.textColor, fontWeight: 700, fontSize: 11 }}>Generovat →</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                <span style={{ fontSize: 12, color: C.muted }}>{bundlesList.length} balíčků strategií</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const label = client.strategies?.find((s) => s.id === client.active_strategy_id)?.label;
+                    setNewBundleName(label ? `${label} × Výstup` : "[Stratég] × [Výstup]");
+                    setNewBundleOutputType("GAMMA");
+                    setShowNewBundlePanel(true);
+                  }}
+                  style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                >
+                  + Nový balíček
+                </button>
+              </div>
+
+              {showNewBundlePanel && (
+                <div style={{ padding: 16, borderRadius: 12, border: "2px solid #c8ff00", background: C.bg2 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#c8ff00", letterSpacing: "0.05em", marginBottom: 12 }}>NOVÝ BALÍČEK</div>
+                  <label style={{ display: "block", marginBottom: 10 }}>
+                    <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 4 }}>Název balíčku</span>
+                    <input
+                      type="text"
+                      value={newBundleName}
+                      onChange={(e) => setNewBundleName(e.target.value)}
+                      placeholder="[Stratég] × [Výstup]"
+                      style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "#0a0a0a", color: "#fff", fontSize: 13 }}
+                    />
+                  </label>
+                  <div style={{ fontSize: 11, color: C.muted, marginBottom: 10 }}>Typ výstupu</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+                    {[
+                      { type: "GAMMA" as const, icon: "🎨", label: "Gamma prezentace" },
+                      { type: "CANVA" as const, icon: "📱", label: "5 příspěvků + Canva" },
+                      { type: "NOTEBOOKLM" as const, icon: "🎧", label: "NotebookLM průvodce" },
+                      { type: "CUSTOM" as const, icon: "◇", label: "Vlastní výstup" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.type}
+                        type="button"
+                        onClick={() => setNewBundleOutputType(opt.type)}
+                        style={{
+                          padding: "10px 12px", borderRadius: 8, border: `1px solid ${newBundleOutputType === opt.type ? "#c8ff00" : C.border}`, background: newBundleOutputType === opt.type ? "#c8ff0018" : "transparent", color: "#ccc", fontSize: 12, textAlign: "left", cursor: "pointer",
+                        }}
+                      >
+                        {opt.icon} {opt.label}
+                      </button>
+                    ))}
                   </div>
-                </Link>
-              ))}
+                  <p style={{ fontSize: 11, color: C.faint, marginBottom: 12 }}>◈ Balíček zachytí aktuální stav diagnostiky, Brand DNA a strategie jako snapshot.</p>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      type="button"
+                      disabled={bundleCreateLoading}
+                      onClick={async () => {
+                        if (!client.id) return;
+                        setBundleCreateLoading(true);
+                        try {
+                          const res = await fetch(`/api/admin/projects/${client.id}/bundles`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name: newBundleName || "[Stratég] × [Výstup]", output_type: newBundleOutputType, strategy_label: client.strategies?.find((s) => s.id === client.active_strategy_id)?.label ?? null }),
+                          });
+                          if (!res.ok) throw new Error((await res.json()).error || "Chyba");
+                          await loadBundles();
+                          setShowNewBundlePanel(false);
+                          setNewBundleName("");
+                        } catch (e) {
+                          setError(e instanceof Error ? e.message : "Nepodařilo se vytvořit balíček");
+                        } finally {
+                          setBundleCreateLoading(false);
+                        }
+                      }}
+                      style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: "#c8ff00", color: "#000", fontWeight: 700, fontSize: 12, cursor: bundleCreateLoading ? "not-allowed" : "pointer" }}
+                    >
+                      ⊡ Vytvořit balíček
+                    </button>
+                    <button type="button" onClick={() => { setShowNewBundlePanel(false); setNewBundleName(""); }} style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer" }}>
+                      Zrušit
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {bundlesLoading ? (
+                <div style={{ padding: 24, textAlign: "center", color: C.muted, fontSize: 12 }}>Načítám balíčky…</div>
+              ) : bundlesList.length === 0 ? (
+                <div style={{ padding: 24, textAlign: "center", color: C.faint, fontSize: 12 }}>Zatím žádné balíčky. Vytvořte první balíček ze strategie.</div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {bundlesList.map((b) => {
+                    const typeInfo = { GAMMA: { icon: "🎨", label: "Gamma" }, CANVA: { icon: "📱", label: "5 příspěvků + Canva" }, NOTEBOOKLM: { icon: "🎧", label: "NotebookLM" }, CUSTOM: { icon: "◇", label: "Vlastní" } }[b.output_type] || { icon: "◇", label: b.output_type };
+                    const statusStyle: Record<string, { color: string; bg: string; icon: string }> = {
+                      NAVRH: { color: "#888", bg: "#1a1a1a", icon: "◯" },
+                      PRIPRAVENY: { color: "#d4b8f0", bg: "#16101e", icon: "◎" },
+                      GENERUJE: { color: "#e8d44d", bg: "#1a1600", icon: "◈" },
+                      HOTOVO: { color: "#c8ff00", bg: "#0f1a00", icon: "✦" },
+                    };
+                    const st = statusStyle[b.status] || statusStyle.NAVRH;
+                    const isGenerating = generatingBundleId === b.id;
+                    return (
+                      <div
+                        key={b.id}
+                        style={{
+                          padding: "12px 14px", borderRadius: 10, background: C.bg2, border: `1px solid ${C.border}`, borderLeft: `4px solid ${st.color}`, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
+                        }}
+                      >
+                        <span style={{ fontSize: 18 }}>{typeInfo.icon}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, color: "#fff", fontSize: 13, marginBottom: 4 }}>{b.name}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            {b.strategy_label && <span style={{ padding: "2px 8px", borderRadius: 6, background: "#d4b8f033", color: "#d4b8f0", fontSize: 10 }}>{b.strategy_label}</span>}
+                            <span style={{ padding: "2px 8px", borderRadius: 6, background: "#444", color: C.faint, fontSize: 10 }}>{typeInfo.label}</span>
+                            <span style={{ fontSize: 10, color: C.muted }}>{new Date(b.created_at).toLocaleDateString("cs-CZ")}</span>
+                          </div>
+                        </div>
+                        <span style={{ padding: "4px 10px", borderRadius: 6, background: st.bg, color: st.color, fontSize: 11, fontWeight: 600 }}>{st.icon} {b.status}</span>
+                        {b.status === "NAVRH" && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                await fetch(`/api/admin/projects/${client.id}/bundles/${b.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "PRIPRAVENY" }) });
+                                await loadBundles();
+                              } catch { setError("Nepodařilo se aktualizovat"); }
+                            }}
+                            style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 11, cursor: "pointer" }}
+                          >
+                            Připravit →
+                          </button>
+                        )}
+                        {b.status === "PRIPRAVENY" && (
+                          <button
+                            type="button"
+                            disabled={isGenerating}
+                            onClick={async () => {
+                              setGeneratingBundleId(b.id);
+                              try {
+                                await fetch(`/api/admin/projects/${client.id}/bundles/${b.id}/generate`, { method: "POST" });
+                                await loadBundles();
+                              } catch { setError("Generování selhalo"); } finally { setGeneratingBundleId(null); }
+                            }}
+                            style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: "#b57bee", color: "#fff", fontSize: 11, fontWeight: 600, cursor: isGenerating ? "not-allowed" : "pointer" }}
+                          >
+                            Generovat →
+                          </button>
+                        )}
+                        {b.status === "GENERUJE" && <span style={{ padding: "6px 12px", borderRadius: 8, background: "#1a1600", color: "#e8d44d", fontSize: 11 }}>◈ Generuje…</span>}
+                        {b.status === "HOTOVO" && (
+                          b.output_url ? (
+                            <a href={b.output_url} target="_blank" rel="noopener noreferrer" style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #c8ff00", background: "transparent", color: "#c8ff00", fontSize: 11, fontWeight: 600, textDecoration: "none" }}>Zobrazit ↗</a>
+                          ) : (
+                            <span style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #c8ff00", color: "#c8ff00", fontSize: 11 }}>Zobrazit ↗</span>
+                          )
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
