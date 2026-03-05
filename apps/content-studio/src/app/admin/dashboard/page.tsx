@@ -48,6 +48,9 @@ type ApiRow = {
   workflow_status: string | null;
   payment_status: string | null;
   short_code: string | null;
+  access_expires_at: string | null;
+  access_type: string | null;
+  last_contact_at: string | null;
   scan_result?: {
     brandScore?: { total?: number };
     brandDna?: {
@@ -100,6 +103,12 @@ type Client = {
   notesAiEnabled: boolean;
   workflow_status: string | null;
   dashboard_section: string | null;
+  access_expires_at: string | null;
+  access_type: string | null;
+  last_contact_at: string | null;
+  created_at: string;
+  projectName: string;
+  clientName: string;
 };
 
 const PILLAR_KEYS = [
@@ -195,6 +204,12 @@ function mapRowToClient(row: ApiRow): Client {
     notesAiEnabled: (scan as { notes_ai_enabled?: boolean }).notes_ai_enabled ?? false,
     workflow_status: row.workflow_status ?? null,
     dashboard_section: scan.dashboard_section ?? null,
+    access_expires_at: row.access_expires_at ?? null,
+    access_type: (row.access_type as "FREE" | "PAID" | "ACTIVE") ?? "FREE",
+    last_contact_at: row.last_contact_at ?? null,
+    created_at: row.created_at ?? "",
+    projectName: row.name?.trim() ?? "",
+    clientName: (scan as { client_name?: string }).client_name?.trim() ?? "",
   };
 }
 
@@ -482,19 +497,34 @@ function PipelineSection({
   );
 }
 
+const URGENCY_COLORS: Record<Urgency, string> = { red: "#ff5577", yellow: C.yellow, green: C.lime, gray: C.faint };
+
 function ClientCard({
   client,
   isActive,
   onClick,
   onTrash,
+  onUpdateStatus,
+  onQuickNote,
+  onRunStrategist,
+  quickActionsLoading,
 }: {
   client: Client;
   isActive: boolean;
   onClick: () => void;
   onTrash?: (e: React.MouseEvent) => void;
+  onUpdateStatus?: (id: string, status: PipelineStatus) => void;
+  onQuickNote?: (id: string, notes: string) => void;
+  onRunStrategist?: (id: string, strategistId: string) => void;
+  quickActionsLoading?: boolean;
 }) {
   const status = getS(client.status);
   const [hover, setHover] = useState(false);
+  const [openQuick, setOpenQuick] = useState<"status" | "note" | "strategist" | null>(null);
+  const [noteDraft, setNoteDraft] = useState(client.notes);
+  const urgency = getUrgency(client);
+  const dotColor = URGENCY_COLORS[urgency];
+  const showQuickActions = hover && (onUpdateStatus || onQuickNote || onRunStrategist);
   return (
     <div
       onClick={onClick}
@@ -512,22 +542,35 @@ function ClientCard({
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-        <div
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 7,
-            flexShrink: 0,
-            background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 12,
-            fontWeight: 700,
-            color: C.lilac,
-          }}
-        >
-          {client.avatar}
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 7,
+              background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 12,
+              fontWeight: 700,
+              color: C.lilac,
+            }}
+          >
+            {client.avatar}
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: -2,
+              right: -2,
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: dotColor,
+              border: "1px solid #0a0a0a",
+            }}
+          />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? "#fff" : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -535,7 +578,104 @@ function ClientCard({
           </div>
           <div style={{ fontSize: 9, color: C.faint }}>{client.sub}</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {showQuickActions && (
+            <>
+              {onUpdateStatus && (
+                <div style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    aria-label="Změnit stav"
+                    onClick={(e) => { e.stopPropagation(); setOpenQuick(openQuick === "status" ? null : "status"); }}
+                    style={{ padding: 2, border: "none", background: "transparent", cursor: "pointer", color: hover ? C.lime : "#444", fontSize: 14 }}
+                  >
+                    ⟳
+                  </button>
+                  {openQuick === "status" && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: 0,
+                        marginTop: 2,
+                        zIndex: 100,
+                        minWidth: 140,
+                        background: C.bg1,
+                        border: `1px solid ${C.border}`,
+                        borderRadius: 8,
+                        padding: 4,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {[...PIPELINE, ...SPECIAL].map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => { onUpdateStatus(client.id, s.id); setOpenQuick(null); }}
+                          style={{ display: "block", width: "100%", padding: "6px 10px", border: "none", background: "transparent", color: C.text, fontSize: 11, textAlign: "left", cursor: "pointer", borderRadius: 4 }}
+                        >
+                          {s.icon} {s.short ?? s.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {onQuickNote && (
+                <div style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    aria-label="Poznámka"
+                    onClick={(e) => { e.stopPropagation(); setNoteDraft(client.notes); setOpenQuick(openQuick === "note" ? null : "note"); }}
+                    style={{ padding: 2, border: "none", background: "transparent", cursor: "pointer", color: hover ? C.yellow : "#444", fontSize: 14 }}
+                  >
+                    ✎
+                  </button>
+                  {openQuick === "note" && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, marginTop: 2, zIndex: 100, width: 200, background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 8, boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }} onClick={(e) => e.stopPropagation()}>
+                      <textarea
+                        value={noteDraft}
+                        onChange={(e) => setNoteDraft(e.target.value)}
+                        onBlur={() => { onQuickNote(client.id, noteDraft); setOpenQuick(null); }}
+                        placeholder="Poznámka…"
+                        rows={3}
+                        style={{ width: "100%", resize: "vertical", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 11, padding: 6, boxSizing: "border-box" }}
+                        autoFocus
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              {onRunStrategist && (
+                <div style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    aria-label="Spustit stratéga"
+                    onClick={(e) => { e.stopPropagation(); setOpenQuick(openQuick === "strategist" ? null : "strategist"); }}
+                    disabled={quickActionsLoading}
+                    style={{ padding: 2, border: "none", background: "transparent", cursor: quickActionsLoading ? "not-allowed" : "pointer", color: hover ? C.purple : "#444", fontSize: 14 }}
+                  >
+                    ◈
+                  </button>
+                  {openQuick === "strategist" && (
+                    <div style={{ position: "absolute", top: "100%", right: 0, marginTop: 2, zIndex: 100, minWidth: 180, maxHeight: 200, overflow: "auto", background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8, padding: 4, boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }} onClick={(e) => e.stopPropagation()}>
+                      {STRATEGISTS_META.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => { onRunStrategist(client.id, s.id); setOpenQuick(null); }}
+                          style={{ display: "block", width: "100%", padding: "6px 10px", border: "none", background: "transparent", color: C.text, fontSize: 11, textAlign: "left", cursor: "pointer", borderRadius: 4 }}
+                        >
+                          {s.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
           <div style={{ fontSize: 11, fontWeight: 700, color: status.color }}>{client.score}</div>
           {onTrash && (
             <button
@@ -623,6 +763,44 @@ const TABS = [
 const scoreColor = (s: number) => (s >= 8 ? C.lime : s >= 6 ? C.yellow : s >= 4 ? C.pink : "#ff5577");
 const scoreLabel = (s: number) => (s >= 8 ? "Silné" : s >= 6 ? "Dobré" : s >= 4 ? "Slabé" : "Kritické");
 
+function getAccessDisplay(client: Client): { label: string; color: string } {
+  const at = client.access_type ?? "FREE";
+  if (at === "ACTIVE") return { label: "Přístup: ACTIVE · bez omezení", color: C.muted };
+  const exp = client.access_expires_at ? new Date(client.access_expires_at) : null;
+  if (!exp) return { label: `Přístup: ${at}`, color: C.muted };
+  const now = new Date();
+  const msLeft = exp.getTime() - now.getTime();
+  const hoursLeft = msLeft / (1000 * 60 * 60);
+  const daysLeft = msLeft / (1000 * 60 * 60 * 24);
+  if (msLeft <= 0) return { label: `Přístup: ${at} · vypršel`, color: "#ff5577" };
+  if (hoursLeft <= 24) return { label: `Přístup: ${at} · vyprší za ${Math.round(hoursLeft)} h`, color: "#ff5577" };
+  if (daysLeft <= 3) return { label: `Přístup: ${at} · vyprší za ${Math.ceil(daysLeft)} dní`, color: C.yellow };
+  const dateStr = exp.toLocaleDateString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric" });
+  return { label: `Přístup: ${at} · vyprší ${dateStr}`, color: C.muted };
+}
+
+type Urgency = "red" | "yellow" | "green" | "gray";
+function getUrgency(client: Client): Urgency {
+  if (client.status === "SUPLIK" || client.status === "ARCHIV") return "gray";
+  const now = new Date();
+  const exp = client.access_expires_at ? new Date(client.access_expires_at).getTime() : 0;
+  const msLeft = exp - now.getTime();
+  const hoursLeft = msLeft / (1000 * 60 * 60);
+  const daysLeft = msLeft / (1000 * 60 * 60 * 24);
+  const lastContact = client.last_contact_at ? new Date(client.last_contact_at).getTime() : 0;
+  const hoursSinceContact = lastContact ? (now.getTime() - lastContact) / (1000 * 60 * 60) : 0;
+
+  const accessExpires24h = exp > 0 && msLeft > 0 && hoursLeft <= 24;
+  const waitingActivation2h = (client.status === "HOVOR" || client.status === "AKTIVNI") && lastContact > 0 && hoursSinceContact > 2;
+  if (accessExpires24h || waitingActivation2h) return "red";
+
+  const accessExpires3d = exp > 0 && msLeft > 0 && daysLeft <= 3;
+  const hovorNotRecorded = client.status === "HOVOR" && !client.last_contact_at;
+  if (accessExpires3d || hovorNotRecorded) return "yellow";
+
+  return "green";
+}
+
 export default function PipelineDashboardPage() {
   const router = useRouter();
   const [rows, setRows] = useState<ApiRow[]>([]);
@@ -638,6 +816,8 @@ export default function PipelineDashboardPage() {
   const [selectedStrategyIds, setSelectedStrategyIds] = useState<string[]>([]);
   const [expandedStrategyId, setExpandedStrategyId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; hard: boolean } | null>(null);
+  const [showOnlyUrgent, setShowOnlyUrgent] = useState(false);
+  const [sidebarSearch, setSidebarSearch] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -675,6 +855,18 @@ export default function PipelineDashboardPage() {
   const suplikClients = clients.filter((c) => c.status === "SUPLIK");
   const archivClients = clients.filter((c) => c.status === "ARCHIV");
   const sectionClients = navSection === "pipeline" ? pipelineClients : navSection === "suplik" ? suplikClients : archivClients;
+  const urgentCount = sectionClients.filter((c) => { const u = getUrgency(c); return u === "red" || u === "yellow"; }).length;
+  const filteredByUrgent = showOnlyUrgent ? sectionClients.filter((c) => { const u = getUrgency(c); return u === "red" || u === "yellow"; }) : sectionClients;
+  const searchQ = sidebarSearch.trim().toLowerCase();
+  const displayedClients = searchQ
+    ? filteredByUrgent.filter((c) => {
+        const name = (c.name || "").toLowerCase();
+        const sub = (c.sub || "").toLowerCase();
+        const projectName = (c.projectName || "").toLowerCase();
+        const clientName = (c.clientName || "").toLowerCase();
+        return name.includes(searchQ) || sub.includes(searchQ) || projectName.includes(searchQ) || clientName.includes(searchQ);
+      })
+    : filteredByUrgent;
   const client = clients.find((c) => c.id === activeId);
 
   const updateStatus = async (id: string, newStatus: PipelineStatus) => {
@@ -857,13 +1049,64 @@ export default function PipelineDashboardPage() {
             <NavItem label="Šuplík" icon="⊡" count={suplikClients.length} color={C.yellow} isActive={navSection === "suplik"} onClick={() => setNavSection("suplik")} />
             <NavItem label="Archiv" icon="◫" count={archivClients.length} color={C.faint} isActive={navSection === "archiv"} onClick={() => setNavSection("archiv")} />
           </div>
+          <div style={{ padding: "8px", borderBottom: `1px solid ${C.border}` }}>
+            <div style={{ position: "relative" }}>
+              <input
+                type="text"
+                value={sidebarSearch}
+                onChange={(e) => setSidebarSearch(e.target.value)}
+                placeholder="Hledat klienta nebo projekt..."
+                style={{
+                  width: "100%",
+                  padding: "8px 28px 8px 10px",
+                  background: "#141414",
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 6,
+                  color: C.text,
+                  fontSize: 12,
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+              {sidebarSearch && (
+                <button
+                  type="button"
+                  onClick={() => setSidebarSearch("")}
+                  aria-label="Vymazat"
+                  style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", padding: 0, border: "none", background: "transparent", color: C.muted, cursor: "pointer", fontSize: 14 }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+          {urgentCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowOnlyUrgent((v) => !v)}
+              style={{
+                margin: "8px 8px 0",
+                padding: "6px 10px",
+                borderRadius: 6,
+                border: `1px solid ${showOnlyUrgent ? C.yellow : C.border}`,
+                background: showOnlyUrgent ? C.yellow + "15" : "transparent",
+                color: showOnlyUrgent ? C.yellow : C.muted,
+                fontSize: 11,
+                cursor: "pointer",
+                textAlign: "left",
+                width: "calc(100% - 16px)",
+              }}
+            >
+              ● {urgentCount} vyžadují pozornost
+            </button>
+          )}
           <div style={{ flex: 1, overflow: "auto", padding: "8px 0" }}>
-            {sectionClients.length === 0 ? (
+            {displayedClients.length === 0 ? (
               <div style={{ padding: "24px 16px", textAlign: "center", fontSize: 11, color: C.faint }}>
-                {navSection === "suplik" ? "Šuplík je prázdný" : navSection === "archiv" ? "Archiv je prázdný" : "Žádní klienti"}
+                {searchQ ? "Žádný klient nenalezen" : showOnlyUrgent ? "Žádné urgentní" : navSection === "suplik" ? "Šuplík je prázdný" : navSection === "archiv" ? "Archiv je prázdný" : "Žádní klienti"}
               </div>
             ) : (
-              sectionClients.map((c) => (
+              displayedClients.map((c) => (
                 <ClientCard
                   key={c.id}
                   client={c}
@@ -873,6 +1116,29 @@ export default function PipelineDashboardPage() {
                     e?.stopPropagation();
                     setDeleteConfirm({ id: c.id, name: c.name, hard: navSection === "archiv" });
                   }}
+                  onUpdateStatus={(id, s) => updateStatus(id, s)}
+                  onQuickNote={async (id, notes) => {
+                    const res = await fetch(`/api/admin/diagnostika/${id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ internal_notes: notes }),
+                    });
+                    if (res.ok) await fetchData();
+                  }}
+                  onRunStrategist={async (id, strategistId) => {
+                    setStrategistLoading(true);
+                    try {
+                      const res = await fetch(`/api/admin/diagnostika/${id}/run-strategist`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ strategistId }),
+                      });
+                      if (res.ok) await fetchData();
+                    } finally {
+                      setStrategistLoading(false);
+                    }
+                  }}
+                  quickActionsLoading={strategistLoading}
                 />
               ))
             )}
@@ -921,6 +1187,14 @@ export default function PipelineDashboardPage() {
               <ScoreRing score={client.score} />
             </div>
             <PipelineSection client={client} onChangeStatus={(s) => updateStatus(client.id, s)} updating={statusUpdating === client.id} />
+            {(() => {
+              const access = getAccessDisplay(client);
+              return (
+                <div style={{ fontSize: 11, color: access.color, marginTop: 8 }}>
+                  {access.label}
+                </div>
+              );
+            })()}
           </div>
 
           <div style={{ display: "flex", gap: 2, marginBottom: 18, background: C.bg1, borderRadius: 10, padding: 3, border: `1px solid ${C.border}` }}>

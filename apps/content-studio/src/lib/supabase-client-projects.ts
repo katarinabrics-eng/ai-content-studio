@@ -2,9 +2,12 @@ import { randomBytes } from "crypto";
 import { getSupabaseClient } from "./supabase-server";
 import type { DiagWorkflowStatus } from "./diagnostika-workflow";
 
-const ACCESS_DAYS = 7;
+const ACCESS_DAYS_FREE = 3;
+const ACCESS_DAYS_PAID = 14;
 const SHORT_CODE_LENGTH = 8;
 const SHORT_CODE_CHARS = "abcdefghjkmnpqrstuvwxyz23456789";
+
+export type AccessType = "FREE" | "PAID" | "ACTIVE";
 
 function generateAccessToken(): string {
   return randomBytes(32).toString("hex");
@@ -19,9 +22,11 @@ function generateShortCode(): string {
   return s;
 }
 
-function getAccessExpiresAt(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + ACCESS_DAYS);
+/** FREE = +3 dny od baseDate, PAID = +14 dní, ACTIVE = null. */
+export function getAccessExpiresAt(accessType: AccessType, baseDate: Date = new Date()): string | null {
+  if (accessType === "ACTIVE") return null;
+  const d = new Date(baseDate);
+  d.setDate(d.getDate() + (accessType === "PAID" ? ACCESS_DAYS_PAID : ACCESS_DAYS_FREE));
   return d.toISOString();
 }
 
@@ -45,6 +50,8 @@ export type ClientProjectRow = {
   workflow_status: DiagWorkflowStatus;
   access_token: string | null;
   access_expires_at: string | null;
+  access_type: AccessType | null;
+  last_contact_at: string | null;
   short_code: string | null;
 };
 
@@ -58,7 +65,8 @@ export async function createClientProject(params: {
 }): Promise<{ id: string }> {
   const supabase = getSupabaseClient();
   const access_token = generateAccessToken();
-  const access_expires_at = getAccessExpiresAt();
+  const access_type: AccessType = "FREE";
+  const access_expires_at = getAccessExpiresAt(access_type);
   const short_code = generateShortCode();
   const workflow_status = params.workflow_status ?? "DIAG_AWAITING_CURATOR";
   const { data, error } = await supabase
@@ -73,6 +81,7 @@ export async function createClientProject(params: {
       updated_at: new Date().toISOString(),
       access_token,
       access_expires_at,
+      access_type,
       short_code,
     })
     .select("id")
@@ -152,7 +161,7 @@ export async function updateClientProjectScanResult(
 /** Aktualizuje editovatelná pole záznamu diagnostiky (admin i klient). */
 export async function updateClientProject(
   projectId: string,
-  updates: { name?: string | null; email?: string | null; web_url?: string | null; manual_input?: string | null }
+  updates: { name?: string | null; email?: string | null; web_url?: string | null; manual_input?: string | null; last_contact_at?: string | null; access_type?: AccessType | null; access_expires_at?: string | null }
 ): Promise<ClientProjectRow | null> {
   const supabase = getSupabaseClient();
   const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -160,6 +169,9 @@ export async function updateClientProject(
   if (updates.email !== undefined) payload.email = updates.email;
   if (updates.web_url !== undefined) payload.web_url = updates.web_url;
   if (updates.manual_input !== undefined) payload.manual_input = updates.manual_input;
+  if (updates.last_contact_at !== undefined) payload.last_contact_at = updates.last_contact_at;
+  if (updates.access_type !== undefined) payload.access_type = updates.access_type;
+  if (updates.access_expires_at !== undefined) payload.access_expires_at = updates.access_expires_at;
   const { data, error } = await supabase
     .from("client_projects")
     .update(payload)
@@ -181,6 +193,15 @@ export async function setClientProjectPaidFromBooking(bookingId: string): Promis
   if (bookErr || !booking) return;
 
   const b = booking as { date: string; time: string; email: string };
+  const { data: project } = await supabase
+    .from("client_projects")
+    .select("created_at")
+    .eq("booking_id", bookingId)
+    .single();
+
+  const created = project?.created_at ? new Date((project as { created_at: string }).created_at) : new Date();
+  const access_expires_at = getAccessExpiresAt("PAID", created);
+
   const { error } = await supabase
     .from("client_projects")
     .update({
@@ -189,6 +210,8 @@ export async function setClientProjectPaidFromBooking(bookingId: string): Promis
       booking_date: b.date,
       booking_time: b.time,
       email: b.email,
+      access_type: "PAID",
+      access_expires_at,
       updated_at: new Date().toISOString(),
     })
     .eq("booking_id", bookingId);

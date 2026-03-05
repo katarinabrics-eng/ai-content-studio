@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { getClientProjectById, updateClientProject, updateClientProjectScanResult } from "@/lib/supabase-client-projects";
+import { getClientProjectById, updateClientProject, updateClientProjectScanResult, getAccessExpiresAt, type AccessType } from "@/lib/supabase-client-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,6 +63,23 @@ export async function PATCH(
     const merged = { ...scanResult, dashboard_section: section };
     const updatedScan = await updateClientProjectScanResult(id, { scan_result: merged });
     if (!updatedScan) return NextResponse.json({ error: "Nepodařilo se uložit sekci" }, { status: 500 });
+  }
+
+  if (body.last_contact_at !== undefined || body.access_type !== undefined) {
+    const freshForAccess = await getClientProjectById(id);
+    const updates: { last_contact_at?: string | null; access_type?: AccessType | null; access_expires_at?: string | null } = {};
+    if (body.last_contact_at !== undefined) {
+      updates.last_contact_at = typeof body.last_contact_at === "string" ? body.last_contact_at : null;
+    }
+    if (body.access_type !== undefined) {
+      const at = body.access_type as AccessType | null;
+      updates.access_type = at && ["FREE", "PAID", "ACTIVE"].includes(at) ? at : null;
+      const created = freshForAccess?.created_at ? new Date(freshForAccess.created_at) : new Date();
+      updates.access_expires_at = at ? getAccessExpiresAt(at, created) : null;
+    }
+    if (Object.keys(updates).length > 0) {
+      await updateClientProject(id, updates);
+    }
   }
 
   const fresh = await getClientProjectById(id);

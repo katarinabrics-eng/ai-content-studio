@@ -3,6 +3,7 @@ import { canDiagTransition } from "@/lib/diagnostika-workflow";
 import {
   getClientProjectById,
   updateClientProjectWorkflowStatus,
+  updateClientProject,
 } from "@/lib/supabase-client-projects";
 import type { DiagWorkflowStatus } from "@/lib/diagnostika-workflow";
 
@@ -47,5 +48,9 @@ export async function PATCH(
       { status: 500 }
     );
   }
-  return NextResponse.json({ ok: true, project: updated });
+  if (workflowStatus === "DIAG_READY_FOR_CLIENT") {
+    await updateClientProject(id, { last_contact_at: new Date().toISOString() });
+  }
+  const fresh = await getClientProjectById(id);
+  return NextResponse.json({ ok: true, project: fresh ?? updated });
 }

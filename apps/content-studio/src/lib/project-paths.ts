@@ -5,6 +5,8 @@
  */
 
 export const BUCKET_CLIENT_PROJECTS = "client-projects";
+/** Bucket pro podklady v admin dashboardu (fotky, loga, PDF, moodboard). */
+export const BUCKET_PROJECT_ASSETS = "project-assets";
 
 export function projectStoragePrefix(projectCode: string): string {
   return `projects/${projectCode}/v1/`;
