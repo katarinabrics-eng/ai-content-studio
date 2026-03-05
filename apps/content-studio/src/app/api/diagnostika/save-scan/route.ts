@@ -14,6 +14,7 @@ function mergeScanResult(existing: Record<string, unknown>, incoming: Record<str
   if (hasPillarAnalysis) merged.pillarAnalysis = incoming.pillarAnalysis;
   const hasSuggested = Array.isArray(incoming.suggested_strategists) && incoming.suggested_strategists.length > 0;
   if (hasSuggested) merged.suggested_strategists = incoming.suggested_strategists;
+  if (incoming.client_name !== undefined) merged.client_name = incoming.client_name;
   return merged;
 }
 

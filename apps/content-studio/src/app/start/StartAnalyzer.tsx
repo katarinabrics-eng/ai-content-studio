@@ -450,13 +450,10 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   };
 
   const confirmNameForm = async () => {
-    const name = nameFormName.trim();
+    const clientName = nameFormName.trim();
     const web = nameFormWeb.trim();
-    if (!name) {
-      setNameFormError("Zadejte jméno nebo název projektu.");
-      return;
-    }
     setNameFormError(null);
+    const resultWithClientName = result ? { ...result, client_name: clientName || undefined } : result;
     if (projectId && result) {
       try {
         const saveRes = await fetch("/api/diagnostika/save-scan", {
@@ -464,9 +461,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             projectId,
-            name,
             webUrl: web || undefined,
-            result,
+            result: resultWithClientName,
           }),
         });
         const saveData = await saveRes.json();
@@ -479,7 +475,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
         return;
       }
     }
-    setResultDisplayName(name);
+    const projectNameFromAi = scraped?.title || (result?.brandDna as { name?: string } | undefined)?.name;
+    setResultDisplayName(clientName || projectNameFromAi || "");
     setResultDisplayWeb(web);
     setPhase("teaser");
   };
@@ -597,12 +594,12 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
-                <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 6 }}>Jméno nebo název projektu</label>
+                <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 6 }}>Jak vás máme oslovovat?</label>
                 <input
                   type="text"
                   value={nameFormName}
                   onChange={(e) => setNameFormName(e.target.value)}
-                  placeholder="Vaše jméno nebo firma"
+                  placeholder="Vaše jméno"
                   style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e7e7ef", fontSize: 14, boxSizing: "border-box" }}
                 />
               </div>

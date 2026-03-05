@@ -146,7 +146,7 @@ function DiagnostikaViewContent() {
       <div className="border-b border-white/10 bg-[#0a0a0a]/95 backdrop-blur sticky top-0 z-10 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           <span className="text-sm text-zinc-400 truncate">
-            {project.name || project.email || "Diagnostika"}
+            {(result as { client_name?: string }).client_name || project.name || project.email || "Diagnostika"}
           </span>
           <button
             type="button"
@@ -206,7 +206,7 @@ function DiagnostikaViewContent() {
       <ScanResultScrollExperience
         result={result}
         projectId={state.project.id}
-        displayName={project.name ?? ""}
+        displayName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
         displayWeb={project.web_url ?? ""}
         accessToken={token || undefined}
         onEnterWorkspace={undefined}
