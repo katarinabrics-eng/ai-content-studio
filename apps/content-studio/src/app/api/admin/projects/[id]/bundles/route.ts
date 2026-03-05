@@ -88,7 +88,11 @@ export async function POST(
 
   if (insertError) {
     console.error("[admin/projects/bundles] insert:", insertError);
-    return NextResponse.json({ error: "Nepodařilo se vytvořit balíček" }, { status: 500 });
+    const msg = insertError.message ?? "";
+    const hint = msg.includes("strategy_bundles") && (msg.includes("does not exist") || msg.includes("relation"))
+      ? " Tabulka strategy_bundles v databázi chybí — spusťte migraci 20260309100000_strategy_bundles.sql v Supabase."
+      : "";
+    return NextResponse.json({ error: `Nepodařilo se vytvořit balíček.${hint}` }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, bundle: inserted });
