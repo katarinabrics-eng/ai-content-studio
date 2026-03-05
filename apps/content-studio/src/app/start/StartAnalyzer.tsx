@@ -179,7 +179,7 @@ const C_FILL = {
 
 export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }) {
   const [url, setUrl] = useState("");
-  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser" | "fillMissing">("input");
+  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser" | "fillMissing" | "nameForm">("input");
   const [msg, setMsg] = useState("");
   const [scraped, setScraped] = useState<Scraped | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -202,6 +202,11 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
   const [fillMissingValues, setFillMissingValues] = useState<Partial<Record<MissingFieldKey, string>>>({});
   const [projectId, setProjectId] = useState<string | null>(null);
   const [teaserView, setTeaserView] = useState<"scroll" | "workspace">("scroll");
+  const [resultDisplayName, setResultDisplayName] = useState("");
+  const [resultDisplayWeb, setResultDisplayWeb] = useState("");
+  const [nameFormName, setNameFormName] = useState("");
+  const [nameFormWeb, setNameFormWeb] = useState("");
+  const [nameFormError, setNameFormError] = useState<string | null>(null);
   const [leadEmail, setLeadEmail] = useState("");
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
@@ -327,19 +332,24 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
           if (saveRes.ok && saveData?.id) {
             setProjectId(saveData.id);
             setSaveError(null);
-            if (typeof saveData?.viewUrl === "string" && saveData.viewUrl) {
-              window.location.href = saveData.viewUrl;
-              return;
-            }
+            setNameFormWeb(mode === "web" ? url.trim() : "");
+            setNameFormName("");
+            setNameFormError(null);
+            setPhase(total < 60 ? "guidance" : "nameForm");
+            return;
           } else {
             setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit do projektu.");
+            setNameFormWeb(mode === "web" ? url.trim() : "");
+            setNameFormName("");
           }
         } catch {
           setSaveError("Výsledek se nepodařilo uložit do projektu. Zkuste to znovu nebo nás kontaktujte.");
+          setNameFormWeb(mode === "web" ? url.trim() : "");
+          setNameFormName("");
         }
-        setPhase(total < 60 ? "guidance" : "teaser");
+        setPhase(total < 60 ? "guidance" : "nameForm");
       } else if (diagnostika) {
-        setPhase(total < 60 ? "guidance" : "teaser");
+        setPhase(total < 60 ? "guidance" : "nameForm");
       } else {
         setPhase(total < 60 ? "guidance" : "result");
       }
@@ -402,7 +412,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     } catch {
       // keep current result
     }
-    setPhase(diagnostika ? "teaser" : "result");
+    setPhase(diagnostika ? "nameForm" : "result");
   };
 
   const reset = () => {
@@ -412,6 +422,11 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setScraped(null);
     setAnswers({});
     setError("");
+    setResultDisplayName("");
+    setResultDisplayWeb("");
+    setNameFormName("");
+    setNameFormWeb("");
+    setNameFormError(null);
     setLeadEmail("");
     setLeadSubmitted(false);
     setLeadError(null);
@@ -432,6 +447,41 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
     setFillMissingValues({});
     setProjectId(null);
     setTeaserView("scroll");
+  };
+
+  const confirmNameForm = async () => {
+    const name = nameFormName.trim();
+    const web = nameFormWeb.trim();
+    if (!name) {
+      setNameFormError("Zadejte jméno nebo název projektu.");
+      return;
+    }
+    setNameFormError(null);
+    if (projectId && result) {
+      try {
+        const saveRes = await fetch("/api/diagnostika/save-scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projectId,
+            name,
+            webUrl: web || undefined,
+            result,
+          }),
+        });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) {
+          setNameFormError(saveData?.error ?? "Nepodařilo se uložit.");
+          return;
+        }
+      } catch {
+        setNameFormError("Chyba připojení.");
+        return;
+      }
+    }
+    setResultDisplayName(name);
+    setResultDisplayWeb(web);
+    setPhase("teaser");
   };
 
   const confirmFillMissing = async () => {
@@ -471,17 +521,16 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
       const saveData = await saveRes.json();
       if (saveRes.ok && saveData?.id) {
         setProjectId(saveData.id);
-        if (typeof saveData?.viewUrl === "string" && saveData.viewUrl) {
-          window.location.href = saveData.viewUrl;
-          return;
-        }
+        setNameFormWeb(url.trim());
+        setNameFormName("");
+        setNameFormError(null);
       } else {
         setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit.");
       }
     } catch {
       setSaveError("Výsledek se nepodařilo uložit. Zkuste to znovu.");
     }
-    setPhase(total < 60 ? "guidance" : "teaser");
+    setPhase(total < 60 ? "guidance" : "nameForm");
   };
 
   async function handleSaveLead() {
@@ -535,6 +584,51 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
 
       {phase === "loading" && diagnostika && <ScanRitualLoading />}
 
+      {phase === "nameForm" && diagnostika && result && (
+        <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
+          {saveError && (
+            <div role="alert" style={{ background: "rgba(220,80,80,0.12)", borderBottom: "1px solid rgba(220,80,80,0.3)", padding: "12px 22px", color: "#e8a0a0", fontSize: 13 }}>
+              {saveError}
+            </div>
+          )}
+          <div style={{ maxWidth: 420, margin: "0 auto" }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "#e7e7ef", marginBottom: 16 }}>
+              Než zobrazíme výsledky — jak vás máme oslovovat?
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 6 }}>Jméno nebo název projektu</label>
+                <input
+                  type="text"
+                  value={nameFormName}
+                  onChange={(e) => setNameFormName(e.target.value)}
+                  placeholder="Vaše jméno nebo firma"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e7e7ef", fontSize: 14, boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 6 }}>Web</label>
+                <input
+                  type="text"
+                  value={nameFormWeb}
+                  onChange={(e) => setNameFormWeb(e.target.value)}
+                  placeholder="https://…"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e7e7ef", fontSize: 14, boxSizing: "border-box" }}
+                />
+              </div>
+              {nameFormError && <p style={{ fontSize: 13, color: "#e8a0a0" }}>{nameFormError}</p>}
+              <button
+                type="button"
+                onClick={confirmNameForm}
+                style={{ padding: "12px 20px", borderRadius: 10, border: "none", background: "#A8EB12", color: "#0a0a0a", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+              >
+                Zobrazit výsledky →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {phase === "teaser" && diagnostika && result ? (
         <>
           {saveError && (
@@ -546,6 +640,8 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
             <ScanResultScrollExperience
               result={result}
               projectId={projectId}
+              displayName={resultDisplayName}
+              displayWeb={resultDisplayWeb}
               onBack={reset}
               onEnterWorkspace={() => setTeaserView("workspace")}
             />

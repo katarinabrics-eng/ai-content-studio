@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BookingCalendar from "@/components/booking/BookingCalendar";
 
 export type BrandScore = {
@@ -103,11 +103,20 @@ function HeroSubline({ total }: { total: number }) {
 export function ScanResultScrollExperience({
   result,
   projectId,
+  displayName = "",
+  displayWeb = "",
+  accessToken,
   onBack,
   onEnterWorkspace,
 }: {
   result: ScanResult;
   projectId: string | null;
+  /** Jméno / název projektu pro hlavičku a předvyplnění formuláře „Uložit výsledky“. */
+  displayName?: string;
+  /** Web pro předvyplnění formuláře „Uložit výsledky“. */
+  displayWeb?: string;
+  /** Token pro stránku /diagnostika/view — uložení přes update-input. */
+  accessToken?: string;
   onBack?: () => void;
   /** Po odeslání e-mailu: vstup do pracovní plochy (tabbed Brand DNA atd.). */
   onEnterWorkspace?: () => void;
@@ -126,6 +135,8 @@ export function ScanResultScrollExperience({
   const [openCalendar, setOpenCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [leadName, setLeadName] = useState(displayName);
+  const [leadWeb, setLeadWeb] = useState(displayWeb);
   const [leadEmail, setLeadEmail] = useState("");
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
@@ -133,47 +144,70 @@ export function ScanResultScrollExperience({
   const [accessUrl, setAccessUrl] = useState<string | null>(null);
   const [secondaryCtaExpanded, setSecondaryCtaExpanded] = useState(false);
 
+  useEffect(() => {
+    setLeadName(displayName);
+    setLeadWeb(displayWeb);
+  }, [displayName, displayWeb]);
+
   async function handleSaveLead() {
-    const trimmed = leadEmail.trim();
-    if (!trimmed) return;
+    const email = leadEmail.trim();
+    const name = leadName.trim();
+    const web = leadWeb.trim();
+    if (!email) {
+      setLeadError("E-mail je povinný.");
+      return;
+    }
     setLeadSubmitting(true);
     setLeadError(null);
     try {
-      const res = await fetch("/api/analysis-leads", {
+      if (accessToken) {
+        const res = await fetch("/api/diagnostika/update-input", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: accessToken,
+            name: name || null,
+            email,
+            web_url: web || null,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setLeadSubmitted(true);
+        } else {
+          setLeadError(data?.error ?? "Nepodařilo se uložit.");
+        }
+        setLeadSubmitting(false);
+        return;
+      }
+      const res = await fetch("/api/diagnostika/save-scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: trimmed,
-          analyzedUrl: "",
+          ...(projectId && { projectId }),
+          name: name || undefined,
+          webUrl: web || undefined,
+          email,
           result: {
             brandScore: result.brandScore,
             brandDna: result.brandDna,
             summary: result.summary,
+            pillarAnalysis: result.pillarAnalysis,
+            suggested_strategists: result.suggested_strategists,
           },
-          scrapedMeta: {},
         }),
       });
       const data = await res.json();
-      if (data.ok) {
-        if (projectId) {
-          try {
-            const updateRes = await fetch("/api/diagnostika/update-email", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ projectId, email: trimmed }),
-            });
-            const updateData = await updateRes.json();
-            if (updateData?.accessUrl) setAccessUrl(updateData.accessUrl);
-          } catch {
-            /* neblokovat – lead je uložen v analysis_leads */
-          }
-        }
+      if (res.ok && data?.viewUrl) {
+        setAccessUrl(data.viewUrl);
         setLeadSubmitted(true);
       } else {
-        setLeadError(data.error ?? "Nepodařilo se odeslat.");
+        setLeadError(data?.error ?? "Nepodařilo se uložit.");
       }
+      setLeadSubmitting(false);
+      return;
     } catch {
-      setLeadError("Chyba při odesílání. Zkuste to znovu.");
+      setLeadError("Chyba připojení.");
     } finally {
       setLeadSubmitting(false);
     }
@@ -329,13 +363,18 @@ export function ScanResultScrollExperience({
     <div className="bg-[#0a0a0a] text-[#e7e7ef] animate-fade-in" style={{ fontFamily: "system-ui, sans-serif" }}>
       {onBack && (
         <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur">
-          <button
-            type="button"
-            onClick={onBack}
-            className="text-xs text-zinc-500 hover:text-zinc-300 transition"
-          >
-            ← Analyzovat jiný web
-          </button>
+          <div className="flex items-center gap-4">
+            {displayName ? (
+              <span className="text-sm font-medium text-zinc-200 truncate max-w-[200px]">{displayName}</span>
+            ) : null}
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-xs text-zinc-500 hover:text-zinc-300 transition shrink-0"
+            >
+              ← Analyzovat jiný web
+            </button>
+          </div>
           <span className="text-[10px] uppercase tracking-widest text-zinc-600">Lucifera Strategic Brand Scan™</span>
         </div>
       )}
@@ -574,14 +613,37 @@ export function ScanResultScrollExperience({
                 {secondaryCtaExpanded ? "− Skrýt" : "Zatím nechci konzultaci — uložte moje výsledky."}
               </button>
               {secondaryCtaExpanded && (
-                <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 flex flex-wrap gap-3 items-end">
-                  <input
-                    type="email"
-                    placeholder="vas@email.cz"
-                    value={leadEmail}
-                    onChange={(e) => setLeadEmail(e.target.value)}
-                    className="flex-1 min-w-[200px] rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
-                  />
+                <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+                  <div>
+                    <label className="block text-xs text-zinc-500 mb-1">Jméno nebo název projektu</label>
+                    <input
+                      type="text"
+                      value={leadName}
+                      onChange={(e) => setLeadName(e.target.value)}
+                      placeholder="Vaše jméno nebo firma"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-500 mb-1">Web</label>
+                    <input
+                      type="text"
+                      value={leadWeb}
+                      onChange={(e) => setLeadWeb(e.target.value)}
+                      placeholder="https://…"
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-zinc-500 mb-1">E-mail</label>
+                    <input
+                      type="email"
+                      placeholder="vas@email.cz"
+                      value={leadEmail}
+                      onChange={(e) => setLeadEmail(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={handleSaveLead}

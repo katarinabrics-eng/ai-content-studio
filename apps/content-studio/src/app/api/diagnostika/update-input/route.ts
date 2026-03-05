@@ -19,13 +19,15 @@ export async function POST(request: Request) {
     const name = typeof body.name === "string" ? body.name.trim() || null : undefined;
     const email = typeof body.email === "string" ? body.email.trim() || null : undefined;
     const manual_input = typeof body.manual_input === "string" ? body.manual_input.trim() || null : undefined;
-    if (name === undefined && email === undefined && manual_input === undefined) {
-      return NextResponse.json({ ok: false, error: "Pošlete alespoň jedno pole: name, email, manual_input." }, { status: 400 });
+    const web_url = typeof body.web_url === "string" ? body.web_url.trim() || null : undefined;
+    if (name === undefined && email === undefined && manual_input === undefined && web_url === undefined) {
+      return NextResponse.json({ ok: false, error: "Pošlete alespoň jedno pole: name, email, manual_input, web_url." }, { status: 400 });
     }
     const updated = await updateClientProject(project.id, {
       ...(name !== undefined && { name }),
       ...(email !== undefined && { email }),
       ...(manual_input !== undefined && { manual_input }),
+      ...(web_url !== undefined && { web_url }),
     });
     if (!updated) {
       return NextResponse.json({ ok: false, error: "Chyba při ukládání." }, { status: 500 });
@@ -37,6 +39,7 @@ export async function POST(request: Request) {
         name: updated.name,
         email: updated.email,
         manual_input: updated.manual_input,
+        web_url: updated.web_url,
       },
     });
   } catch (e) {

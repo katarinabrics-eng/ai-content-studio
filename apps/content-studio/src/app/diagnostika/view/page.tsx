@@ -206,6 +206,9 @@ function DiagnostikaViewContent() {
       <ScanResultScrollExperience
         result={result}
         projectId={state.project.id}
+        displayName={project.name ?? ""}
+        displayWeb={project.web_url ?? ""}
+        accessToken={token || undefined}
         onEnterWorkspace={undefined}
       />
     </main>

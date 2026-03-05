@@ -63,8 +63,12 @@ export async function POST(request: Request) {
       if (!updated) {
         return NextResponse.json({ error: "Nepodařilo se aktualizovat scan." }, { status: 500 });
       }
-      if (name != null) {
-        await updateClientProject(projectId, { name: name || null });
+      const projectUpdates: { name?: string | null; email?: string | null; web_url?: string | null } = {};
+      if (name != null) projectUpdates.name = name || null;
+      if (email != null) projectUpdates.email = email || null;
+      if (webUrl != null) projectUpdates.web_url = webUrl || null;
+      if (Object.keys(projectUpdates).length > 0) {
+        await updateClientProject(projectId, projectUpdates);
       }
       const fresh = await getClientProjectById(projectId);
       return NextResponse.json({ ok: true, id: projectId, viewUrl: viewUrlFor(fresh) });
