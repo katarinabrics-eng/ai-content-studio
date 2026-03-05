@@ -37,6 +37,7 @@ function generateReason(
     the_pathfinder: "Cesta zákazníka od zájmu k nákupu si zaslouží mapu.",
     the_luminary: "Osobní značka a komunita posílí důvěru.",
     the_horizon: "Trendy a dlouhodobá strategie dají značce směr.",
+    the_content_voice: "Generuje texty pro web, bio, video brief, claims a srdce značky z Brand DNA.",
   };
   return reasons[id] ?? "Doporučeno na základě profilu značky.";
 }
@@ -63,6 +64,7 @@ export function selectStrategists(
     { id: "the_pathfinder", score: 20 - architecture },
     { id: "the_luminary", score: 20 - trust - identity },
     { id: "the_horizon", score: total < 50 ? 12 : 5 },
+    { id: "the_content_voice", score: 20 - identity - light },
   ];
 
   candidates.sort((a, b) => b.score - a.score);

@@ -6,7 +6,8 @@ export type StrategistId =
   | "the_signal"
   | "the_pathfinder"
   | "the_luminary"
-  | "the_horizon";
+  | "the_horizon"
+  | "the_content_voice";
 
 export type Strategist = {
   id: StrategistId;
@@ -133,6 +134,53 @@ KONTEXT:
 Produkt/oblast: {{produkt}}
 
 Vygeneruj strategický plán: executive_summary, future_readiness_audit, trend_relevance_map, ai_integration_strategy, category_evolution, future_proof_strategy, 12_month_future_roadmap. Na závěr "horizon_verdict". Výstup v češtině.`,
+  },
+  {
+    id: "the_content_voice",
+    name: "Obsahový stratég — Hlas a příběh značky",
+    title: "Generuje texty pro web, bio, video brief, claims a srdce značky z Brand DNA.",
+    focus: "Cesta zákazníka, srdce značky, benefity, video brief, bio varianty, claims a tagliny.",
+    placeholders: ["kontext", "produkt"],
+    promptTemplate: `Jednej jako expert na obsah a hlas značky. Na základě Brand DNA klienta vygeneruj konkrétní texty. Použij kontext níže.
+
+KONTEXT / BRAND DNA:
+{{kontext}}
+
+Produkt/oblast: {{produkt}}
+
+Vygeneruj přesně těchto 6 výstupů. Piš v jazyce klienta — pokud je Brand DNA česky, piš česky. Vyhni se obecnostem a klišé. Každý text musí být konkrétní pro tuto značku.
+
+Formát výstupu (přesně tyto nadpisy a pořadí):
+
+1. CESTA ZÁKAZNÍKA
+Popis cesty klienta jeho jazykem — problém který řeší, moment kdy našel řešení, transformace kterou zažil.
+Formát: 3 odstavce, osobní tón, konkrétní.
+
+2. SRDCE ZNAČKY
+Proč značka existuje. Co hájí. Čemu věří.
+Formát: 3-5 vět, silné, bez obecností.
+
+3. KLÍČOVÉ BENEFITY
+5 konkrétních benefitů pro cílovou skupinu. Ne funkce — pocity a výsledky.
+Formát: každý benefit = nadpis + jedna věta.
+
+4. VIDEO BRIEF / SCRIPT
+Krátký script pro prezentační video značky.
+Struktura: Problém → Řešení → Důkaz → Výzva k akci.
+Délka: 60-90 sekund mluveného slova.
+
+5. BIO VARIANTY
+- Krátké bio (Twitter/Instagram): max 160 znaků
+- Střední bio (LinkedIn About): 3-4 věty
+- Dlouhé bio (web stránka O mně): 2-3 odstavce
+
+6. CLAIMS A TAGLINY
+5 variant claimu značky — různé tóny:
+- Silný a přímý
+- Emocionální
+- Provokativní
+- Minimalistický
+- Příběhový`,
   },
 ];
 

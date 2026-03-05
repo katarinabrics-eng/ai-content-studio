@@ -105,6 +105,8 @@ type Client = {
     scores?: { relevance: number; clarity: number; feasibility: number; impact: number };
     verdict?: string;
     fit?: number;
+    strategist_id?: string | null;
+    content?: string;
   }>;
   notes: string;
   notesAiEnabled: boolean;
@@ -198,6 +200,8 @@ function mapRowToClient(row: ApiRow): Client {
       scores,
       verdict: verdictFromApi ?? "Doporučeno pro rozvoj značky na základě diagnostiky.",
       fit,
+      strategist_id: (s as { strategist_id?: string }).strategist_id ?? null,
+      content: content ?? undefined,
     };
   });
   const created = row.created_at ? new Date(row.created_at).toLocaleDateString("cs-CZ") : "—";
@@ -250,6 +254,71 @@ function mapRowToClient(row: ApiRow): Client {
     briefSubmittedAt: row.brief_submitted_at ?? null,
     short_code: row.short_code ?? null,
   };
+}
+
+const CONTENT_VOICE_SECTION_TITLES = [
+  "CESTA ZÁKAZNÍKA",
+  "SRDCE ZNAČKY",
+  "KLÍČOVÉ BENEFITY",
+  "VIDEO BRIEF / SCRIPT",
+  "BIO VARIANTY",
+  "CLAIMS A TAGLINY",
+];
+
+function parseContentVoiceSections(content: string): Array<{ title: string; body: string }> {
+  const sections: Array<{ title: string; body: string }> = [];
+  const normalized = content.replace(/\r\n/g, "\n");
+  for (let i = 0; i < CONTENT_VOICE_SECTION_TITLES.length; i++) {
+    const title = CONTENT_VOICE_SECTION_TITLES[i]!;
+    const nextTitle = CONTENT_VOICE_SECTION_TITLES[i + 1];
+    const num = i + 1;
+    const headingRe = new RegExp(`(?:^|\\n)${num}\\.\\s*${title.replace(/[/\\]/g, "\\\\")}[^\\S\\n]*(\\n|$)`, "im");
+    const altRe = new RegExp(`(?:^|\\n)${title.replace(/[/\\]/g, "\\\\")}[^\\S\\n]*(\\n|$)`, "im");
+    const match = normalized.match(headingRe) ?? normalized.match(altRe);
+    if (!match || match.index === undefined) continue;
+    const start = match.index + match[0].length;
+    const afterStart = normalized.slice(start);
+    const nextNum = num + 1;
+    const nextHeadingRe = nextTitle
+      ? new RegExp(`(?:^|\\n)${nextNum}\\.\\s*${nextTitle.replace(/[/\\]/g, "\\\\")}`, "im")
+      : null;
+    const nextMatch = nextHeadingRe ? afterStart.match(nextHeadingRe) : null;
+    const end = nextMatch?.index !== undefined ? nextMatch.index : afterStart.length;
+    const body = afterStart.slice(0, end).trim();
+    if (body) sections.push({ title, body });
+  }
+  if (sections.length === 0 && content.trim()) {
+    sections.push({ title: "Výstup", body: content.trim() });
+  }
+  return sections;
+}
+
+function CopyButton({ text, style }: { text: string; style?: React.CSSProperties }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    });
+  };
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      style={{
+        padding: "4px 8px",
+        borderRadius: 6,
+        border: "1px solid #444",
+        background: "transparent",
+        color: "#444",
+        fontSize: 10,
+        cursor: "pointer",
+        ...style,
+      }}
+    >
+      {copied ? "✓ Zkopírováno" : "Kopírovat"}
+    </button>
+  );
 }
 
 function Tag({ color, children }: { color: string; children: React.ReactNode }) {
@@ -1017,6 +1086,7 @@ export default function PipelineDashboardPage() {
   const [prehledActivities, setPrehledActivities] = useState<Array<{ id: string; type: string; message: string | null; seen_at: string | null; created_at: string }>>([]);
   const [prehledActivitiesLoading, setPrehledActivitiesLoading] = useState(false);
   const [activityUnreadByProject, setActivityUnreadByProject] = useState<Record<string, number>>({});
+  const [contentAccordionOpen, setContentAccordionOpen] = useState<Record<string, number | null>>({});
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -1563,7 +1633,15 @@ export default function PipelineDashboardPage() {
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ strategistId }),
                               });
-                              if (res.ok) await fetchData();
+                              const data = await res.json().catch(() => ({}));
+                              if (!res.ok) {
+                                setError(data?.error ?? "Chyba při generování strategie");
+                                return;
+                              }
+                              setError(null);
+                              await fetchData();
+                            } catch (e) {
+                              setError(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
                             } finally {
                               setStrategistLoading(false);
                             }
@@ -1872,10 +1950,14 @@ export default function PipelineDashboardPage() {
                       body: JSON.stringify({ strategistId }),
                     });
                     const data = await res.json();
-                    if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                    if (!res.ok) {
+                      setError(data?.error ?? "Chyba při generování strategie");
+                      return;
+                    }
+                    setError(null);
                     await fetchData();
                   } catch (e) {
-                    alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
+                    setError(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
                   } finally {
                     setStrategistLoading(false);
                   }
@@ -2135,7 +2217,12 @@ export default function PipelineDashboardPage() {
                             </div>
                             <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
                             {isExpanded && (
-                              <div style={{ marginTop: 10, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{s.summary ?? "—"}</div>
+                              <div style={{ marginTop: 10, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+                                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+                                  <CopyButton text={s.content ?? s.summary ?? ""} />
+                                </div>
+                                {s.summary ?? "—"}
+                              </div>
                             )}
                           </div>
                           <button
@@ -2145,6 +2232,7 @@ export default function PipelineDashboardPage() {
                           >
                             {isExpanded ? "Sbalit" : "Detail"}
                           </button>
+                          <CopyButton text={s.content ?? s.summary ?? ""} />
                           <button
                             type="button"
                             onClick={() => {
@@ -2267,48 +2355,110 @@ export default function PipelineDashboardPage() {
                     {client.strategies.length === 0 && (
                       <div style={{ padding: 20, textAlign: "center", fontSize: 11, color: C.faint, background: C.bg2, borderRadius: 10 }}>Žádné strategie. Spusťte stratéga níže.</div>
                     )}
-                    {client.strategies.map((s) => (
-                      <div
-                        key={s.id}
-                        style={{
-                          padding: "14px 16px",
-                          borderRadius: 10,
-                          border: `1px solid ${s.active ? C.lime + "50" : C.border}`,
-                          background: s.active ? C.lime + "07" : C.bg2,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 10,
-                        }}
-                      >
-                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-                          <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{s.label}</span>
-                              {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                    {client.strategies.map((s) => {
+                      const isContentVoice = s.strategist_id === "the_content_voice" && s.content;
+                      const contentSections = isContentVoice ? parseContentVoiceSections(s.content!) : [];
+                      const accordionOpen = contentAccordionOpen[s.id] ?? null;
+                      return (
+                        <div
+                          key={s.id}
+                          style={{
+                            padding: "14px 16px",
+                            borderRadius: 10,
+                            border: `1px solid ${s.active ? C.lime + "50" : C.border}`,
+                            background: s.active ? C.lime + "07" : C.bg2,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 10,
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+                            <div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                                {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
+                              </div>
+                              <div style={{ fontSize: 10, color: C.faint }}>Datum spuštění: {s.date}</div>
                             </div>
-                            <div style={{ fontSize: 10, color: C.faint }}>Datum spuštění: {s.date}</div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNewBundleName(`${s.label} × Výstup`);
+                                setNewBundleOutputType("GAMMA");
+                                setActiveTab("vystup");
+                                setShowNewBundlePanel(true);
+                              }}
+                              style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+                            >
+                              ⊡ Zabalit do balíčku →
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setNewBundleName(`${s.label} × Výstup`);
-                              setNewBundleOutputType("GAMMA");
-                              setActiveTab("vystup");
-                              setShowNewBundlePanel(true);
-                            }}
-                            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
-                          >
-                            ⊡ Zabalit do balíčku →
-                          </button>
+                          {isContentVoice && contentSections.length > 0 ? (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                              {contentSections.map((sec, idx) => {
+                                const isOpen = accordionOpen === idx;
+                                return (
+                                  <div key={idx} style={{ border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden", background: C.bg0 }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => setContentAccordionOpen((prev) => ({ ...prev, [s.id]: isOpen ? null : idx }))}
+                                      style={{
+                                        width: "100%",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        gap: 8,
+                                        padding: "10px 12px",
+                                        border: "none",
+                                        background: "transparent",
+                                        color: "#e8d44d",
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        letterSpacing: "0.04em",
+                                        cursor: "pointer",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      <span>{sec.title}</span>
+                                      <span style={{ fontSize: 14 }}>{isOpen ? "−" : "+"}</span>
+                                    </button>
+                                    {isOpen && (
+                                      <div style={{ padding: "10px 12px", borderTop: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 8 }}>
+                                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                          <CopyButton text={sec.body} />
+                                        </div>
+                                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{sec.body}</div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
+                                <button
+                                  type="button"
+                                  onClick={() => { setNewBundleName(`${s.label} × Výstup`); setNewBundleOutputType("GAMMA"); setActiveTab("vystup"); setShowNewBundlePanel(true); }}
+                                  style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, fontWeight: 600, cursor: "pointer" }}
+                                >
+                                  ⊡ Zabalit do balíčku →
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {s.summary && (
+                                <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, padding: "8px 10px", background: C.bg0, borderRadius: 8, borderLeft: `3px solid ${C.purple}` }}>
+                                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+                                    <span style={{ fontSize: 9, fontWeight: 700, color: C.faint, letterSpacing: "0.05em" }}>KLÍČOVÉ BODY STRATEGIE</span>
+                                    <CopyButton text={s.content ?? s.summary ?? ""} />
+                                  </div>
+                                  {s.summary}
+                                </div>
+                              )}
+                            </>
+                          )}
                         </div>
-                        {s.summary && (
-                          <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, padding: "8px 10px", background: C.bg0, borderRadius: 8, borderLeft: `3px solid ${C.purple}` }}>
-                            <div style={{ fontSize: 9, fontWeight: 700, color: C.faint, letterSpacing: "0.05em", marginBottom: 4 }}>KLÍČOVÉ BODY STRATEGIE</div>
-                            {s.summary}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div style={{ padding: "14px 16px", borderRadius: 10, border: `1px solid ${C.purple}33`, background: C.bg2, borderLeft: `4px solid ${C.purple}` }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", marginBottom: 12 }}>SPUSTIT NOVÉHO STRATÉGA</div>
@@ -2334,17 +2484,21 @@ export default function PipelineDashboardPage() {
                               body: JSON.stringify({ strategistId }),
                             });
                             const data = await res.json();
-                            if (!res.ok) throw new Error(data?.error ?? "Chyba");
+                            if (!res.ok) {
+                              setError(data?.error ?? "Chyba při generování strategie");
+                              return;
+                            }
+                            setError(null);
                             await fetchData();
                           } catch (e) {
-                            alert(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
+                            setError(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
                           } finally {
                             setStrategistLoading(false);
                           }
                         }}
                         style={{ padding: "10px 18px", borderRadius: 8, border: "none", background: C.purple, color: "#fff", fontWeight: 700, fontSize: 12, cursor: strategistLoading ? "not-allowed" : "pointer" }}
                       >
-                        {strategistLoading ? "Spouštím…" : "Spustit →"}
+                        {strategistLoading ? "◈ Generuji strategii…" : "Spustit →"}
                       </button>
                     </div>
                   </div>

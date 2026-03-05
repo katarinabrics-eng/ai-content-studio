@@ -64,17 +64,38 @@ export async function POST(
 
   const openaiKey = process.env.OPENAI_API_KEY;
   if (!openaiKey) {
-    return NextResponse.json({ error: "OPENAI_API_KEY není nastaven" }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "OPENAI_API_KEY není nastaven. Kontaktujte správce." }, { status: 500 });
   }
 
-  const openai = new OpenAI({ apiKey: openaiKey });
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-    max_tokens: 4096,
-  });
-
-  const output = completion.choices[0]?.message?.content?.trim() ?? "";
+  let output: string;
+  try {
+    const openai = new OpenAI({ apiKey: openaiKey });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60_000);
+    const completion = await openai.chat.completions.create(
+      {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 4096,
+      },
+      { signal: controller.signal }
+    );
+    clearTimeout(timeoutId);
+    output = completion.choices[0]?.message?.content?.trim() ?? "";
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("abort") || msg.includes("timeout")) {
+      return NextResponse.json({ ok: false, error: "Vypršel časový limit (60 s). Zkuste to znovu." }, { status: 408 });
+    }
+    if (msg.includes("rate limit") || msg.includes("429")) {
+      return NextResponse.json({ ok: false, error: "Příliš mnoho požadavků. Počkejte chvíli a zkuste znovu." }, { status: 429 });
+    }
+    if (msg.includes("API key") || msg.includes("401") || msg.includes("Incorrect API key")) {
+      return NextResponse.json({ ok: false, error: "Neplatný API klíč pro AI. Kontaktujte správce." }, { status: 500 });
+    }
+    console.error("[run-strategist]", err);
+    return NextResponse.json({ ok: false, error: `Generování strategie selhalo: ${msg.slice(0, 120)}` }, { status: 500 });
+  }
   const now = new Date().toISOString();
   const scanResult = (project.scan_result ?? {}) as Record<string, unknown>;
   const existingSaved = Array.isArray(scanResult.saved_strategies) ? scanResult.saved_strategies as Array<{ id: string; name?: string; created_at?: string; strategist_id?: string; content?: string }> : [];
@@ -95,7 +116,7 @@ export async function POST(
 
   const updated = await updateClientProjectScanResult(id, { scan_result: merged });
   if (!updated) {
-    return NextResponse.json({ error: "Nepodařilo se uložit výstup stratega" }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Nepodařilo se uložit výstup stratega do databáze." }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, output });

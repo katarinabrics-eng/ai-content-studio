@@ -94,7 +94,7 @@ export default function AIDoporuceni({ strategists = [], onSpustit, loading = fa
                   opacity: loading ? 0.7 : 1,
                 }}
               >
-                {loading ? "Spouštím…" : "Spustit →"}
+                {loading ? "◈ Generuji strategii…" : "Spustit →"}
               </button>
             </div>
           ))

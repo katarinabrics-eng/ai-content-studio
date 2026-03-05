@@ -73,6 +73,7 @@ const VALID_STRATEGIST_IDS: StrategistId[] = [
   "the_pathfinder",
   "the_luminary",
   "the_horizon",
+  "the_content_voice",
 ];
 
 export function isValidStrategistId(id: string): id is StrategistId {
