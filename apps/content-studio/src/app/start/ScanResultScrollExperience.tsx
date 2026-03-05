@@ -547,9 +547,17 @@ export function ScanResultScrollExperience({
           >
             Rezervovat strategický hovor
           </button>
-          <p className="text-zinc-500 text-sm mt-3">
-            7 800 Kč · částka se odečte z celkové spolupráce
-          </p>
+          <div className="mt-3 text-center">
+            <p className="text-zinc-500 text-sm">
+              7 800 Kč · strategický hovor · vizuální board · strategie · 3 Canva šablony na míru
+            </p>
+            <p className="text-zinc-600 text-xs mt-1">
+              Pokud nebudete s výsledkem spokojeni, částku vrátíme. Veškerý obsah vám zůstává.{" "}
+              <a href="/obchodni-podminky" className="text-zinc-500 hover:text-zinc-400 underline underline-offset-1">
+                Podmínky vrácení
+              </a>
+            </p>
+          </div>
         </div>
       </Section>
 
