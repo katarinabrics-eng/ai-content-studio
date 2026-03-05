@@ -132,6 +132,8 @@ type Client = {
   outputsActivatedAt: string | null;
   accessSentAt: string | null;
   briefSubmittedAt: string | null;
+  /** Krátký kód pro odkaz na client/[short_code]/brief. */
+  short_code: string | null;
 };
 
 const PILLAR_KEYS = [
@@ -246,6 +248,7 @@ function mapRowToClient(row: ApiRow): Client {
     outputsActivatedAt: row.outputs_activated_at ?? null,
     accessSentAt: row.access_sent_at ?? null,
     briefSubmittedAt: row.brief_submitted_at ?? null,
+    short_code: row.short_code ?? null,
   };
 }
 
