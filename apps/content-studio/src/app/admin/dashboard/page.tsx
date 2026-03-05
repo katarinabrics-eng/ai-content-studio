@@ -45,8 +45,9 @@ type ApiRow = {
   email: string | null;
   web_url: string | null;
   name: string | null;
-  client_name: string | null;
-  project_name: string | null;
+  /** Z DB po migraci 20260308100000; jinak lze z scan_result. */
+  client_name?: string | null;
+  project_name?: string | null;
   workflow_status: string | null;
   payment_status: string | null;
   short_code: string | null;
@@ -136,8 +137,8 @@ const PILLAR_KEYS = [
 function mapRowToClient(row: ApiRow): Client {
   const scan = row.scan_result ?? {};
   const status = toPipelineStatus(row.workflow_status, scan.dashboard_section);
-  const clientDisplayName = (row.client_name ?? row.email ?? "—").toString().trim() || "—";
-  const projectDisplayName = (row.project_name ?? row.name ?? row.web_url ?? "—").toString().trim() || "—";
+  const clientDisplayName = (row.client_name ?? (scan as { client_name?: string }).client_name ?? row.email ?? "—").toString().trim() || "—";
+  const projectDisplayName = (row.project_name ?? (scan as { project_name?: string }).project_name ?? row.name ?? row.web_url ?? "—").toString().trim() || "—";
   const name = row.name?.trim() || row.email?.trim() || `Projekt ${row.id.slice(0, 8)}`;
   const sub = row.name ? (row.email || row.web_url || "—") : row.email || row.web_url || "—";
   const avatar = (name || "?").charAt(0).toUpperCase();
