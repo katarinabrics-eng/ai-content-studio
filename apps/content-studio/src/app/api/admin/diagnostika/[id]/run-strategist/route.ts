@@ -47,7 +47,7 @@ export async function POST(
     web_url: project.web_url,
   });
 
-  const prompt = buildPrompt(strategist, {
+  let prompt = buildPrompt(strategist, {
     kontext,
     produkt_sluzba: (project.scan_result as { brandDna?: { name?: string } })?.brandDna?.name ?? project.name ?? project.email ?? "",
     tema_napad: kontext.slice(0, 200),
@@ -55,6 +55,11 @@ export async function POST(
     sdeleni_text: project.manual_input ?? kontext.slice(0, 300),
     produkt: (project.scan_result as { brandDna?: { name?: string } })?.brandDna?.name ?? project.name ?? "",
   });
+
+  const scan = project.scan_result as { admin_notes?: string | null; notes_ai_enabled?: boolean } | null;
+  if (scan?.notes_ai_enabled && typeof scan.admin_notes === "string" && scan.admin_notes.trim()) {
+    prompt += `\n\nPoznámky kurátora k tomuto projektu:\n${scan.admin_notes.trim()}`;
+  }
 
   const openaiKey = process.env.OPENAI_API_KEY;
   if (!openaiKey) {

@@ -33,11 +33,16 @@ export async function PATCH(
     if (!updated) return NextResponse.json({ error: "Nepodařilo se aktualizovat" }, { status: 500 });
   }
 
-  if (body.internal_notes !== undefined) {
-    const notes = typeof body.internal_notes === "string" ? body.internal_notes : null;
+  if (body.internal_notes !== undefined || body.notes_ai_enabled !== undefined) {
     const freshForNotes = await getClientProjectById(id);
     const scanResult = (freshForNotes?.scan_result ?? project.scan_result ?? {}) as Record<string, unknown>;
-    const merged = { ...scanResult, admin_notes: notes ?? null };
+    const merged = { ...scanResult };
+    if (body.internal_notes !== undefined) {
+      merged.admin_notes = typeof body.internal_notes === "string" ? body.internal_notes : null;
+    }
+    if (body.notes_ai_enabled !== undefined) {
+      merged.notes_ai_enabled = body.notes_ai_enabled === true;
+    }
     const updatedScan = await updateClientProjectScanResult(id, { scan_result: merged });
     if (!updatedScan) return NextResponse.json({ error: "Nepodařilo se uložit poznámky" }, { status: 500 });
   }
@@ -61,13 +66,15 @@ export async function PATCH(
   }
 
   const fresh = await getClientProjectById(id);
+  const sr = fresh?.scan_result as Record<string, unknown> | null | undefined;
   return NextResponse.json({
     ok: true,
     project: fresh
       ? {
           name: fresh.name,
           manual_input: fresh.manual_input,
-          internal_notes: (fresh.scan_result as Record<string, unknown>)?.admin_notes ?? null,
+          internal_notes: sr?.admin_notes ?? null,
+          notes_ai_enabled: sr?.notes_ai_enabled ?? false,
         }
       : null,
   });

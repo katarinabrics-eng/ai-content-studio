@@ -61,6 +61,7 @@ type ApiRow = {
     summary?: string;
     pillarAnalysis?: Record<string, { score?: number; interpretation?: string; strategicOpportunity?: string }>;
     admin_notes?: string | null;
+    notes_ai_enabled?: boolean;
     suggested_strategists?: Array<{ id: string; label: string; tagline?: string; reason?: string; fit_score?: number }>;
     saved_strategies?: Array<{ id: string; name: string; created_at: string; strategist_id?: string | null; content?: string; fit?: number; scores?: { relevance: number; clarity: number; feasibility: number; impact: number }; verdict?: string }>;
     active_strategy_id?: string | null;
@@ -94,6 +95,7 @@ type Client = {
     fit?: number;
   }>;
   notes: string;
+  notesAiEnabled: boolean;
   workflow_status: string | null;
   dashboard_section: string | null;
 };
@@ -177,6 +179,7 @@ function mapRowToClient(row: ApiRow): Client {
     strategists,
     strategies,
     notes: scan.admin_notes ?? "",
+    notesAiEnabled: (scan as { notes_ai_enabled?: boolean }).notes_ai_enabled ?? false,
     workflow_status: row.workflow_status ?? null,
     dashboard_section: scan.dashboard_section ?? null,
   };
@@ -1172,6 +1175,28 @@ export default function PipelineDashboardPage() {
 
           {activeTab === "poznamky" && (
             <Section title="INTERNÍ POZNÁMKY" accent={C.yellow}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, cursor: "pointer", fontSize: 12, color: client.notesAiEnabled ? C.purple : C.muted }}>
+                <input
+                  type="checkbox"
+                  checked={client.notesAiEnabled}
+                  onChange={async (e) => {
+                    const next = e.target.checked;
+                    try {
+                      const res = await fetch(`/api/admin/diagnostika/${client.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ notes_ai_enabled: next }),
+                      });
+                      if (!res.ok) throw new Error("Nepodařilo se uložit");
+                      await fetchData();
+                    } catch {
+                      setError("Nepodařilo se uložit nastavení AI poznámek");
+                    }
+                  }}
+                  style={{ accentColor: C.purple }}
+                />
+                <span>◈ AI čerpá z těchto poznámek při tvorbě strategie a hodnocení stavu</span>
+              </label>
               <p style={{ fontSize: 11, color: C.faint, marginBottom: 8 }}>Poznámky upravíte v hlavní administraci.</p>
               <div style={{ padding: 12, background: C.bg2, borderRadius: 8, fontSize: 12, color: "#ccc", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{client.notes || "—"}</div>
               <Link href={`/admin?id=${client.id}`} style={{ display: "inline-block", marginTop: 10, padding: "6px 16px", borderRadius: 8, border: "none", background: C.yellow, color: "#000", fontWeight: 700, fontSize: 11, textDecoration: "none" }}>Upravit v administraci →</Link>
