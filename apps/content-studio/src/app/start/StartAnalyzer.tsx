@@ -797,6 +797,7 @@ export function StartAnalyzer({ diagnostika = false }: { diagnostika?: boolean }
                   <span style={C.lbl}>Vizuální náhled webu</span>
                   <span style={{ fontSize: 10, color: "#333" }}>Firecrawl screenshot</span>
                 </div>
+                {/* eslint-disable-next-line @next/next/no-img-element -- dynamic base64 screenshot, next/image does not optimize data URLs */}
                 <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="screenshot" style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)", maxHeight: 260, objectFit: "cover", objectPosition: "top" }} />
               </div>
             )}

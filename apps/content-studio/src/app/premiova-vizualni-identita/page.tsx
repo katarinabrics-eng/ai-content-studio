@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { HeroImageFull } from "../components/HomePlaceholders";
 import { Header } from "../components/Header";
 import { VibeSection } from "../components/VibeSection";
@@ -101,7 +102,7 @@ export default function PremioveVizualniIdentitaPage() {
         <div className="relative mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-16">
             <div className="relative flex justify-center lg:col-span-7">
-              <img src="/placeholders/KDOJSEM_01.png" alt="" className="max-h-[75vh] w-full object-contain object-center" />
+              <Image src="/placeholders/KDOJSEM_01.png" alt="" width={800} height={600} className="max-h-[75vh] w-full object-contain object-center" />
             </div>
             <div className="flex flex-col justify-center lg:col-span-5">
               <h2 className="font-bold leading-[1.1] tracking-tight text-[#111111]" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", marginBottom: "24px" }}>
@@ -132,9 +133,9 @@ export default function PremioveVizualniIdentitaPage() {
             <p className="text-[20px] leading-[1.6] text-[#3A3A3A]">Ne jednotlivé snímky. Ale vizuální jazyk, který funguje v praxi.</p>
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-10">
-            {["01_ukazky.png", "01_ukazky_1.png", "01_ukazky_2.png", "01_ukazky_3.png"].map((src, i) => (
-              <div key={src} className="overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)]">
-                <img src={`/placeholders/${src}`} alt="" className="h-full w-full object-cover" />
+            {["01_ukazky.png", "01_ukazky_1.png", "01_ukazky_2.png", "01_ukazky_3.png"].map((src) => (
+              <div key={src} className="relative overflow-hidden rounded-[16px] border-2 border-transparent transition-[box-shadow,border-color] duration-300 hover:border-[#A8EB12] hover:shadow-[0_0_0_2px_rgba(168,235,18,0.4)] aspect-[4/3]">
+                <Image src={`/placeholders/${src}`} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
               </div>
             ))}
           </div>

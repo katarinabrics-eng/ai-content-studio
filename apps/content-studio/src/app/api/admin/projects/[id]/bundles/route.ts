@@ -69,7 +69,7 @@ export async function POST(
   const activeId = (scan.active_strategy_id as string) ?? null;
   const savedStrategies = (scan.saved_strategies as Array<{ id: string; [k: string]: unknown }>) ?? [];
   const activeStrategy = activeId ? savedStrategies.find((s) => s.id === activeId) ?? null : null;
-  const snapshotStrategy = activeStrategy ? { id: activeStrategy.id, name: activeStrategy.name, content: activeStrategy.content, ...activeStrategy } : null;
+  const snapshotStrategy = activeStrategy ? { ...activeStrategy } : null;
 
   const supabase = getSupabaseClient();
   const { data: inserted, error: insertError } = await supabase
