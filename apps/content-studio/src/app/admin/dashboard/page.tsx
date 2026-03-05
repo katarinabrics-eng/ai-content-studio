@@ -1003,9 +1003,9 @@ export default function PipelineDashboardPage() {
       if (!byEmail.has(key)) byEmail.set(key, []);
       byEmail.get(key)!.push(c);
     }
-    for (const arr of byEmail.values()) {
+    Array.from(byEmail.values()).forEach((arr) => {
       arr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    }
+    });
     const groups = Array.from(byEmail.entries()).map(([emailKey, list]) => ({
       emailKey,
       clients: list,
