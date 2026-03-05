@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toPipelineStatus, PIPELINE_TO_WORKFLOW, type PipelineStatus } from "./pipeline-map";
 import { STRATEGISTS_META } from "@/lib/strategist-selector";
+import type { StrategistId } from "@/lib/strategists/config";
 
 const C = {
   lime: "#c8ff00",
@@ -585,7 +586,7 @@ export default function PipelineDashboardPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [navSection, setNavSection] = useState<"pipeline" | "suplik" | "archiv">("pipeline");
   const [activeTab, setActiveTab] = useState("prehled");
-  const [strategistId, setStrategistId] = useState(STRATEGISTS_META[0]?.id ?? "the_architect");
+  const [strategistId, setStrategistId] = useState<StrategistId>(STRATEGISTS_META[0]?.id ?? "the_architect");
   const [strategistLoading, setStrategistLoading] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
   const [selectedStrategyIds, setSelectedStrategyIds] = useState<string[]>([]);
@@ -1102,7 +1103,7 @@ export default function PipelineDashboardPage() {
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                       <select
                         value={strategistId}
-                        onChange={(e) => setStrategistId(e.target.value)}
+                        onChange={(e) => setStrategistId(e.target.value as StrategistId)}
                         style={{ padding: "10px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, color: "#fff", fontSize: 13, minWidth: 280 }}
                       >
                         {STRATEGISTS_META.map((s) => (
