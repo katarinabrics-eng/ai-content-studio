@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Header } from "../components/Header";
 
 export const metadata: Metadata = {
   title: "Brand Scan — Zjisti kde stojí tvoje značka | Studio Lucifera",
@@ -11,5 +12,10 @@ export default function BrandScanLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  );
 }

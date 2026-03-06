@@ -24,17 +24,18 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 h-14 transition-colors duration-200 ${
-        scrolled
-          ? "border-b border-stone-200/60 bg-white/80 backdrop-blur-md"
-          : "border-b border-stone-200 bg-white"
-      }`}
+      className="sticky top-0 z-50 h-14 transition-colors duration-200 backdrop-blur-md"
+      style={{
+        background: scrolled ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.95)",
+        borderBottom: "1px solid rgba(0,0,0,0.09)",
+      }}
     >
       <div className="mx-auto flex h-full max-w-[1360px] items-center justify-between gap-4 px-6 xl:px-10">
         <a
           href="/"
           className="flex shrink-0 items-center focus:outline-none"
           aria-label="Lucifera"
+          style={{ color: "#111111" }}
         >
           <img
             src="/placeholders/LUCIFERA-Logo-Left.png"
@@ -48,7 +49,10 @@ export function Header() {
             <a
               key={item.href}
               href={item.href}
-              className="shrink-0 whitespace-nowrap text-sm text-stone-600 transition-colors hover:text-stone-900"
+              className="shrink-0 whitespace-nowrap text-sm transition-colors"
+              style={{ color: "#555555" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#111111"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "#555555"; }}
             >
               {item.label}
             </a>
@@ -59,7 +63,8 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-100 lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg lg:hidden"
+            style={{ color: "#555555" }}
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Zavřít menu" : "Otevřít menu"}
           >
@@ -75,13 +80,17 @@ export function Header() {
           </button>
           <a
             href="/client/pristup"
-            className="shrink-0 text-sm text-stone-600 hover:text-stone-900 hidden sm:inline"
+            className="shrink-0 text-sm hidden sm:inline"
+            style={{ color: "#555555" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#111111"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "#555555"; }}
           >
             Pro klienty
           </a>
           <a
             href="/rezervace"
-            className="rounded-lg bg-[#A8EB12] px-4 py-2.5 text-sm font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 sm:px-5"
+            className="rounded-lg px-4 py-2.5 text-sm font-semibold sm:px-5"
+            style={{ background: "#b7e94c", color: "#111" }}
           >
             Domluvit konzultaci
           </a>
@@ -89,14 +98,18 @@ export function Header() {
       </div>
 
       {menuOpen && (
-        <nav className="absolute left-0 right-0 top-14 border-b border-stone-200 bg-white px-4 py-4 shadow-sm lg:hidden">
+        <nav
+          className="absolute left-0 right-0 top-14 px-4 py-4 shadow-sm lg:hidden"
+          style={{ borderBottom: "1px solid rgba(0,0,0,0.09)", background: "rgba(255,255,255,0.98)" }}
+        >
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => (
               <li key={item.href}>
                 <a
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-sm text-stone-700 hover:bg-stone-50"
+                  className="block rounded-lg px-3 py-2 text-sm"
+                  style={{ color: "#111111" }}
                 >
                   {item.label}
                 </a>
@@ -106,7 +119,8 @@ export function Header() {
               <a
                 href="/client/pristup"
                 onClick={() => setMenuOpen(false)}
-                className="block rounded-lg px-3 py-2 text-sm text-stone-700 hover:bg-stone-50"
+                className="block rounded-lg px-3 py-2 text-sm"
+                style={{ color: "#111111" }}
               >
                 Pro klienty
               </a>

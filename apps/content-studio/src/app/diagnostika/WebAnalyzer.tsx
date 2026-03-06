@@ -1,7 +1,6 @@
 "use client";
 
 import { ChoiceButton } from "@/components/ChoiceButton";
-import { tokens } from "@/lib/design-tokens";
 import {
   MANUAL_OFFER_TYPES,
   MANUAL_AUDIENCE,
@@ -11,17 +10,19 @@ import {
   MAX_AUDIENCE_SELECT,
 } from "@/lib/diagnostika-manual";
 
+const LIME_MAIN = "#b7e94c";
+const CARD_BORDER = "rgba(0,0,0,0.09)";
 const C = {
   card: {
-    background: "rgba(255,255,255,0.025)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    background: "#ffffff",
+    border: `1px solid ${CARD_BORDER}`,
     borderRadius: 14,
     padding: 20,
     marginBottom: 12,
   },
   lbl: {
     fontSize: 9,
-    color: "#444",
+    color: "#555555",
     textTransform: "uppercase" as const,
     letterSpacing: "0.15em",
     marginBottom: 5,
@@ -29,11 +30,11 @@ const C = {
   },
   inp: {
     width: "100%",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.09)",
+    background: "#ffffff",
+    border: "1px solid rgba(0,0,0,0.12)",
     borderRadius: 10,
     padding: "12px 14px",
-    color: "#fff",
+    color: "#111111",
     fontSize: 14,
     outline: "none",
     boxSizing: "border-box" as const,
@@ -41,8 +42,8 @@ const C = {
   btn: {
     width: "100%",
     padding: 13,
-    background: "#a8e063",
-    color: "#000",
+    background: LIME_MAIN,
+    color: "#111",
     fontWeight: 700,
     fontSize: 14,
     border: "none",
@@ -50,6 +51,16 @@ const C = {
     cursor: "pointer" as const,
     marginTop: 10,
   },
+};
+
+const lightTokens = {
+  text: "#111111",
+  muted: "#555555",
+  accent: LIME_MAIN,
+  bg: "#f0f0f0",
+  card: "#ffffff",
+  border: CARD_BORDER,
+  error: "#dc2626",
 };
 
 export type WebAnalyzerProps = {
@@ -127,36 +138,39 @@ export function WebAnalyzer({
   const showIntro = diagnostika && !hideIntro;
   return (
     <div className="analyzer-fade">
+      <style>{`
+        .analyzer-inp:focus { border-color: #b7e94c !important; box-shadow: 0 0 0 3px rgba(183,233,76,0.18); }
+        .analyzer-inp::placeholder { color: #bbbbbb; }
+      `}</style>
       {showIntro && (
         <section className="relative max-w-4xl mx-auto mb-20 px-6">
-          {/* Záře pod velkým oknem – vrstvený efekt (měkká + výraznější) */}
-          <div className="absolute inset-0 -z-20 blur-[100px] opacity-25 rounded-full scale-150" style={{ background: `radial-gradient(ellipse 80% 50% at 50% 70%, ${tokens.colors.primary}50, transparent 70%)` }} />
-          <div className="absolute inset-0 -z-10 blur-3xl opacity-40 rounded-full" style={{ background: `linear-gradient(to right, ${tokens.colors.primary}60, ${tokens.colors.accent}60)` }} />
+          <div className="absolute inset-0 -z-20 blur-[100px] opacity-25 rounded-full scale-150" style={{ background: `radial-gradient(ellipse 80% 50% at 50% 70%, ${lightTokens.accent}50, transparent 70%)` }} />
+          <div className="absolute inset-0 -z-10 blur-3xl opacity-40 rounded-full" style={{ background: `linear-gradient(to right, ${lightTokens.accent}60, ${lightTokens.accent}60)` }} />
           <div className="text-center mb-10">
-            <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: tokens.colors.accent }}>Strategický vstup</p>
-            <h2 className="text-4xl md:text-5xl font-semibold mb-6" style={{ color: tokens.colors.text }}>Analýza vizuální úrovně značky</h2>
-            <p className="max-w-2xl mx-auto leading-relaxed" style={{ color: tokens.colors.muted }}>
+            <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{ color: lightTokens.accent }}>Strategický vstup</p>
+            <h2 className="text-4xl md:text-5xl font-semibold mb-6" style={{ color: lightTokens.text }}>Analýza vizuální úrovně značky</h2>
+            <p className="max-w-2xl mx-auto leading-relaxed" style={{ color: lightTokens.muted }}>
               Diskrétní orientační rozbor toho, jak vaše značka působí navenek. Ukážeme vám silné body, slabá místa a jeden možný směr dalšího rozvoje.
             </p>
           </div>
-          <div className="rounded-3xl p-10 backdrop-blur-xl border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-            <p className="leading-relaxed mb-8" style={{ color: tokens.colors.muted }}>
+          <div className="rounded-3xl p-10 backdrop-blur-xl border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+            <p className="leading-relaxed mb-8" style={{ color: lightTokens.muted }}>
               Tato ukázková analýza je vstupní fází před strategickou konzultací. Plná diagnostika a vizuální board jsou součástí placené spolupráce.
             </p>
-            <div className="h-px mb-8" style={{ background: `linear-gradient(to right, transparent, ${tokens.colors.border}, transparent)` }} />
-            <p className="text-sm uppercase tracking-widest mb-6" style={{ color: tokens.colors.muted }}>Jak to probíhá</p>
+            <div className="h-px mb-8" style={{ background: `linear-gradient(to right, transparent, ${lightTokens.border}, transparent)` }} />
+            <p className="text-sm uppercase tracking-widest mb-6" style={{ color: lightTokens.muted }}>Jak to probíhá</p>
             <div className="grid md:grid-cols-3 gap-6 text-sm">
-              <div className="rounded-2xl p-6 border" style={{ background: tokens.colors.bg, borderColor: tokens.colors.border }}>
-                <div className="text-lg mb-3" style={{ color: tokens.colors.accent }}>01</div>
-                <span style={{ color: tokens.colors.muted }}>Zadáte web nebo podklady o značce.</span>
+              <div className="rounded-2xl p-6 border" style={{ background: lightTokens.bg, borderColor: lightTokens.border }}>
+                <div className="text-lg mb-3" style={{ color: lightTokens.accent }}>01</div>
+                <span style={{ color: lightTokens.muted }}>Zadáte web nebo podklady o značce.</span>
               </div>
-              <div className="rounded-2xl p-6 border" style={{ background: tokens.colors.bg, borderColor: tokens.colors.border }}>
-                <div className="text-lg mb-3" style={{ color: tokens.colors.accent }}>02</div>
-                <span style={{ color: tokens.colors.muted }}>Získáte orientační analýzu a návrh jednoho směru.</span>
+              <div className="rounded-2xl p-6 border" style={{ background: lightTokens.bg, borderColor: lightTokens.border }}>
+                <div className="text-lg mb-3" style={{ color: lightTokens.accent }}>02</div>
+                <span style={{ color: lightTokens.muted }}>Získáte orientační analýzu a návrh jednoho směru.</span>
               </div>
-              <div className="rounded-2xl p-6 border" style={{ background: tokens.colors.bg, borderColor: tokens.colors.border }}>
-                <div className="text-lg mb-3" style={{ color: tokens.colors.accent }}>03</div>
-                <span style={{ color: tokens.colors.muted }}>Pokud dává smysl pokračovat, rezervujete termín a zahájíme spolupráci.</span>
+              <div className="rounded-2xl p-6 border" style={{ background: lightTokens.bg, borderColor: lightTokens.border }}>
+                <div className="text-lg mb-3" style={{ color: lightTokens.accent }}>03</div>
+                <span style={{ color: lightTokens.muted }}>Pokud dává smysl pokračovat, rezervujete termín a zahájíme spolupráci.</span>
               </div>
             </div>
           </div>
@@ -171,33 +185,33 @@ export function WebAnalyzer({
               gap: 6,
               padding: "4px 12px",
               borderRadius: 9999,
-              background: `${tokens.colors.accent}18`,
-              border: `1px solid ${tokens.colors.accent}40`,
-              color: tokens.colors.accent,
+              background: "rgba(183,233,76,0.15)",
+              border: "1px solid rgba(183,233,76,0.4)",
+              color: lightTokens.accent,
               fontSize: 11,
               marginBottom: 18,
             }}
           >
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: tokens.colors.accent }} />
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: lightTokens.accent }} />
             {diagnostika ? "Ukázková analýza" : "Modul 1 · Analýza značky"}
           </span>
-          <h1 style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3, marginBottom: 10, color: tokens.colors.text }}>
+          <h1 style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3, marginBottom: 10, color: lightTokens.text }}>
             Zadejte web.
             <br />
-            <span style={{ color: tokens.colors.muted }}>Zbytek uděláme za vás.</span>
+            <span style={{ color: lightTokens.muted }}>Zbytek uděláme za vás.</span>
           </h1>
         </div>
       )}
 
-      <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-10" : ""} style={diagnostika ? { background: tokens.colors.card, border: `1px solid ${tokens.colors.border}` } : C.card}>
+      <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-10" : ""} style={diagnostika ? { background: "#ffffff", border: `1px solid ${CARD_BORDER}` } : C.card}>
         {diagnostika && (
           <div className="flex justify-center mb-6">
-            <div className="inline-flex rounded-full p-1 border" style={{ background: tokens.colors.bg, borderColor: tokens.colors.border }}>
+            <div className="inline-flex rounded-full p-1 border" style={{ background: lightTokens.bg, borderColor: lightTokens.border }}>
               <button
                 type="button"
                 onClick={() => setMode("web")}
                 className="px-6 py-2 rounded-full text-sm transition"
-                style={mode === "web" ? { background: tokens.colors.accent, color: "#000" } : { color: tokens.colors.muted }}
+                style={mode === "web" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0f0f0", color: lightTokens.muted }}
               >
                 Mám web
               </button>
@@ -205,7 +219,7 @@ export function WebAnalyzer({
                 type="button"
                 onClick={() => setMode("manual")}
                 className="px-6 py-2 rounded-full text-sm transition"
-                style={mode === "manual" ? { background: tokens.colors.accent, color: "#000" } : { color: tokens.colors.muted }}
+                style={mode === "manual" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0f0f0", color: lightTokens.muted }}
               >
                 Nemám web
               </button>
@@ -230,12 +244,12 @@ export function WebAnalyzer({
         {diagnostika && mode === "manual" && (
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center mb-2">
-              <h2 className="text-xl md:text-2xl font-semibold mb-1" style={{ color: tokens.colors.text }}>Nemáte web?</h2>
-              <p className="text-sm md:text-base" style={{ color: tokens.colors.muted }}>Stačí pár informací. Provedeme vás.</p>
+              <h2 className="text-xl md:text-2xl font-semibold mb-1" style={{ color: lightTokens.text }}>Nemáte web?</h2>
+              <p className="text-sm md:text-base" style={{ color: lightTokens.muted }}>Stačí pár informací. Provedeme vás.</p>
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Název značky / jméno</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Název značky / jméno</label>
               <input
                 type="text"
                 style={C.inp}
@@ -246,8 +260,8 @@ export function WebAnalyzer({
               />
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Co nabízíte (max 1–2)</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Co nabízíte (max 1–2)</label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MANUAL_OFFER_TYPES.map((opt) => {
                   const on = offerTypes.includes(opt);
@@ -269,8 +283,8 @@ export function WebAnalyzer({
               </div>
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Pro koho (max 2)</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Pro koho (max 2)</label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MANUAL_AUDIENCE.map((opt) => {
                   const on = audience.includes(opt);
@@ -292,8 +306,8 @@ export function WebAnalyzer({
               </div>
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Cenová úroveň</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Cenová úroveň</label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MANUAL_PRICE_LEVELS.map((opt) => (
                   <ChoiceButton
@@ -306,9 +320,9 @@ export function WebAnalyzer({
               </div>
             </div>
 
-            <p className="text-sm font-medium pt-2 pb-1" style={{ color: tokens.colors.muted }}>Vizuál a tón (volitelné)</p>
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Preferovaný styl</label>
+            <p className="text-sm font-medium pt-2 pb-1" style={{ color: lightTokens.muted }}>Vizuál a tón (volitelné)</p>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Preferovaný styl</label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MANUAL_STYLE_OPTIONS.map((opt) => (
                   <ChoiceButton
@@ -321,8 +335,8 @@ export function WebAnalyzer({
               </div>
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Barvy značky (volitelné)</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Barvy značky (volitelné)</label>
               <input
                 type="text"
                 style={C.inp}
@@ -333,8 +347,8 @@ export function WebAnalyzer({
               />
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Fonty (volitelné)</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Fonty (volitelné)</label>
               <input
                 type="text"
                 style={C.inp}
@@ -345,8 +359,8 @@ export function WebAnalyzer({
               />
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Co chcete vyzařovat (volitelné)</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Co chcete vyzařovat (volitelné)</label>
               <textarea
                 style={{ ...C.inp, minHeight: 80 }}
                 placeholder="Např. důvěra, profesionalita, teplo, energie, minimalismus…"
@@ -356,8 +370,8 @@ export function WebAnalyzer({
               />
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
-              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: tokens.colors.muted }}>Stručně popište, co děláte (volitelné)</label>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+              <label className="block text-xs uppercase tracking-widest mb-3" style={{ color: lightTokens.muted }}>Stručně popište, co děláte (volitelné)</label>
               <textarea
                 style={{ ...C.inp, minHeight: 88 }}
                 placeholder={"Například:\nPomáhám ženám po mateřské nastavit online podnikání.\nVytvářím přírodní kosmetiku pro citlivou pleť.\nUčím firmy pracovat s vizuální identitou."}
@@ -365,10 +379,10 @@ export function WebAnalyzer({
                 onChange={(e) => setManualOptionalText(e.target.value)}
                 className="analyzer-inp rounded-xl resize-y placeholder:text-zinc-500"
               />
-              <p className="text-[11px] mt-2" style={{ color: tokens.colors.muted }}>Krátké. Konkrétní. Jasné.</p>
+              <p className="text-[11px] mt-2" style={{ color: lightTokens.muted }}>Krátké. Konkrétní. Jasné.</p>
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 text-center border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 text-center border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
               <input
                 type="file"
                 accept="application/pdf"
@@ -388,13 +402,13 @@ export function WebAnalyzer({
                 className="hidden"
                 id="pdfUpload"
               />
-              <label htmlFor="pdfUpload" className="cursor-pointer transition block text-sm" style={{ color: tokens.colors.muted }}>
+              <label htmlFor="pdfUpload" className="cursor-pointer transition block text-sm" style={{ color: lightTokens.muted }}>
                 {brandFile ? `Vybrán soubor: ${brandFile.name}` : "Nahrajte textový PDF dokument (max 2 MB). Dokument by měl obsahovat pouze textové informace o značce."}
               </label>
-              <p className="text-[11px] mt-2" style={{ color: tokens.colors.muted }}>Dokument musí obsahovat skutečný text (ne naskenované obrázky).</p>
+              <p className="text-[11px] mt-2" style={{ color: lightTokens.muted }}>Dokument musí obsahovat skutečný text (ne naskenované obrázky).</p>
             </div>
 
-            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 text-center border" style={{ background: tokens.colors.card, borderColor: tokens.colors.border }}>
+            <div className="rounded-2xl px-6 py-6 md:px-8 md:py-8 text-center border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
               <input
                 type="file"
                 accept="image/png, image/jpeg, image/webp"
@@ -414,7 +428,7 @@ export function WebAnalyzer({
                 className="hidden"
                 id="imageUpload"
               />
-              <label htmlFor="imageUpload" className="cursor-pointer transition block text-sm" style={{ color: tokens.colors.muted }}>
+              <label htmlFor="imageUpload" className="cursor-pointer transition block text-sm" style={{ color: lightTokens.muted }}>
                 {imageFile ? `Vybrán obrázek: ${imageFile.name}` : "Nahrajte jednu ukázku grafiky nebo fotografie (max 1 MB). Ideálně reprezentativní vizuál vaší značky."}
               </label>
               {imageFile && (
@@ -429,10 +443,10 @@ export function WebAnalyzer({
             <div
               style={{
                 padding: "10px 14px",
-                background: `${tokens.colors.error}18`,
-                border: `1px solid ${tokens.colors.error}40`,
+                background: `${lightTokens.error}18`,
+                border: `1px solid ${lightTokens.error}40`,
                 borderRadius: 12,
-                color: tokens.colors.error,
+                color: lightTokens.error,
                 fontSize: 13,
               }}
             >
@@ -446,9 +460,9 @@ export function WebAnalyzer({
                   marginTop: 8,
                   padding: "8px 14px",
                   background: "transparent",
-                  border: `1px solid ${tokens.colors.border}`,
+                  border: `1px solid ${lightTokens.border}`,
                   borderRadius: 10,
-                  color: tokens.colors.muted,
+                  color: lightTokens.muted,
                   fontSize: 12,
                   cursor: "pointer",
                 }}
@@ -470,7 +484,7 @@ export function WebAnalyzer({
 
       <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
         {["Screenshot webu", "Analýza textu", "Claude Vision", "Brand DNA"].map((t) => (
-          <span key={t} style={{ fontSize: 10, color: tokens.colors.muted }}>✓ {t}</span>
+          <span key={t} style={{ fontSize: 10, color: lightTokens.muted }}>✓ {t}</span>
         ))}
       </div>
     </div>
