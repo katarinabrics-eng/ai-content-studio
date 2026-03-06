@@ -79,7 +79,7 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
 
 function buildAnalyzeInput(scraped: Scraped): string {
   const textContent = scraped.markdown.slice(0, 7000);
-  return `Analyzuj následující web na základě jeho skutečného obsahu.
+  return `Analyzuj následující web na základě jeho skutečného obsahu. Veškerou odpověď piš výhradně v češtině.
 
 URL: ${scraped.url}
 Název: ${scraped.title ?? ""}
@@ -90,7 +90,7 @@ OBSAH WEBU (markdown):
 ${textContent}
 ---
 
-Vrať čistý text (ne JSON), oddělené sekce:
+Vrať čistý text (ne JSON), oddělené sekce, vše v češtině:
 
 1. Shrnutí positioning – jak se web/služba prezentuje, hlavní sdělení.
 2. Cílovou skupinu – komu je nabídka určena (pokud je z obsahu zřejmá).
@@ -101,23 +101,29 @@ Vrať čistý text (ne JSON), oddělené sekce:
 
 const PILLAR_ANALYSIS_SCHEMA = `
   "pillarAnalysis": {
-    "light": { "score": 0-10, "interpretation": "3-4 věty", "observed": ["nález 1"], "notObserved": ["co chybí 1"], "reasoning": "2-4 věty proč", "strategicOpportunity": "jedna věta" },
-    "energy": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
-    "architecture": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
-    "identity": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
-    "trust": { "score": 0-10, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." }
+    "light": { "score": 1-10 celé číslo, "interpretation": "3-4 věty česky", "observed": ["nález 1"], "notObserved": ["co chybí 1"], "reasoning": "2-4 věty proč", "strategicOpportunity": "jedna věta" },
+    "energy": { "score": 1-10 celé číslo, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
+    "architecture": { "score": 1-10 celé číslo, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
+    "identity": { "score": 1-10 celé číslo, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." },
+    "trust": { "score": 1-10 celé číslo, "interpretation": "...", "observed": ["..."], "notObserved": ["..."], "reasoning": "...", "strategicOpportunity": "..." }
   }
 `;
 
 const DIAGNOSTIKA_METHODOLOGY = `
 JAZYK: Veškerý výstup piš výhradně v češtině – interpretation, observed, notObserved, reasoning, strategicOpportunity, summary i všechny položky v polích. Žádná angličtina.
 
-KONZISTENCE SKÓRE: Stejná úroveň důkazů na webu musí vést ke stejnému skóre. Používej škálu 0–10 důsledně podle jasných kritérií. Nepodhodnocuj ani nepřehodnocuj – skóre musí odpovídat popsaným observed/notObserved.
+Hodnoť VÝHRADNĚ podle těchto kritérií. Každý pilíř ohodnoť na stupnici 1–10, kde:
+1–3 = chybí úplně
+4–5 = základní úroveň
+6–7 = průměrná úroveň
+8–9 = nadprůměrná úroveň
+10 = výjimečná úroveň
+Buď konzistentní — stejný web musí dostat stejné skóre.
 
 You are a senior brand strategist. Generate output using this strict structure for EACH pillar.
 
 POVINNÉ u KAŽDÉHO pilíře (light, energy, architecture, identity, trust):
-- score: 0–10 (odpovídá tomu, co jste v observed/notObserved/reasoning popsali).
+- score: 1–10 celé číslo (odpovídá škále výše a tomu, co jste v observed/notObserved/reasoning popsali).
 - interpretation: 3–4 věty pro veřejnou část – stručně, profesionálně, co značka v pilíři dělá a co jí chybí.
 - observed: pole s min. 1 konkrétním nálezem (co jste na webu/v podkladech zaznamenali). Nikdy ne prázdné.
 - notObserved: pole s min. 1 položkou (co chybí nebo co by mohlo být lepší). Nikdy ne prázdné.
@@ -218,10 +224,31 @@ function getTextFromChatResponse(data: unknown): string {
   return text || "No output received";
 }
 
+const PILLAR_KEYS = ["light", "energy", "architecture", "identity", "trust"] as const;
+
 function parseDiagnostikaResult(raw: string): Record<string, unknown> {
   const match = raw.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("AI nevrátilo platný JSON");
   return JSON.parse(match[0]) as Record<string, unknown>;
+}
+
+/** Validuje, že každý pilíř má score v rozsahu 1–10 (číslo). Vyhodí chybu při neplatném výstupu. */
+function validatePillarScores(result: Record<string, unknown>): void {
+  const pillarAnalysis = result.pillarAnalysis as Record<string, { score?: unknown }> | undefined;
+  if (!pillarAnalysis || typeof pillarAnalysis !== "object") {
+    throw new Error("Chybí pillarAnalysis");
+  }
+  for (const key of PILLAR_KEYS) {
+    const pillar = pillarAnalysis[key];
+    if (!pillar || typeof pillar !== "object") {
+      throw new Error(`Pilíř "${key}" chybí nebo není objekt`);
+    }
+    const score = pillar.score;
+    const num = typeof score === "string" ? parseInt(score, 10) : typeof score === "number" ? score : NaN;
+    if (Number.isNaN(num) || num < 1 || num > 10 || Math.floor(num) !== num) {
+      throw new Error(`Pilíř "${key}" má neplatné score (očekáváno celé číslo 1–10): ${String(score)}`);
+    }
+  }
 }
 
 export async function POST(request: Request) {
@@ -322,7 +349,7 @@ export async function POST(request: Request) {
           model: OPENAI_MODEL,
           messages: [{ role: "user", content: messageContent }],
           max_tokens: formatDiagnostika ? 4200 : 2000,
-          ...(formatDiagnostika ? { temperature: 0.3 } : {}),
+          ...(formatDiagnostika ? { temperature: 0.1, seed: 42 } : {}),
         }),
       },
       FETCH_TIMEOUT_MS
@@ -348,6 +375,14 @@ export async function POST(request: Request) {
     if (formatDiagnostika) {
       try {
         const result = parseDiagnostikaResult(outputText);
+        validatePillarScores(result);
+        const total = (result.brandScore as { total?: number } | undefined)?.total;
+        const analyzedUrl = scraped?.url ?? "";
+        console.log("[diagnostika]", {
+          url: analyzedUrl,
+          totalScore: total,
+          at: new Date().toISOString(),
+        });
         const suggested = selectStrategists(result);
         return NextResponse.json({
           result: {
@@ -359,8 +394,10 @@ export async function POST(request: Request) {
           },
           scraped: scrapedPayload,
         });
-      } catch {
-        return NextResponse.json({ error: "AI nevrátilo platnou Brand DNA (JSON). Zkuste to znovu." }, { status: 500 });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "AI nevrátilo platnou Brand DNA (JSON). Zkuste to znovu.";
+        const status = message.includes("score") || message.includes("pillar") || message.includes("Pilíř") ? 400 : 500;
+        return NextResponse.json({ error: message }, { status });
       }
     }
 
