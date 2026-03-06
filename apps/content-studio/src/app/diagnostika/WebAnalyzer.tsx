@@ -57,7 +57,7 @@ const lightTokens = {
   text: "#111111",
   muted: "#555555",
   accent: LIME_MAIN,
-  bg: "#f0f0f0",
+  bg: "#f0efeb",
   card: "#ffffff",
   border: CARD_BORDER,
   error: "#dc2626",
@@ -211,7 +211,7 @@ export function WebAnalyzer({
                 type="button"
                 onClick={() => setMode("web")}
                 className="px-6 py-2 rounded-full text-sm transition"
-                style={mode === "web" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0f0f0", color: lightTokens.muted }}
+                style={mode === "web" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0efeb", color: lightTokens.muted }}
               >
                 Mám web
               </button>
@@ -219,7 +219,7 @@ export function WebAnalyzer({
                 type="button"
                 onClick={() => setMode("manual")}
                 className="px-6 py-2 rounded-full text-sm transition"
-                style={mode === "manual" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0f0f0", color: lightTokens.muted }}
+                style={mode === "manual" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0efeb", color: lightTokens.muted }}
               >
                 Nemám web
               </button>

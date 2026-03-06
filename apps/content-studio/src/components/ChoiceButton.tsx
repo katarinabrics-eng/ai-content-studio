@@ -27,9 +27,9 @@ export function ChoiceButton({
           : "manual-pill px-4 py-2.5 rounded-full text-sm transition-all duration-200"
       }
       style={{
-        background: selected ? `${tokens.colors.accent}18` : tokens.colors.card,
-        border: `1px solid ${selected ? tokens.colors.accent + "99" : tokens.colors.border}`,
-        color: selected ? tokens.colors.accent : tokens.colors.muted,
+        background: selected ? tokens.colors.accentTint : "#f7f7f5",
+        border: `1px solid ${selected ? tokens.colors.primary : "rgba(0,0,0,0.12)"}`,
+        color: selected ? "#111" : tokens.colors.muted,
         boxShadow: selected ? `0 0 20px ${tokens.colors.accent}20` : "none",
       }}
     >

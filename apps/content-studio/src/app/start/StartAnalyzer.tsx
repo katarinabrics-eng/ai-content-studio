@@ -134,14 +134,14 @@ function deriveTeaser(result: Result): TeaserData {
 
 function Check({ label, ok }: { label: string; ok?: boolean }) {
   return (
-    <div style={{ display: "flex", gap: 9, padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center" }}>
-      <span style={{ color: ok ? "#a8e063" : "#333", fontSize: 13, minWidth: 16 }}>{ok ? "✓" : "✗"}</span>
-      <span style={{ fontSize: 12, color: ok ? "#bbb" : "#444" }}>{label}</span>
+    <div style={{ display: "flex", gap: 9, padding: "6px 0", borderBottom: "1px solid rgba(0,0,0,0.06)", alignItems: "center" }}>
+      <span style={{ color: ok ? "#b7e94c" : "#555", fontSize: 13, minWidth: 16 }}>{ok ? "✓" : "✗"}</span>
+      <span style={{ fontSize: 12, color: ok ? "#555" : "#777" }}>{label}</span>
     </div>
   );
 }
 
-function Pill({ text, color = "#666" }: { text: string; color?: string }) {
+function Pill({ text, color = "#777" }: { text: string; color?: string }) {
   return <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: color + "18", border: `1px solid ${color}30`, color }}>{text}</span>;
 }
 
@@ -149,8 +149,8 @@ function Row({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
   return (
     <div style={{ marginBottom: 13 }}>
-      <div style={{ fontSize: 9, color: "#444", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 13, color: "#ccc", lineHeight: 1.6 }}>{value}</div>
+      <div style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>{label}</div>
+      <div style={{ fontSize: 13, color: "#111111", lineHeight: 1.6 }}>{value}</div>
     </div>
   );
 }
@@ -159,24 +159,24 @@ function ColorDot({ hex }: { hex?: string }) {
   if (!hex) return null;
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-      <span style={{ width: 14, height: 14, borderRadius: "50%", background: hex, border: "1px solid rgba(255,255,255,0.1)", display: "inline-block" }} />
-      <span style={{ fontSize: 11, color: "#666", fontFamily: "monospace" }}>{hex}</span>
+      <span style={{ width: 14, height: 14, borderRadius: "50%", background: hex, border: "1px solid rgba(0,0,0,0.12)", display: "inline-block" }} />
+      <span style={{ fontSize: 11, color: "#777", fontFamily: "monospace" }}>{hex}</span>
     </span>
   );
 }
 
 const C = {
-  card: { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 12 },
-  lbl: { fontSize: 9, color: "#444", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
-  inp: { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 10, padding: "12px 14px", color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
-  btn: { width: "100%", padding: 13, background: "#a8e063", color: "#000", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
+  card: { background: "#ffffff", border: "1px solid rgba(0,0,0,0.09)", borderRadius: 14, padding: 20, marginBottom: 12 },
+  lbl: { fontSize: 9, color: "#555", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
+  inp: { width: "100%", background: "#ffffff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 10, padding: "12px 14px", color: "#111111", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
+  btn: { width: "100%", padding: 13, background: "#b7e94c", color: "#111", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
 };
 
 const C_FILL = {
-  card: { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 12 },
-  lbl: { fontSize: 9, color: "#444", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
-  inp: { width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 10, padding: "12px 14px", color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
-  btn: { width: "100%", padding: 13, background: "#a8e063", color: "#000", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
+  card: { background: "#ffffff", border: "1px solid rgba(0,0,0,0.09)", borderRadius: 14, padding: 20, marginBottom: 12 },
+  lbl: { fontSize: 9, color: "#555", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
+  inp: { width: "100%", background: "#ffffff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 10, padding: "12px 14px", color: "#111111", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
+  btn: { width: "100%", padding: 13, background: "#b7e94c", color: "#111", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
 };
 
 export function StartAnalyzer({
@@ -618,19 +618,20 @@ export function StartAnalyzer({
 
   const embedCompact = Boolean(diagnostika && hideIntro);
   return (
-    <div style={{ minHeight: embedCompact ? undefined : "100vh", background: "#0a0a0a", color: "#e7e7ef" }}>
+    <div style={{ minHeight: embedCompact ? undefined : "100vh", background: "#ffffff", color: "#111111" }}>
       <style>{`
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         .analyzer-fade{animation:up 0.35s ease}
-        .analyzer-inp:focus{border-color:rgba(168,224,99,0.4)!important;background:rgba(255,255,255,0.07)!important}
-        .manual-pill:hover:not(:disabled){box-shadow:0 0 24px rgba(168,224,99,0.15);border-color:rgba(168,224,99,0.25)!important}
+        .analyzer-inp:focus{border-color:#b7e94c!important;box-shadow:0 0 0 3px rgba(183,233,76,0.18)!important}
+        .analyzer-inp::placeholder{color:#bbbbbb}
+        .manual-pill:hover:not(:disabled){box-shadow:0 0 24px rgba(183,233,76,0.15);border-color:rgba(183,233,76,0.4)!important}
       `}</style>
 
-      <header style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(168,224,99,0.1)", border: "1px solid rgba(168,224,99,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#a8e063" }}>L</div>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "#3a3a4a" }}>Lucifera <span style={{ color: "#a8e063" }}>·</span> AI Content System</span>
-        <span style={{ marginLeft: "auto", fontSize: 10, color: "#222", background: "#161622", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
+      <header style={{ borderBottom: "1px solid rgba(0,0,0,0.09)", padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(183,233,76,0.12)", border: "1px solid rgba(183,233,76,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#5a8a00" }}>L</div>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555" }}>Lucifera <span style={{ color: "#b7e94c" }}>·</span> AI Content System</span>
+        <span style={{ marginLeft: "auto", fontSize: 10, color: "#555", background: "#f0efeb", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
       </header>
 
       {phase === "loading" && diagnostika && <ScanRitualLoading />}
@@ -643,35 +644,37 @@ export function StartAnalyzer({
             </div>
           )}
           <div style={{ maxWidth: 420, margin: "0 auto" }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: "#e7e7ef", marginBottom: 16 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "#111111", marginBottom: 16 }}>
               Než zobrazíme výsledky — jak vás máme oslovovat?
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
-                <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 6 }}>Jak vás máme oslovovat?</label>
+                <label style={{ display: "block", fontSize: 12, color: "#555", marginBottom: 6 }}>Jak vás máme oslovovat?</label>
                 <input
                   type="text"
                   value={nameFormName}
                   onChange={(e) => setNameFormName(e.target.value)}
                   placeholder="Vaše jméno"
-                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e7e7ef", fontSize: 14, boxSizing: "border-box" }}
+                  className="analyzer-inp"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "#ffffff", color: "#111111", fontSize: 14, boxSizing: "border-box" }}
                 />
               </div>
               <div>
-                <label style={{ display: "block", fontSize: 12, color: "#888", marginBottom: 6 }}>Web</label>
+                <label style={{ display: "block", fontSize: 12, color: "#555", marginBottom: 6 }}>Web</label>
                 <input
                   type="text"
                   value={nameFormWeb}
                   onChange={(e) => setNameFormWeb(e.target.value)}
                   placeholder="https://…"
-                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)", color: "#e7e7ef", fontSize: 14, boxSizing: "border-box" }}
+                  className="analyzer-inp"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "#ffffff", color: "#111111", fontSize: 14, boxSizing: "border-box" }}
                 />
               </div>
-              {nameFormError && <p style={{ fontSize: 13, color: "#e8a0a0" }}>{nameFormError}</p>}
+              {nameFormError && <p style={{ fontSize: 13, color: "#dc2626" }}>{nameFormError}</p>}
               <button
                 type="button"
                 onClick={confirmNameForm}
-                style={{ padding: "12px 20px", borderRadius: 10, border: "none", background: "#A8EB12", color: "#0a0a0a", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+                style={{ padding: "12px 20px", borderRadius: 10, border: "none", background: "#b7e94c", color: "#111", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
               >
                 Zobrazit výsledky →
               </button>
@@ -747,7 +750,7 @@ export function StartAnalyzer({
 
         {phase === "fillMissing" && result && missingFields.length > 0 && (
           <div className="analyzer-fade" style={{ maxWidth: 640, margin: "0 auto" }}>
-            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#555", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
             <p className="text-sm mb-6" style={{ color: tokens.colors.muted }}>
               Z analýzy webu nám chybí několik údajů. Doplňte je prosím – pak pokračujeme k výsledkům.
             </p>
@@ -845,17 +848,17 @@ export function StartAnalyzer({
         {phase === "loading" && !diagnostika && (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
             <div style={{ position: "relative", width: 52, height: 52, margin: "0 auto 20px" }}>
-              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(168,224,99,0.08)" }} />
-              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid transparent", borderTopColor: "#a8e063", animation: "spin 0.9s linear infinite" }} />
+              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(183,233,76,0.2)" }} />
+              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid transparent", borderTopColor: "#b7e94c", animation: "spin 0.9s linear infinite" }} />
             </div>
-            <p style={{ color: "#a8e063", fontSize: 14, fontWeight: 500 }}>{msg}</p>
-            <p style={{ color: "#2a2a3a", fontSize: 11, marginTop: 6 }}>cca 15–25 sekund</p>
+            <p style={{ color: "#b7e94c", fontSize: 14, fontWeight: 500 }}>{msg}</p>
+            <p style={{ color: "#555", fontSize: 11, marginTop: 6 }}>cca 15–25 sekund</p>
           </div>
         )}
 
         {phase === "guidance" && result && (
           <div className="analyzer-fade">
-            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#555", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
             <ScoreCard
               score={score}
               url={url || undefined}
@@ -876,21 +879,21 @@ export function StartAnalyzer({
 
         {phase === "result" && result && (
           <div className="analyzer-fade">
-            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#333", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← Analyzovat jiný web</button>
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#555", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← Analyzovat jiný web</button>
             {scraped?.screenshot && (
               <div style={{ ...C.card, padding: 12, marginBottom: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <span style={C.lbl}>Vizuální náhled webu</span>
-                  <span style={{ fontSize: 10, color: "#333" }}>Firecrawl screenshot</span>
+                  <span style={{ fontSize: 10, color: "#555" }}>Firecrawl screenshot</span>
                 </div>
                 {/* eslint-disable-next-line @next/next/no-img-element -- dynamic base64 screenshot, next/image does not optimize data URLs */}
-                <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="screenshot" style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)", maxHeight: 260, objectFit: "cover", objectPosition: "top" }} />
+                <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="screenshot" style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(0,0,0,0.09)", maxHeight: 260, objectFit: "cover", objectPosition: "top" }} />
               </div>
             )}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
               <div style={{ ...C.card, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, margin: 0 }}>
                 <ScoreRing score={score} />
-                <p style={{ fontSize: 10, color: "#2a2a3a", textAlign: "center", wordBreak: "break-all" }}>{scraped?.url}</p>
+                <p style={{ fontSize: 10, color: "#555", textAlign: "center", wordBreak: "break-all" }}>{scraped?.url}</p>
               </div>
               <div style={{ ...C.card, margin: 0 }}>
                 <span style={C.lbl}>Co jsme našli</span>
@@ -914,13 +917,13 @@ export function StartAnalyzer({
               <Row label="Unikátní hodnota" value={result.brandDna?.uniqueValue} />
               {result.brandDna?.visualStyle && (
                 <div style={{ marginBottom: 13 }}>
-                  <div style={{ fontSize: 9, color: "#444", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 6 }}>Vizuální styl</div>
+                  <div style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 6 }}>Vizuální styl</div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 6 }}>
                     <ColorDot hex={result.brandDna.visualStyle.primaryColor} />
                     <ColorDot hex={result.brandDna.visualStyle.secondaryColor} />
                   </div>
                   {result.brandDna.visualStyle.mood && <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5 }}>{result.brandDna.visualStyle.mood}</p>}
-                  {result.brandDna.visualStyle.typography && <p style={{ fontSize: 11, color: "#444", marginTop: 3 }}>{result.brandDna.visualStyle.typography}</p>}
+                  {result.brandDna.visualStyle.typography && <p style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{result.brandDna.visualStyle.typography}</p>}
                 </div>
               )}
               {result.brandDna?.contentPillars && result.brandDna.contentPillars.length > 0 && (
@@ -943,7 +946,7 @@ export function StartAnalyzer({
             {result.summary && (
               <div style={{ ...C.card, borderColor: "rgba(168,224,99,0.1)", background: "rgba(168,224,99,0.015)" }}>
                 <span style={C.lbl}>Hodnocení stratéga</span>
-                <p style={{ fontSize: 13, color: "#bbb", lineHeight: 1.7 }}>{result.summary}</p>
+                <p style={{ fontSize: 13, color: "#777", lineHeight: 1.7 }}>{result.summary}</p>
               </div>
             )}
             <details style={{ marginBottom: 12 }}>
@@ -951,16 +954,16 @@ export function StartAnalyzer({
                 Načtený text webu ({Math.round((scraped?.markdown?.length ?? 0) / 100) / 10}k znaků)
               </summary>
               <div style={{ ...C.card, marginTop: 6, maxHeight: 160, overflow: "auto" }}>
-                <pre style={{ fontSize: 10, color: "#333", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{scraped?.markdown?.slice(0, 2000)}...</pre>
+                <pre style={{ fontSize: 10, color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{scraped?.markdown?.slice(0, 2000)}...</pre>
               </div>
             </details>
             <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.15)", background: "rgba(168,224,99,0.015)" }}>
               <p style={{ color: "#a8e063", fontWeight: 600, marginBottom: 5 }}>Brand DNA připravena ✓</p>
               {diagnostika ? (
-                <p style={{ color: "#333", fontSize: 12 }}>Výsledek diagnostiky je připraven.</p>
+                <p style={{ color: "#111111", fontSize: 12 }}>Výsledek diagnostiky je připraven.</p>
               ) : (
                 <>
-                  <p style={{ color: "#333", fontSize: 12, marginBottom: 14 }}>Modul 2: generátor postů ve stylu tohoto klienta</p>
+                  <p style={{ color: "#111111", fontSize: 12, marginBottom: 14 }}>Modul 2: generátor postů ve stylu tohoto klienta</p>
                   <button type="button" style={{ ...C.btn, maxWidth: 260, margin: "0 auto" }}>Pokračovat na tvorbu obsahu →</button>
                 </>
               )}
@@ -968,8 +971,8 @@ export function StartAnalyzer({
 
             {!leadSubmitted ? (
               <div style={{ ...C.card, borderColor: "rgba(168,224,99,0.2)", background: "rgba(168,224,99,0.03)" }}>
-                <p style={{ color: "#ccc", fontSize: 14, marginBottom: 8 }}>Chcete se k analýze vrátit a my vás můžeme kontaktovat?</p>
-                <p style={{ color: "#666", fontSize: 12, marginBottom: 12 }}>Zadejte e-mail – nebudeme vás spamovat, můžeme vám poslat ukázku a dál s vámi pracovat.</p>
+                <p style={{ color: "#111111", fontSize: 14, marginBottom: 8 }}>Chcete se k analýze vrátit a my vás můžeme kontaktovat?</p>
+                <p style={{ color: "#555", fontSize: 12, marginBottom: 12 }}>Zadejte e-mail – nebudeme vás spamovat, můžeme vám poslat ukázku a dál s vámi pracovat.</p>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
                   <input
                     type="email"
@@ -993,7 +996,7 @@ export function StartAnalyzer({
             ) : (
               <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.2)", background: "rgba(168,224,99,0.05)" }}>
                 <p style={{ color: "#a8e063", fontWeight: 600 }}>Děkujeme, budeme vás kontaktovat.</p>
-                <p style={{ color: "#888", fontSize: 12, marginTop: 4 }}>Vaše analýza je u nás uložená.</p>
+                <p style={{ color: "#777", fontSize: 12, marginTop: 4 }}>Vaše analýza je u nás uložená.</p>
               </div>
             )}
           </div>

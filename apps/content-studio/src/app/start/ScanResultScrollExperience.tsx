@@ -87,7 +87,7 @@ function Section({
   return (
     <section
       className={`flex flex-col items-center justify-center px-6 text-center ${compact ? "py-8" : "py-12 md:py-14"} ${className}`}
-      style={{ background: "#0a0a0a", color: "#e7e7ef" }}
+      style={{ background: "#ffffff", color: "#111111" }}
     >
       {children}
     </section>
@@ -224,16 +224,16 @@ export function ScanResultScrollExperience({
   }) {
     return (
       <div className="mt-4">
-        <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Jak jsme hodnotili</p>
+        <p className="text-xs text-[#555] uppercase tracking-wider mb-2">Jak jsme hodnotili</p>
         <button
           type="button"
           onClick={onToggle}
-          className="text-sm font-medium text-lime-400 hover:text-lime-300 underline underline-offset-2 transition bg-transparent border-0 cursor-pointer p-0"
+          className="text-sm font-medium text-[#b7e94c] hover:text-[#d0ec78] underline underline-offset-2 transition bg-transparent border-0 cursor-pointer p-0"
         >
           {isOpen ? "− Skrýt metodiku" : "Zjistit, jak jsme hodnotili →"}
         </button>
         {isOpen && (
-          <div className="mt-3 p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 text-sm text-zinc-300 leading-relaxed">
+          <div className="mt-3 p-4 rounded-xl bg-[#f0efeb] border border-black/12 text-sm text-[#555] leading-relaxed">
             {children}
           </div>
         )}
@@ -276,13 +276,13 @@ export function ScanResultScrollExperience({
     return (
       <Section>
         <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{title}</h2>
-          {subtitle && <p className="text-sm text-zinc-500 mb-4">{subtitle}</p>}
-          <p className="text-2xl font-bold text-lime-400 mb-4">{title}: {score}/10</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#111111] mb-1">{title}</h2>
+          {subtitle && <p className="text-sm text-[#555] mb-4">{subtitle}</p>}
+          <p className="text-2xl font-bold text-[#b7e94c] mb-4">{title}: {score}/10</p>
 
           <div className="space-y-3">
             {publicInterpretation ? (
-              <p className="text-base text-zinc-200 leading-relaxed">{publicInterpretation}</p>
+              <p className="text-base text-[#555] leading-relaxed">{publicInterpretation}</p>
             ) : (
               <div>{children}</div>
             )}
@@ -296,8 +296,8 @@ export function ScanResultScrollExperience({
                   <>
                     {analysis?.observed && analysis.observed.length > 0 && (
                       <div>
-                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
-                        <ul className="list-disc list-inside text-zinc-300 space-y-1">
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
+                        <ul className="list-disc list-inside text-[#555] space-y-1">
                           {analysis.observed.map((item, i) => (
                             <li key={i}>{item}</li>
                           ))}
@@ -306,8 +306,8 @@ export function ScanResultScrollExperience({
                     )}
                     {analysis?.notObserved && analysis.notObserved.length > 0 && (
                       <div>
-                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co jsme nezaznamenali</p>
-                        <ul className="list-disc list-inside text-zinc-400 space-y-1">
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co jsme nezaznamenali</p>
+                        <ul className="list-disc list-inside text-[#777] space-y-1">
                           {analysis.notObserved.map((item, i) => (
                             <li key={i}>{item}</li>
                           ))}
@@ -316,29 +316,29 @@ export function ScanResultScrollExperience({
                     )}
                     {showTrustMethodology && id === "trust" && (
                       <div>
-                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Metodika rozlišuje mezi</p>
-                        <div className="text-zinc-400 space-y-1.5 text-xs">
-                          <p><strong className="text-zinc-300">Portfolio</strong> = ukázka práce</p>
-                          <p><strong className="text-zinc-300">Reference</strong> = hlas klienta</p>
-                          <p><strong className="text-zinc-300">Case study</strong> = důkaz výsledku</p>
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Metodika rozlišuje mezi</p>
+                        <div className="text-[#777] space-y-1.5 text-xs">
+                          <p><strong className="text-[#555]">Portfolio</strong> = ukázka práce</p>
+                          <p><strong className="text-[#555]">Reference</strong> = hlas klienta</p>
+                          <p><strong className="text-[#555]">Case study</strong> = důkaz výsledku</p>
                         </div>
                       </div>
                     )}
                     {analysis?.reasoning?.trim() && (
                       <div>
-                        <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
-                        <p className="text-zinc-300 leading-relaxed">{analysis.reasoning}</p>
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
+                        <p className="text-[#555] leading-relaxed">{analysis.reasoning}</p>
                       </div>
                     )}
                     {(!analysis?.observed?.length && !analysis?.notObserved?.length && !analysis?.reasoning?.trim()) &&
                       (analysis?.interpretation?.trim() || analysis?.strategicOpportunity?.trim()) && (
                       <div className="space-y-2">
                         {analysis.interpretation?.trim() && (
-                          <p className="text-zinc-300 leading-relaxed">{analysis.interpretation}</p>
+                          <p className="text-[#555] leading-relaxed">{analysis.interpretation}</p>
                         )}
                         {analysis.strategicOpportunity?.trim() && (
-                          <p className="text-[#A8EB12]/90 text-sm">
-                            <span className="text-zinc-500 uppercase tracking-wider text-xs block mb-1">Doporučený směr</span>
+                          <p className="text-[#5a8a00] text-sm">
+                            <span className="text-[#555] uppercase tracking-wider text-xs block mb-1">Doporučený směr</span>
                             {analysis.strategicOpportunity}
                           </p>
                         )}
@@ -347,8 +347,8 @@ export function ScanResultScrollExperience({
                   </>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-zinc-500 text-sm">Pro tento pilíř není k dispozici rozepsaná metodika hodnocení.</p>
-                    <p className="text-zinc-600 text-xs">Skóre vychází z analýzy obsahu webu a zadaných podkladů.</p>
+                    <p className="text-[#555] text-sm">Pro tento pilíř není k dispozici rozepsaná metodika hodnocení.</p>
+                    <p className="text-[#777] text-xs">Skóre vychází z analýzy obsahu webu a zadaných podkladů.</p>
                   </div>
                 )}
               </div>
@@ -360,30 +360,30 @@ export function ScanResultScrollExperience({
   }
 
   return (
-    <div className="bg-[#0a0a0a] text-[#e7e7ef] animate-fade-in">
+    <div className="bg-white text-[#111111] animate-fade-in">
       {onBack && (
-        <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur">
+        <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-black/9 bg-white/90 backdrop-blur">
           <div className="flex items-center gap-4">
             {displayName ? (
-              <span className="text-sm font-medium text-zinc-200 truncate max-w-[200px]">{displayName}</span>
+              <span className="text-sm font-medium text-[#555] truncate max-w-[200px]">{displayName}</span>
             ) : null}
             <button
               type="button"
               onClick={onBack}
-              className="text-xs text-zinc-500 hover:text-zinc-300 transition shrink-0"
+              className="text-xs text-[#555] hover:text-[#111111] transition shrink-0"
             >
               ← Analyzovat jiný web
             </button>
           </div>
-          <span className="text-[10px] uppercase tracking-widest text-zinc-600">Lucifera Strategic Brand Scan™</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#777]">Lucifera Strategic Brand Scan™</span>
         </div>
       )}
 
       {/* CTA: Chci – Prémiovou vizuální identitu (platba za Visual Board / konzultaci) */}
-      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 py-2.5 px-4 border-b border-white/5 bg-[#0a0a0a]/95 backdrop-blur">
+      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 py-2.5 px-4 border-b border-black/9 bg-white/95 backdrop-blur">
         <a
           href="/rezervace?from=premiova"
-          className="inline-flex items-center justify-center rounded-lg bg-[#A8EB12] px-4 py-2 text-sm font-medium text-[#0a0a0a] hover:bg-[#b8f022]"
+          className="inline-flex items-center justify-center rounded-lg bg-[#b7e94c] px-4 py-2 text-sm font-medium text-[#111] hover:bg-[#d0ec78]"
         >
           Chci – Prémiovou vizuální identitu
         </a>
@@ -392,14 +392,14 @@ export function ScanResultScrollExperience({
       {/* 1. HERO – Zrcadlo */}
       <Section>
         <div className="animate-fade-in">
-          <p className="text-xs uppercase tracking-[0.25em] text-zinc-500 mb-4">
+          <p className="text-xs uppercase tracking-[0.25em] text-[#555] mb-4">
             Index vizuální úrovně značky
           </p>
-          <p className="text-6xl md:text-8xl font-bold text-white mb-2">
+          <p className="text-6xl md:text-8xl font-bold text-[#111111] mb-2">
             {total}
-            <span className="text-zinc-500 font-normal text-4xl md:text-5xl"> / 100</span>
+            <span className="text-[#555] font-normal text-4xl md:text-5xl"> / 100</span>
           </p>
-          <p className="text-sm text-zinc-400 max-w-md mx-auto mt-6 leading-relaxed">
+          <p className="text-sm text-[#777] max-w-md mx-auto mt-6 leading-relaxed">
             „{HeroSubline({ total })}“
           </p>
         </div>
@@ -408,16 +408,16 @@ export function ScanResultScrollExperience({
       {/* 2. Radar – 5 pilířů */}
       <Section>
         <div className="w-full max-w-lg mx-auto space-y-6">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-8">Pět pilířů značky</p>
+          <p className="text-xs uppercase tracking-widest text-[#555] mb-8">Pět pilířů značky</p>
           <div className="flex flex-wrap justify-center gap-8">
             {pillarList.map((p) => (
               <div key={p.id} className="flex flex-col items-center gap-1">
-                <span className="text-lg font-semibold text-white">{p.title}</span>
-                <span className="text-2xl font-bold text-lime-400">{p.score}/10</span>
+                <span className="text-lg font-semibold text-[#111111]">{p.title}</span>
+                <span className="text-2xl font-bold text-[#b7e94c]">{p.score}/10</span>
               </div>
             ))}
           </div>
-          <p className="text-zinc-400 text-sm mt-10 max-w-md mx-auto">
+          <p className="text-[#777] text-sm mt-10 max-w-md mx-auto">
             „Vaše značka není slabá. Ale není ještě strategicky sladěná.“
           </p>
         </div>
@@ -425,16 +425,16 @@ export function ScanResultScrollExperience({
 
       {/* 3. Přechod */}
       <Section compact>
-        <p className="text-xl md:text-2xl text-zinc-500 max-w-lg mx-auto">
+        <p className="text-xl md:text-2xl text-[#555] max-w-lg mx-auto">
           Značka není jen vizuál.<br />Je to systém.
         </p>
       </Section>
 
       {/* 4. PILÍŘ I – SVĚTLO */}
       <PillarBlock id="light" title="SVĚTLO" subtitle="Clarity of Value">
-        <div className="space-y-4 text-sm text-zinc-300">
+        <div className="space-y-4 text-sm text-[#555]">
           <div>
-            <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co funguje</p>
+            <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co funguje</p>
             <ul className="list-disc list-inside space-y-1">
               {d.positioning && <li>Je jasné, že nabízíte konkrétní hodnotu</li>}
               {d.targetAudience && <li>Komunikace je srozumitelná</li>}
@@ -442,7 +442,7 @@ export function ScanResultScrollExperience({
             </ul>
           </div>
           <div>
-            <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Co brzdí růst</p>
+            <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co brzdí růst</p>
             <ul className="list-disc list-inside space-y-1">
               {!result.brandScore?.hasHeadline && <li>Hlavní claim je generický nebo chybí</li>}
               {!result.brandScore?.hasTargetAudience && <li>Cílová skupina není jednoznačně identifikovaná</li>}
@@ -451,16 +451,16 @@ export function ScanResultScrollExperience({
           </div>
         </div>
         {d.positioning && (
-          <div className="mt-8 p-4 rounded-xl bg-lime-500/10 border border-lime-500/20">
-            <p className="text-xs uppercase tracking-wider text-zinc-500 mb-2">Pokud by měl být claim přesnější, mohl by znít například:</p>
-            <p className="text-white font-medium">„{d.positioning}“</p>
+          <div className="mt-8 p-4 rounded-xl bg-[rgba(183,233,76,0.12)] border border-[rgba(183,233,76,0.4)]">
+            <p className="text-xs uppercase tracking-wider text-[#555] mb-2">Pokud by měl být claim přesnější, mohl by znít například:</p>
+            <p className="text-[#111111] font-medium">„{d.positioning}“</p>
           </div>
         )}
       </PillarBlock>
 
       {/* 5. Přechod */}
       <Section compact>
-        <p className="text-xl text-zinc-500 max-w-lg mx-auto">
+        <p className="text-xl text-[#555] max-w-lg mx-auto">
           Značka může být jasná.<br />Ale proč právě ona?
         </p>
       </Section>
@@ -470,14 +470,14 @@ export function ScanResultScrollExperience({
         {riskCommoditization && (
           <p className="text-amber-400/90 text-sm font-medium mb-6">Riziko zaměnitelnosti: vysoké</p>
         )}
-        <p className="text-zinc-400 text-sm mb-4">Osa: Cena ↔ Prémiovost · Obecné ↔ Specializované</p>
-        {d.uniqueValue ? <p className="text-zinc-300">Unikátní hodnota: {d.uniqueValue}</p> : null}
-        <p className="text-zinc-400 text-sm mt-6">„Vaše značka dnes soutěží v přeplněné kategorii.“</p>
+        <p className="text-[#777] text-sm mb-4">Osa: Cena ↔ Prémiovost · Obecné ↔ Specializované</p>
+        {d.uniqueValue ? <p className="text-[#555]">Unikátní hodnota: {d.uniqueValue}</p> : null}
+        <p className="text-[#777] text-sm mt-6">„Vaše značka dnes soutěží v přeplněné kategorii.“</p>
       </PillarBlock>
 
       {/* 7. PILÍŘ III – ARCHITEKTURA */}
       <PillarBlock id="architecture" title="ARCHITEKTURA">
-        <p className="text-zinc-400 text-sm">
+        <p className="text-[#777] text-sm">
           {result.brandScore?.hasCTA
             ? "Výzva k akci je přítomna – uživatel ví, co má udělat."
             : "Uživatel musí projít více kroků, než pochopí, co má udělat. Body tření. Konverzní mezera."}
@@ -486,43 +486,43 @@ export function ScanResultScrollExperience({
 
       {/* 8. PILÍŘ IV – IDENTITA */}
       <PillarBlock id="identity" title="IDENTITA">
-        <p className="text-zinc-400 text-sm mb-4">Vaše značka působí spíše:</p>
-        <ul className="list-disc list-inside text-zinc-300 text-sm space-y-1 mb-6">
+        <p className="text-[#777] text-sm mb-4">Vaše značka působí spíše:</p>
+        <ul className="list-disc list-inside text-[#555] text-sm space-y-1 mb-6">
           {d.tone && <li>{d.tone}</li>}
           {d.communicationStyle && <li>{d.communicationStyle}</li>}
           {result.brandScore?.hasVisualIdentity ? <li>Vizuálně sjednoceně</li> : <li>Bez výrazného emočního tónu</li>}
         </ul>
-        <p className="text-zinc-500 text-sm">Silnější směr by mohl být: Autoritativní + Lidský</p>
+        <p className="text-[#555] text-sm">Silnější směr by mohl být: Autoritativní + Lidský</p>
       </PillarBlock>
 
       {/* 9. PILÍŘ V – DŮVĚRA */}
       <PillarBlock id="trust" title="DŮVĚRA" showTrustMethodology>
         {!result.brandScore?.hasSocialProof && (
-          <ul className="list-disc list-inside text-zinc-400 text-sm space-y-1 mb-6">
+          <ul className="list-disc list-inside text-[#777] text-sm space-y-1 mb-6">
             <li>Chybí reference</li>
             <li>Chybí konkrétní výsledky</li>
             <li>Chybí expertní ukotvení</li>
           </ul>
         )}
-        <p className="text-zinc-400 text-sm">„Bez důvěry značka nezíská prémiovou pozici.“</p>
+        <p className="text-[#777] text-sm">„Bez důvěry značka nezíská prémiovou pozici.“</p>
       </PillarBlock>
 
       {/* 10. Shrnutí */}
       <Section>
         <div className="max-w-xl mx-auto text-left">
-          <h2 className="text-2xl font-bold text-white mb-8">Strategický profil vaší značky</h2>
+          <h2 className="text-2xl font-bold text-[#111111] mb-8">Strategický profil vaší značky</h2>
           <div className="grid grid-cols-2 gap-3 text-sm mb-8">
             {pillarList.map((p) => (
-              <div key={p.id} className="flex justify-between py-2 border-b border-white/10">
-                <span className="text-zinc-400">{p.title}</span>
-                <span className="font-semibold text-white">{p.score}</span>
+              <div key={p.id} className="flex justify-between py-2 border-b border-black/12">
+                <span className="text-[#777]">{p.title}</span>
+                <span className="font-semibold text-[#111111]">{p.score}</span>
               </div>
             ))}
           </div>
-          <div className="space-y-4 text-sm text-zinc-300">
+          <div className="space-y-4 text-sm text-[#555]">
             {d.missingElements && d.missingElements.length > 0 && (
               <div>
-                <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">3 klíčová rizika / okamžité akce</p>
+                <p className="text-[#555] uppercase tracking-wider text-xs mb-2">3 klíčová rizika / okamžité akce</p>
                 <ul className="list-disc list-inside space-y-1">
                   {d.missingElements.slice(0, 3).map((m) => (
                     <li key={m}>{m}</li>
@@ -532,8 +532,8 @@ export function ScanResultScrollExperience({
             )}
             {summary && (
               <div>
-                <p className="text-zinc-500 uppercase tracking-wider text-xs mb-2">Doporučený strategický posun</p>
-                <p className="text-zinc-300">{summary}</p>
+                <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Doporučený strategický posun</p>
+                <p className="text-[#555]">{summary}</p>
               </div>
             )}
           </div>
@@ -544,20 +544,20 @@ export function ScanResultScrollExperience({
       {result.suggested_strategists && result.suggested_strategists.length > 0 && (
         <Section>
           <div className="max-w-xl mx-auto text-left">
-            <h2 className="text-2xl font-bold text-white mb-6">Pro vaši značku doporučujeme</h2>
+            <h2 className="text-2xl font-bold text-[#111111] mb-6">Pro vaši značku doporučujeme</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {result.suggested_strategists.slice(0, 2).map((s) => (
                 <div
                   key={s.id}
-                  className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
+                  className="rounded-xl border border-black/12 bg-[#f7f7f5] p-4 text-left"
                 >
-                  <div className="font-semibold text-white">{s.label}</div>
-                  {s.tagline && <div className="text-sm text-zinc-400 mt-1">{s.tagline}</div>}
+                  <div className="font-semibold text-[#111111]">{s.label}</div>
+                  {s.tagline && <div className="text-sm text-[#777] mt-1">{s.tagline}</div>}
                   {s.fit_score != null && (
-                    <div className="text-xs text-lime-400 mt-2">Fit: {s.fit_score} %</div>
+                    <div className="text-xs text-[#b7e94c] mt-2">Fit: {s.fit_score} %</div>
                   )}
                   {s.reason && (
-                    <p className="text-sm text-zinc-300 mt-2">{s.reason}</p>
+                    <p className="text-sm text-[#555] mt-2">{s.reason}</p>
                   )}
                 </div>
               ))}
@@ -568,7 +568,7 @@ export function ScanResultScrollExperience({
 
       {/* Info před CTA – dočasné uložení */}
       <Section compact>
-        <p className="text-sm text-zinc-500 max-w-xl mx-auto text-center leading-relaxed">
+        <p className="text-sm text-[#555] max-w-xl mx-auto text-center leading-relaxed">
           Vaše výsledky jsou dočasně uloženy v této session. Zadejte email a uchováme je — až se vrátíte, vše bude na místě. Bez emailu data po zavření stránky zmizí.
         </p>
       </Section>
@@ -576,7 +576,7 @@ export function ScanResultScrollExperience({
       {/* Primární CTA – jeden velký blok */}
       <Section className="pb-6">
         <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-semibold text-white mb-6 leading-relaxed">
+          <h2 className="text-2xl md:text-3xl font-semibold text-[#111111] mb-6 leading-relaxed">
             Značka má potenciál. Otázka je, zda ho chcete využít.
           </h2>
           <button
@@ -587,12 +587,12 @@ export function ScanResultScrollExperience({
             Rezervovat strategický hovor
           </button>
           <div className="mt-3 text-center">
-            <p className="text-zinc-500 text-sm">
+            <p className="text-[#555] text-sm">
               7 800 Kč · strategický hovor · vizuální board · strategie · 3 Canva šablony na míru
             </p>
-            <p className="text-zinc-600 text-xs mt-1">
+            <p className="text-[#777] text-xs mt-1">
               Pokud nebudete s výsledkem spokojeni, částku vrátíme. Veškerý obsah vám zůstává.{" "}
-              <a href="/obchodni-podminky" className="text-zinc-500 hover:text-zinc-400 underline underline-offset-1">
+              <a href="/obchodni-podminky" className="text-[#555] hover:text-[#777] underline underline-offset-1">
                 Podmínky vrácení
               </a>
             </p>
@@ -608,47 +608,47 @@ export function ScanResultScrollExperience({
               <button
                 type="button"
                 onClick={() => setSecondaryCtaExpanded((v) => !v)}
-                className="text-sm text-zinc-400 hover:text-zinc-300 underline underline-offset-2 transition"
+                className="text-sm text-[#777] hover:text-[#111111] underline underline-offset-2 transition"
               >
                 {secondaryCtaExpanded ? "− Skrýt" : "Zatím nechci konzultaci — uložte moje výsledky."}
               </button>
               {secondaryCtaExpanded && (
-                <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+                <div className="mt-4 p-4 rounded-xl bg-[#f7f7f5] border border-black/12 space-y-3">
                   <div>
-                    <label className="block text-xs text-zinc-500 mb-1">Jméno nebo název projektu</label>
+                    <label className="block text-xs text-[#555] mb-1">Jméno nebo název projektu</label>
                     <input
                       type="text"
                       value={leadName}
                       onChange={(e) => setLeadName(e.target.value)}
                       placeholder="Vaše jméno nebo firma"
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                      className="w-full rounded-lg border border-black/12 bg-white px-4 py-2.5 text-[#111111] text-sm placeholder:text-[#bbbbbb] focus:border-[#b7e94c] focus:outline-none focus:ring-1 focus:ring-[rgba(183,233,76,0.18)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-zinc-500 mb-1">Web</label>
+                    <label className="block text-xs text-[#555] mb-1">Web</label>
                     <input
                       type="text"
                       value={leadWeb}
                       onChange={(e) => setLeadWeb(e.target.value)}
                       placeholder="https://…"
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                      className="w-full rounded-lg border border-black/12 bg-white px-4 py-2.5 text-[#111111] text-sm placeholder:text-[#bbbbbb] focus:border-[#b7e94c] focus:outline-none focus:ring-1 focus:ring-[rgba(183,233,76,0.18)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-zinc-500 mb-1">E-mail</label>
+                    <label className="block text-xs text-[#555] mb-1">E-mail</label>
                     <input
                       type="email"
                       placeholder="vas@email.cz"
                       value={leadEmail}
                       onChange={(e) => setLeadEmail(e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white text-sm placeholder:text-zinc-500 focus:border-lime-400/50 focus:outline-none focus:ring-1 focus:ring-lime-400/30"
+                      className="w-full rounded-lg border border-black/12 bg-white px-4 py-2.5 text-[#111111] text-sm placeholder:text-[#bbbbbb] focus:border-[#b7e94c] focus:outline-none focus:ring-1 focus:ring-[rgba(183,233,76,0.18)]"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={handleSaveLead}
                     disabled={leadSubmitting || !leadEmail.trim()}
-                    className="rounded-lg bg-zinc-600 text-white font-medium px-5 py-2.5 hover:bg-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+                    className="rounded-lg bg-[#555] text-white font-medium px-5 py-2.5 hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
                   >
                     {leadSubmitting ? "Ukládám…" : "Uložit výsledky"}
                   </button>
@@ -659,16 +659,16 @@ export function ScanResultScrollExperience({
               )}
             </>
           ) : (
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <p className="text-sm text-zinc-300">
+            <div className="p-4 rounded-xl bg-[#f7f7f5] border border-black/12">
+              <p className="text-sm text-[#555]">
                 Výsledky jsou uloženy. Až budete připraveni pokračovat, napište nám na{" "}
-                <a href="mailto:ahoj@studiolucifera.cz" className="text-lime-400 underline">ahoj@studiolucifera.cz</a>
+                <a href="mailto:ahoj@studiolucifera.cz" className="text-[#b7e94c] underline">ahoj@studiolucifera.cz</a>
                 {" "}— aktivujeme váš účet.
               </p>
               {accessUrl && (
-                <p className="text-xs text-zinc-500 mt-2">
+                <p className="text-xs text-[#555] mt-2">
                   Odkaz pro návrat k výsledkům (7 dní):{" "}
-                  <a href={accessUrl} className="text-lime-400 underline break-all" target="_blank" rel="noreferrer">{accessUrl}</a>
+                  <a href={accessUrl} className="text-[#b7e94c] underline break-all" target="_blank" rel="noreferrer">{accessUrl}</a>
                 </p>
               )}
             </div>
@@ -699,16 +699,16 @@ export function ScanResultScrollExperience({
         {/* Prémiový potvrzovací mezikrok */}
         {openConfirmation && selectedDate && (
           <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6">
-            <div className="bg-[#0e0e0e] border border-white/10 rounded-3xl p-12 max-w-lg w-full text-white">
+            <div className="bg-white border border-black/12 rounded-3xl p-12 max-w-lg w-full text-[#111111]">
               <h3 className="text-3xl font-semibold mb-6">
                 Potvrzení vstupu do spolupráce
               </h3>
-              <p className="text-white/70 mb-6">
+              <p className="text-[#555] mb-6">
                 Rezervujete termín strategického Visual Boardu.
                 Tento krok je závazný a zahajuje přípravu spolupráce.
               </p>
               <div className="mb-8">
-                <div className="text-white/50 text-sm">Vybraný termín</div>
+                <div className="text-[#777] text-sm">Vybraný termín</div>
                 <div className="text-2xl font-semibold mt-1">{selectedDate}</div>
                 <div className="text-2xl font-semibold mt-4">7 800 Kč</div>
               </div>
@@ -717,7 +717,7 @@ export function ScanResultScrollExperience({
                 onClick={() => {
                   window.location.href = `/api/checkout?type=board&date=${encodeURIComponent(selectedDate)}`;
                 }}
-                className="w-full py-4 rounded-xl bg-lime-400 text-black font-semibold hover:scale-[1.02] transition-all"
+                className="w-full py-4 rounded-xl bg-[#b7e94c] text-[#111] font-semibold hover:scale-[1.02] transition-all"
               >
                 Uhradit a vstoupit do spolupráce
               </button>
@@ -727,7 +727,7 @@ export function ScanResultScrollExperience({
                   setOpenConfirmation(false);
                   setOpenCalendar(false);
                 }}
-                className="w-full mt-4 text-white/40 hover:text-white transition"
+                className="w-full mt-4 text-[#777] hover:text-[#111111] transition"
               >
                 Zrušit
               </button>
@@ -736,7 +736,7 @@ export function ScanResultScrollExperience({
         )}
 
       <Section compact>
-        <p className="text-xs text-zinc-600 max-w-md mx-auto text-center leading-relaxed">
+        <p className="text-xs text-[#777] max-w-md mx-auto text-center leading-relaxed">
           Metodika Lucifera Strategic Brand Scan™ je součástí placené spolupráce. Veřejná verze je orientační náhled.
         </p>
       </Section>

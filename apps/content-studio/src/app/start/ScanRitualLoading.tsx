@@ -35,12 +35,12 @@ export function ScanRitualLoading() {
   const displayNumber = COUNTER_VALUES[counterIndex];
 
   return (
-    <div className="fixed inset-0 z-20 flex flex-col items-center justify-center bg-[#0a0a0a] text-[#e7e7ef] px-6">
+    <div className="fixed inset-0 z-20 flex flex-col items-center justify-center bg-white text-[#111111] px-6">
       <div className="max-w-lg mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-semibold text-white mb-2">
+        <h2 className="text-2xl md:text-3xl font-semibold text-[#111111] mb-2">
           Lucifera analyzuje vaši značku
         </h2>
-        <p className="text-zinc-500 text-sm md:text-base mb-12">
+        <p className="text-[#555] text-sm md:text-base mb-12">
           Vytváříme diagnostický profil ve 5 vrstvách.
         </p>
 
@@ -48,19 +48,19 @@ export function ScanRitualLoading() {
           {RITUAL_STEPS.map((label, i) => (
             <li
               key={label}
-              className="flex items-center gap-3 text-zinc-400 transition-all duration-500"
+              className="flex items-center gap-3 text-[#777] transition-all duration-500"
               style={{
                 opacity: i < visibleSteps ? 1 : 0.25,
                 transform: i < visibleSteps ? "translateX(0)" : "translateX(-8px)",
               }}
             >
               <span
-                className="text-lime-400 font-medium shrink-0 transition-opacity duration-300"
+                className="font-medium shrink-0 transition-opacity duration-300 text-[#b7e94c]"
                 style={{ opacity: i < visibleSteps ? 1 : 0 }}
               >
                 ✔
               </span>
-              <span className={i < visibleSteps ? "text-zinc-300" : "text-zinc-600"}>
+              <span className={i < visibleSteps ? "text-[#555]" : "text-[#777]"}>
                 {label}
               </span>
             </li>
@@ -68,18 +68,18 @@ export function ScanRitualLoading() {
         </ul>
 
         <div className="mb-4">
-          <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">
+          <p className="text-xs uppercase tracking-widest text-[#555] mb-2">
             Index vizuální úrovně se počítá…
           </p>
           <p
-            className="text-5xl md:text-6xl font-bold text-lime-400 tabular-nums transition-all duration-500"
+            className="text-5xl md:text-6xl font-bold text-[#b7e94c] tabular-nums transition-all duration-500"
             key={displayNumber}
           >
             {displayNumber}
           </p>
         </div>
 
-        <p className="text-[11px] text-zinc-600 max-w-xs mx-auto leading-relaxed">
+        <p className="text-[11px] text-[#777] max-w-xs mx-auto leading-relaxed">
           Scan je orientační. Kompletní strategie vzniká až při spolupráci.
         </p>
       </div>
