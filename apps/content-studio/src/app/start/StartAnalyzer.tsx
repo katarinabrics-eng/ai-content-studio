@@ -250,7 +250,7 @@ export function StartAnalyzer({
   const score = result?.brandScore?.total ?? 0;
 
   const analyze = async (overrideUrl?: string) => {
-    const urlToUse = (overrideUrl ?? url).trim();
+    const urlToUse = String(overrideUrl ?? url ?? "").trim();
     if (mode === "web" && !urlToUse) return;
     if (diagnostika && mode === "manual" && !hasManualInput) return;
     setError("");

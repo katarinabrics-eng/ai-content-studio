@@ -207,9 +207,11 @@ JSON musí mít přesně tento tvar:
 /** Extract plain text from Chat Completions response. */
 function getTextFromChatResponse(data: unknown): string {
   if (data == null) return "No output received";
-  const d = data as { choices?: Array<{ message?: { content?: string } }> };
-  const text = d.choices?.[0]?.message?.content?.trim();
-  return text ?? "No output received";
+  const d = data as { model?: string; choices?: Array<{ message?: { content?: unknown } }> };
+  const content = d.choices?.[0]?.message?.content;
+  if (content == null) return "No output received";
+  const text = typeof content === "string" ? content.trim() : "";
+  return text || "No output received";
 }
 
 function parseDiagnostikaResult(raw: string): Record<string, unknown> {

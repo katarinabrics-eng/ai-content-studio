@@ -122,7 +122,8 @@ export function WebAnalyzer({
   error,
   onRetry,
 }: WebAnalyzerProps) {
-  const canSubmit = (mode === "web" && url.trim()) || (diagnostika && mode === "manual" && hasManualInput);
+  const urlStr = typeof url === "string" ? url : "";
+  const canSubmit = (mode === "web" && urlStr.trim()) || (diagnostika && mode === "manual" && hasManualInput);
   const showIntro = diagnostika && !hideIntro;
   return (
     <div className="analyzer-fade">
