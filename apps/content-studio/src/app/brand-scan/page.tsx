@@ -77,7 +77,7 @@ export default function BrandScanPage() {
           </p>
           {/* STARTANALYZER EMBED */}
           <div className="w-full" style={{ maxWidth: 600, margin: "0 auto" }}>
-            <StartAnalyzer diagnostika />
+            <StartAnalyzer diagnostika hideIntro />
           </div>
           {/* POZNÁMKA pod formulářem */}
           <p
@@ -428,7 +428,7 @@ export default function BrandScanPage() {
           zjisti co skutečně nefunguje.
         </h2>
         <div className="relative z-[1] w-full" style={{ maxWidth: 600, margin: "0 auto" }}>
-          <StartAnalyzer diagnostika />
+          <StartAnalyzer diagnostika hideIntro />
         </div>
         <p
           className="relative z-[1] mt-8 text-[11px]"

@@ -179,10 +179,12 @@ const C_FILL = {
 
 export function StartAnalyzer({
   diagnostika = false,
+  hideIntro = false,
   initialUrl,
   initialManualText,
 }: {
   diagnostika?: boolean;
+  hideIntro?: boolean;
   initialUrl?: string;
   initialManualText?: string;
 }) {
@@ -687,6 +689,7 @@ export function StartAnalyzer({
         {phase === "input" && (
           <WebAnalyzer
             diagnostika={diagnostika}
+            hideIntro={hideIntro}
             mode={mode}
             setMode={setMode}
             url={url}

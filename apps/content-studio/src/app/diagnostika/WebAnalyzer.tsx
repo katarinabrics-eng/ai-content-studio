@@ -54,6 +54,7 @@ const C = {
 
 export type WebAnalyzerProps = {
   diagnostika?: boolean;
+  hideIntro?: boolean;
   mode: "web" | "manual";
   setMode: (m: "web" | "manual") => void;
   url: string;
@@ -89,6 +90,7 @@ export type WebAnalyzerProps = {
 /** Vstup URL + toggle mám/nemám web + manual formulář. */
 export function WebAnalyzer({
   diagnostika = false,
+  hideIntro = false,
   mode,
   setMode,
   url,
@@ -121,9 +123,10 @@ export function WebAnalyzer({
   onRetry,
 }: WebAnalyzerProps) {
   const canSubmit = (mode === "web" && url.trim()) || (diagnostika && mode === "manual" && hasManualInput);
+  const showIntro = diagnostika && !hideIntro;
   return (
     <div className="analyzer-fade">
-      {diagnostika && (
+      {showIntro && (
         <section className="relative max-w-4xl mx-auto mb-20 px-6">
           {/* Záře pod velkým oknem – vrstvený efekt (měkká + výraznější) */}
           <div className="absolute inset-0 -z-20 blur-[100px] opacity-25 rounded-full scale-150" style={{ background: `radial-gradient(ellipse 80% 50% at 50% 70%, ${tokens.colors.primary}50, transparent 70%)` }} />
@@ -158,30 +161,32 @@ export function WebAnalyzer({
           </div>
         </section>
       )}
-      <div style={{ textAlign: "center", marginBottom: 32 }}>
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "4px 12px",
-            borderRadius: 9999,
-            background: `${tokens.colors.accent}18`,
-            border: `1px solid ${tokens.colors.accent}40`,
-            color: tokens.colors.accent,
-            fontSize: 11,
-            marginBottom: 18,
-          }}
-        >
-          <span style={{ width: 5, height: 5, borderRadius: "50%", background: tokens.colors.accent }} />
-          {diagnostika ? "Ukázková analýza" : "Modul 1 · Analýza značky"}
-        </span>
-        <h1 style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3, marginBottom: 10, color: tokens.colors.text }}>
-          Zadejte web.
-          <br />
-          <span style={{ color: tokens.colors.muted }}>Zbytek uděláme za vás.</span>
-        </h1>
-      </div>
+      {!hideIntro && (
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "4px 12px",
+              borderRadius: 9999,
+              background: `${tokens.colors.accent}18`,
+              border: `1px solid ${tokens.colors.accent}40`,
+              color: tokens.colors.accent,
+              fontSize: 11,
+              marginBottom: 18,
+            }}
+          >
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: tokens.colors.accent }} />
+            {diagnostika ? "Ukázková analýza" : "Modul 1 · Analýza značky"}
+          </span>
+          <h1 style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3, marginBottom: 10, color: tokens.colors.text }}>
+            Zadejte web.
+            <br />
+            <span style={{ color: tokens.colors.muted }}>Zbytek uděláme za vás.</span>
+          </h1>
+        </div>
+      )}
 
       <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-10" : ""} style={diagnostika ? { background: tokens.colors.card, border: `1px solid ${tokens.colors.border}` } : C.card}>
         {diagnostika && (
