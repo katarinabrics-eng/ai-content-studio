@@ -1618,7 +1618,8 @@ export default function PipelineDashboardPage() {
     const { id, hard } = deleteConfirm;
     try {
       if (hard) {
-        const res = await fetch(`/api/admin/data?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        const url = "/api/admin/data?id=" + encodeURIComponent(id);
+        const res = await fetch(url, { method: "DELETE" });
         if (!res.ok) throw new Error("Nepodařilo se smazat");
         if (activeId === id) {
           const rest = clients.filter((c) => c.id !== id);
@@ -1639,7 +1640,7 @@ export default function PipelineDashboardPage() {
   return (
     <div
       style={{
-        fontFamily: "'DM Sans', system-ui, sans-serif",
+        fontFamily: "DM Sans, system-ui, sans-serif",
         minHeight: "100vh",
         color: C.text,
         display: "flex",
@@ -3029,7 +3030,6 @@ export default function PipelineDashboardPage() {
               </div>
             );
           })()}
-          </div>
           </div>
         </div>
       </div>
