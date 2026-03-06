@@ -827,12 +827,12 @@ function ClientCard({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        marginLeft: 16,
+        marginLeft: 20,
         marginRight: 8,
         marginBottom: 2,
         padding: "6px 12px 6px 8px",
         borderRadius: 6,
-        borderLeft: `2px solid ${isActive ? "#c8ff00" : "#1a1a1a"}`,
+        borderLeft: `1px solid ${isActive ? "rgba(200,255,0,0.4)" : "#1a1a1a"}`,
         background: isActive ? "#0f0f0f" : "transparent",
         cursor: "pointer",
         position: "relative",
@@ -859,7 +859,7 @@ function ClientCard({
           {client.avatar}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? "#ffffff" : "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? "#ccc" : "#777", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {title}
           </div>
         </div>
@@ -961,7 +961,7 @@ function ClientCard({
               )}
             </>
           )}
-          <span style={{ fontSize: 10, color: "#555", background: "#111", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
+          <span style={{ fontSize: 10, color: "#666", background: "#151515", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
           {onTrash && (
             <button
               type="button"
@@ -1029,7 +1029,7 @@ function NavItem({
       }}
     >
       <span style={{ fontSize: 14, color: isActive ? color : C.faint }}>{icon}</span>
-      <span style={{ fontSize: 9, fontWeight: 700, color: "#333", letterSpacing: "0.15em", flex: 1 }}>{label}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: "#777", letterSpacing: "0.15em", flex: 1 }}>{label}</span>
       {count > 0 && (
         <span style={{ fontSize: 9, fontWeight: 700, color: "#555", background: "#1a1a1a", padding: "1px 6px", borderRadius: 4 }}>{count}</span>
       )}
@@ -1085,6 +1085,140 @@ function getUrgency(client: Client): Urgency {
   if (accessExpires3d || hovorNotRecorded) return "yellow";
 
   return "green";
+}
+
+const CARD_PANEL = {
+  background: "rgba(255,255,255,0.025)",
+  backdropFilter: "blur(20px)",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 14,
+  padding: 12,
+  boxShadow: "0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
+};
+
+function ContextPanel({
+  client,
+  statusUpdating,
+  onUpdateStatus,
+  onRefresh,
+  setError,
+}: {
+  client: Client;
+  statusUpdating: boolean;
+  onUpdateStatus: (s: PipelineStatus) => void;
+  onRefresh: () => void;
+  setError: (e: string | null) => void;
+}) {
+  const [showEdit, setShowEdit] = useState(false);
+  const status = getS(client.status);
+  const access = getAccessDisplay(client);
+  return (
+    <>
+      <div style={CARD_PANEL}>
+        <div style={{ fontSize: 10, color: "#888", letterSpacing: "0.12em", marginBottom: 8 }}>KLIENT</div>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              flexShrink: 0,
+              background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
+              border: "1px solid rgba(255,255,255,0.06)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16,
+              fontWeight: 700,
+              color: C.lilac,
+            }}
+          >
+            {client.avatar}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{client.projectDisplayName || client.name}</span>
+              <button type="button" onClick={() => setShowEdit((e) => !e)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#888", fontSize: 12 }} title="Upravit">✏</button>
+            </div>
+            {!showEdit && (
+              <>
+                <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{client.email || "—"}</div>
+                {client.web_url ? (
+                  <a href={client.web_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: C.lime, marginTop: 4, display: "inline-block" }}>↗ {client.web_url.replace(/^https?:\/\//, "").slice(0, 24)}{client.web_url.length > 30 ? "…" : ""}</a>
+                ) : (
+                  <span style={{ fontSize: 12, color: "#555" }}>—</span>
+                )}
+              </>
+            )}
+            {showEdit && (
+              <div style={{ marginTop: 8, padding: 10, background: "#0d0d0d", border: "1px solid #1f1f1f", borderRadius: 8 }}>
+                <input placeholder="Jméno" defaultValue={client.projectDisplayName || client.name} style={{ width: "100%", marginBottom: 6, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
+                <input placeholder="Email" defaultValue={client.email} style={{ width: "100%", marginBottom: 6, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
+                <input placeholder="Web" defaultValue={client.web_url || ""} style={{ width: "100%", marginBottom: 6, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
+                <input placeholder="Telefon" style={{ width: "100%", marginBottom: 8, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
+                <button type="button" onClick={() => setShowEdit(false)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>Uložit</button>
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 700, color: status.color, background: status.bg }}>{status.icon} {status.short ?? status.label}</span>
+          <span style={{ fontSize: 10, color: "#666" }}>{access.label}</span>
+        </div>
+      </div>
+
+      <div style={CARD_PANEL}>
+        <div style={{ fontSize: 10, color: C.lime, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 8 }}>PIPELINE</div>
+        <PipelineSection client={client} onChangeStatus={onUpdateStatus} onRefresh={onRefresh} updating={statusUpdating} />
+      </div>
+
+      <div style={CARD_PANEL}>
+        <div style={{ fontSize: 10, color: C.lime, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 8 }}>PILÍŘE ZNAČKY</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {client.pillars.map((p) => {
+            const col = p.score >= 8 ? C.lime : p.score >= 6 ? C.yellow : p.score >= 4 ? C.pink : "#ff5577";
+            return (
+              <div key={p.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 10, color: "#666", width: 20 }}>{p.icon}</span>
+                <div style={{ flex: 1, height: 6, borderRadius: 3, background: C.bg3, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${p.score * 10}%`, background: col, borderRadius: 3 }} />
+                </div>
+                <span style={{ fontSize: 10, color: "#aaa" }}>{p.score}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={CARD_PANEL}>
+        <div style={{ fontSize: 10, color: C.lime, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 8 }}>BRAND DNA</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12 }}>
+          <div><span style={{ color: "#666", fontSize: 10 }}>Positioning</span><div style={{ color: "#aaa", marginTop: 2 }}>{client.dna.positioning ?? "—"}</div></div>
+          <div><span style={{ color: "#666", fontSize: 10 }}>Tón</span><div style={{ color: "#aaa", marginTop: 2 }}>{client.dna.tone ?? "—"}</div></div>
+          <div><span style={{ color: "#666", fontSize: 10 }}>Cílová skupina</span><div style={{ color: "#aaa", marginTop: 2 }}>{client.dna.targetAudience ?? "—"}</div></div>
+        </div>
+      </div>
+
+      <div style={CARD_PANEL}>
+        <div style={{ fontSize: 10, color: C.lime, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 8 }}>KURÁTORSKÉ AKCE</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <SendAccessBlock client={client} onSent={onRefresh} />
+          <PipelineOutputsBlock client={client} onRefresh={onRefresh} updating={statusUpdating} />
+          {!client.briefSubmittedAt ? (
+            <button
+              type="button"
+              onClick={async () => { try { await fetch(`/api/admin/projects/${client.id}/send-access`, { method: "POST" }); onRefresh(); } catch { setError("Nepodařilo se odeslat výzvu"); } }}
+              style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer", textAlign: "left" }}
+            >
+              📋 Poslat výzvu k briefu
+            </button>
+          ) : (
+            <div style={{ fontSize: 12, color: C.lime }}>✓ Brief odeslán</div>
+          )}
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default function PipelineDashboardPage() {
@@ -1503,7 +1637,17 @@ export default function PipelineDashboardPage() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: C.bg0, minHeight: "100vh", color: C.text, display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        fontFamily: "'DM Sans', system-ui, sans-serif",
+        minHeight: "100vh",
+        color: C.text,
+        display: "flex",
+        flexDirection: "column",
+        background: C.bg0,
+        backgroundImage: "radial-gradient(ellipse at 15% 50%, rgba(181,123,238,0.05) 0%, transparent 55%), radial-gradient(ellipse at 85% 20%, rgba(200,255,0,0.03) 0%, transparent 45%)",
+      }}
+    >
       {deleteConfirm && (
         <div
           style={{
@@ -1562,13 +1706,13 @@ export default function PipelineDashboardPage() {
         </div>
       )}
       <div style={{ height: 48, background: C.bg1, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 20px", gap: 14, flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: C.faint, letterSpacing: "0.14em" }}>PIPELINE</span>
+        <span style={{ fontSize: 10, color: "#777", letterSpacing: "0.14em" }}>PIPELINE</span>
         <div style={{ flex: 1 }} />
         {error && <span style={{ fontSize: 11, color: C.pink }}>{error}</span>}
       </div>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <div style={{ width: 224, borderRight: `1px solid ${C.border}`, background: C.bg1, display: "flex", flexDirection: "column", flexShrink: 0 }}>
+        <div style={{ width: 200, borderRight: `1px solid ${C.border}`, background: C.bg1, display: "flex", flexDirection: "column", flexShrink: 0 }}>
           <div style={{ padding: "10px 0 6px", borderBottom: `1px solid ${C.border}` }}>
             <NavItem label="Pipeline" icon="◈" count={pipelineClients.length} color={C.lime} isActive={navSection === "pipeline"} onClick={() => setNavSection("pipeline")} />
             <NavItem label="Šuplík" icon="⊡" count={suplikClients.length} color={C.yellow} isActive={navSection === "suplik"} onClick={() => setNavSection("suplik")} />
@@ -1676,7 +1820,7 @@ export default function PipelineDashboardPage() {
                         margin: "0 8px 2px",
                         borderRadius: 8,
                         cursor: "pointer",
-                        background: hasActiveInGroup ? "#0f0f0f" : "transparent",
+                        background: hasActiveInGroup ? "rgba(200,255,0,0.05)" : "transparent",
                         borderLeft: `2px solid ${hasActiveInGroup ? "#c8ff00" : "transparent"}`,
                         position: "relative",
                       }}
@@ -1686,16 +1830,16 @@ export default function PipelineDashboardPage() {
                       {activityDotColor && (
                         <div title={activityDotTitle} style={{ position: "absolute", top: 8, right: 8, width: 6, height: 6, borderRadius: "50%", background: activityDotColor, zIndex: 1 }} />
                       )}
-                      <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.lilac }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 7, flexShrink: 0, border: "1px solid rgba(200,255,0,0.15)", background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: C.lilac }}>
                         {first.clientAvatar}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "#ffffff", letterSpacing: "0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: hasActiveInGroup ? "#c8ff00" : "rgba(200,255,0,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {clientLabel}
                         </div>
-                        <div style={{ fontSize: 11, color: "#444" }}>{first.email ?? first.sub ?? ""}</div>
+                        <div style={{ fontSize: 11, color: "#666" }}>{first.email ?? first.sub ?? ""}</div>
                       </div>
-                      <span style={{ fontSize: 10, color: "#444" }}>{isCollapsed ? "▸" : "▾"}</span>
+                      <span style={{ fontSize: 10, color: "#666" }}>{isCollapsed ? "▸" : "▾"}</span>
                     </div>
                     {!isCollapsed &&
                       groupClients.map((c) => (
@@ -1751,146 +1895,42 @@ export default function PipelineDashboardPage() {
           <div style={{ padding: "8px" }}>
             <Link
               href="/admin"
-              style={{ display: "block", padding: "8px 12px", borderRadius: 8, border: `1px dashed ${C.border}`, fontSize: 11, color: C.faint, textAlign: "center", textDecoration: "none" }}
+              style={{ display: "block", padding: "8px 12px", borderRadius: 8, border: `1px dashed ${C.border}`, fontSize: 11, color: "#666", textAlign: "center", textDecoration: "none" }}
             >
               Administrace diagnostiky
             </Link>
           </div>
         </div>
 
-        <div style={{ flex: 1, overflow: "auto", padding: workMode ? 24 : "20px 24px" }}>
-          {workMode && <CompactClientHeader client={client} onExpand={() => setWorkMode(false)} />}
-          <div style={{ maxWidth: workMode ? "none" : 720, margin: "0 auto" }}>
-          {!workMode && (
-          <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 11,
-                  flexShrink: 0,
-                  background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
-                  border: `1px solid ${C.purple}44`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: C.lilac,
-                }}
-              >
-                {client.avatar}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{client.projectDisplayName || client.name}</div>
-                <div style={{ fontSize: 12, color: C.muted, marginBottom: 6 }}>
-                  {[client.clientDisplayName !== "—" && client.clientDisplayName, client.email, client.web_url].filter(Boolean).join(" · ") || "—"}
-                </div>
-                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {client.tags.map((t) => (
-                    <Tag key={t} color={C.lilac}>#{t}</Tag>
-                  ))}
-                  <Tag color={C.faint}>{client.created}</Tag>
-                </div>
-                <SendAccessBlock client={client} onSent={fetchData} />
-              </div>
-              <ScoreRing score={client.score} />
-            </div>
-            <PipelineSection client={client} onChangeStatus={(s) => updateStatus(client.id, s)} onRefresh={fetchData} updating={statusUpdating === client.id} />
-            {(() => {
-              const access = getAccessDisplay(client);
-              return (
-                <div style={{ fontSize: 11, color: access.color, marginTop: 8 }}>
-                  {access.label}
-                </div>
-              );
-            })()}
+        {client && (
+          <div
+            style={{
+              width: workMode ? 200 : 260,
+              flexShrink: 0,
+              background: "rgba(8,8,8,0.7)",
+              backdropFilter: "blur(24px)",
+              borderRight: "1px solid rgba(255,255,255,0.06)",
+              overflowY: "auto",
+              padding: "16px 12px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
+          >
+            <ContextPanel
+              client={client}
+              statusUpdating={statusUpdating === client.id}
+              onUpdateStatus={(s) => updateStatus(client.id, s)}
+              onRefresh={fetchData}
+              setError={setError}
+            />
+          </div>
+        )}
 
-            {pendingVersion && (
-              <div style={{ marginTop: 12, padding: 12, background: C.bg2, border: `1px solid ${C.yellow}`, borderRadius: 10 }}>
-                <div style={{ fontSize: 12, color: C.text, marginBottom: 10 }}>
-                  Klient znovu spustil diagnostiku {new Date(pendingVersion.created_at).toLocaleDateString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })} — zobrazit změny
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  <button
-                    type="button"
-                    disabled={versionsActionLoading}
-                    onClick={() => setShowAcceptConfirm(true)}
-                    style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 11, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
-                  >
-                    Přijmout novou verzi
-                  </button>
-                  <button
-                    type="button"
-                    disabled={versionsActionLoading}
-                    onClick={async () => {
-                      setVersionsActionLoading(true);
-                      try {
-                        const res = await fetch(`/api/admin/diagnostika/${client.id}/versions`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ action: "ignore", versionId: pendingVersion.id }),
-                        });
-                        if (!res.ok) {
-                          const data = await res.json().catch(() => ({}));
-                          throw new Error(data?.error ?? "Chyba");
-                        }
-                        const verRes = await fetch(`/api/admin/diagnostika/${client.id}/versions`);
-                        if (verRes.ok) {
-                          const vd = await verRes.json();
-                          setPendingVersion(vd.pending ?? null);
-                        } else {
-                          setPendingVersion(null);
-                        }
-                        setShowCompareDiff(false);
-                      } catch (e) {
-                        alert(e instanceof Error ? e.message : "Nepodařilo se ignorovat");
-                      } finally {
-                        setVersionsActionLoading(false);
-                      }
-                    }}
-                    style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, cursor: versionsActionLoading ? "not-allowed" : "pointer" }}
-                  >
-                    Ignorovat
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowCompareDiff((v) => !v)}
-                    style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${C.purple}`, background: showCompareDiff ? C.purple + "22" : "transparent", color: C.purple, fontSize: 11, cursor: "pointer" }}
-                  >
-                    {showCompareDiff ? "Skrýt porovnání" : "Porovnat rozdíly"}
-                  </button>
-                </div>
-                {showCompareDiff && (() => {
-                  const activeRow = rows.find((r) => r.id === activeId);
-                  const current = (activeRow?.scan_result ?? {}) as Record<string, unknown>;
-                  const next = pendingVersion.scan_result;
-                  const scoreCur = (current?.brandScore as { total?: number } | undefined)?.total ?? "—";
-                  const scoreNext = (next?.brandScore as { total?: number } | undefined)?.total ?? "—";
-                  const nameCur = (current?.brandDna as { name?: string } | undefined)?.name ?? (current?.client_name as string) ?? "—";
-                  const nameNext = (next?.brandDna as { name?: string } | undefined)?.name ?? (next?.client_name as string) ?? "—";
-                  const summaryCur = typeof current?.summary === "string" ? current.summary : "—";
-                  const summaryNext = typeof next?.summary === "string" ? next.summary : "—";
-                  return (
-                    <div style={{ marginTop: 14, padding: 12, background: C.bg0, borderRadius: 8, border: `1px solid ${C.border}`, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, fontSize: 11 }}>
-                      <div>
-                        <div style={{ color: C.muted, marginBottom: 8, fontWeight: 700 }}>Aktuální verze</div>
-                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Skóre:</span> {String(scoreCur)}</div>
-                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Název:</span> {String(nameCur)}</div>
-                        <div style={{ color: C.text, lineHeight: 1.5 }}><span style={{ color: C.faint }}>Shrnutí:</span> {(String(summaryCur)).slice(0, 200)}{(String(summaryCur)).length > 200 ? "…" : ""}</div>
-                      </div>
-                      <div>
-                        <div style={{ color: C.purple, marginBottom: 8, fontWeight: 700 }}>Nová verze (od klienta)</div>
-                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Skóre:</span> {String(scoreNext)}</div>
-                        <div style={{ marginBottom: 6 }}><span style={{ color: C.faint }}>Název:</span> {String(nameNext)}</div>
-                        <div style={{ color: C.text, lineHeight: 1.5 }}><span style={{ color: C.faint }}>Shrnutí:</span> {(String(summaryNext)).slice(0, 200)}{(String(summaryNext)).length > 200 ? "…" : ""}</div>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
+        <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 26, fontWeight: 700, color: "#cccccc", padding: "12px 20px 0" }}>
+            {client?.projectDisplayName || client?.name || "Projekt"}
+          </div>
 
             {showAcceptConfirm && pendingVersion && client && (
               <div
@@ -1998,20 +2038,19 @@ export default function PipelineDashboardPage() {
                 </div>
               </div>
             )}
-          </div>
-          )}
 
           <div
             style={{
               display: "flex",
               gap: 2,
-              marginBottom: 18,
-              background: workMode ? "#0a0a0a" : C.bg1,
-              borderRadius: workMode ? 0 : 10,
-              padding: workMode ? "0 24px" : 3,
-              border: workMode ? "none" : `1px solid ${C.border}`,
-              borderBottom: workMode ? "1px solid #1a1a1a" : undefined,
-              ...(workMode ? { position: "sticky" as const, top: 44, zIndex: 9 } : {}),
+              marginBottom: 0,
+              background: "rgba(6,6,6,0.9)",
+              backdropFilter: "blur(12px)",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              padding: "0 20px",
+              position: "sticky",
+              top: 0,
+              zIndex: 9,
             }}
           >
             {TABS.map((tab) => {
@@ -2061,6 +2100,18 @@ export default function PipelineDashboardPage() {
             </button>
           </div>
 
+          <div style={{ padding: 20, maxWidth: "none" }}>
+          {pendingVersion && client && (
+            <div style={{ marginBottom: 16, padding: 12, background: C.bg2, border: `1px solid ${C.yellow}`, borderRadius: 10 }}>
+              <div style={{ fontSize: 12, color: C.text, marginBottom: 10 }}>
+                Klient znovu spustil diagnostiku — zobrazit změny
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                <button type="button" disabled={versionsActionLoading} onClick={() => setShowAcceptConfirm(true)} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>Přijmout novou verzi</button>
+                <button type="button" disabled={versionsActionLoading} onClick={async () => { setVersionsActionLoading(true); try { const res = await fetch(`/api/admin/diagnostika/${client.id}/versions`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "ignore", versionId: pendingVersion.id }) }); if (!res.ok) throw new Error(); const verRes = await fetch(`/api/admin/diagnostika/${client.id}/versions`); if (verRes.ok) { const vd = await verRes.json(); setPendingVersion(vd.pending ?? null); } else setPendingVersion(null); setShowCompareDiff(false); } catch { } finally { setVersionsActionLoading(false); } }} style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, cursor: "pointer" }}>Ignorovat</button>
+              </div>
+            </div>
+          )}
           {activeTab === "prehled" && (
             <div>
               <AIDoporuceni
@@ -2088,40 +2139,6 @@ export default function PipelineDashboardPage() {
                   }
                 }}
               />
-              <Section title="PILÍŘE ZNAČKY" accent={C.lime}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
-                  {client.pillars.map((p) => {
-                    const col = scoreColor(p.score);
-                    return (
-                      <div key={p.key} style={{ padding: "12px 8px", borderRadius: 10, background: C.bg2, border: `1px solid ${col}28`, textAlign: "center" }}>
-                        <div style={{ fontSize: 20, marginBottom: 5 }}>{p.icon}</div>
-                        <div style={{ fontSize: 9, color: C.muted, marginBottom: 6 }}>{p.label}</div>
-                        <div style={{ fontSize: 24, fontWeight: 800, color: col, lineHeight: 1, marginBottom: 5 }}>{p.score}</div>
-                        <div style={{ height: 3, borderRadius: 2, background: C.bg3, overflow: "hidden", marginBottom: 6 }}>
-                          <div style={{ height: "100%", width: `${p.score * 10}%`, background: col }} />
-                        </div>
-                        <Tag color={col}>{scoreLabel(p.score)}</Tag>
-                        <div style={{ fontSize: 9, color: C.faint, marginTop: 6, lineHeight: 1.4 }}>{p.note}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Section>
-              <Section title="BRAND DNA" accent={C.pink}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                  {Object.entries(client.dna).map(([key, val]) => {
-                    const labels: Record<string, string> = { positioning: "Positioning", tone: "Tón komunikace", uniqueValue: "Jedinečná hodnota", targetAudience: "Cílová skupina" };
-                    const accents: Record<string, string> = { positioning: C.purple, tone: C.pink, uniqueValue: C.lime, targetAudience: C.lilac };
-                    return (
-                      <div key={key} style={{ padding: "10px 13px", borderRadius: 8, background: C.bg2, borderLeft: `3px solid ${accents[key] ?? C.border}`, border: `1px solid ${C.border}` }}>
-                        <div style={{ fontSize: 9, color: accents[key] ?? C.muted, letterSpacing: "0.1em", fontWeight: 700, marginBottom: 4 }}>{labels[key] ?? key}</div>
-                        <div style={{ fontSize: 11, color: "#ccc", lineHeight: 1.5 }}>{val}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Section>
-
               <Section title="BRIEF" accent={C.yellow}>
                 {!client.briefSubmittedAt ? (
                   <div style={{ padding: 14, borderRadius: 10, border: "1px solid #1f1f1f", background: "#111" }}>
@@ -3012,6 +3029,7 @@ export default function PipelineDashboardPage() {
               </div>
             );
           })()}
+          </div>
           </div>
         </div>
       </div>
