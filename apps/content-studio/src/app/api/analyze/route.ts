@@ -110,6 +110,10 @@ const PILLAR_ANALYSIS_SCHEMA = `
 `;
 
 const DIAGNOSTIKA_METHODOLOGY = `
+JAZYK: Veškerý výstup piš výhradně v češtině – interpretation, observed, notObserved, reasoning, strategicOpportunity, summary i všechny položky v polích. Žádná angličtina.
+
+KONZISTENCE SKÓRE: Stejná úroveň důkazů na webu musí vést ke stejnému skóre. Používej škálu 0–10 důsledně podle jasných kritérií. Nepodhodnocuj ani nepřehodnocuj – skóre musí odpovídat popsaným observed/notObserved.
+
 You are a senior brand strategist. Generate output using this strict structure for EACH pillar.
 
 POVINNÉ u KAŽDÉHO pilíře (light, energy, architecture, identity, trust):
@@ -318,6 +322,7 @@ export async function POST(request: Request) {
           model: OPENAI_MODEL,
           messages: [{ role: "user", content: messageContent }],
           max_tokens: formatDiagnostika ? 4200 : 2000,
+          ...(formatDiagnostika ? { temperature: 0.3 } : {}),
         }),
       },
       FETCH_TIMEOUT_MS

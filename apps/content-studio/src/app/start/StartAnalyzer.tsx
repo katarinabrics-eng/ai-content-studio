@@ -65,6 +65,8 @@ function getMissingFieldsFromResult(result: Result | null): MissingFieldKey[] {
   if (!has(vs?.primaryColor)) missing.push("brand_colors");
   if (!has(vs?.typography)) missing.push("brand_fonts");
   if (!has(result.brandDna.tone) && !has(result.brandDna.communicationStyle)) missing.push("tone_of_voice");
+  if (!has(result.brandDna.positioning)) missing.push("positioning");
+  if (!has(result.brandDna.targetAudience) && score.hasTargetAudience !== true) missing.push("target_audience");
   return missing;
 }
 
@@ -517,6 +519,8 @@ export function StartAnalyzer({
       ...result,
       brandDna: {
         ...result.brandDna,
+        positioning: fillMissingValues.positioning?.trim() || result.brandDna?.positioning,
+        targetAudience: fillMissingValues.target_audience?.trim() || result.brandDna?.targetAudience,
         tone: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.tone,
         communicationStyle: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.communicationStyle,
         visualStyle: {
@@ -798,6 +802,32 @@ export function StartAnalyzer({
                     value={fillMissingValues.tone_of_voice ?? ""}
                     onChange={(e) => setFillMissingValues((p) => ({ ...p, tone_of_voice: e.target.value }))}
                     className="analyzer-inp rounded-xl resize-y placeholder:text-zinc-500"
+                  />
+                </div>
+              )}
+              {missingFields.includes("positioning") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.positioning}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. prémiové služby pro náročné klienty, dostupné řešení pro širokou veřejnost"
+                    value={fillMissingValues.positioning ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, positioning: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+              {missingFields.includes("target_audience") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.target_audience}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. podnikatelé, ženy budující osobní značku, malé firmy"
+                    value={fillMissingValues.target_audience ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, target_audience: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
                   />
                 </div>
               )}

@@ -8,7 +8,9 @@ export type MissingFieldKey =
   | "preferred_style"
   | "brand_colors"
   | "brand_fonts"
-  | "tone_of_voice";
+  | "tone_of_voice"
+  | "positioning"
+  | "target_audience";
 
 /** Popisky pro UI (druhý krok „doplň chybějící“). */
 export const MISSING_FIELD_LABELS: Record<MissingFieldKey, string> = {
@@ -16,6 +18,8 @@ export const MISSING_FIELD_LABELS: Record<MissingFieldKey, string> = {
   brand_colors: "Barvy značky",
   brand_fonts: "Fonty",
   tone_of_voice: "Co chcete vyzařovat",
+  positioning: "Hlavní sdělení / positioning",
+  target_audience: "Cílová skupina",
 };
 
 export const MANUAL_OFFER_TYPES = [
@@ -58,6 +62,8 @@ export type ManualVisualParams = {
   brand_colors?: string | null;
   brand_fonts?: string | null;
   tone_of_voice?: string | null;
+  positioning?: string | null;
+  target_audience?: string | null;
 };
 
 export function buildManualData(
@@ -79,6 +85,8 @@ export function buildManualData(
     brand_colors,
     brand_fonts,
     tone_of_voice,
+    positioning,
+    target_audience,
   } = params;
   const parts: string[] = [];
   if (brandName.trim()) parts.push(`Název značky: ${brandName.trim()}`);
@@ -90,5 +98,7 @@ export function buildManualData(
   if (brand_colors?.trim()) parts.push(`Barvy: ${brand_colors.trim()}`);
   if (brand_fonts?.trim()) parts.push(`Fonty: ${brand_fonts.trim()}`);
   if (tone_of_voice?.trim()) parts.push(`Co vyzařovat / tón: ${tone_of_voice.trim()}`);
+  if (positioning?.trim()) parts.push(`Hlavní sdělení / positioning: ${positioning.trim()}`);
+  if (target_audience?.trim()) parts.push(`Cílová skupina: ${target_audience.trim()}`);
   return parts.join("\n\n");
 }
