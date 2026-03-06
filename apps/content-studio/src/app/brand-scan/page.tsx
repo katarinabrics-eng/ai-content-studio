@@ -35,8 +35,8 @@ export default function BrandScanPage() {
           aria-hidden
         />
         <div
-          className="relative z-[1] flex max-w-[720px] flex-col items-center text-center"
-          style={{ maxWidth: 720 }}
+          className="relative z-[1] flex w-full max-w-[920px] flex-col items-center text-center"
+          style={{ maxWidth: 920 }}
         >
           {/* BADGE */}
           <span
@@ -76,7 +76,7 @@ export default function BrandScanPage() {
             Zadej web. Za pár minut máš konkrétní čísla — kde ztrácíš zákazníky dřív než tě vůbec poznají.
           </p>
           {/* STARTANALYZER EMBED */}
-          <div className="w-full" style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div className="w-full" style={{ maxWidth: 880, margin: "0 auto" }}>
             <StartAnalyzer diagnostika hideIntro />
           </div>
           {/* POZNÁMKA pod formulářem */}
