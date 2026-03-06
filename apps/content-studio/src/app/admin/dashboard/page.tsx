@@ -373,20 +373,87 @@ function Section({
   );
 }
 
-function ScoreRing({ score }: { score: number }) {
+function ScoreRing({ score, size = "default" }: { score: number; size?: "default" | "small" }) {
   const color = score >= 70 ? C.lime : score >= 50 ? C.yellow : C.pink;
-  const r = 20;
+  const isSmall = size === "small";
+  const r = isSmall ? 12 : 20;
+  const wh = isSmall ? 32 : 54;
   const circ = 2 * Math.PI * r;
   const dash = (score / 100) * circ;
   return (
-    <div style={{ position: "relative", width: 54, height: 54, flexShrink: 0 }}>
-      <svg width="54" height="54" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="27" cy="27" r={r} fill="none" stroke={C.bg3} strokeWidth="4" />
-        <circle cx="27" cy="27" r={r} fill="none" stroke={color} strokeWidth="4" strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
+    <div style={{ position: "relative", width: wh, height: wh, flexShrink: 0 }}>
+      <svg width={wh} height={wh} style={{ transform: "rotate(-90deg)" }}>
+        <circle cx={wh / 2} cy={wh / 2} r={r} fill="none" stroke={C.bg3} strokeWidth={isSmall ? 2.5 : 4} />
+        <circle cx={wh / 2} cy={wh / 2} r={r} fill="none" stroke={color} strokeWidth={isSmall ? 2.5 : 4} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color, lineHeight: 1 }}>{score}</div>
-        <div style={{ fontSize: 8, color: C.faint, letterSpacing: "0.06em" }}>SKÓRE</div>
+        <div style={{ fontSize: isSmall ? 10 : 13, fontWeight: 800, color, lineHeight: 1 }}>{score}</div>
+        {!isSmall && <div style={{ fontSize: 8, color: C.faint, letterSpacing: "0.06em" }}>SKÓRE</div>}
+      </div>
+    </div>
+  );
+}
+
+function CompactClientHeader({ client, onExpand }: { client: Client; onExpand: () => void }) {
+  const current = getS(client.status);
+  return (
+    <div
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+        height: 44,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 24px",
+        background: "#0d0d0d",
+        borderBottom: "1px solid #1a1a1a",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 6,
+            flexShrink: 0,
+            background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
+            border: `1px solid ${C.purple}44`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 11,
+            fontWeight: 700,
+            color: C.lilac,
+          }}
+        >
+          {client.avatar}
+        </div>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{client.projectDisplayName || client.name}</span>
+        <span
+          style={{
+            padding: "2px 8px",
+            borderRadius: 10,
+            border: `1px solid ${current.color}55`,
+            background: current.bg,
+            color: current.color,
+            fontSize: 10,
+            fontWeight: 700,
+          }}
+        >
+          {current.icon} {current.label}
+        </span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <ScoreRing score={client.score} size="small" />
+        <button
+          type="button"
+          onClick={onExpand}
+          style={{ fontSize: 12, color: "#555", background: "transparent", border: "none", cursor: "pointer", padding: "4px 8px" }}
+        >
+          ↑ Rozbalit
+        </button>
       </div>
     </div>
   );
@@ -1050,6 +1117,8 @@ export default function PipelineDashboardPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [navSection, setNavSection] = useState<"pipeline" | "suplik" | "archiv">("pipeline");
   const [activeTab, setActiveTab] = useState("prehled");
+  const [workMode, setWorkMode] = useState(false);
+  const activeTabInitialized = useRef(false);
   const [strategistId, setStrategistId] = useState<StrategistId>(STRATEGISTS_META[0]?.id ?? "the_architect");
   const [strategistLoading, setStrategistLoading] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
@@ -1118,6 +1187,28 @@ export default function PipelineDashboardPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("admin_work_mode");
+      if (saved === "true") setWorkMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const workTabs = ["strategie", "vystup", "poznamky", "podklady"];
+    if (!activeTabInitialized.current) {
+      activeTabInitialized.current = true;
+      return;
+    }
+    setWorkMode(workTabs.includes(activeTab));
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("admin_work_mode", String(workMode));
+    }
+  }, [workMode]);
 
   useEffect(() => {
     if (!activeId) {
@@ -1664,8 +1755,10 @@ export default function PipelineDashboardPage() {
           </div>
         </div>
 
-        <div style={{ flex: 1, overflow: "auto", padding: "20px 24px" }}>
-          <div style={{ maxWidth: 720, margin: "0 auto" }}>
+        <div style={{ flex: 1, overflow: "auto", padding: workMode ? 24 : "20px 24px" }}>
+          {workMode && <CompactClientHeader client={client} onExpand={() => setWorkMode(false)} />}
+          <div style={{ maxWidth: workMode ? "none" : 720, margin: "0 auto" }}>
+          {!workMode && (
           <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${C.border}` }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
               <div
@@ -1903,8 +1996,21 @@ export default function PipelineDashboardPage() {
               </div>
             )}
           </div>
+          )}
 
-          <div style={{ display: "flex", gap: 2, marginBottom: 18, background: C.bg1, borderRadius: 10, padding: 3, border: `1px solid ${C.border}` }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 2,
+              marginBottom: 18,
+              background: workMode ? "#0a0a0a" : C.bg1,
+              borderRadius: workMode ? 0 : 10,
+              padding: workMode ? "0 24px" : 3,
+              border: workMode ? "none" : `1px solid ${C.border}`,
+              borderBottom: workMode ? "1px solid #1a1a1a" : undefined,
+              ...(workMode ? { position: "sticky" as const, top: 44, zIndex: 9 } : {}),
+            }}
+          >
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -1934,6 +2040,22 @@ export default function PipelineDashboardPage() {
                 </button>
               );
             })}
+            <button
+              type="button"
+              onClick={() => setWorkMode((w) => !w)}
+              style={{
+                marginLeft: "auto",
+                fontSize: 11,
+                color: workMode ? "#c8ff00" : "#444",
+                background: "transparent",
+                border: `1px solid ${workMode ? "#c8ff00" : "#333"}`,
+                borderRadius: 6,
+                padding: "4px 10px",
+                cursor: "pointer",
+              }}
+            >
+              {workMode ? "⊡ Kompakt" : "⊞ Rozšířit"}
+            </button>
           </div>
 
           {activeTab === "prehled" && (
