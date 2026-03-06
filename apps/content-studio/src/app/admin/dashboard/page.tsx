@@ -790,7 +790,7 @@ function PipelineSection({
   );
 }
 
-const URGENCY_COLORS: Record<Urgency, string> = { red: "#ff5577", yellow: C.yellow, green: C.lime, gray: C.faint };
+const ACTIVITY_DOT_COLORS = { urgent: "#ff4444", message: "#c8ff00", activity: "#e8d44d" } as const;
 
 function ClientCard({
   client,
@@ -803,8 +803,6 @@ function ClientCard({
   quickActionsLoading,
   displayTitle,
   style: cardStyle,
-  activityUnreadCount = 0,
-  activityTooltip,
 }: {
   client: Client;
   isActive: boolean;
@@ -816,15 +814,11 @@ function ClientCard({
   quickActionsLoading?: boolean;
   displayTitle?: string;
   style?: React.CSSProperties;
-  activityUnreadCount?: number;
-  activityTooltip?: string;
 }) {
   const status = getS(client.status);
   const [hover, setHover] = useState(false);
   const [openQuick, setOpenQuick] = useState<"status" | "note" | "strategist" | null>(null);
   const [noteDraft, setNoteDraft] = useState(client.notes);
-  const urgency = getUrgency(client);
-  const dotColor = URGENCY_COLORS[urgency];
   const showQuickActions = hover && (onUpdateStatus || onQuickNote || onRunStrategist);
   const title = displayTitle ?? client.name;
   return (
@@ -833,56 +827,41 @@ function ClientCard({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        margin: "0 8px 2px",
-        padding: "10px 12px",
-        borderRadius: 9,
-        background: isActive ? C.bg2 : "transparent",
-        border: isActive ? `1px solid ${status.color}30` : "1px solid transparent",
-        borderLeft: `3px solid ${isActive ? status.color : "transparent"}`,
+        marginLeft: 16,
+        marginRight: 8,
+        marginBottom: 2,
+        padding: "6px 12px 6px 8px",
+        borderRadius: 6,
+        borderLeft: `2px solid ${isActive ? "#c8ff00" : "#1a1a1a"}`,
+        background: isActive ? "#0f0f0f" : "transparent",
         cursor: "pointer",
         position: "relative",
+        ...(hover && !isActive ? { background: "#0d0d0d", color: "#bbb" } : {}),
         ...cardStyle,
       }}
     >
-      {activityUnreadCount > 0 && (
-        <div title={activityTooltip ?? (activityUnreadCount === 1 ? "Nová aktivita" : `${activityUnreadCount} nových aktivit`)} style={{ position: "absolute", top: 6, right: 6, width: 6, height: 6, borderRadius: "50%", background: "#fff", zIndex: 1 }} />
-      )}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
-        <div style={{ position: "relative", flexShrink: 0 }}>
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 12,
-              fontWeight: 700,
-              color: C.lilac,
-            }}
-          >
-            {client.avatar}
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: -2,
-              right: -2,
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: dotColor,
-              border: "1px solid #0a0a0a",
-            }}
-          />
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 4,
+            background: "#1a1a1a",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 9,
+            fontWeight: 700,
+            color: C.lilac,
+            flexShrink: 0,
+          }}
+        >
+          {client.avatar}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? "#fff" : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? "#ffffff" : "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {title}
           </div>
-          {displayTitle == null && <div style={{ fontSize: 9, color: C.faint }}>{client.sub}</div>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           {showQuickActions && (
@@ -982,7 +961,7 @@ function ClientCard({
               )}
             </>
           )}
-          <div style={{ fontSize: 11, fontWeight: 700, color: status.color }}>{client.score}</div>
+          <span style={{ fontSize: 10, color: "#555", background: "#111", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
           {onTrash && (
             <button
               type="button"
@@ -1006,7 +985,7 @@ function ClientCard({
           )}
         </div>
       </div>
-      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 4, alignItems: "center", marginTop: 4 }}>
         <span style={{ padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, color: status.color, background: status.bg, letterSpacing: "0.05em" }}>
           {status.icon} {status.short ?? status.label}
         </span>
@@ -1050,9 +1029,9 @@ function NavItem({
       }}
     >
       <span style={{ fontSize: 14, color: isActive ? color : C.faint }}>{icon}</span>
-      <span style={{ fontSize: 12, color: isActive ? color : C.muted, fontWeight: isActive ? 700 : 400, flex: 1, letterSpacing: "0.04em" }}>{label}</span>
+      <span style={{ fontSize: 9, fontWeight: 700, color: "#333", letterSpacing: "0.15em", flex: 1 }}>{label}</span>
       {count > 0 && (
-        <span style={{ fontSize: 9, fontWeight: 700, color: isActive ? color : C.faint, background: isActive ? color + "20" : C.bg3, padding: "1px 6px", borderRadius: 10 }}>{count}</span>
+        <span style={{ fontSize: 9, fontWeight: 700, color: "#555", background: "#1a1a1a", padding: "1px 6px", borderRadius: 4 }}>{count}</span>
       )}
     </button>
   );
@@ -1154,7 +1133,7 @@ export default function PipelineDashboardPage() {
   const [notesSaving, setNotesSaving] = useState(false);
   const [prehledActivities, setPrehledActivities] = useState<Array<{ id: string; type: string; message: string | null; seen_at: string | null; created_at: string }>>([]);
   const [prehledActivitiesLoading, setPrehledActivitiesLoading] = useState(false);
-  const [activityUnreadByProject, setActivityUnreadByProject] = useState<Record<string, number>>({});
+  const [activityUnreadByProject, setActivityUnreadByProject] = useState<Record<string, { count: number; hasNewMessage: boolean }>>({});
   const [contentAccordionOpen, setContentAccordionOpen] = useState<Record<string, number | null>>({});
 
   const fetchData = useCallback(async () => {
@@ -1295,11 +1274,22 @@ export default function PipelineDashboardPage() {
     if (rows.length === 0) return;
     fetch("/api/admin/activity-unread-counts")
       .then((r) => r.json())
-      .then((d) => setActivityUnreadByProject(d.byProject ?? {}))
+      .then((d) => {
+        const raw = d.byProject ?? {};
+        const next: Record<string, { count: number; hasNewMessage: boolean }> = {};
+        for (const [id, v] of Object.entries(raw)) {
+          if (typeof v === "object" && v !== null && "count" in v) {
+            next[id] = { count: (v as { count: number }).count ?? 0, hasNewMessage: !!(v as { hasNewMessage?: boolean }).hasNewMessage };
+          } else {
+            next[id] = { count: Number(v) || 0, hasNewMessage: false };
+          }
+        }
+        setActivityUnreadByProject(next);
+      })
       .catch(() => setActivityUnreadByProject({}));
   }, [rows.length]);
 
-  const totalUnreadActivities = Object.values(activityUnreadByProject).reduce((a, b) => a + b, 0);
+  const totalUnreadActivities = Object.values(activityUnreadByProject).reduce((a, p) => a + (p?.count ?? 0), 0);
 
   const clients = rows.map(mapRowToClient);
   const lastNotesSyncIdRef = useRef<string | null>(null);
@@ -1614,6 +1604,11 @@ export default function PipelineDashboardPage() {
                 </button>
               )}
             </div>
+            <div style={{ display: "flex", gap: 12, padding: "4px 12px 8px", fontSize: 9, color: "#333" }}>
+              <span><span style={{ color: ACTIVITY_DOT_COLORS.message }}>●</span> Zpráva</span>
+              <span><span style={{ color: ACTIVITY_DOT_COLORS.activity }}>●</span> Aktivita</span>
+              <span><span style={{ color: ACTIVITY_DOT_COLORS.urgent }}>●</span> Urgentní</span>
+            </div>
           </div>
           {(urgentCount > 0 || totalUnreadActivities > 0) && (
             <button
@@ -1646,18 +1641,23 @@ export default function PipelineDashboardPage() {
               clientGroups.map(({ emailKey, clients: groupClients }) => {
                 const first = groupClients[0]!;
                 const clientLabel = first.clientDisplayName + (groupClients.length > 1 ? ` (${groupClients.length})` : "");
-                const groupUrgency = groupClients.reduce<Urgency>((acc, c) => {
-                  const u = getUrgency(c);
-                  if (u === "red") return "red";
-                  if (u === "yellow" && acc !== "red") return "yellow";
-                  if (u === "green" && acc !== "red" && acc !== "yellow") return "green";
-                  return acc;
-                }, "gray");
                 const hasActiveInGroup = groupClients.some((c) => c.id === activeId);
                 const isCollapsed = collapsedClientEmails.has(emailKey);
-                const dotColor = URGENCY_COLORS[groupUrgency];
+                const groupUnread = groupClients.reduce((acc, c) => {
+                  const p = activityUnreadByProject[c.id];
+                  const count = p?.count ?? 0;
+                  return { count: acc.count + count, hasNewMessage: acc.hasNewMessage || !!(p?.hasNewMessage) };
+                }, { count: 0, hasNewMessage: false });
+                const anyUrgentUnread = groupClients.some((c) => {
+                  const u = getUrgency(c);
+                  const count = activityUnreadByProject[c.id]?.count ?? 0;
+                  return u === "red" && count > 0;
+                });
+                const activityDotType = groupUnread.count === 0 ? null : anyUrgentUnread ? "urgent" as const : groupUnread.hasNewMessage ? "message" as const : "activity" as const;
+                const activityDotColor = activityDotType ? ACTIVITY_DOT_COLORS[activityDotType] : null;
+                const activityDotTitle = activityDotType === "urgent" ? "Vyžaduje pozornost" : activityDotType === "message" ? "Zpráva od klienta" : activityDotType === "activity" ? "Nová aktivita" : "";
                 return (
-                  <div key={emailKey} style={{ marginBottom: 4 }}>
+                  <div key={emailKey} style={{ marginBottom: 8, borderBottom: "1px solid #111" }}>
                     <div
                       role="button"
                       tabIndex={0}
@@ -1671,27 +1671,31 @@ export default function PipelineDashboardPage() {
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 8,
-                        padding: "8px 12px",
+                        gap: 10,
+                        padding: "10px 12px",
                         margin: "0 8px 2px",
-                        borderRadius: 9,
+                        borderRadius: 8,
                         cursor: "pointer",
-                        background: hasActiveInGroup ? C.bg2 : "transparent",
-                        borderLeft: `3px solid ${hasActiveInGroup ? C.lime : "transparent"}`,
+                        background: hasActiveInGroup ? "#0f0f0f" : "transparent",
+                        borderLeft: `2px solid ${hasActiveInGroup ? "#c8ff00" : "transparent"}`,
+                        position: "relative",
                       }}
+                      onMouseEnter={(e) => { const t = e.currentTarget; if (!hasActiveInGroup) t.style.background = "#111"; }}
+                      onMouseLeave={(e) => { const t = e.currentTarget; if (!hasActiveInGroup) t.style.background = "transparent"; }}
                     >
-                      <div style={{ position: "relative", flexShrink: 0 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: 7, background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: C.lilac }}>
-                          {first.clientAvatar}
-                        </div>
-                        <div style={{ position: "absolute", top: -2, right: -2, width: 8, height: 8, borderRadius: "50%", background: dotColor, border: "1px solid #0a0a0a" }} />
+                      {activityDotColor && (
+                        <div title={activityDotTitle} style={{ position: "absolute", top: 8, right: 8, width: 6, height: 6, borderRadius: "50%", background: activityDotColor, zIndex: 1 }} />
+                      )}
+                      <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.lilac }}>
+                        {first.clientAvatar}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: hasActiveInGroup ? 700 : 500, color: hasActiveInGroup ? "#fff" : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#ffffff", letterSpacing: "0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {clientLabel}
                         </div>
+                        <div style={{ fontSize: 11, color: "#444" }}>{first.email ?? first.sub ?? ""}</div>
                       </div>
-                      <span style={{ fontSize: 10, color: C.faint }}>{isCollapsed ? "▸" : "▾"}</span>
+                      <span style={{ fontSize: 10, color: "#444" }}>{isCollapsed ? "▸" : "▾"}</span>
                     </div>
                     {!isCollapsed &&
                       groupClients.map((c) => (
@@ -1701,8 +1705,7 @@ export default function PipelineDashboardPage() {
                           isActive={c.id === activeId}
                           onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }}
                           displayTitle={c.projectDisplayName}
-                          style={{ marginLeft: 12 }}
-                          activityUnreadCount={activityUnreadByProject[c.id] ?? 0}
+                          style={{}}
                           onTrash={(e) => {
                             e?.stopPropagation();
                             setDeleteConfirm({ id: c.id, name: c.projectDisplayName || c.name, hard: navSection === "archiv" });
