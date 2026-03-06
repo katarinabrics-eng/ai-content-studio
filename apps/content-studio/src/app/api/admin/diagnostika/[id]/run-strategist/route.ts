@@ -48,7 +48,7 @@ export async function POST(
     web_url: project.web_url,
   });
 
-  const scanResult = project.scan_result as {
+  const scanForBrandDna = project.scan_result as {
     brandDna?: {
       positioning?: string;
       uniqueValue?: string;
@@ -59,7 +59,7 @@ export async function POST(
       archetype?: string;
     };
   } | null;
-  const brandDna = scanResult?.brandDna;
+  const brandDna = scanForBrandDna?.brandDna;
   const brandDnaStructured = brandDna
     ? `
 - Positioning: ${brandDna.positioning ?? "—"}
