@@ -1,108 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { StartAnalyzer } from "../start/StartAnalyzer";
 
 const LIME = "#c8ff00";
 const BORDER = "#1f1f1f";
 const BG_DARK = "#0a0a0a";
 const HERO_BG = "#080808";
 const CARD_BG = "#111";
-const MUTED = "#888";
 const PINK = "#e879a0";
 const YELLOW = "#e8d44d";
 const PURPLE = "#b57bee";
-
-function BrandScanForm({ id }: { id?: string }) {
-  const router = useRouter();
-  const [mode, setMode] = useState<"web" | "manual">("web");
-  const [url, setUrl] = useState("");
-  const [manualText, setManualText] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (mode === "web" && url.trim()) {
-      const u = url.trim().startsWith("http") ? url.trim() : `https://${url.trim()}`;
-      router.push(`/diagnostika?url=${encodeURIComponent(u)}`);
-      return;
-    }
-    if (mode === "manual" && manualText.trim()) {
-      router.push(`/diagnostika?manual=true&text=${encodeURIComponent(manualText.trim())}`);
-    }
-  };
-
-  return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-4 w-full max-w-[560px]">
-      <div className="flex gap-6 justify-center">
-        <button
-          type="button"
-          onClick={() => setMode("web")}
-          className="text-sm font-semibold transition-colors"
-          style={{
-            color: mode === "web" ? LIME : "#555",
-            borderBottom: mode === "web" ? `2px solid ${LIME}` : "2px solid transparent",
-            paddingBottom: 6,
-          }}
-        >
-          Mám web
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("manual")}
-          className="text-sm font-semibold transition-colors"
-          style={{
-            color: mode === "manual" ? LIME : "#555",
-            borderBottom: mode === "manual" ? `2px solid ${LIME}` : "2px solid transparent",
-            paddingBottom: 6,
-          }}
-        >
-          Nemám web
-        </button>
-      </div>
-      {mode === "web" ? (
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="www.vaseznacka.cz"
-            className="flex-1 min-w-0 px-4 py-3 rounded-lg bg-[#111] border border-[#1f1f1f] text-white placeholder-zinc-500 text-base outline-none focus:border-[#c8ff0080]"
-            style={{ borderColor: BORDER }}
-          />
-          <button
-            type="submit"
-            disabled={!url.trim()}
-            className="shrink-0 px-6 py-3 rounded-lg font-bold text-black text-base disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: LIME }}
-          >
-            Spustit Brand Scan →
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <textarea
-            value={manualText}
-            onChange={(e) => setManualText(e.target.value)}
-            placeholder="Popište svoji značku, obor, cílovou skupinu..."
-            rows={4}
-            className="w-full px-4 py-3 rounded-lg bg-[#111] border border-[#1f1f1f] text-white placeholder-zinc-500 text-base outline-none focus:border-[#c8ff0080] resize-y"
-            style={{ borderColor: BORDER }}
-          />
-          <button
-            type="submit"
-            disabled={!manualText.trim()}
-            className="w-full sm:w-auto px-6 py-3 rounded-lg font-bold text-black text-base disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: LIME }}
-          >
-            Spustit Brand Scan →
-          </button>
-        </div>
-      )}
-      <p className="text-sm text-zinc-500">Zdarma · Bez registrace · Výsledky během minut</p>
-    </form>
-  );
-}
 
 export default function BrandScanPage() {
   return (
@@ -151,7 +59,9 @@ export default function BrandScanPage() {
           >
             Zadej web. Za pár minut máš konkrétní čísla — kde ztrácíš zákazníky dřív než tě vůbec poznají.
           </p>
-          <BrandScanForm />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <StartAnalyzer diagnostika />
+          </div>
         </div>
       </section>
 
@@ -265,7 +175,9 @@ export default function BrandScanPage() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-10">
             Než investuješ do obsahu — zjisti co skutečně nefunguje.
           </h2>
-          <BrandScanForm id="cta-form" />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <StartAnalyzer diagnostika />
+          </div>
           <p className="mt-8 text-sm text-zinc-500">
             Studio Lucifera · Kampa, Praha · AI u nás vychází z reálných fotek.
           </p>
