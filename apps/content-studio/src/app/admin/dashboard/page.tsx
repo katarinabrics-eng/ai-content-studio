@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { toPipelineStatus, PIPELINE_TO_WORKFLOW, type PipelineStatus } from "./pipeline-map";
 import { STRATEGISTS_META } from "@/lib/strategist-selector";
 import type { StrategistId } from "@/lib/strategists/config";
@@ -22,6 +23,16 @@ const C = {
   text: "#e8e8e8",
   muted: "#888",
   faint: "#444",
+};
+
+const strategyMarkdownComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => <p style={{ margin: "0 0 8px", color: C.muted, fontSize: 11, lineHeight: 1.5 }}>{children}</p>,
+  h1: ({ children }: { children?: React.ReactNode }) => <h1 style={{ margin: "12px 0 6px", color: "#fff", fontSize: 13, fontWeight: 700 }}>{children}</h1>,
+  h2: ({ children }: { children?: React.ReactNode }) => <h2 style={{ margin: "12px 0 6px", color: "#fff", fontSize: 12, fontWeight: 700 }}>{children}</h2>,
+  h3: ({ children }: { children?: React.ReactNode }) => <h3 style={{ margin: "10px 0 4px", color: "#fff", fontSize: 12, fontWeight: 700 }}>{children}</h3>,
+  ul: ({ children }: { children?: React.ReactNode }) => <ul style={{ margin: "4px 0", paddingLeft: 18, color: C.muted, fontSize: 11 }}>{children}</ul>,
+  li: ({ children }: { children?: React.ReactNode }) => <li style={{ marginBottom: 2 }}>{children}</li>,
+  strong: ({ children }: { children?: React.ReactNode }) => <strong style={{ color: "#ccc", fontWeight: 700 }}>{children}</strong>,
 };
 
 const PIPELINE: { id: PipelineStatus; label: string; short: string; color: string; bg: string; icon: string; step: number }[] = [
@@ -2315,6 +2326,31 @@ export default function PipelineDashboardPage() {
 
           {activeTab === "strategie" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <AIDoporuceni
+                strategists={client.strategists}
+                loading={strategistLoading}
+                onSpustit={async (strategistId) => {
+                  setStrategistLoading(true);
+                  try {
+                    const res = await fetch(`/api/admin/diagnostika/${client.id}/run-strategist`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ strategistId }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      setError(data?.error ?? "Chyba při generování strategie");
+                      return;
+                    }
+                    setError(null);
+                    await fetchData();
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : "Nepodařilo se spustit stratega");
+                  } finally {
+                    setStrategistLoading(false);
+                  }
+                }}
+              />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12 }}>
                 <div style={{ fontSize: 11, color: C.faint }}>{client.strategies.length} uložených strategií</div>
                 <button
@@ -2385,11 +2421,11 @@ export default function PipelineDashboardPage() {
                             </div>
                             <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
                             {isExpanded && (
-                              <div style={{ marginTop: 10, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+                              <div style={{ marginTop: 10, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, lineHeight: 1.5 }}>
                                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
                                   <CopyButton text={s.content ?? s.summary ?? ""} />
                                 </div>
-                                {s.summary ?? "—"}
+                                <ReactMarkdown components={strategyMarkdownComponents}>{s.content ?? s.summary ?? "—"}</ReactMarkdown>
                               </div>
                             )}
                           </div>
@@ -2434,7 +2470,7 @@ export default function PipelineDashboardPage() {
                           <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${leftColor}`, background: C.bg2 }}>
                             <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratA.label}</div>
                             <div style={{ fontSize: 11, color: leftColor, marginBottom: 8 }}>Fit {(stratA.fit ?? 0)}%</div>
-                            <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}>{stratA.summary ?? "—"}</p>
+                            <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}><ReactMarkdown components={strategyMarkdownComponents}>{stratA.summary ?? "—"}</ReactMarkdown></div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
                               {(stratA.priorities ?? []).map((p, i) => (
                                 <span key={i} style={{ padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: C.lime + "22", color: C.lime }}>{p}</span>
@@ -2454,12 +2490,12 @@ export default function PipelineDashboardPage() {
                                 );
                               })}
                             </div>
-                            <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${leftColor}` }}>{stratA.verdict ?? "—"}</div>
+                            <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${leftColor}` }}><ReactMarkdown components={strategyMarkdownComponents}>{stratA.verdict ?? "—"}</ReactMarkdown></div>
                           </div>
                           <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${rightColor}`, background: C.bg2 }}>
                             <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratB.label}</div>
                             <div style={{ fontSize: 11, color: rightColor, marginBottom: 8 }}>Fit {(stratB.fit ?? 0)}%</div>
-                            <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}>{stratB.summary ?? "—"}</p>
+                            <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}><ReactMarkdown components={strategyMarkdownComponents}>{stratB.summary ?? "—"}</ReactMarkdown></div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
                               {(stratB.priorities ?? []).map((p, i) => (
                                 <span key={i} style={{ padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: C.lime + "22", color: C.lime }}>{p}</span>
@@ -2479,7 +2515,7 @@ export default function PipelineDashboardPage() {
                                 );
                               })}
                             </div>
-                            <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${rightColor}` }}>{stratB.verdict ?? "—"}</div>
+                            <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${rightColor}` }}><ReactMarkdown components={strategyMarkdownComponents}>{stratB.verdict ?? "—"}</ReactMarkdown></div>
                           </div>
                         </div>
                         <div style={{ padding: 16, borderRadius: 12, background: C.bg2, border: `1px solid ${C.border}` }}>
@@ -2595,7 +2631,7 @@ export default function PipelineDashboardPage() {
                                         <div style={{ display: "flex", justifyContent: "flex-end" }}>
                                           <CopyButton text={sec.body} />
                                         </div>
-                                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{sec.body}</div>
+                                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.6 }}><ReactMarkdown components={strategyMarkdownComponents}>{sec.body}</ReactMarkdown></div>
                                       </div>
                                     )}
                                   </div>
@@ -2619,7 +2655,7 @@ export default function PipelineDashboardPage() {
                                     <span style={{ fontSize: 9, fontWeight: 700, color: C.faint, letterSpacing: "0.05em" }}>KLÍČOVÉ BODY STRATEGIE</span>
                                     <CopyButton text={s.content ?? s.summary ?? ""} />
                                   </div>
-                                  {s.summary}
+                                  <ReactMarkdown components={strategyMarkdownComponents}>{s.content ?? s.summary ?? ""}</ReactMarkdown>
                                 </div>
                               )}
                             </>
