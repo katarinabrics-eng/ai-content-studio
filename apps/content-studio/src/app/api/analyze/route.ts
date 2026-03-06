@@ -220,7 +220,15 @@ function parseDiagnostikaResult(raw: string): Record<string, unknown> {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    let body: Record<string, unknown>;
+    try {
+      body = (await request.json()) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json(
+        { error: "Neplatný požadavek (chybí nebo poškozené JSON tělo)." },
+        { status: 400 }
+      );
+    }
     const url = typeof body?.url === "string" ? body.url.trim() : "";
     const manualData = typeof body?.manualData === "string" ? body.manualData.trim() : "";
     const pdfBase64 = typeof body?.pdfBase64 === "string" ? body.pdfBase64 : "";

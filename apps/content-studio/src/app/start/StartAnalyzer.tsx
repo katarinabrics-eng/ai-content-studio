@@ -263,6 +263,7 @@ export function StartAnalyzer({
         : ["Analyzuji zadané podklady...", "Analyzuji obsah...", "Generuji skóre..."];
     let loadingStep = 0;
     let progressInterval: ReturnType<typeof setInterval> | undefined;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
       setPhase("loading");
       setMsg(loadingMessages[0]);
@@ -271,7 +272,7 @@ export function StartAnalyzer({
         setMsg(loadingMessages[loadingStep]);
       }, 5000);
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 90_000);
+      timeout = setTimeout(() => controller.abort(), 90_000);
       const body: Record<string, unknown> = diagnostika ? { format: "diagnostika" } : {};
       if (mode === "web") {
         body.url = urlToUse;
@@ -309,7 +310,7 @@ export function StartAnalyzer({
       try {
         data = await res.json();
       } catch {
-        setError("Server vrátil neplatnou odpověď. Zkuste to znovu.");
+        setError("Server vrátil neplatnou odpověď (ne JSON). Zkontrolujte na Vercelu env: OPENAI_API_KEY, FIRECRAWL_API_KEY. Případně timeout — analýza trvá 20–60 s.");
         setPhase("input");
         return;
       }
@@ -367,6 +368,7 @@ export function StartAnalyzer({
       }
     } catch (e) {
       if (progressInterval !== undefined) clearInterval(progressInterval);
+      if (timeout !== undefined) clearTimeout(timeout);
       const msg = e instanceof Error ? e.message : "Nepodařilo se analyzovat.";
       const friendly =
         msg === "fetch failed" || msg === "Failed to fetch"
