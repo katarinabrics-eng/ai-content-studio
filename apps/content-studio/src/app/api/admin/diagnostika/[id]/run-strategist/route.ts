@@ -48,8 +48,32 @@ export async function POST(
     web_url: project.web_url,
   });
 
+  const scanResult = project.scan_result as {
+    brandDna?: {
+      positioning?: string;
+      uniqueValue?: string;
+      targetAudience?: string;
+      tone?: string;
+      toneOfVoice?: string;
+      contentPillars?: string[];
+      archetype?: string;
+    };
+  } | null;
+  const brandDna = scanResult?.brandDna;
+  const brandDnaStructured = brandDna
+    ? `
+- Positioning: ${brandDna.positioning ?? "—"}
+- Unique Value: ${brandDna.uniqueValue ?? "—"}
+- Target Audience: ${brandDna.targetAudience ?? "—"}
+- Tone of Voice: ${brandDna.toneOfVoice ?? brandDna.tone ?? "—"}
+- Content Pillars: ${(brandDna.contentPillars ?? []).join(", ") || "—"}
+- Brand Archetype: ${brandDna.archetype ?? "—"}
+`.trim()
+    : "Brand DNA není k dispozici.";
+
   let prompt = buildPrompt(strategist, {
     kontext,
+    brand_dna_structured: brandDnaStructured,
     produkt_sluzba: (project.scan_result as { brandDna?: { name?: string } })?.brandDna?.name ?? project.name ?? project.email ?? "",
     tema_napad: kontext.slice(0, 200),
     cil: kontext.slice(0, 200),
