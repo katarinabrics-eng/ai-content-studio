@@ -1137,14 +1137,14 @@ function ContextPanel({
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{client.projectDisplayName || client.name}</span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#fff", wordBreak: "break-word" }}>{client.projectDisplayName || client.name}</span>
               <button type="button" onClick={() => setShowEdit((e) => !e)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#888", fontSize: 12 }} title="Upravit">✏</button>
             </div>
             {!showEdit && (
               <>
-                <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{client.email || "—"}</div>
+                <div style={{ fontSize: 12, color: "#999", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }} title={client.email || undefined}>{client.email || "—"}</div>
                 {client.web_url ? (
-                  <a href={client.web_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: C.lime, marginTop: 4, display: "inline-block" }}>↗ {client.web_url.replace(/^https?:\/\//, "").slice(0, 24)}{client.web_url.length > 30 ? "…" : ""}</a>
+                  <a href={client.web_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: C.lime, marginTop: 4, display: "inline-block", maxWidth: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={client.web_url}>↗ {client.web_url.replace(/^https?:\/\//, "")}</a>
                 ) : (
                   <span style={{ fontSize: 12, color: "#555" }}>—</span>
                 )}
@@ -1239,6 +1239,7 @@ export default function PipelineDashboardPage() {
   const [expandedStrategyId, setExpandedStrategyId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; hard: boolean } | null>(null);
   const [showOnlyUrgent, setShowOnlyUrgent] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [pendingVersion, setPendingVersion] = useState<{ id: string; scan_result: Record<string, unknown>; created_at: string } | null>(null);
   const [showCompareDiff, setShowCompareDiff] = useState(false);
@@ -1707,13 +1708,35 @@ export default function PipelineDashboardPage() {
         </div>
       )}
       <div style={{ height: 48, background: C.bg1, borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", padding: "0 20px", gap: 14, flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#777", letterSpacing: "0.14em" }}>PIPELINE</span>
+        <button
+          type="button"
+          onClick={() => setSidebarOpen((v) => !v)}
+          style={{ background: "none", border: "none", color: "#777", fontSize: 18, cursor: "pointer", padding: "0 12px" }}
+          aria-label={sidebarOpen ? "Zavřít menu" : "Otevřít menu"}
+        >
+          ☰
+        </button>
+        {activeId && client && (
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#ccc", marginLeft: 8 }}>
+            {client.projectDisplayName || client.name}
+          </span>
+        )}
         <div style={{ flex: 1 }} />
         {error && <span style={{ fontSize: 11, color: C.pink }}>{error}</span>}
       </div>
 
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <div style={{ width: 200, borderRight: `1px solid ${C.border}`, background: C.bg1, display: "flex", flexDirection: "column", flexShrink: 0 }}>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden", position: "relative" }}>
+        {sidebarOpen && (
+          <>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setSidebarOpen(false)}
+              onKeyDown={(e) => e.key === "Escape" && setSidebarOpen(false)}
+              style={{ position: "absolute", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }}
+              aria-label="Zavřít menu"
+            />
+            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: 200, zIndex: 50, borderRight: `1px solid ${C.border}`, background: C.bg1, display: "flex", flexDirection: "column", flexShrink: 0 }}>
           <div style={{ padding: "10px 0 6px", borderBottom: `1px solid ${C.border}` }}>
             <NavItem label="Pipeline" icon="◈" count={pipelineClients.length} color={C.lime} isActive={navSection === "pipeline"} onClick={() => setNavSection("pipeline")} />
             <NavItem label="Šuplík" icon="⊡" count={suplikClients.length} color={C.yellow} isActive={navSection === "suplik"} onClick={() => setNavSection("suplik")} />
@@ -1901,12 +1924,14 @@ export default function PipelineDashboardPage() {
               Administrace diagnostiky
             </Link>
           </div>
-        </div>
+            </div>
+            </>
+          )}
 
         {client && (
           <div
             style={{
-              width: workMode ? 200 : 260,
+              width: workMode ? 220 : 300,
               flexShrink: 0,
               background: "rgba(8,8,8,0.7)",
               backdropFilter: "blur(24px)",
@@ -1928,7 +1953,7 @@ export default function PipelineDashboardPage() {
           </div>
         )}
 
-        <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: "auto", display: "flex", flexDirection: "column" }}>
           <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 26, fontWeight: 700, color: "#cccccc", padding: "12px 20px 0" }}>
             {client?.projectDisplayName || client?.name || "Projekt"}
           </div>
