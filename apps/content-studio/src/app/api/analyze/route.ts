@@ -7,7 +7,7 @@ export const maxDuration = 60;
 
 const FIRECRAWL_BASE = "https://api.firecrawl.dev/v2";
 const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
-const OPENAI_MODEL = "gpt-4.1";
+const OPENAI_MODEL = "gpt-4o";
 const FETCH_TIMEOUT_MS = 55_000;
 
 function fetchWithTimeout(url: string, init: RequestInit, ms: number): Promise<Response> {
