@@ -10,40 +10,40 @@ import type { StrategistId } from "@/lib/strategists/config";
 import AIDoporuceni from "@/components/AIDoporuceni";
 
 const C = {
-  lime: "#c8ff00",
+  lime: "#a8d800",
   purple: "#b57bee",
   pink: "#f06ba8",
   yellow: "#e8d44d",
   lilac: "#d4b8f0",
-  bg0: "#080808",
-  bg1: "#0f0f0f",
-  bg2: "#141414",
-  bg3: "#1c1c1c",
-  border: "#1f1f1f",
-  text: "#e8e8e8",
-  muted: "#888",
-  faint: "#444",
+  bg0: "#ffffff",
+  bg1: "#f7f7f7",
+  bg2: "#f0f0f0",
+  bg3: "#e8e8e8",
+  border: "rgba(0,0,0,0.08)",
+  text: "#111111",
+  muted: "#555555",
+  faint: "#999999",
 };
 
 const strategyMarkdownComponents = {
   p: ({ children }: { children?: React.ReactNode }) => <p style={{ margin: "0 0 8px", color: C.muted, fontSize: 11, lineHeight: 1.5 }}>{children}</p>,
-  h1: ({ children }: { children?: React.ReactNode }) => <h1 style={{ margin: "12px 0 6px", color: "#fff", fontSize: 13, fontWeight: 700 }}>{children}</h1>,
-  h2: ({ children }: { children?: React.ReactNode }) => <h2 style={{ margin: "12px 0 6px", color: "#fff", fontSize: 12, fontWeight: 700 }}>{children}</h2>,
-  h3: ({ children }: { children?: React.ReactNode }) => <h3 style={{ margin: "10px 0 4px", color: "#fff", fontSize: 12, fontWeight: 700 }}>{children}</h3>,
+  h1: ({ children }: { children?: React.ReactNode }) => <h1 style={{ margin: "12px 0 6px", color: C.text, fontSize: 13, fontWeight: 700 }}>{children}</h1>,
+  h2: ({ children }: { children?: React.ReactNode }) => <h2 style={{ margin: "12px 0 6px", color: C.text, fontSize: 12, fontWeight: 700 }}>{children}</h2>,
+  h3: ({ children }: { children?: React.ReactNode }) => <h3 style={{ margin: "10px 0 4px", color: C.text, fontSize: 12, fontWeight: 700 }}>{children}</h3>,
   ul: ({ children }: { children?: React.ReactNode }) => <ul style={{ margin: "4px 0", paddingLeft: 18, color: C.muted, fontSize: 11 }}>{children}</ul>,
   li: ({ children }: { children?: React.ReactNode }) => <li style={{ marginBottom: 2 }}>{children}</li>,
-  strong: ({ children }: { children?: React.ReactNode }) => <strong style={{ color: "#ccc", fontWeight: 700 }}>{children}</strong>,
+  strong: ({ children }: { children?: React.ReactNode }) => <strong style={{ color: "#333", fontWeight: 700 }}>{children}</strong>,
 };
 
 const PIPELINE: { id: PipelineStatus; label: string; short: string; color: string; bg: string; icon: string; step: number }[] = [
-  { id: "LEAD", label: "Nový lead", short: "Lead", color: "#888", bg: "#1a1a1a", icon: "◉", step: 1 },
-  { id: "HOVOR", label: "Před hovorem", short: "Hovor", color: C.lilac, bg: "#16101e", icon: "◎", step: 2 },
-  { id: "AKTIVNI", label: "Aktivní zakázka", short: "Aktivní", color: C.lime, bg: "#0f1a00", icon: "◈", step: 3 },
-  { id: "HOTOVO", label: "Hotovo", short: "Hotovo", color: C.purple, bg: "#160f22", icon: "✦", step: 4 },
+  { id: "LEAD", label: "Nový lead", short: "Lead", color: C.muted, bg: C.bg2, icon: "◉", step: 1 },
+  { id: "HOVOR", label: "Před hovorem", short: "Hovor", color: C.lilac, bg: "#f5f0fa", icon: "◎", step: 2 },
+  { id: "AKTIVNI", label: "Aktivní zakázka", short: "Aktivní", color: C.lime, bg: "rgba(168,216,0,0.1)", icon: "◈", step: 3 },
+  { id: "HOTOVO", label: "Hotovo", short: "Hotovo", color: C.purple, bg: "#f5f0f8", icon: "✦", step: 4 },
 ];
 const SPECIAL: { id: PipelineStatus; label: string; short?: string; color: string; bg: string; icon: string }[] = [
-  { id: "SUPLIK", label: "Šuplík", short: "Šuplík", color: C.yellow, bg: "#1a1600", icon: "⊡" },
-  { id: "ARCHIV", label: "Archiv", short: "Archiv", color: C.faint, bg: "#111", icon: "◫" },
+  { id: "SUPLIK", label: "Šuplík", short: "Šuplík", color: C.yellow, bg: "#f5f5e8", icon: "⊡" },
+  { id: "ARCHIV", label: "Archiv", short: "Archiv", color: C.faint, bg: C.bg3, icon: "◫" },
 ];
 const ALL = [...PIPELINE, ...SPECIAL];
 function getS(id: string) {
@@ -319,9 +319,9 @@ function CopyButton({ text, style }: { text: string; style?: React.CSSProperties
       style={{
         padding: "4px 8px",
         borderRadius: 6,
-        border: "1px solid #444",
+        border: `1px solid ${C.border}`,
         background: "transparent",
-        color: "#444",
+        color: C.faint,
         fontSize: 10,
         cursor: "pointer",
         ...style,
@@ -418,8 +418,8 @@ function CompactClientHeader({ client, onExpand }: { client: Client; onExpand: (
         alignItems: "center",
         justifyContent: "space-between",
         padding: "0 24px",
-        background: "#0d0d0d",
-        borderBottom: "1px solid #1a1a1a",
+        background: C.bg1,
+        borderBottom: `1px solid ${C.border}`,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -441,7 +441,7 @@ function CompactClientHeader({ client, onExpand }: { client: Client; onExpand: (
         >
           {client.avatar}
         </div>
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{client.projectDisplayName || client.name}</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{client.projectDisplayName || client.name}</span>
         <span
           style={{
             padding: "2px 8px",
@@ -461,7 +461,7 @@ function CompactClientHeader({ client, onExpand }: { client: Client; onExpand: (
         <button
           type="button"
           onClick={onExpand}
-          style={{ fontSize: 12, color: "#555", background: "transparent", border: "none", cursor: "pointer", padding: "4px 8px" }}
+          style={{ fontSize: 12, color: C.muted, background: "transparent", border: "none", cursor: "pointer", padding: "4px 8px" }}
         >
           ↑ Rozbalit
         </button>
@@ -500,7 +500,7 @@ function SendAccessBlock({ client, onSent }: { client: Client; onSent: () => voi
             setLoading(false);
           }
         }}
-        style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 11, cursor: loading ? "not-allowed" : "pointer" }}
+        style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, cursor: loading ? "not-allowed" : "pointer" }}
       >
         {loading ? "Odesílám…" : "✉ Poslat přístup klientovi"}
       </button>
@@ -526,7 +526,7 @@ function PipelineOutputsBlock({
   if (client.outputsActivated) {
     return (
       <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 12, color: "#c8ff00", marginBottom: 4 }}>
+        <div style={{ fontSize: 12, color: C.lime, marginBottom: 4 }}>
           ✓ Výstupy aktivovány {client.outputsActivatedAt ? new Date(client.outputsActivatedAt).toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" }) : ""}
         </div>
         <button
@@ -570,7 +570,7 @@ function PipelineOutputsBlock({
             setLoading(false);
           }
         }}
-        style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: "#c8ff00", color: "#000", fontWeight: 700, fontSize: 12, cursor: updating || loading ? "not-allowed" : "pointer" }}
+        style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: C.lime, color: "#111", fontWeight: 700, fontSize: 12, boxShadow: "0 1px 4px rgba(168,216,0,0.4)", cursor: updating || loading ? "not-allowed" : "pointer" }}
       >
         {loading ? "Aktivuji…" : "⚡ Aktivovat výstupy pro klienta"}
       </button>
@@ -659,7 +659,7 @@ function PipelineSection({
                   }}
                 >
                   <span style={{ color: s.color, fontSize: 13 }}>{s.icon}</span>
-                  <span style={{ fontSize: 12, color: s.id === client.status ? "#fff" : C.muted, fontWeight: s.id === client.status ? 700 : 400, flex: 1, textAlign: "left" }}>{s.label}</span>
+                  <span style={{ fontSize: 12, color: s.id === client.status ? "#111" : C.muted, fontWeight: s.id === client.status ? 700 : 400, flex: 1, textAlign: "left" }}>{s.label}</span>
                   {s.id === client.aiStatus && s.id !== client.status && (
                     <span style={{ fontSize: 9, color: s.color, background: s.color + "22", padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>AI</span>
                   )}
@@ -684,7 +684,7 @@ function PipelineSection({
                   }}
                 >
                   <span style={{ color: s.color, fontSize: 13 }}>{s.icon}</span>
-                  <span style={{ fontSize: 12, color: s.id === client.status ? "#fff" : C.muted, fontWeight: s.id === client.status ? 700 : 400, textAlign: "left" }}>{s.label}</span>
+                  <span style={{ fontSize: 12, color: s.id === client.status ? "#111" : C.muted, fontWeight: s.id === client.status ? 700 : 400, textAlign: "left" }}>{s.label}</span>
                 </button>
               ))}
             </div>
@@ -714,7 +714,7 @@ function PipelineSection({
                       justifyContent: "center",
                       background: isActive ? step.color : isDone ? step.color + "33" : C.bg3,
                       border: `2px solid ${isActive ? step.color : isAI ? step.color + "99" : isDone ? step.color + "66" : C.border}`,
-                      color: isActive ? (step.color === C.lime ? "#000" : "#fff") : isDone ? step.color : C.faint,
+                      color: isActive ? (step.color === C.lime ? "#111" : "#fff") : isDone ? step.color : C.faint,
                       fontSize: isActive ? 13 : 12,
                       fontWeight: 800,
                       boxShadow: isAI ? `0 0 0 4px ${step.color}22` : "none",
@@ -801,18 +801,18 @@ function PipelineSection({
   );
 }
 
-const ACTIVITY_DOT_COLORS = { urgent: "#ff4444", message: "#c8ff00", activity: "#e8d44d" } as const;
+const ACTIVITY_DOT_COLORS = { urgent: "#ff4444", message: "#a8d800", activity: "#e8d44d" } as const;
 
 const STATUS_BADGE_STYLE: Record<string, { color: string; bg: string }> = {
-  LEAD: { color: "#e8d44d", bg: "rgba(232,212,77,0.1)" },
-  AKTIVNI: { color: "#c8ff00", bg: "rgba(200,255,0,0.1)" },
-  HOTOVO: { color: "#888", bg: "#151515" },
+  LEAD: { color: "#e8d44d", bg: "rgba(232,212,77,0.15)" },
+  AKTIVNI: { color: "#a8d800", bg: "rgba(168,216,0,0.1)" },
+  HOTOVO: { color: C.muted, bg: C.bg2 },
 };
 function getStatusBadgeStyle(statusId: string) {
-  return STATUS_BADGE_STYLE[statusId] ?? { color: "#888", bg: "#151515" };
+  return STATUS_BADGE_STYLE[statusId] ?? { color: C.muted, bg: C.bg2 };
 }
 
-const DOT_INDICATOR_COLORS = { red: "#ff4444", yellow: "#e8d44d", green: "#c8ff00" } as const;
+const DOT_INDICATOR_COLORS = { red: "#ff4444", yellow: "#e8d44d", green: "#a8d800" } as const;
 
 function ClientCard({
   client,
@@ -857,11 +857,11 @@ function ClientCard({
         marginBottom: 2,
         padding: "6px 12px 6px 8px",
         borderRadius: 6,
-        borderLeft: `1px solid ${isActive ? "rgba(200,255,0,0.4)" : "#1a1a1a"}`,
-        background: isActive ? "#0f0f0f" : "transparent",
+        borderLeft: `1px solid ${isActive ? "rgba(168,216,0,0.4)" : C.border}`,
+        background: isActive ? C.bg1 : "transparent",
         cursor: "pointer",
         position: "relative",
-        ...(hover && !isActive ? { background: "#0d0d0d", color: "#bbb" } : {}),
+        ...(hover && !isActive ? { background: C.bg2, color: C.muted } : {}),
         ...cardStyle,
       }}
     >
@@ -871,7 +871,7 @@ function ClientCard({
             width: 20,
             height: 20,
             borderRadius: 4,
-            background: "#1a1a1a",
+            background: C.bg2,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -890,7 +890,7 @@ function ClientCard({
               style={{ width: 6, height: 6, borderRadius: "50%", background: DOT_INDICATOR_COLORS[dotIndicator], flexShrink: 0 }}
             />
           )}
-          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? "#ccc" : "#666", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? C.text : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
             {title}
           </div>
         </div>
@@ -903,7 +903,7 @@ function ClientCard({
                     type="button"
                     aria-label="Změnit stav"
                     onClick={(e) => { e.stopPropagation(); setOpenQuick(openQuick === "status" ? null : "status"); }}
-                    style={{ padding: 2, border: "none", background: "transparent", cursor: "pointer", color: hover ? C.lime : "#444", fontSize: 14 }}
+                    style={{ padding: 2, border: "none", background: "transparent", cursor: "pointer", color: hover ? C.lime : C.faint, fontSize: 14 }}
                   >
                     ⟳
                   </button>
@@ -944,7 +944,7 @@ function ClientCard({
                     type="button"
                     aria-label="Poznámka"
                     onClick={(e) => { e.stopPropagation(); setNoteDraft(client.notes); setOpenQuick(openQuick === "note" ? null : "note"); }}
-                    style={{ padding: 2, border: "none", background: "transparent", cursor: "pointer", color: hover ? C.yellow : "#444", fontSize: 14 }}
+                    style={{ padding: 2, border: "none", background: "transparent", cursor: "pointer", color: hover ? C.yellow : C.faint, fontSize: 14 }}
                   >
                     ✎
                   </button>
@@ -970,7 +970,7 @@ function ClientCard({
                     aria-label="Spustit stratéga"
                     onClick={(e) => { e.stopPropagation(); setOpenQuick(openQuick === "strategist" ? null : "strategist"); }}
                     disabled={quickActionsLoading}
-                    style={{ padding: 2, border: "none", background: "transparent", cursor: quickActionsLoading ? "not-allowed" : "pointer", color: hover ? C.purple : "#444", fontSize: 14 }}
+                    style={{ padding: 2, border: "none", background: "transparent", cursor: quickActionsLoading ? "not-allowed" : "pointer", color: hover ? C.purple : C.faint, fontSize: 14 }}
                   >
                     ◈
                   </button>
@@ -992,7 +992,7 @@ function ClientCard({
               )}
             </>
           )}
-          <span style={{ fontSize: 10, color: "#888", background: "#151515", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
+          <span style={{ fontSize: 10, color: C.muted, background: C.bg2, borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
           <span style={{ fontSize: 9, fontWeight: 700, color: badgeStyle.color, background: badgeStyle.bg, padding: "2px 7px", borderRadius: 100 }}>{status.short ?? status.label}</span>
           {onTrash && (
             <button
@@ -1004,7 +1004,7 @@ function ClientCard({
                 border: "none",
                 background: "transparent",
                 cursor: "pointer",
-                color: hover ? "#ff5577" : "#444",
+                color: hover ? "#ff5577" : C.faint,
                 fontSize: 14,
                 lineHeight: 1,
                 display: "flex",
@@ -1061,9 +1061,9 @@ function NavItem({
       }}
     >
       <span style={{ fontSize: 14, color: isActive ? color : C.faint }}>{icon}</span>
-      <span style={{ fontSize: 10, fontWeight: 700, color: "#777", letterSpacing: "0.15em", flex: 1 }}>{label}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: C.muted, letterSpacing: "0.15em", flex: 1 }}>{label}</span>
       {count > 0 && (
-        <span style={{ fontSize: 9, fontWeight: 700, color: "#555", background: "#1a1a1a", padding: "1px 6px", borderRadius: 4 }}>{count}</span>
+        <span style={{ fontSize: 9, fontWeight: 700, color: C.muted, background: C.bg2, padding: "1px 6px", borderRadius: 4 }}>{count}</span>
       )}
     </button>
   );
@@ -1120,12 +1120,12 @@ function getUrgency(client: Client): Urgency {
 }
 
 const CARD_PANEL = {
-  background: "rgba(255,255,255,0.025)",
+  background: "#ffffff",
   backdropFilter: "blur(20px)",
-  border: "1px solid rgba(255,255,255,0.06)",
+  border: "1px solid rgba(0,0,0,0.08)",
   borderRadius: 14,
   padding: 12,
-  boxShadow: "0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
+  boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
 };
 
 function ContextPanel({
@@ -1147,7 +1147,7 @@ function ContextPanel({
   return (
     <>
       <div style={CARD_PANEL}>
-        <div style={{ fontSize: 10, color: "#888", letterSpacing: "0.12em", marginBottom: 8 }}>KLIENT</div>
+        <div style={{ fontSize: 10, color: C.muted, letterSpacing: "0.12em", marginBottom: 8 }}>KLIENT</div>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
           <div
             style={{
@@ -1156,7 +1156,7 @@ function ContextPanel({
               borderRadius: 10,
               flexShrink: 0,
               background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`,
-              border: "1px solid rgba(255,255,255,0.06)",
+              border: `1px solid ${C.border}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -1169,33 +1169,33 @@ function ContextPanel({
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#fff", wordBreak: "break-word" }}>{client.projectDisplayName || client.name}</span>
-              <button type="button" onClick={() => setShowEdit((e) => !e)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#888", fontSize: 12 }} title="Upravit">✏</button>
+              <span style={{ fontSize: 15, fontWeight: 700, color: C.text, wordBreak: "break-word" }}>{client.projectDisplayName || client.name}</span>
+              <button type="button" onClick={() => setShowEdit((e) => !e)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: C.muted, fontSize: 12 }} title="Upravit">✏</button>
             </div>
             {!showEdit && (
               <>
-                <div style={{ fontSize: 12, color: "#999", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }} title={client.email || undefined}>{client.email || "—"}</div>
+                <div style={{ fontSize: 12, color: C.faint, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }} title={client.email || undefined}>{client.email || "—"}</div>
                 {client.web_url ? (
                   <a href={client.web_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: C.lime, marginTop: 4, display: "inline-block", maxWidth: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={client.web_url}>↗ {client.web_url.replace(/^https?:\/\//, "")}</a>
                 ) : (
-                  <span style={{ fontSize: 12, color: "#555" }}>—</span>
+                  <span style={{ fontSize: 12, color: C.muted }}>—</span>
                 )}
               </>
             )}
             {showEdit && (
-              <div style={{ marginTop: 8, padding: 10, background: "#0d0d0d", border: "1px solid #1f1f1f", borderRadius: 8 }}>
+              <div style={{ marginTop: 8, padding: 10, background: C.bg1, border: `1px solid ${C.border}`, borderRadius: 8 }}>
                 <input placeholder="Jméno" defaultValue={client.projectDisplayName || client.name} style={{ width: "100%", marginBottom: 6, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
                 <input placeholder="Email" defaultValue={client.email} style={{ width: "100%", marginBottom: 6, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
                 <input placeholder="Web" defaultValue={client.web_url || ""} style={{ width: "100%", marginBottom: 6, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
                 <input placeholder="Telefon" style={{ width: "100%", marginBottom: 8, padding: "6px 8px", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 6, color: C.text, fontSize: 12 }} />
-                <button type="button" onClick={() => setShowEdit(false)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", background: C.lime, color: "#000", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>Uložit</button>
+                <button type="button" onClick={() => setShowEdit(false)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", background: C.lime, color: "#111", fontWeight: 700, fontSize: 11, cursor: "pointer", boxShadow: "0 1px 4px rgba(168,216,0,0.4)" }}>Uložit</button>
               </div>
             )}
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 700, color: status.color, background: status.bg }}>{status.icon} {status.short ?? status.label}</span>
-          <span style={{ fontSize: 10, color: "#666" }}>{access.label}</span>
+          <span style={{ fontSize: 10, color: C.muted }}>{access.label}</span>
         </div>
       </div>
 
@@ -1211,7 +1211,7 @@ function ContextPanel({
             const col = p.score >= 8 ? C.lime : p.score >= 6 ? C.yellow : p.score >= 4 ? C.pink : "#ff5577";
             return (
               <div key={p.key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 10, color: "#666", width: 20 }}>{p.icon}</span>
+                <span style={{ fontSize: 10, color: C.muted, width: 20 }}>{p.icon}</span>
                 <div style={{ flex: 1, height: 6, borderRadius: 3, background: C.bg3, overflow: "hidden" }}>
                   <div style={{ height: "100%", width: `${p.score * 10}%`, background: col, borderRadius: 3 }} />
                 </div>
@@ -1225,9 +1225,9 @@ function ContextPanel({
       <div style={CARD_PANEL}>
         <div style={{ fontSize: 10, color: C.lime, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 8 }}>BRAND DNA</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12 }}>
-          <div><span style={{ color: "#666", fontSize: 10 }}>Positioning</span><div style={{ color: "#aaa", marginTop: 2 }}>{client.dna.positioning ?? "—"}</div></div>
-          <div><span style={{ color: "#666", fontSize: 10 }}>Tón</span><div style={{ color: "#aaa", marginTop: 2 }}>{client.dna.tone ?? "—"}</div></div>
-          <div><span style={{ color: "#666", fontSize: 10 }}>Cílová skupina</span><div style={{ color: "#aaa", marginTop: 2 }}>{client.dna.targetAudience ?? "—"}</div></div>
+          <div><span style={{ color: C.muted, fontSize: 10 }}>Positioning</span><div style={{ color: C.faint, marginTop: 2 }}>{client.dna.positioning ?? "—"}</div></div>
+          <div><span style={{ color: C.muted, fontSize: 10 }}>Tón</span><div style={{ color: C.faint, marginTop: 2 }}>{client.dna.tone ?? "—"}</div></div>
+          <div><span style={{ color: C.muted, fontSize: 10 }}>Cílová skupina</span><div style={{ color: C.faint, marginTop: 2 }}>{client.dna.targetAudience ?? "—"}</div></div>
         </div>
       </div>
 
@@ -1240,7 +1240,7 @@ function ContextPanel({
             <button
               type="button"
               onClick={async () => { try { await fetch(`/api/admin/projects/${client.id}/send-access`, { method: "POST" }); onRefresh(); } catch { setError("Nepodařilo se odeslat výzvu"); } }}
-              style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer", textAlign: "left" }}
+              style={{ padding: "8px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: "pointer", textAlign: "left" }}
             >
               📋 Poslat výzvu k briefu
             </button>
@@ -1630,7 +1630,7 @@ export default function PipelineDashboardPage() {
     return (
       <div style={{ fontFamily: "system-ui", background: C.bg0, minHeight: "100vh", padding: 24, color: C.pink }}>
         <p>{error}</p>
-        <button onClick={() => fetchData()} style={{ marginTop: 12, padding: "8px 16px", background: C.bg2, border: `1px solid ${C.border}`, color: "#fff", borderRadius: 8, cursor: "pointer" }}>
+        <button onClick={() => fetchData()} style={{ marginTop: 12, padding: "8px 16px", background: C.bg2, border: `1px solid ${C.border}`, color: C.text, borderRadius: 8, cursor: "pointer" }}>
           Zkusit znovu
         </button>
       </div>
@@ -1679,7 +1679,7 @@ export default function PipelineDashboardPage() {
         display: "flex",
         flexDirection: "column",
         background: C.bg0,
-        backgroundImage: "radial-gradient(ellipse at 15% 50%, rgba(181,123,238,0.05) 0%, transparent 55%), radial-gradient(ellipse at 85% 20%, rgba(200,255,0,0.03) 0%, transparent 45%)",
+        backgroundImage: "radial-gradient(ellipse at 15% 50%, rgba(181,123,238,0.06) 0%, transparent 55%), radial-gradient(ellipse at 85% 20%, rgba(168,216,0,0.04) 0%, transparent 45%)",
       }}
     >
       {deleteConfirm && (
@@ -1727,7 +1727,7 @@ export default function PipelineDashboardPage() {
                   borderRadius: 8,
                   border: "none",
                   background: deleteConfirm.hard ? "#ff5577" : C.faint,
-                  color: "#fff",
+                  color: C.text,
                   fontSize: 12,
                   fontWeight: 700,
                   cursor: "pointer",
@@ -1743,13 +1743,13 @@ export default function PipelineDashboardPage() {
         <button
           type="button"
           onClick={() => setSidebarOpen((v) => !v)}
-          style={{ background: "none", border: "none", color: "#777", fontSize: 18, cursor: "pointer", padding: "0 12px" }}
+          style={{ background: "none", border: "none", color: C.muted, fontSize: 18, cursor: "pointer", padding: "0 12px" }}
           aria-label={sidebarOpen ? "Zavřít menu" : "Otevřít menu"}
         >
           ☰
         </button>
         {activeId && client && (
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#ccc", marginLeft: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#333", marginLeft: 8 }}>
             {client.projectDisplayName || client.name}
           </span>
         )}
@@ -1784,7 +1784,7 @@ export default function PipelineDashboardPage() {
                 style={{
                   width: "100%",
                   padding: "8px 28px 8px 10px",
-                  background: "#141414",
+                  background: C.bg2,
                   border: `1px solid ${C.border}`,
                   borderRadius: 6,
                   color: C.text,
@@ -1857,7 +1857,7 @@ export default function PipelineDashboardPage() {
                 const activityDotColor = activityDotType ? ACTIVITY_DOT_COLORS[activityDotType] : null;
                 const activityDotTitle = activityDotType === "urgent" ? "Vyžaduje pozornost" : activityDotType === "message" ? "Zpráva od klienta" : activityDotType === "activity" ? "Nová aktivita" : "";
                 return (
-                  <div key={emailKey} style={{ marginBottom: 8, borderBottom: "1px solid #111" }}>
+                  <div key={emailKey} style={{ marginBottom: 8, borderBottom: `1px solid ${C.border}` }}>
                     <div
                       role="button"
                       tabIndex={0}
@@ -1876,25 +1876,25 @@ export default function PipelineDashboardPage() {
                         margin: "0 8px 2px",
                         borderRadius: 8,
                         cursor: "pointer",
-                        background: hasActiveInGroup ? "rgba(200,255,0,0.05)" : "transparent",
-                        borderLeft: `2px solid ${hasActiveInGroup ? "#c8ff00" : "transparent"}`,
+                        background: hasActiveInGroup ? "rgba(168,216,0,0.1)" : "transparent",
+                        borderLeft: `2px solid ${hasActiveInGroup ? C.lime : "transparent"}`,
                         position: "relative",
                       }}
-                      onMouseEnter={(e) => { const t = e.currentTarget; if (!hasActiveInGroup) t.style.background = "#111"; }}
+                      onMouseEnter={(e) => { const t = e.currentTarget; if (!hasActiveInGroup) t.style.background = C.bg2; }}
                       onMouseLeave={(e) => { const t = e.currentTarget; if (!hasActiveInGroup) t.style.background = "transparent"; }}
                     >
                       {activityDotColor && (
                         <div title={activityDotTitle} style={{ position: "absolute", top: 8, right: 8, width: 6, height: 6, borderRadius: "50%", background: activityDotColor, zIndex: 1 }} />
                       )}
-                      <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, border: "1px solid rgba(200,255,0,0.15)", background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.lilac }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, border: `1px solid ${C.border}`, background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.lilac }}>
                         {first.clientAvatar}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "#c8ff00", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.lime, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {clientLabel}
                         </div>
                       </div>
-                      <span style={{ fontSize: 10, color: "#666" }}>{isCollapsed ? "▸" : "▾"}</span>
+                      <span style={{ fontSize: 10, color: C.muted }}>{isCollapsed ? "▸" : "▾"}</span>
                     </div>
                     {!isCollapsed &&
                       groupClients.map((c) => {
@@ -1958,7 +1958,7 @@ export default function PipelineDashboardPage() {
           <div style={{ padding: "8px" }}>
             <Link
               href="/admin"
-              style={{ display: "block", padding: "8px 12px", borderRadius: 8, border: `1px dashed ${C.border}`, fontSize: 11, color: "#666", textAlign: "center", textDecoration: "none" }}
+              style={{ display: "block", padding: "8px 12px", borderRadius: 8, border: `1px dashed ${C.border}`, fontSize: 11, color: C.muted, textAlign: "center", textDecoration: "none" }}
             >
               Administrace diagnostiky
             </Link>
@@ -1972,9 +1972,9 @@ export default function PipelineDashboardPage() {
             style={{
               width: workMode ? 260 : 380,
               flexShrink: 0,
-              background: "rgba(8,8,8,0.7)",
+              background: "rgba(255,255,255,0.8)",
               backdropFilter: "blur(24px)",
-              borderRight: "1px solid rgba(255,255,255,0.06)",
+              borderRight: "1px solid rgba(0,0,0,0.1)",
               overflowY: "auto",
               padding: "16px 12px",
               display: "flex",
@@ -1992,8 +1992,8 @@ export default function PipelineDashboardPage() {
           </div>
         )}
 
-        <div style={{ flex: 1, minWidth: 0, overflow: "auto", display: "flex", flexDirection: "column" }}>
-          <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 26, fontWeight: 700, color: "#cccccc", padding: "12px 20px 0" }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: "auto", display: "flex", flexDirection: "column", background: "#f8f8f8" }}>
+          <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: 26, fontWeight: 700, color: C.text, padding: "12px 20px 0" }}>
             {client?.projectDisplayName || client?.name || "Projekt"}
           </div>
 
@@ -2024,7 +2024,7 @@ export default function PipelineDashboardPage() {
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 8 }}>Schválit přepsání diagnostiky</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: C.text, marginBottom: 8 }}>Schválit přepsání diagnostiky</div>
                   <p style={{ fontSize: 12, color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
                     Aktuální data diagnostiky budou nahrazena novou verzí od klienta. Níže vidíte, co se přepíše. Stará verze zůstane uložena v historii.
                   </p>
@@ -2109,9 +2109,9 @@ export default function PipelineDashboardPage() {
               display: "flex",
               gap: 2,
               marginBottom: 0,
-              background: "rgba(6,6,6,0.9)",
+              background: "rgba(255,255,255,0.92)",
               backdropFilter: "blur(12px)",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              borderBottom: "1px solid rgba(0,0,0,0.1)",
               padding: "0 20px",
               position: "sticky",
               top: 0,
@@ -2130,11 +2130,11 @@ export default function PipelineDashboardPage() {
                     borderRadius: 7,
                     border: "none",
                     background: isActive ? C.bg2 : "transparent",
-                    color: isActive ? "#fff" : C.faint,
+                    color: isActive ? "#111" : C.faint,
                     fontSize: 10,
                     fontWeight: isActive ? 700 : 400,
                     cursor: "pointer",
-                    borderBottom: isActive ? `2px solid ${tab.accent}` : "2px solid transparent",
+                    borderBottom: isActive ? "2px solid #a8d800" : "2px solid transparent",
                     letterSpacing: "0.05em",
                     display: "flex",
                     alignItems: "center",
@@ -2153,9 +2153,9 @@ export default function PipelineDashboardPage() {
               style={{
                 marginLeft: "auto",
                 fontSize: 11,
-                color: workMode ? "#c8ff00" : "#444",
+                color: workMode ? C.lime : C.faint,
                 background: "transparent",
-                border: `1px solid ${workMode ? "#c8ff00" : "#333"}`,
+                border: `1px solid ${workMode ? C.lime : C.border}`,
                 borderRadius: 6,
                 padding: "4px 10px",
                 cursor: "pointer",
@@ -2206,8 +2206,8 @@ export default function PipelineDashboardPage() {
               />
               <Section title="BRIEF" accent={C.yellow}>
                 {!client.briefSubmittedAt ? (
-                  <div style={{ padding: 14, borderRadius: 10, border: "1px solid #1f1f1f", background: "#111" }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 4 }}>📋 Brief nebyl odeslán</div>
+                  <div style={{ padding: 14, borderRadius: 10, border: `1px solid ${C.border}`, background: C.bg2 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 4 }}>📋 Brief nebyl odeslán</div>
                     <div style={{ fontSize: 11, color: C.muted, marginBottom: 10 }}>Klient zatím nevyplnil dotazník o značce.</div>
                     <button
                       type="button"
@@ -2219,16 +2219,16 @@ export default function PipelineDashboardPage() {
                           setError("Nepodařilo se odeslat výzvu");
                         }
                       }}
-                      style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer" }}
+                      style={{ padding: "8px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: "pointer" }}
                     >
                       Poslat výzvu →
                     </button>
                   </div>
                 ) : (
-                  <div style={{ padding: 14, borderRadius: 10, border: "2px solid #c8ff00", background: C.bg2 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#c8ff00", marginBottom: 4 }}>✓ Brief odeslán {new Date(client.briefSubmittedAt).toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" })}</div>
+                  <div style={{ padding: 14, borderRadius: 10, border: "2px solid #a8d800", background: C.bg2 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.lime, marginBottom: 4 }}>✓ Brief odeslán {new Date(client.briefSubmittedAt).toLocaleString("cs-CZ", { dateStyle: "short", timeStyle: "short" })}</div>
                     {client.short_code ? (
-                      <a href={`/client/${encodeURIComponent(client.short_code)}/brief`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 8, padding: "8px 14px", borderRadius: 8, border: "1px solid #c8ff00", background: "transparent", color: "#c8ff00", fontSize: 12, textDecoration: "none", cursor: "pointer" }}>
+                      <a href={`/client/${encodeURIComponent(client.short_code)}/brief`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 8, padding: "8px 14px", borderRadius: 8, border: `1px solid ${C.lime}`, background: "transparent", color: C.lime, fontSize: 12, textDecoration: "none", cursor: "pointer" }}>
                         Zobrazit brief →
                       </a>
                     ) : (
@@ -2259,7 +2259,7 @@ export default function PipelineDashboardPage() {
                         <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", background: C.bg2, borderRadius: 8, border: `1px solid ${C.border}` }}>
                           <span style={{ fontSize: 14 }}>{icon}</span>
                           <span style={{ fontSize: 11, color: C.muted }}>{label}</span>
-                          <span style={{ fontSize: 11, color: "#ccc", flex: 1 }}>{a.message ?? "—"}</span>
+                          <span style={{ fontSize: 11, color: "#333", flex: 1 }}>{a.message ?? "—"}</span>
                           <span style={{ fontSize: 10, color: C.faint }}>{relTime}</span>
                         </div>
                       );
@@ -2304,7 +2304,7 @@ export default function PipelineDashboardPage() {
                         <div key={p.key} style={{ padding: 14, borderRadius: 10, background: C.bg2, border: `1px solid ${col}28`, borderLeft: `4px solid ${col}` }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                             <span style={{ fontSize: 18 }}>{p.icon}</span>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{p.label}</span>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{p.label}</span>
                             <span style={{ fontSize: 18, fontWeight: 800, color: col }}>{score}/10</span>
                             <Tag color={col}>{scoreLabel(score)}</Tag>
                           </div>
@@ -2444,7 +2444,7 @@ export default function PipelineDashboardPage() {
                           />
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{s.label}</span>
                               {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
                             </div>
                             <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
@@ -2496,7 +2496,7 @@ export default function PipelineDashboardPage() {
                       <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 8 }}>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                           <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${leftColor}`, background: C.bg2 }}>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratA.label}</div>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: C.text, marginBottom: 4 }}>{stratA.label}</div>
                             <div style={{ fontSize: 11, color: leftColor, marginBottom: 8 }}>Fit {(stratA.fit ?? 0)}%</div>
                             <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}><ReactMarkdown components={strategyMarkdownComponents}>{stratA.summary ?? "—"}</ReactMarkdown></div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
@@ -2521,7 +2521,7 @@ export default function PipelineDashboardPage() {
                             <div style={{ marginTop: 12, padding: 10, background: C.bg0, borderRadius: 8, fontSize: 11, color: C.muted, borderLeft: `3px solid ${leftColor}` }}><ReactMarkdown components={strategyMarkdownComponents}>{stratA.verdict ?? "—"}</ReactMarkdown></div>
                           </div>
                           <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${rightColor}`, background: C.bg2 }}>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratB.label}</div>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: C.text, marginBottom: 4 }}>{stratB.label}</div>
                             <div style={{ fontSize: 11, color: rightColor, marginBottom: 8 }}>Fit {(stratB.fit ?? 0)}%</div>
                             <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}><ReactMarkdown components={strategyMarkdownComponents}>{stratB.summary ?? "—"}</ReactMarkdown></div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
@@ -2607,7 +2607,7 @@ export default function PipelineDashboardPage() {
                           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
                             <div>
                               <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                                <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{s.label}</span>
                                 {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
                               </div>
                               <div style={{ fontSize: 10, color: C.faint }}>Datum spuštění: {s.date}</div>
@@ -2698,7 +2698,7 @@ export default function PipelineDashboardPage() {
                       <select
                         value={strategistId}
                         onChange={(e) => setStrategistId(e.target.value as StrategistId)}
-                        style={{ padding: "10px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, color: "#fff", fontSize: 13, minWidth: 280 }}
+                        style={{ padding: "10px 14px", background: C.bg3, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 13, minWidth: 280 }}
                       >
                         {STRATEGISTS_META.map((s) => (
                           <option key={s.id} value={s.id}>{s.label} – {s.tagline}</option>
@@ -2836,7 +2836,7 @@ export default function PipelineDashboardPage() {
                       a.click();
                       URL.revokeObjectURL(url);
                     }}
-                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #c8ff00", background: "transparent", color: "#c8ff00", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: `1px solid ${C.lime}`, background: "transparent", color: C.lime, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                   >
                     Exportovat jako dokument
                   </button>
@@ -2848,7 +2848,7 @@ export default function PipelineDashboardPage() {
                       setNewBundleOutputType("GAMMA");
                       setShowNewBundlePanel(true);
                     }}
-                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                   >
                     + Nový balíček
                   </button>
@@ -2856,8 +2856,8 @@ export default function PipelineDashboardPage() {
               </div>
 
               {showNewBundlePanel && (
-                <div style={{ padding: 16, borderRadius: 12, border: "2px solid #c8ff00", background: C.bg2 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#c8ff00", letterSpacing: "0.05em", marginBottom: 12 }}>NOVÝ BALÍČEK</div>
+                <div style={{ padding: 16, borderRadius: 12, border: "2px solid #a8d800", background: C.bg2 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.lime, letterSpacing: "0.05em", marginBottom: 12 }}>NOVÝ BALÍČEK</div>
                   <label style={{ display: "block", marginBottom: 10 }}>
                     <span style={{ fontSize: 11, color: C.muted, display: "block", marginBottom: 4 }}>Název balíčku</span>
                     <input
@@ -2865,7 +2865,7 @@ export default function PipelineDashboardPage() {
                       value={newBundleName}
                       onChange={(e) => setNewBundleName(e.target.value)}
                       placeholder="[Stratég] × [Výstup]"
-                      style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "#0a0a0a", color: "#fff", fontSize: 13 }}
+                      style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.bg0, color: C.text, fontSize: 13 }}
                     />
                   </label>
                   <div style={{ fontSize: 11, color: C.muted, marginBottom: 10 }}>Typ výstupu</div>
@@ -2881,7 +2881,7 @@ export default function PipelineDashboardPage() {
                         type="button"
                         onClick={() => setNewBundleOutputType(opt.type)}
                         style={{
-                          padding: "10px 12px", borderRadius: 8, border: `1px solid ${newBundleOutputType === opt.type ? "#c8ff00" : C.border}`, background: newBundleOutputType === opt.type ? "#c8ff0018" : "transparent", color: "#ccc", fontSize: 12, textAlign: "left", cursor: "pointer",
+                          padding: "10px 12px", borderRadius: 8, border: `1px solid ${newBundleOutputType === opt.type ? C.lime : C.border}`, background: newBundleOutputType === opt.type ? "rgba(168,216,0,0.1)" : "transparent", color: C.muted, fontSize: 12, textAlign: "left", cursor: "pointer",
                         }}
                       >
                         {opt.icon} {opt.label}
@@ -2912,11 +2912,11 @@ export default function PipelineDashboardPage() {
                           setBundleCreateLoading(false);
                         }
                       }}
-                      style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: "#c8ff00", color: "#000", fontWeight: 700, fontSize: 12, cursor: bundleCreateLoading ? "not-allowed" : "pointer" }}
+                      style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: C.lime, color: "#111", fontWeight: 700, fontSize: 12, boxShadow: "0 1px 4px rgba(168,216,0,0.4)", cursor: bundleCreateLoading ? "not-allowed" : "pointer" }}
                     >
                       ⊡ Vytvořit balíček
                     </button>
-                    <button type="button" onClick={() => { setShowNewBundlePanel(false); setNewBundleName(""); }} style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer" }}>
+                    <button type="button" onClick={() => { setShowNewBundlePanel(false); setNewBundleName(""); }} style={{ padding: "10px 16px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: "pointer" }}>
                       Zrušit
                     </button>
                   </div>
@@ -2932,10 +2932,10 @@ export default function PipelineDashboardPage() {
                   {bundlesList.map((b) => {
                     const typeInfo = { GAMMA: { icon: "🎨", label: "Gamma" }, CANVA: { icon: "📱", label: "5 příspěvků + Canva" }, NOTEBOOKLM: { icon: "🎧", label: "NotebookLM" }, CUSTOM: { icon: "◇", label: "Vlastní" } }[b.output_type] || { icon: "◇", label: b.output_type };
                     const statusStyle: Record<string, { color: string; bg: string; icon: string }> = {
-                      NAVRH: { color: "#888", bg: "#1a1a1a", icon: "◯" },
+                      NAVRH: { color: C.muted, bg: C.bg2, icon: "◯" },
                       PRIPRAVENY: { color: "#d4b8f0", bg: "#16101e", icon: "◎" },
                       GENERUJE: { color: "#e8d44d", bg: "#1a1600", icon: "◈" },
-                      HOTOVO: { color: "#c8ff00", bg: "#0f1a00", icon: "✦" },
+                      HOTOVO: { color: C.lime, bg: "rgba(168,216,0,0.1)", icon: "✦" },
                     };
                     const st = statusStyle[b.status] || statusStyle.NAVRH;
                     const isGenerating = generatingBundleId === b.id;
@@ -2948,10 +2948,10 @@ export default function PipelineDashboardPage() {
                       >
                         <span style={{ fontSize: 18 }}>{typeInfo.icon}</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 700, color: "#fff", fontSize: 13, marginBottom: 4 }}>{b.name}</div>
+                          <div style={{ fontWeight: 700, color: C.text, fontSize: 13, marginBottom: 4 }}>{b.name}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                             {b.strategy_label && <span style={{ padding: "2px 8px", borderRadius: 6, background: "#d4b8f033", color: "#d4b8f0", fontSize: 10 }}>{b.strategy_label}</span>}
-                            <span style={{ padding: "2px 8px", borderRadius: 6, background: "#444", color: C.faint, fontSize: 10 }}>{typeInfo.label}</span>
+                            <span style={{ padding: "2px 8px", borderRadius: 6, background: C.bg3, color: C.faint, fontSize: 10 }}>{typeInfo.label}</span>
                             <span style={{ fontSize: 10, color: C.muted }}>{new Date(b.created_at).toLocaleDateString("cs-CZ")}</span>
                           </div>
                         </div>
@@ -2965,7 +2965,7 @@ export default function PipelineDashboardPage() {
                                 await loadBundles();
                               } catch { setError("Nepodařilo se aktualizovat"); }
                             }}
-                            style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 11, cursor: "pointer" }}
+                            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 11, cursor: "pointer" }}
                           >
                             Připravit →
                           </button>
@@ -2989,9 +2989,9 @@ export default function PipelineDashboardPage() {
                         {b.status === "GENERUJE" && <span style={{ padding: "6px 12px", borderRadius: 8, background: "#1a1600", color: "#e8d44d", fontSize: 11 }}>◈ Generuje…</span>}
                         {b.status === "HOTOVO" && (
                           b.output_url ? (
-                            <a href={b.output_url} target="_blank" rel="noopener noreferrer" style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #c8ff00", background: "transparent", color: "#c8ff00", fontSize: 11, fontWeight: 600, textDecoration: "none" }}>Zobrazit ↗</a>
+                            <a href={b.output_url} target="_blank" rel="noopener noreferrer" style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.lime}`, background: "transparent", color: C.lime, fontSize: 11, fontWeight: 600, textDecoration: "none" }}>Zobrazit ↗</a>
                           ) : (
-                            <span style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #c8ff00", color: "#c8ff00", fontSize: 11 }}>Zobrazit ↗</span>
+                            <span style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.lime}`, color: C.lime, fontSize: 11 }}>Zobrazit ↗</span>
                           )
                         )}
                       </div>
@@ -3031,7 +3031,7 @@ export default function PipelineDashboardPage() {
                 onChange={(e) => setNotesDraft(e.target.value)}
                 placeholder="Poznámky kurátora…"
                 style={{
-                  width: "100%", minHeight: 160, padding: 13, resize: "vertical", background: "#141414", border: "1px solid #1f1f1f", borderRadius: 8, color: "#ccc", fontSize: 12, lineHeight: 1.7, boxSizing: "border-box",
+                  width: "100%", minHeight: 160, padding: 13, resize: "vertical", background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 12, lineHeight: 1.7, boxSizing: "border-box",
                 }}
               />
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
@@ -3069,7 +3069,7 @@ export default function PipelineDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setNotesDraft(notesSavedValue)}
-                  style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, cursor: "pointer" }}
+                  style={{ padding: "10px 16px", borderRadius: 8, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: "pointer" }}
                 >
                   Zrušit
                 </button>
@@ -3092,7 +3092,7 @@ export default function PipelineDashboardPage() {
                       >
                         <div style={{ fontSize: 11, color: C.muted }}>{entry.at} · {entry.preview}</div>
                         {notesHistoryExpandedIndex === idx && (
-                          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}`, fontSize: 12, color: "#ccc", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{entry.full || "—"}</div>
+                          <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${C.border}`, fontSize: 12, color: C.muted, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{entry.full || "—"}</div>
                         )}
                       </div>
                     ))}
@@ -3115,7 +3115,7 @@ export default function PipelineDashboardPage() {
                     onClick={() => podkladyFileInputRef.current?.click()}
                     style={{
                       padding: "28px 20px",
-                      background: "#141414",
+                      background: C.bg2,
                       border: `2px dashed ${dragOverPodklady ? PODKLADY_ACCENT : C.border}`,
                       borderRadius: 12,
                       textAlign: "center",

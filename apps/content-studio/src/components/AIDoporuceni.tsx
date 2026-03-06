@@ -1,13 +1,13 @@
 "use client";
 
 const C = {
-  lime: "#c8ff00",
+  lime: "#a8d800",
   purple: "#b57bee",
   pink: "#f06ba8",
-  bg0: "#080808",
-  bg2: "#141414",
-  border: "#1f1f1f",
-  muted: "#888",
+  bg0: "#ffffff",
+  bg2: "#f0f0f0",
+  border: "rgba(0,0,0,0.08)",
+  muted: "#555555",
 };
 
 export type AIDoporuceniStrategist = {
@@ -28,7 +28,7 @@ export default function AIDoporuceni({ strategists = [], onSpustit, loading = fa
   return (
     <div style={{ borderRadius: 12, border: `1px solid ${C.border}`, overflow: "hidden", marginBottom: 14 }}>
       {/* Header */}
-      <div style={{ padding: "10px 16px", background: "#0f0f0f", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ padding: "10px 16px", background: "#f7f7f7", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ width: 3, height: 14, borderRadius: 2, background: C.purple, flexShrink: 0 }} />
         <span style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em" }}>
           AI DOPORUČUJE PRO TUTO ZNAČKU
@@ -70,7 +70,7 @@ export default function AIDoporuceni({ strategists = [], onSpustit, loading = fa
               </div>
 
               {/* Název */}
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 8, paddingRight: 80 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#111111", marginBottom: 8, paddingRight: 80 }}>
                 {s.label}
               </div>
 
