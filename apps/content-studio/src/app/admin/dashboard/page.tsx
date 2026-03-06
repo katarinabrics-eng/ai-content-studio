@@ -1931,7 +1931,7 @@ export default function PipelineDashboardPage() {
         {client && (
           <div
             style={{
-              width: workMode ? 220 : 300,
+              width: workMode ? 260 : 380,
               flexShrink: 0,
               background: "rgba(8,8,8,0.7)",
               backdropFilter: "blur(24px)",
