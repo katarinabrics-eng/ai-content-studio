@@ -2654,18 +2654,116 @@ export default function PipelineDashboardPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                 <span style={{ fontSize: 12, color: C.muted }}>{bundlesList.length} balíčků strategií</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const label = client.strategies?.find((s) => s.id === client.active_strategy_id)?.label;
-                    setNewBundleName(label ? `${label} × Výstup` : "[Stratég] × [Výstup]");
-                    setNewBundleOutputType("GAMMA");
-                    setShowNewBundlePanel(true);
-                  }}
-                  style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
-                >
-                  + Nový balíček
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const projectName = client.projectDisplayName || client.name || "Projekt";
+                      const now = new Date();
+                      const dateStr = now.toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
+                      const activeRow = rows.find((r) => r.id === activeId);
+                      const scan = (activeRow?.scan_result ?? {}) as Record<string, unknown>;
+                      const brandDna = (scan.brandDna ?? {}) as Record<string, string>;
+                      const archetype = brandDna.archetype?.trim() ? brandDna.archetype : "—";
+                      let proposals: Array<{ format: string; hook: string; body: string; cta: string; hashtags?: string[]; visual_brief?: string }> = [];
+                      try {
+                        const r = await fetch(`/api/admin/projects/${activeId}/proposals`);
+                        const d = await r.json();
+                        if (d?.proposals) proposals = d.proposals;
+                      } catch { /* pokračuj bez návrhů */ }
+                      const lines: string[] = [];
+                      lines.push(`# ${projectName} — Strategický dokument\n`);
+                      lines.push(`Datum: ${dateStr}\n`);
+                      lines.push("---\n");
+                      lines.push("\n## 1. Brand DNA\n");
+                      lines.push(`- Positioning: ${(client.dna?.positioning ?? brandDna.positioning ?? "—").toString().trim() || "—"}\n`);
+                      lines.push(`- Tón komunikace: ${(client.dna?.tone ?? brandDna.tone ?? "—").toString().trim() || "—"}\n`);
+                      lines.push(`- Cílová skupina: ${(client.dna?.targetAudience ?? brandDna.targetAudience ?? "—").toString().trim() || "—"}\n`);
+                      lines.push(`- Unikátní hodnota: ${(client.dna?.uniqueValue ?? brandDna.uniqueValue ?? "—").toString().trim() || "—"}\n`);
+                      lines.push(`- Archetype: ${archetype}\n`);
+                      lines.push("\n## 2. Pilíře značky\n");
+                      lines.push("| Pilíř | Skóre | Poznámka |\n");
+                      lines.push("|-------|-------|----------|\n");
+                      for (const p of client.pillars ?? []) {
+                        const note = (p.note ?? "—").replace(/\|/g, "\\|").replace(/\n/g, " ");
+                        lines.push(`| ${p.icon} ${p.label} | ${p.score}/10 | ${note} |\n`);
+                      }
+                      lines.push("\n## 3. Výstupy agentů\n");
+                      for (const s of client.strategies ?? []) {
+                        lines.push(`### ${s.label}\n`);
+                        const body = [s.summary, s.content].filter(Boolean).join("\n\n");
+                        lines.push(body ? `${body}\n\n` : "*Žádný obsah.*\n\n");
+                      }
+                      lines.push("## 4. Texty pro web a sítě\n");
+                      if (proposals.length === 0) {
+                        lines.push("*Zatím žádné texty.*\n\n");
+                      } else {
+                        for (const p of proposals) {
+                          lines.push(`**${p.format}**\n`);
+                          if (p.hook) lines.push(`${p.hook}\n`);
+                          if (p.body) lines.push(`${p.body}\n`);
+                          if (p.cta) lines.push(`CTA: ${p.cta}\n`);
+                          if (Array.isArray(p.hashtags) && p.hashtags.length) lines.push(`${p.hashtags.join(" ")}\n`);
+                          lines.push("\n");
+                        }
+                      }
+                      lines.push("## 5. Doporučení + akční plán\n");
+                      const rawPlan = scan.strategic_plan;
+                      const planText = typeof rawPlan === "string" ? rawPlan : (rawPlan && typeof (rawPlan as { _raw?: string })._raw === "string" ? (rawPlan as { _raw: string })._raw : rawPlan ? JSON.stringify(rawPlan, null, 2) : "");
+                      lines.push(planText ? `${planText}\n\n` : "*Doporučení z diagnostiky zatím nebyla vygenerována.*\n\n");
+                      lines.push("## 6. Obsahový brief pro tvorbu\n");
+                      const byReels = proposals.filter((p) => /instagram|reels|video/i.test(p.format));
+                      const byPosty = proposals.filter((p) => !/instagram|reels|video/i.test(p.format));
+                      lines.push("### Reels\n");
+                      if (byReels.length) {
+                        for (const p of byReels) {
+                          lines.push(`- **Téma:** ${(p.hook || "—").replace(/\n/g, " ")}\n`);
+                          lines.push(`- **Sdělení:** ${(p.body || "—").replace(/\n/g, " ")}\n`);
+                          lines.push(`- **Vizuální styl:** ${(p.visual_brief || "—").replace(/\n/g, " ")}\n`);
+                          lines.push(`- **CTA:** ${(p.cta || "—").replace(/\n/g, " ")}\n\n`);
+                        }
+                      } else lines.push("*Zatím žádné.*\n\n");
+                      lines.push("### Posty\n");
+                      if (byPosty.length) {
+                        for (const p of byPosty) {
+                          lines.push(`- **Téma:** ${(p.hook || "—").replace(/\n/g, " ")}\n`);
+                          lines.push(`- **Sdělení:** ${(p.body || "—").replace(/\n/g, " ")}\n`);
+                          lines.push(`- **Vizuální styl:** ${(p.visual_brief || "—").replace(/\n/g, " ")}\n`);
+                          lines.push(`- **CTA:** ${(p.cta || "—").replace(/\n/g, " ")}\n\n`);
+                        }
+                      } else lines.push("*Zatím žádné.*\n\n");
+                      lines.push("### Foto / Video\n");
+                      const visualBriefs = proposals.map((p) => p.visual_brief).filter(Boolean);
+                      if (visualBriefs.length) lines.push(visualBriefs.join("\n\n") + "\n\n");
+                      else lines.push("*Zatím žádné.*\n\n");
+                      lines.push("---\n");
+                      lines.push("*Generováno Studio Lucifera AI Content Studio*\n");
+                      const md = lines.join("");
+                      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `${projectName.replace(/[^a-zA-Z0-9\u00C0-\u024F\-]/g, "_")}_strategicky_dokument.md`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #c8ff00", background: "transparent", color: "#c8ff00", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                  >
+                    Exportovat jako dokument
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const label = client.strategies?.find((s) => s.id === client.active_strategy_id)?.label;
+                      setNewBundleName(label ? `${label} × Výstup` : "[Stratég] × [Výstup]");
+                      setNewBundleOutputType("GAMMA");
+                      setShowNewBundlePanel(true);
+                    }}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #1f1f1f", background: "transparent", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                  >
+                    + Nový balíček
+                  </button>
+                </div>
               </div>
 
               {showNewBundlePanel && (
