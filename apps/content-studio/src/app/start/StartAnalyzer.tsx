@@ -254,6 +254,7 @@ export function StartAnalyzer({
     if (mode === "web" && !urlToUse) return;
     if (diagnostika && mode === "manual" && !hasManualInput) return;
     setError("");
+    setSaveError(null);
     setResult(null);
     setScraped(null);
     setAnswers({});
@@ -341,7 +342,16 @@ export function StartAnalyzer({
               result: resData,
             }),
           });
-          const saveData = await saveRes.json();
+          let saveData: { id?: string; error?: string };
+          try {
+            saveData = await saveRes.json();
+          } catch {
+            setSaveError("Odpověď serveru (save-scan) nebyla platné JSON. Zkuste to znovu.");
+            setNameFormWeb(mode === "web" ? urlToUse : "");
+            setNameFormName("");
+            setPhase(total < 60 ? "guidance" : "nameForm");
+            return;
+          }
           if (saveRes.ok && saveData?.id) {
             setProjectId(saveData.id);
             setSaveError(null);
@@ -720,7 +730,12 @@ export function StartAnalyzer({
             toneOfVoice={toneOfVoice}
             setToneOfVoice={setToneOfVoice}
             hasManualInput={!!hasManualInput}
-            onAnalyze={analyze}
+            onAnalyze={(overrideUrl?: string) => {
+              Promise.resolve(analyze(overrideUrl)).catch((e: unknown) => {
+                setError(e instanceof Error ? e.message : "Nepodařilo se spustit analýzu.");
+                setPhase("input");
+              });
+            }}
             error={error}
             onRetry={() => setError("")}
           />
