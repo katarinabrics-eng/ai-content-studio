@@ -4,17 +4,16 @@ import Link from "next/link";
 import { StartAnalyzer } from "../start/StartAnalyzer";
 
 const LIME = "#b7e94c";
-const LIME2 = "#d0ec78";
 const LIME_DARK = "#5a8a00";
 const PINK = "#d4457a";
 const YELLOW = "#c9960a";
 const PURPLE = "#7c4dbe";
+const ORANGE = "#e07c3c";
 const TEXT = "#111111";
 const MUTED = "#555555";
 const FAINT = "#999999";
 const BG = "#ffffff";
 const BG1 = "#f7f7f5";
-const BG2 = "#f0efeb";
 const BORDER = "rgba(0,0,0,0.09)";
 const BORDER2 = "rgba(0,0,0,0.14)";
 
@@ -24,6 +23,21 @@ const navItems = [
   { href: "/portrety", label: "Portréty" },
   { href: "/premiova-vizualni-identita", label: "Prémiová identita" },
   { href: "/#zaver", label: "Kontakt" },
+];
+
+const HERO_CHECKLIST = [
+  "Screenshot webu",
+  "Analýza textu",
+  "Claude Vision",
+  "Brand DNA",
+];
+
+const MOCKUP_PILLARS = [
+  { icon: "🌟", label: "Světlo", color: LIME, value: 6 },
+  { icon: "⚡", label: "Energie", color: YELLOW, value: 5 },
+  { icon: "🏗", label: "Architektura", color: ORANGE, value: 4 },
+  { icon: "🎯", label: "Identita", color: PURPLE, value: 7 },
+  { icon: "🤝", label: "Důvěra", color: LIME, value: 5 },
 ];
 
 export default function BrandScanPage() {
@@ -42,14 +56,14 @@ export default function BrandScanPage() {
         <div className="mx-auto flex h-full w-full max-w-[1360px] items-center justify-between gap-6">
           <Link href="/" className="flex shrink-0 items-center gap-3 no-underline">
             <div
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md font-bold text-black"
-              style={{ background: LIME, fontSize: 14 }}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] font-bold text-black"
+              style={{ background: LIME, fontSize: 14, width: 28, height: 28 }}
             >
               L
             </div>
             <span
               className="font-bold"
-              style={{ fontSize: 14, letterSpacing: "0.06em", color: TEXT }}
+              style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.06em", color: TEXT }}
             >
               LUCIFERA
             </span>
@@ -59,7 +73,7 @@ export default function BrandScanPage() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="shrink-0 text-[13px] no-underline transition-colors hover:opacity-80"
+                className="shrink-0 text-[13px] no-underline transition-colors"
                 style={{ color: MUTED }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = TEXT; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = MUTED; }}
@@ -71,60 +85,186 @@ export default function BrandScanPage() {
           <Link
             href="/rezervace"
             className="shrink-0 rounded-lg px-5 py-2.5 text-[13px] font-bold no-underline"
-            style={{ background: LIME, color: "#111" }}
+            style={{ background: LIME, color: "#111", fontWeight: 700 }}
           >
             Domluvit konzultaci
           </Link>
         </div>
       </nav>
 
-      {/* 2. HERO — minHeight 100vh, center */}
+      {/* 2. HERO — dvousloupcový layout */}
       <section
-        className="relative flex min-h-[100vh] flex-col items-center justify-center px-6 pt-24 pb-16 md:pt-28 md:pb-20"
-        style={{ background: BG, textAlign: "center" }}
+        className="flex min-h-[100vh] flex-col md:flex-row items-stretch gap-12 md:gap-16 pt-[120px] md:pt-[140px] pb-[110px] px-8 md:px-20"
+        style={{ background: BG }}
       >
-        <div className="w-full max-w-[920px] flex flex-col items-center">
+        {/* Levý sloupec */}
+        <div className="flex flex-1 flex-col justify-center max-w-[520px]">
           <span
-            className="mb-8 inline-block rounded-full border px-5 py-2.5"
+            className="mb-8 inline-flex w-fit rounded-full border px-[14px] py-[5px] uppercase"
             style={{
               background: "rgba(183,233,76,0.15)",
               border: "1px solid rgba(183,233,76,0.45)",
               borderRadius: 100,
               fontSize: 10,
               fontWeight: 700,
-              letterSpacing: "0.14em",
+              letterSpacing: "0.12em",
               color: LIME_DARK,
             }}
           >
             BRAND SCAN · ZDARMA
           </span>
           <h1
-            className="font-serif max-w-[800px] leading-tight"
+            className="mb-6 leading-tight"
             style={{
-              fontSize: "clamp(42px, 7vw, 84px)",
+              fontFamily: "var(--font-playfair), serif",
+              fontSize: "clamp(42px, 5vw, 72px)",
               fontWeight: 900,
               color: TEXT,
-              marginBottom: 0,
             }}
           >
-            Víš jak tvoje značka vypadá <em style={{ fontStyle: "italic", color: LIME_DARK }}>zvenku?</em>
+            Víš jak tvoje značka vypadá{" "}
+            <em style={{ fontStyle: "italic", color: LIME }}>zvenku?</em>
           </h1>
-          <p
-            className="mx-auto mt-6 max-w-[580px] text-[18px] leading-relaxed"
-            style={{ color: MUTED, marginBottom: 44 }}
-          >
+          <p className="mb-10 text-[16px] leading-relaxed" style={{ color: MUTED, maxWidth: 500 }}>
             Zadej web. Za pár minut máš konkrétní čísla — kde ztrácíš zákazníky dřív než tě vůbec poznají.
           </p>
-          <div
-            className="w-full rounded-[18px] border px-8 py-7 md:px-8 md:py-7"
-            style={{ maxWidth: 880, margin: "0 auto", background: BG1, border: `1px solid ${BORDER}`, padding: "28px 32px" }}
-          >
-            <StartAnalyzer diagnostika hideIntro />
+          <ul className="space-y-4 mb-10">
+            {HERO_CHECKLIST.map((item) => (
+              <li key={item} className="flex items-center gap-3">
+                <span
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+                  style={{ background: LIME, color: "#111", width: 20, height: 20 }}
+                >
+                  ✓
+                </span>
+                <span style={{ color: TEXT }}>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap gap-3 mb-8">
+            <Link
+              href="#analyzer"
+              className="inline-flex items-center justify-center rounded-[10px] px-6 py-[13px] text-[15px] font-bold no-underline transition-opacity hover:opacity-90"
+              style={{ background: LIME, color: "#111" }}
+            >
+              Analyzovat značku →
+            </Link>
+            <Link
+              href="#jak-to-funguje"
+              className="inline-flex items-center justify-center rounded-[10px] px-[22px] py-[13px] text-[15px] no-underline transition-colors"
+              style={{
+                background: "transparent",
+                border: "1.5px solid rgba(0,0,0,0.18)",
+                color: MUTED,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = TEXT;
+                e.currentTarget.style.borderColor = BORDER;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = MUTED;
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.18)";
+              }}
+            >
+              Jak to funguje
+            </Link>
           </div>
-          <p className="mt-5 text-[12px]" style={{ color: FAINT }}>
+          <p className="text-[12px]" style={{ color: FAINT }}>
             Zdarma · Bez registrace · Výsledky během minut
           </p>
         </div>
+
+        {/* Pravý sloupec — mockup karta */}
+        <div className="flex flex-1 items-center justify-center min-h-[400px]">
+          <div
+            className="relative w-full max-w-[420px] rounded-[20px] p-7"
+            style={{
+              background: BG,
+              boxShadow: "0 8px 40px rgba(0,0,0,0.10)",
+              padding: 28,
+            }}
+          >
+            <div
+              className="absolute -top-3 right-4 rounded-[12px] px-4 py-2 text-[12px]"
+              style={{
+                background: BG,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+              }}
+            >
+              🍎 Identita nalezena / Brand DNA kompletní
+            </div>
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <p className="text-[14px] font-semibold mb-1" style={{ color: TEXT }}>
+                  contentpro.cz
+                </p>
+                <p className="text-[12px]" style={{ color: FAINT }}>
+                  Analýza dokončena · právě teď
+                </p>
+              </div>
+              <div className="flex flex-col items-center shrink-0">
+                <div
+                  className="flex h-[52px] w-[52px] items-center justify-center rounded-full border-[3px]"
+                  style={{ borderColor: LIME }}
+                >
+                  <span className="text-[20px] font-bold" style={{ color: TEXT }}>55</span>
+                </div>
+                <span className="text-[10px] mt-1" style={{ color: FAINT }}>/100</span>
+              </div>
+            </div>
+            <div className="space-y-4 mb-6">
+              {MOCKUP_PILLARS.map((p) => (
+                <div key={p.label} className="flex items-center gap-3">
+                  <span className="text-base">{p.icon}</span>
+                  <span className="flex-1 text-[13px]" style={{ color: TEXT }}>{p.label}</span>
+                  <div
+                    className="h-1.5 rounded-full overflow-hidden flex-1 max-w-[120px]"
+                    style={{ background: "rgba(0,0,0,0.08)" }}
+                  >
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${(p.value / 10) * 100}%`,
+                        background: p.color,
+                      }}
+                    />
+                  </div>
+                  <span className="text-[12px] font-medium w-5" style={{ color: MUTED }}>{p.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              <span
+                className="rounded-lg px-3 py-1.5 text-[11px]"
+                style={{ background: "rgba(212,69,122,0.15)", color: PINK }}
+              >
+                ⚠ Slabá architektura
+              </span>
+              <span
+                className="rounded-lg px-3 py-1.5 text-[11px]"
+                style={{ background: "rgba(0,0,0,0.06)", color: MUTED }}
+              >
+                Průměrná energie
+              </span>
+            </div>
+            <p className="text-[12px]" style={{ color: FAINT }}>
+              🍊 Stratég doporučen / Architekt · 87% shoda
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 2b. StartAnalyzer — beze změny */}
+      <section id="analyzer" className="px-6 py-16 md:py-20" style={{ background: BG1 }}>
+        <div
+          className="mx-auto w-full max-w-[880px] rounded-[18px] border px-8 py-7"
+          style={{ border: `1px solid ${BORDER}`, padding: "28px 32px" }}
+        >
+          <StartAnalyzer diagnostika hideIntro />
+        </div>
+        <p className="mt-5 text-center text-[12px]" style={{ color: FAINT }}>
+          Zdarma · Bez registrace · Výsledky během minut
+        </p>
       </section>
 
       {/* 3. DIVIDER */}
@@ -226,7 +366,7 @@ export default function BrandScanPage() {
       </section>
 
       {/* 6. SEKCE JAK TO FUNGUJE */}
-      <section className="relative mx-auto max-w-[1100px] px-6 py-16 md:py-20" style={{ background: BG1 }}>
+      <section id="jak-to-funguje" className="relative mx-auto max-w-[1100px] px-6 py-16 md:py-20" style={{ background: BG1 }}>
         <p
           className="mb-3 text-[9px] font-bold uppercase"
           style={{ letterSpacing: "0.16em", color: LIME_DARK }}
