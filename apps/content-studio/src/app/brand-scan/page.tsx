@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 const LIME = "#c8ff00";
 const BORDER = "#1f1f1f";
 const BG_DARK = "#0a0a0a";
+const HERO_BG = "#080808";
 const CARD_BG = "#111";
 const MUTED = "#888";
 const PINK = "#e879a0";
@@ -32,21 +33,29 @@ function BrandScanForm({ id }: { id?: string }) {
   };
 
   return (
-    <form id={id} onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-6 border-b border-white/10 pb-3 mb-2">
+    <form id={id} onSubmit={handleSubmit} className="space-y-4 w-full max-w-[560px]">
+      <div className="flex gap-6 justify-center">
         <button
           type="button"
           onClick={() => setMode("web")}
-          className="text-sm font-semibold text-zinc-500 hover:text-zinc-300"
-          style={mode === "web" ? { color: LIME, borderBottom: `2px solid ${LIME}` } : undefined}
+          className="text-sm font-semibold transition-colors"
+          style={{
+            color: mode === "web" ? LIME : "#555",
+            borderBottom: mode === "web" ? `2px solid ${LIME}` : "2px solid transparent",
+            paddingBottom: 6,
+          }}
         >
           Mám web
         </button>
         <button
           type="button"
           onClick={() => setMode("manual")}
-          className="text-sm font-semibold text-zinc-500 hover:text-zinc-300"
-          style={mode === "manual" ? { color: LIME, borderBottom: `2px solid ${LIME}` } : undefined}
+          className="text-sm font-semibold transition-colors"
+          style={{
+            color: mode === "manual" ? LIME : "#555",
+            borderBottom: mode === "manual" ? `2px solid ${LIME}` : "2px solid transparent",
+            paddingBottom: 6,
+          }}
         >
           Nemám web
         </button>
@@ -97,20 +106,56 @@ function BrandScanForm({ id }: { id?: string }) {
 
 export default function BrandScanPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white light-theme" style={{ background: BG_DARK }}>
-      <div className="mx-auto max-w-[720px] px-6 py-12 md:py-20">
-        {/* SEKCE 1 — HERO */}
-        <section className="pt-8 pb-16">
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-white leading-tight">
-            Víš jak tvoje značka vypadá zvenku?
+    <main className="min-h-screen text-white light-theme" style={{ background: BG_DARK }}>
+      {/* SEKCE 1 — HERO: full viewport, centrováno */}
+      <section
+        className="flex min-h-[100vh] flex-col items-center justify-center px-6 py-12"
+        style={{ background: HERO_BG }}
+      >
+        <div className="flex flex-col items-center text-center">
+          {/* Badge */}
+          <span
+            className="inline-block rounded-full border px-5 py-2 text-[10px] font-semibold uppercase"
+            style={{
+              borderColor: "rgba(200,255,0,0.4)",
+              color: LIME,
+              letterSpacing: "0.15em",
+              marginBottom: 40,
+            }}
+          >
+            BRAND SCAN · ZDARMA
+          </span>
+          {/* Nadpis h1: Playfair, poslední slovo italic + lime */}
+          <h1
+            className="font-serif font-bold text-white"
+            style={{
+              fontFamily: "var(--font-playfair)",
+              fontSize: "clamp(56px, 8vw, 96px)",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.05,
+              maxWidth: 800,
+            }}
+          >
+            Víš jak tvoje značka vypadá{" "}
+            <span style={{ fontStyle: "italic", color: LIME }}>zvenku?</span>
           </h1>
-          <p className="mt-6 text-lg text-zinc-400 max-w-[560px]" style={{ color: MUTED }}>
+          {/* Podnadpis */}
+          <p
+            className="font-sans mx-auto mt-6 max-w-[560px] text-center text-[18px]"
+            style={{
+              color: "#555",
+              lineHeight: 1.7,
+              marginTop: 24,
+              marginBottom: 48,
+            }}
+          >
             Zadej web. Za pár minut máš konkrétní čísla — kde ztrácíš zákazníky dřív než tě vůbec poznají.
           </p>
-          <div className="mt-10">
-            <BrandScanForm />
-          </div>
-        </section>
+          <BrandScanForm />
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-[720px] px-6 py-12 md:py-20">
 
         {/* SEKCE 2 — PROBLÉM */}
         <section className="py-16 border-t border-white/10">
