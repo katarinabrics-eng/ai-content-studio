@@ -803,6 +803,17 @@ function PipelineSection({
 
 const ACTIVITY_DOT_COLORS = { urgent: "#ff4444", message: "#c8ff00", activity: "#e8d44d" } as const;
 
+const STATUS_BADGE_STYLE: Record<string, { color: string; bg: string }> = {
+  LEAD: { color: "#e8d44d", bg: "rgba(232,212,77,0.1)" },
+  AKTIVNI: { color: "#c8ff00", bg: "rgba(200,255,0,0.1)" },
+  HOTOVO: { color: "#888", bg: "#151515" },
+};
+function getStatusBadgeStyle(statusId: string) {
+  return STATUS_BADGE_STYLE[statusId] ?? { color: "#888", bg: "#151515" };
+}
+
+const DOT_INDICATOR_COLORS = { red: "#ff4444", yellow: "#e8d44d", green: "#c8ff00" } as const;
+
 function ClientCard({
   client,
   isActive,
@@ -813,6 +824,7 @@ function ClientCard({
   onRunStrategist,
   quickActionsLoading,
   displayTitle,
+  dotIndicator,
   style: cardStyle,
 }: {
   client: Client;
@@ -824,6 +836,7 @@ function ClientCard({
   onRunStrategist?: (id: string, strategistId: string) => void;
   quickActionsLoading?: boolean;
   displayTitle?: string;
+  dotIndicator?: "red" | "yellow" | "green" | null;
   style?: React.CSSProperties;
 }) {
   const status = getS(client.status);
@@ -832,6 +845,7 @@ function ClientCard({
   const [noteDraft, setNoteDraft] = useState(client.notes);
   const showQuickActions = hover && (onUpdateStatus || onQuickNote || onRunStrategist);
   const title = displayTitle ?? client.name;
+  const badgeStyle = getStatusBadgeStyle(client.status);
   return (
     <div
       onClick={onClick}
@@ -869,8 +883,14 @@ function ClientCard({
         >
           {client.avatar}
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? "#ccc" : "#777", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 6 }}>
+          {dotIndicator && (
+            <div
+              title={dotIndicator === "red" ? "Urgentní" : dotIndicator === "yellow" ? "Čeká na mě" : "Zpráva od klienta"}
+              style={{ width: 6, height: 6, borderRadius: "50%", background: DOT_INDICATOR_COLORS[dotIndicator], flexShrink: 0 }}
+            />
+          )}
+          <div style={{ fontSize: 12, fontWeight: 500, color: isActive ? "#ccc" : "#666", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>
             {title}
           </div>
         </div>
@@ -972,7 +992,8 @@ function ClientCard({
               )}
             </>
           )}
-          <span style={{ fontSize: 10, color: "#666", background: "#151515", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
+          <span style={{ fontSize: 10, color: "#888", background: "#151515", borderRadius: 4, padding: "1px 5px", fontWeight: 600 }}>{client.score}</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color: badgeStyle.color, background: badgeStyle.bg, padding: "2px 7px", borderRadius: 100 }}>{status.short ?? status.label}</span>
           {onTrash && (
             <button
               type="button"
@@ -1747,7 +1768,7 @@ export default function PipelineDashboardPage() {
               style={{ position: "absolute", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }}
               aria-label="Zavřít menu"
             />
-            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: 200, zIndex: 50, borderRight: `1px solid ${C.border}`, background: C.bg1, display: "flex", flexDirection: "column", flexShrink: 0 }}>
+            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: 280, zIndex: 50, borderRight: `1px solid ${C.border}`, background: C.bg1, display: "flex", flexDirection: "column", flexShrink: 0 }}>
           <div style={{ padding: "10px 0 6px", borderBottom: `1px solid ${C.border}` }}>
             <NavItem label="Pipeline" icon="◈" count={pipelineClients.length} color={C.lime} isActive={navSection === "pipeline"} onClick={() => setNavSection("pipeline")} />
             <NavItem label="Šuplík" icon="⊡" count={suplikClients.length} color={C.yellow} isActive={navSection === "suplik"} onClick={() => setNavSection("suplik")} />
@@ -1865,25 +1886,32 @@ export default function PipelineDashboardPage() {
                       {activityDotColor && (
                         <div title={activityDotTitle} style={{ position: "absolute", top: 8, right: 8, width: 6, height: 6, borderRadius: "50%", background: activityDotColor, zIndex: 1 }} />
                       )}
-                      <div style={{ width: 28, height: 28, borderRadius: 7, flexShrink: 0, border: "1px solid rgba(200,255,0,0.15)", background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: C.lilac }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, border: "1px solid rgba(200,255,0,0.15)", background: `linear-gradient(135deg, ${C.purple}44, ${C.pink}33)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.lilac }}>
                         {first.clientAvatar}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: hasActiveInGroup ? "#c8ff00" : "rgba(200,255,0,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#c8ff00", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {clientLabel}
                         </div>
-                        <div style={{ fontSize: 11, color: "#666" }}>{first.email ?? first.sub ?? ""}</div>
                       </div>
                       <span style={{ fontSize: 10, color: "#666" }}>{isCollapsed ? "▸" : "▾"}</span>
                     </div>
                     {!isCollapsed &&
-                      groupClients.map((c) => (
+                      groupClients.map((c) => {
+                        const urgency = getUrgency(c);
+                        const dotIndicator: "red" | "yellow" | "green" | null =
+                          urgency === "red" ? "red"
+                          : activityUnreadByProject[c.id]?.hasNewMessage ? "green"
+                          : !c.briefSubmittedAt ? "yellow"
+                          : null;
+                        return (
                         <ClientCard
                           key={c.id}
                           client={c}
                           isActive={c.id === activeId}
                           onClick={() => { setActiveId(c.id); setActiveTab("prehled"); }}
                           displayTitle={c.projectDisplayName}
+                          dotIndicator={dotIndicator}
                           style={{}}
                           onTrash={(e) => {
                             e?.stopPropagation();
@@ -1921,7 +1949,7 @@ export default function PipelineDashboardPage() {
                           }}
                           quickActionsLoading={strategistLoading}
                         />
-                      ))}
+                      ); })}
                   </div>
                 );
               })
