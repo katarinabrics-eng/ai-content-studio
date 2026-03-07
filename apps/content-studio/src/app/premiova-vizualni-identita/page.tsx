@@ -137,7 +137,7 @@ export default function PremioveVizualniIdentitaPage() {
         @keyframes orbFloat3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-15px,20px) scale(1.1)} }
         @keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes floatBadge2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes float1 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
         @keyframes float2 { 0%,100%{transform:translateY(4px)} 50%{transform:translateY(-6px)} }
         @keyframes float3 { 0%,100%{transform:translateY(2px)} 50%{transform:translateY(-10px)} }
         @keyframes float4 { 0%,100%{transform:translateY(3px)} 50%{transform:translateY(-7px)} }
@@ -230,20 +230,14 @@ export default function PremioveVizualniIdentitaPage() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
-                background: "rgba(183,233,76,.18)",
-                border: "1px solid rgba(183,233,76,.45)",
-                borderRadius: 100,
-                padding: "6px 18px",
                 fontSize: 11,
-                fontWeight: 700,
                 letterSpacing: ".12em",
-                textTransform: "uppercase",
-                color: LIME_DARK,
+                color: "#7ab82e",
                 marginBottom: 28,
               }}
             >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: LIME, animation: "pulseDot 2s infinite", flexShrink: 0 }} />
-              Prémiová vizuální identita
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ab82e", animation: "pulseDot 2s infinite", flexShrink: 0 }} />
+              prémiová vizuální identita
             </div>
 
             <h1
