@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { HeroImageFull } from "../components/HomePlaceholders";
 import { Header } from "../components/Header";
 import { VibeSection } from "../components/VibeSection";
 
@@ -25,6 +24,14 @@ const glassStyle: React.CSSProperties = {
   WebkitBackdropFilter: "blur(20px)",
   border: "1px solid rgba(255,255,255,0.9)",
   boxShadow: "0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
+};
+
+const heroCardGlass: React.CSSProperties = {
+  background: "rgba(255,255,255,0.88)",
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border: "1px solid rgba(255,255,255,0.9)",
+  boxShadow: "0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
 };
 
 const faqs = [
@@ -130,12 +137,25 @@ export default function PremioveVizualniIdentitaPage() {
         @keyframes orbFloat3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-15px,20px) scale(1.1)} }
         @keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes floatBadge2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+        @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes float2 { 0%,100%{transform:translateY(4px)} 50%{transform:translateY(-6px)} }
+        @keyframes float3 { 0%,100%{transform:translateY(2px)} 50%{transform:translateY(-10px)} }
+        @keyframes float4 { 0%,100%{transform:translateY(3px)} 50%{transform:translateY(-7px)} }
         @keyframes pulseDot { 0%{box-shadow:0 0 0 0 rgba(183,233,76,.5)} 70%{box-shadow:0 0 0 8px rgba(183,233,76,0)} 100%{box-shadow:0 0 0 0 rgba(183,233,76,0)} }
         @keyframes ringGlow { 0%,100%{box-shadow:0 0 16px rgba(183,233,76,.32),inset 0 0 12px rgba(183,233,76,.1)} 50%{box-shadow:0 0 28px rgba(183,233,76,.5),inset 0 0 18px rgba(183,233,76,.2)} }
         @keyframes barGrow { from{width:30px} to{width:60px} }
         @keyframes barGrow2 { from{width:50px} to{width:25px} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
         @keyframes lineGrow { from{transform:scaleX(0);transform-origin:left} to{transform:scaleX(1)} }
+        .premiove-hero-entry{opacity:0;transform:translateY(20px);animation:fadeUp .7s ease forwards}
+        .premiove-hero-entry.delay-0{animation-delay:0s}
+        .premiove-hero-entry.delay-1{animation-delay:.08s}
+        .premiove-hero-entry.delay-2{animation-delay:.16s}
+        .premiove-hero-entry.delay-3{animation-delay:.24s}
+        .premiove-hero-entry.delay-4{animation-delay:.32s}
+        .premiove-hero-entry.delay-5{animation-delay:.4s}
+        .premiove-hero-entry.delay-6{animation-delay:.48s}
+        .premiove-hero-entry.delay-7{animation-delay:.56s}
         .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
         .reveal.visible{opacity:1;transform:translateY(0)}
         .reveal-delay-1{transition-delay:.1s}
@@ -148,215 +168,159 @@ export default function PremioveVizualniIdentitaPage() {
         .faq-details details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
         .faq-details summary:hover{background:rgba(183,233,76,.05);color:#5a8a00}
         @media (max-width: 900px) {
-          .premiove-hero{grid-template-columns:1fr !important; padding:100px 24px 60px !important;}
-          .premiove-hero .premiove-hero-visual{order:-1;}
+          .premiove-hero{min-height:auto;padding:0 !important;background-position:0 0, right bottom !important;}
+          .premiove-hero .hero-mobile-overlay{display:block !important;}
+          .premiove-hero .hero-content{grid-template-columns:1fr !important;padding:100px 24px 60px !important;}
+          .premiove-hero .hero-cards-wrap{min-height:180px;position:relative;}
+          .premiove-hero .hero-card-3,.premiove-hero .hero-card-4{display:none !important;}
         }
       `}</style>
 
       <Header />
 
-      {/* HERO — centrovaný blok, symetrický padding */}
+      {/* HERO — pozadí hlavnycover_02, gradient zleva, text vlevo, plovoucí kartičky vpravo */}
       <section
         className="premiove-hero"
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 60,
-          padding: "120px 80px 80px",
-          maxWidth: 1280,
-          width: "100%",
-          margin: "0 auto",
-          overflow: "hidden",
           position: "relative",
-          background: BG,
+          overflow: "hidden",
           minHeight: "100vh",
-          alignItems: "center",
+          backgroundColor: BG,
+          backgroundImage: `linear-gradient(95deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.90) 35%, rgba(255,255,255,0.40) 55%, transparent 70%), url("/placeholders/hlavnycover_02.png")`,
+          backgroundSize: "auto, contain",
+          backgroundPosition: "0 0, right center",
+          backgroundRepeat: "no-repeat, no-repeat",
         }}
       >
+        {/* Mobil: overlay zesvětlí shora */}
         <div
+          className="hero-mobile-overlay"
           aria-hidden
           style={{
+            display: "none",
             position: "absolute",
-            width: 500,
-            height: 500,
-            background: "radial-gradient(circle, rgba(183,233,76,.22), transparent 70%)",
-            top: -100,
-            right: -100,
-            borderRadius: "50%",
-            filter: "blur(60px)",
+            inset: 0,
+            background: "linear-gradient(to bottom, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.2) 50%, transparent 70%)",
             pointerEvents: "none",
-            zIndex: 0,
-            animation: "orbFloat1 8s infinite",
+            zIndex: 1,
           }}
         />
         <div
-          aria-hidden
+          className="hero-content"
           style={{
-            position: "absolute",
-            width: 300,
-            height: 300,
-            background: "radial-gradient(circle, rgba(183,233,76,.12), transparent 70%)",
-            bottom: 100,
-            left: -80,
-            borderRadius: "50%",
-            filter: "blur(60px)",
-            pointerEvents: "none",
-            zIndex: 0,
-            animation: "orbFloat2 10s infinite",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: "0 40px 0 0",
+            position: "relative",
             zIndex: 2,
+            maxWidth: 1440,
+            margin: "0 auto",
+            paddingLeft: 80,
+            paddingRight: 80,
+            paddingTop: 120,
+            paddingBottom: 80,
+            minHeight: "100vh",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 48,
+            alignItems: "center",
           }}
         >
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(183,233,76,.13)",
-              border: "1px solid rgba(183,233,76,.4)",
-              borderRadius: 100,
-              padding: "5px 16px",
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: ".18em",
-              textTransform: "uppercase",
-              color: LIME_DARK,
-              marginBottom: 32,
-            }}
-          >
-            <span
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div
+              className="premiove-hero-entry delay-0"
               style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: LIME,
-                animation: "pulseDot 2s infinite",
-              }}
-            />
-            Luxus Vizuál Content
-          </div>
-
-          <h1
-            style={{
-              fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(44px, 5.5vw, 72px)",
-              fontWeight: 900,
-              lineHeight: 1.06,
-              letterSpacing: "-.03em",
-              marginBottom: 24,
-            }}
-          >
-            Přestaňte řídit obsah.
-            <br />
-            <em style={{ fontStyle: "italic", color: LIME_DARK, position: "relative" }}>
-              Začněte řídit značku.
-              <span
-                style={{
-                  position: "absolute",
-                  bottom: -4,
-                  left: 0,
-                  right: 0,
-                  height: 3,
-                  background: "linear-gradient(90deg,#b7e94c,transparent)",
-                  animation: "lineGrow 1s .5s both",
-                  transformOrigin: "left",
-                }}
-                aria-hidden
-              />
-            </em>
-          </h1>
-
-          <p style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, maxWidth: 460, marginBottom: 36 }}>
-            Studio Lucifera je místo, kde přestanete vizuálně podceňovat svou pozici. Vytváříme obsah. Nastavujeme systém. Vaše značka pak pracuje i bez vás.
-          </p>
-
-          <div style={{ display: "flex", gap: 14, marginBottom: 40 }}>
-            <a
-              href="/rezervace"
-              style={{
-                background: LIME,
-                color: TEXT,
-                borderRadius: 11,
-                padding: "15px 28px",
-                fontSize: 15,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                background: "rgba(183,233,76,.18)",
+                border: "1px solid rgba(183,233,76,.45)",
+                borderRadius: 100,
+                padding: "6px 18px",
+                fontSize: 11,
                 fontWeight: 700,
-                boxShadow: `0 4px 24px ${GLOW_STRONG}`,
-                textDecoration: "none",
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+                color: LIME_DARK,
+                marginBottom: 28,
               }}
             >
-              Rezervovat vstupní hovor →
-            </a>
-            <a
-              href="#jak-to-funguje"
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: LIME, animation: "pulseDot 2s infinite", flexShrink: 0 }} />
+              Prémiová vizuální identita
+            </div>
+
+            <h1
+              className="premiove-hero-entry delay-1"
               style={{
-                background: "rgba(255,255,255,.7)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                border: "1.5px solid rgba(0,0,0,.13)",
-                borderRadius: 11,
-                padding: "14px 24px",
-                fontSize: 15,
-                color: MUTED,
-                textDecoration: "none",
+                fontFamily: "var(--font-playfair), serif",
+                fontSize: "clamp(40px, 5vw, 68px)",
+                fontWeight: 900,
+                lineHeight: 1.08,
+                letterSpacing: "-.03em",
+                marginBottom: 24,
               }}
             >
-              Jak to funguje
-            </a>
+              Jeden den focení.
+              <br />
+              <em style={{ fontStyle: "italic", color: LIME_DARK }}>Obsah na měsíce dopředu.</em>
+            </h1>
+
+            <p
+              className="premiove-hero-entry delay-2"
+              style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, maxWidth: 480, marginBottom: 36 }}
+            >
+              Fotografie, video, AI agent natrénovaný na vaši značku a dva měsíce kurátorovaného obsahu — vše z jedné spolupráce.
+            </p>
+
+            <div className="premiove-hero-entry delay-3" style={{ display: "flex", gap: 14, marginBottom: 24 }}>
+              <a
+                href="/rezervace"
+                style={{
+                  background: LIME,
+                  color: TEXT,
+                  borderRadius: 11,
+                  padding: "15px 28px",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  boxShadow: `0 4px 24px ${GLOW_STRONG}`,
+                  textDecoration: "none",
+                }}
+              >
+                Rezervovat vstupní hovor →
+              </a>
+              <a
+                href="#jak-to-funguje"
+                style={{
+                  background: "transparent",
+                  border: "1.5px solid rgba(0,0,0,.2)",
+                  borderRadius: 11,
+                  padding: "14px 24px",
+                  fontSize: 15,
+                  color: MUTED,
+                  textDecoration: "none",
+                }}
+              >
+                Jak to funguje
+              </a>
+            </div>
+
+            <p className="premiove-hero-entry delay-4" style={{ fontSize: 12, color: FAINT }}>
+              Vstupní hovor · 7 800 Kč · Bez závazku Fáze 1
+            </p>
           </div>
 
-          <p style={{ fontSize: 12, color: FAINT }}>Vstupní hovor · 7 800 Kč · Bez závazku Fáze 1</p>
-        </div>
-
-        <div className="premiove-hero-visual" style={{ position: "relative", display: "flex", alignItems: "stretch" }}>
-          <div style={{ position: "relative", flex: 1, minHeight: "100vh", width: "100%" }}>
-            <HeroImageFull />
+          <div
+            className="hero-cards-wrap"
+            style={{ position: "relative", minHeight: 420 }}
+          >
             <div
+              className="hero-float-card hero-card-1 premiove-hero-entry delay-5"
               style={{
                 position: "absolute",
-                bottom: 0,
+                top: 24,
                 left: 0,
-                right: 0,
-                height: "40%",
-                background: "linear-gradient(to top, rgba(183,233,76,.12), transparent)",
-                pointerEvents: "none",
-                zIndex: 1,
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "40%",
-                height: "100%",
-                background: "linear-gradient(to right, rgba(255,255,255,.6), transparent)",
-                pointerEvents: "none",
-                zIndex: 1,
-              }}
-            />
-
-            <div
-              ref={(el) => { if (el) parallaxRefs.current[0] = el; }}
-              className="parallax-el"
-              style={{
-                position: "absolute",
-                top: 140,
-                left: -36,
                 borderRadius: 18,
                 padding: "14px 20px",
-                animation: "floatBadge 3s ease-in-out infinite",
+                animation: "float1 3.5s ease-in-out infinite",
                 zIndex: 3,
-                transition: "transform .15s ease-out",
-                transform: parallaxTransforms[0] || "none",
-                ...glassStyle,
+                ...heroCardGlass,
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -367,20 +331,17 @@ export default function PremioveVizualniIdentitaPage() {
             </div>
 
             <div
-              ref={(el) => { if (el) parallaxRefs.current[1] = el; }}
-              className="parallax-el"
+              className="hero-float-card hero-card-2 premiove-hero-entry delay-5"
               style={{
                 position: "absolute",
-                top: 140,
-                right: 32,
+                top: 24,
+                right: 0,
                 borderRadius: 18,
                 padding: "16px 20px",
                 textAlign: "center",
-                animation: "floatBadge 4s 1s ease-in-out infinite",
+                animation: "float2 4s ease-in-out 0.8s infinite",
                 zIndex: 3,
-                transition: "transform .15s ease-out",
-                transform: parallaxTransforms[1] || "none",
-                ...glassStyle,
+                ...heroCardGlass,
               }}
             >
               <div
@@ -402,43 +363,16 @@ export default function PremioveVizualniIdentitaPage() {
             </div>
 
             <div
-              ref={(el) => { if (el) parallaxRefs.current[2] = el; }}
-              className="parallax-el"
+              className="hero-float-card hero-card-3 premiove-hero-entry delay-6"
               style={{
                 position: "absolute",
-                bottom: 120,
-                left: -44,
+                bottom: 100,
+                left: 20,
                 borderRadius: 18,
                 padding: "16px 22px",
-                background: "rgba(17,17,17,.88)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,.1)",
-                boxShadow: "0 8px 32px rgba(0,0,0,.25)",
-                animation: "floatBadge2 3.5s infinite",
+                animation: "float3 4.5s ease-in-out 1.5s infinite",
                 zIndex: 3,
-                transition: "transform .15s ease-out",
-                transform: parallaxTransforms[2] || "none",
-              }}
-            >
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,.45)", textTransform: "uppercase", letterSpacing: ".12em", marginBottom: 4 }}>Celková investice</div>
-              <div style={{ fontFamily: "var(--font-playfair), serif", fontSize: 26, fontWeight: 900, color: "#fff", textShadow: "0 0 20px rgba(183,233,76,.3)" }}>56 800 Kč</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,.4)" }}>Fáze 0 + Fáze 1</div>
-            </div>
-
-            <div
-              ref={(el) => { if (el) parallaxRefs.current[3] = el; }}
-              className="parallax-el"
-              style={{
-                position: "absolute",
-                bottom: 220,
-                right: 24,
-                borderRadius: 14,
-                padding: "12px 16px",
-                animation: "floatBadge2 5s 2s infinite",
-                zIndex: 3,
-                transition: "transform .15s ease-out",
-                transform: parallaxTransforms[3] || "none",
-                ...glassStyle,
+                ...heroCardGlass,
               }}
             >
               <div style={{ fontSize: 10, textTransform: "uppercase", color: FAINT, marginBottom: 8 }}>Týdenní výstupy</div>
@@ -450,6 +384,24 @@ export default function PremioveVizualniIdentitaPage() {
                 <span style={{ fontSize: 12, color: TEXT }}>Vizuály</span>
                 <div style={{ height: 4, background: "rgba(183,233,76,.35)", borderRadius: 2, marginTop: 4, width: 50, animation: "barGrow2 2.5s infinite alternate" }} />
               </div>
+            </div>
+
+            <div
+              className="hero-float-card hero-card-4 premiove-hero-entry delay-7"
+              style={{
+                position: "absolute",
+                bottom: 200,
+                right: 24,
+                borderRadius: 14,
+                padding: "14px 18px",
+                animation: "float4 3.8s ease-in-out 0.4s infinite",
+                zIndex: 3,
+                ...heroCardGlass,
+              }}
+            >
+              <div style={{ fontSize: 10, textTransform: "uppercase", color: FAINT, marginBottom: 4 }}>Výstupy</div>
+              <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 22, fontWeight: 900, color: LIME_DARK }}>500+ fotek</span>
+              <div style={{ fontSize: 11, color: FAINT, marginTop: 4 }}>z jednoho dne</div>
             </div>
           </div>
         </div>
