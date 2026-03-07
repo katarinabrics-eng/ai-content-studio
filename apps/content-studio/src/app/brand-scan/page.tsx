@@ -29,8 +29,8 @@ const navItems = [
 ];
 
 const PROBLEM_CARDS = [
-  { accent: PINK, title: "Web říká jedno. Sítě druhé.", text: "Zákazník přijde a odejde. Nezachytil co nabízíš — ne proto že ho to nezajímá, ale proto že to nebylo jasné." },
-  { accent: YELLOW, title: "Máš 20 nástrojů. A stále nemáš systém.", text: "Jeden píše, druhý generuje, třetí analyzuje. Sedíš uprostřed a místo tvorby řešíš nástroje." },
+  { accent: PINK, title: "Web říká jedno. Sítě druhé.", text: "Zákazník přijde a odejde — ne proto že ho to nezajímá, ale proto že to nebylo jasné." },
+  { accent: YELLOW, title: "Máš nástroje. Nemáš systém.", text: "Jeden píše, druhý generuje, třetí analyzuje. Sedíte uprostřed a místo tvorby řešíte nástroje." },
   { accent: PURPLE, title: "Tohle není problém tvorby.", text: "Je to problém strategie. Brand Scan ukáže přesně kde — v číslech, ne v obecných radách." },
 ];
 
@@ -499,7 +499,7 @@ export default function BrandScanPage() {
               lineHeight: 1.2,
             }}
           >
-            Máš značku. Ale nikdo to nevidí tak, jak ty.
+            Máš značku. Ale zákazník to nevidí.
           </h2>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3" style={{ gap: 20 }}>
             {PROBLEM_CARDS.map((card, i) => (
