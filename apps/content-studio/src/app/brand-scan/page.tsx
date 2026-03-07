@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { StartAnalyzer } from "../start/StartAnalyzer";
 
@@ -43,9 +44,9 @@ const PILLARS = [
 ];
 
 const STEPS = [
-  { num: "01", title: "Zadáš web", text: "Stačí URL. AI udělá screenshot, přečte texty, analyzuje vizuální identitu a Brand DNA." },
+  { num: "01", title: "Zadáte web", text: "Stačí URL. AI udělá screenshot, přečte texty, analyzuje vizuální identitu a Brand DNA." },
   { num: "02", title: "Systém analyzuje", text: "Pět pilířů, celkové skóre, Brand DNA. Konkrétní čísla — ne obecné rady." },
-  { num: "03", title: "Vidíš kde stojíš", text: "Přesné slabiny, silné stránky, doporučení AI stratéga. Výsledky které zůstanou." },
+  { num: "03", title: "Vidíte kde stojíte", text: "Přesné slabiny, silné stránky, doporučení AI stratéga. Výsledky které zůstanou." },
 ];
 
 const BENEFITS = [
@@ -83,6 +84,23 @@ const analyzerWrapperStyle: React.CSSProperties = {
 };
 
 export default function BrandScanPage() {
+  const stepsSectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const el = stepsSectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add("steps-inview");
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <main className="font-sans" style={{ background: BG, color: TEXT }}>
       <style>{`
@@ -114,6 +132,19 @@ export default function BrandScanPage() {
         @media (max-width: 640px) {
           .brand-scan-analyzer-card { padding: 24px 20px !important; border-radius: 16px !important; }
         }
+        .steps-section .steps-card-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.3s ease; }
+        .steps-section.steps-inview .steps-card-reveal { opacity: 1; transform: translateY(0); }
+        .steps-section.steps-inview .steps-card-reveal:nth-child(1) { transition-delay: 0.05s; }
+        .steps-section.steps-inview .steps-card-reveal:nth-child(3) { transition-delay: 0.18s; }
+        .steps-section.steps-inview .steps-card-reveal:nth-child(5) { transition-delay: 0.32s; }
+        .steps-card-reveal:hover { transform: translateY(-5px) !important; box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+        .steps-section .step-num-reveal { opacity: 0; transform: scale(0.92); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .steps-section.steps-inview .step-num-reveal { opacity: 1; transform: scale(1); }
+        .steps-section.steps-inview .steps-card-reveal:nth-child(1) .step-num-reveal { transition-delay: 0.12s; }
+        .steps-section.steps-inview .steps-card-reveal:nth-child(3) .step-num-reveal { transition-delay: 0.28s; }
+        .steps-section.steps-inview .steps-card-reveal:nth-child(5) .step-num-reveal { transition-delay: 0.45s; }
+        .step-connector { display: flex; align-items: center; justify-content: center; color: rgba(183,233,76,0.6); font-size: 18px; font-weight: 300; }
+        @media (max-width: 768px) { .step-connector { display: none !important; } .steps-cards-grid { grid-template-columns: 1fr !important; } }
       `}</style>
 
       {/* NAV */}
@@ -568,7 +599,9 @@ export default function BrandScanPage() {
 
       {/* SEKCE JAK TO FUNGUJE */}
       <section
+        ref={stepsSectionRef}
         id="jak-to-funguje"
+        className="steps-section"
         style={{
           background: BG1,
           borderTop: `1px solid ${BORDER}`,
@@ -594,10 +627,20 @@ export default function BrandScanPage() {
             Tři kroky. Výsledky hned.
           </h2>
           <p style={{ fontSize: 14, color: FAINT, marginTop: -28 }}>Žádná registrace. Žádné čekání. Jen URL a výsledky.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, marginTop: 40 }}>
-            {STEPS.map((step) => (
+          <div
+            className="steps-cards-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto 1fr auto 1fr",
+              gap: 20,
+              alignItems: "stretch",
+              marginTop: 40,
+            }}
+          >
+            {STEPS.flatMap((step, i) => [
               <div
                 key={step.num}
+                className="steps-card-reveal"
                 style={{
                   background: BG,
                   border: `1px solid ${BORDER}`,
@@ -607,6 +650,7 @@ export default function BrandScanPage() {
                 }}
               >
                 <div
+                  className="step-num-reveal"
                   style={{
                     width: 36,
                     height: 36,
@@ -625,8 +669,9 @@ export default function BrandScanPage() {
                 </div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: TEXT, marginBottom: 8 }}>{step.title}</h3>
                 <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.6 }}>{step.text}</p>
-              </div>
-            ))}
+              </div>,
+              ...(i < STEPS.length - 1 ? [<span key={`conn-${i}`} className="step-connector" aria-hidden>→</span>] : []),
+            ])}
           </div>
         </div>
       </section>
