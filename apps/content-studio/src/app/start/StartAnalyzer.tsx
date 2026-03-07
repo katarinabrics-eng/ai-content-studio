@@ -7,6 +7,7 @@ import { GapQuestions } from "@/app/diagnostika/GapQuestions";
 import { WebAnalyzer } from "@/app/diagnostika/WebAnalyzer";
 import { StrategyOutput } from "@/app/diagnostika/StrategyOutput";
 import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
+import { DiagnostikaResultsView } from "@/app/diagnostika/DiagnostikaResultsView";
 import { ScanRitualLoading } from "./ScanRitualLoading";
 import {
   buildManualData as buildManualDataFromLib,
@@ -225,6 +226,7 @@ export function StartAnalyzer({
   const [leadError, setLeadError] = useState<string | null>(null);
   const [leadSubmitting, setLeadSubmitting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [diagnostikaViewUrl, setDiagnostikaViewUrl] = useState<string | null>(null);
 
   function buildManualData(): string {
     return buildManualDataFromLib({
@@ -456,6 +458,7 @@ export function StartAnalyzer({
     setLeadEmail("");
     setLeadSubmitted(false);
     setLeadError(null);
+    setDiagnostikaViewUrl(null);
     setMode("web");
     setManualText("");
     setBrandName("");
@@ -690,18 +693,53 @@ export function StartAnalyzer({
               {saveError}
             </div>
           )}
-          {teaserView === "scroll" ? (
-            <ScanResultScrollExperience
-              result={result}
-              projectId={projectId}
-              displayName={resultDisplayName}
-              displayWeb={resultDisplayWeb}
-              onBack={reset}
-              onEnterWorkspace={() => setTeaserView("workspace")}
-            />
-          ) : (
-            <StrategyOutput result={result} projectId={projectId} onBack={reset} />
-          )}
+          <DiagnostikaResultsView
+            result={result}
+            scraped={scraped}
+            displayName={resultDisplayName}
+            displayWeb={resultDisplayWeb}
+            projectId={projectId}
+            accessUrl={diagnostikaViewUrl}
+            onBack={reset}
+            onSaveLead={async (data) => {
+              if (!data.email?.trim() || !result) return;
+              setLeadSubmitting(true);
+              setLeadError(null);
+              try {
+                const saveRes = await fetch("/api/diagnostika/save-scan", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    ...(projectId && { projectId }),
+                    name: data.name || undefined,
+                    webUrl: data.web || undefined,
+                    email: data.email.trim(),
+                    result: {
+                      brandScore: result.brandScore,
+                      brandDna: result.brandDna,
+                      summary: result.summary,
+                      pillarAnalysis: result.pillarAnalysis,
+                      suggested_strategists: result.suggested_strategists,
+                    },
+                  }),
+                });
+                const saveData = await saveRes.json();
+                if (saveRes.ok && saveData?.viewUrl) {
+                  setDiagnostikaViewUrl(saveData.viewUrl);
+                  setLeadSubmitted(true);
+                } else {
+                  setLeadError(saveData?.error ?? "Nepodařilo se uložit.");
+                }
+              } catch {
+                setLeadError("Chyba připojení.");
+              } finally {
+                setLeadSubmitting(false);
+              }
+            }}
+            leadSubmitted={leadSubmitted}
+            leadError={leadError}
+            leadSubmitting={leadSubmitting}
+          />
         </>
       ) : (
       <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">

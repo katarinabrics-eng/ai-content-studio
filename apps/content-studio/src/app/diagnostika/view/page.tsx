@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { ScanResultScrollExperience } from "@/app/start/ScanResultScrollExperience";
+import { DiagnostikaResultsView } from "@/app/diagnostika/DiagnostikaResultsView";
 import type { ScanResult } from "@/app/start/ScanResultScrollExperience";
 
 type ProjectData = {
@@ -213,13 +213,13 @@ function DiagnostikaViewContent() {
           </p>
         </div>
       ) : (
-        <ScanResultScrollExperience
+        <DiagnostikaResultsView
           result={result}
-          projectId={state.project.id}
+          scraped={null}
           displayName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
           displayWeb={project.web_url ?? ""}
-          accessToken={token || undefined}
-          onEnterWorkspace={undefined}
+          projectId={state.project.id}
+          hideCta
         />
       )}
     </main>
