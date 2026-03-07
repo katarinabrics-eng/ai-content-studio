@@ -414,8 +414,8 @@ export default function PremioveVizualniIdentitaPage() {
 
       <VibeSection />
 
-      {/* SEKCE PROBLÉM */}
-      <section style={{ background: BG1, padding: "96px 80px", maxWidth: 1260, margin: "0 auto", position: "relative", overflow: "hidden" }}>
+      {/* SEKCE PROBLÉM — full-width pozadí, obsah v containeru */}
+      <section style={{ background: BG1, padding: "96px 0", position: "relative", overflow: "hidden", width: "100%" }}>
         <div
           aria-hidden
           style={{
@@ -428,58 +428,60 @@ export default function PremioveVizualniIdentitaPage() {
             filter: "blur(80px)",
           }}
         />
-        <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Problém</p>
-        <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48, letterSpacing: "-.02em", lineHeight: 1.15 }}>
-          Za tři sekundy si o vás udělají názor. Otázka je, jaký.
-        </h2>
-        <p className="reveal reveal-delay-2" style={{ fontSize: 17, color: MUTED, marginBottom: 40 }}>Trh nečte co umíte. Čte co vidí.</p>
+        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
+          <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Problém</p>
+          <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48, letterSpacing: "-.02em", lineHeight: 1.15 }}>
+            Za tři sekundy si o vás udělají názor. Otázka je, jaký.
+          </h2>
+          <p className="reveal reveal-delay-2" style={{ fontSize: 17, color: MUTED, marginBottom: 40 }}>Trh nečte co umíte. Čte co vidí.</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <div
-            className="reveal reveal-delay-3"
-            style={{
-              gridColumn: "1 / -1",
-              background: "#111",
-              borderRadius: 24,
-              padding: 52,
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3vw,42px)", color: "#fff", position: "relative", zIndex: 1 }}>
-              Web říká jedno. Fotky druhé. Příspěvky <em style={{ color: LIME, fontStyle: "italic" }}>třetí.</em>
-            </h3>
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,.6)", maxWidth: 600, marginTop: 16, position: "relative", zIndex: 1 }}>
-              Zákazník přijde, nepochopí — a odejde. Ne proto že ho to nezajímá. Ale proto že za tři sekundy neviděl důvod zůstat. To není problém tvorby. Je to problém systému.
-            </p>
-          </div>
-          <div
-            className="reveal"
-            style={{
-              background: BG,
-              border: `1px solid ${BORDER2}`,
-              borderRadius: 20,
-              padding: 36,
-              overflow: "hidden",
-            }}
-          >
-            <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>01 ·</p>
-            <h4 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Vaše ceny rostou. Váš obraz ne.</h4>
-            <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Trh vás vidí tak, jak se prezentujete. Pokud vaše vizuální úroveň zaostává za cenou — ztrácíte důvěru.</p>
-          </div>
-          <div
-            className="reveal"
-            style={{
-              background: BG,
-              border: `1px solid ${BORDER2}`,
-              borderRadius: 20,
-              padding: 36,
-              overflow: "hidden",
-            }}
-          >
-            <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>02 ·</p>
-            <h4 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Hodiny v nástrojích místo v práci.</h4>
-            <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Jedna AI píše, druhá generuje obrázky. Vy sedíte uprostřed a místo strategie řešíte nástroje.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div
+              className="reveal reveal-delay-3"
+              style={{
+                gridColumn: "1 / -1",
+                background: "#111",
+                borderRadius: 24,
+                padding: 52,
+                overflow: "hidden",
+                position: "relative",
+              }}
+            >
+              <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3vw,42px)", color: "#fff", position: "relative", zIndex: 1 }}>
+                Web říká jedno. Fotky druhé. Příspěvky <em style={{ color: LIME, fontStyle: "italic" }}>třetí.</em>
+              </h3>
+              <p style={{ fontSize: 16, color: "rgba(255,255,255,.6)", maxWidth: 600, marginTop: 16, position: "relative", zIndex: 1 }}>
+                Zákazník přijde, nepochopí — a odejde. Ne proto že ho to nezajímá. Ale proto že za tři sekundy neviděl důvod zůstat. To není problém tvorby. Je to problém systému.
+              </p>
+            </div>
+            <div
+              className="reveal"
+              style={{
+                background: BG,
+                border: `1px solid ${BORDER2}`,
+                borderRadius: 20,
+                padding: 36,
+                overflow: "hidden",
+              }}
+            >
+              <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>01 ·</p>
+              <h4 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Vaše ceny rostou. Váš obraz ne.</h4>
+              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Trh vás vidí tak, jak se prezentujete. Pokud vaše vizuální úroveň zaostává za cenou — ztrácíte důvěru.</p>
+            </div>
+            <div
+              className="reveal"
+              style={{
+                background: BG,
+                border: `1px solid ${BORDER2}`,
+                borderRadius: 20,
+                padding: 36,
+                overflow: "hidden",
+              }}
+            >
+              <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>02 ·</p>
+              <h4 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Hodiny v nástrojích místo v práci.</h4>
+              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Jedna AI píše, druhá generuje obrázky. Vy sedíte uprostřed a místo strategie řešíte nástroje.</p>
+            </div>
           </div>
         </div>
       </section>
