@@ -297,7 +297,7 @@ export function DiagnostikaResultsView({
         {/* 3. PULLQUOTE */}
         {summary && (
           <section style={{ marginBottom: 24 }}>
-            <p className="diag-pullquote">„{summary}"</p>
+            <p className="diag-pullquote">&ldquo;{summary}&rdquo;</p>
             <div className="diag-divider" />
           </section>
         )}
