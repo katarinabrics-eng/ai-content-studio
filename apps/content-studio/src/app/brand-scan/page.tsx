@@ -59,15 +59,17 @@ const BENEFITS = [
 
 const HERO_CHECKLIST = ["Screenshot webu", "Analýza textu", "Claude Vision", "Brand DNA"];
 
-const ORANGE = "#e07c3c";
+const ORANGE_REF = "#e87040";
+const YELLOW_REF = "#e8c000";
+const TAG_RED = "#c03030";
 const MOCKUP_PILLARS = [
-  { icon: "🌟", label: "Světlo", color: LIME, value: 6 },
-  { icon: "⚡", label: "Energie", color: YELLOW, value: 5 },
-  { icon: "🏗", label: "Architektura", color: ORANGE, value: 4 },
-  { icon: "🎯", label: "Identita", color: PURPLE, value: 7 },
-  { icon: "🤝", label: "Důvěra", color: LIME, value: 5 },
+  { icon: "💡", label: "Světlo", color: LIME, value: 6, pct: 60 },
+  { icon: "⚡", label: "Energie", color: YELLOW_REF, value: 5, pct: 50 },
+  { icon: "🏗", label: "Architektura", color: ORANGE_REF, value: 4, pct: 40 },
+  { icon: "🎯", label: "Identita", color: PURPLE, value: 7, pct: 70 },
+  { icon: "🤝", label: "Důvěra", color: LIME, value: 5, pct: 55 },
 ];
-const MOCKUP_DOMAIN = "studiolucifera.cz";
+const MOCKUP_DOMAIN = "contentpro.cz";
 
 const analyzerWrapperStyle: React.CSSProperties = {
   background: BG1,
@@ -82,10 +84,30 @@ export default function BrandScanPage() {
     <main className="font-sans" style={{ background: BG, color: TEXT }}>
       <style>{`
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(14px); }
+          from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .hero-child { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+        .hero-left > * { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+        .hero-left > *:nth-child(1) { animation-delay: 0.05s; }
+        .hero-left > *:nth-child(2) { animation-delay: 0.15s; }
+        .hero-left > *:nth-child(3) { animation-delay: 0.25s; }
+        .hero-left > *:nth-child(4) { animation-delay: 0.35s; }
+        .hero-left > *:nth-child(5) { animation-delay: 0.42s; }
+        .hero-left > *:nth-child(6) { animation-delay: 0.5s; }
+        @keyframes floatBadge {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes ringGlow {
+          0%, 100% { box-shadow: 0 0 0 4px rgba(183,233,76,0.3), inset 0 0 12px rgba(183,233,76,0.08); }
+          50% { box-shadow: 0 0 0 6px rgba(183,233,76,0.5), inset 0 0 16px rgba(183,233,76,0.12); }
+        }
+        .float-badge { animation: floatBadge 3s ease-in-out infinite; }
+        .ring-glow { animation: ringGlow 2.5s ease-in-out infinite; }
+        @media (max-width: 900px) {
+          .hero-section { grid-template-columns: 1fr !important; padding: 100px 24px 60px !important; }
+          .hero-section > div:last-child { order: -1; justify-self: center; max-width: 100%; }
+        }
       `}</style>
 
       {/* NAV */}
@@ -151,191 +173,320 @@ export default function BrandScanPage() {
         </div>
       </nav>
 
-      {/* HERO — dvousloupcový layout */}
+      {/* HERO — centrovaný grid dle reference */}
       <section
-        className="flex min-h-[100vh] flex-col md:flex-row items-stretch gap-12 md:gap-16 pt-[120px] md:pt-[140px] pb-[110px] px-8 md:px-20"
-        style={{ background: BG }}
+        className="hero-section"
+        style={{
+          padding: "110px 40px 80px",
+          maxWidth: 1100,
+          margin: "0 auto",
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 60,
+          alignItems: "center",
+          minHeight: "100vh",
+          background: BG,
+        }}
       >
-        {/* Levý sloupec */}
-        <div className="flex flex-1 flex-col justify-center max-w-[520px] mx-auto md:mx-0 text-center md:text-left">
-          <span
-            className="hero-child inline-flex w-fit rounded-full border uppercase mx-auto md:mx-0"
+        <div className="hero-left" style={{ display: "flex", flexDirection: "column" }}>
+          <div
             style={{
-              background: "rgba(183,233,76,0.15)",
-              border: "1px solid rgba(183,233,76,0.45)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              background: "rgba(183,233,76,0.12)",
+              border: "1px solid rgba(183,233,76,0.4)",
               borderRadius: 100,
               padding: "5px 14px",
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 700,
-              letterSpacing: "0.14em",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
               color: LIME_DARK,
-              marginBottom: 28,
-              animationDelay: "0.05s",
+              marginBottom: 22,
             }}
           >
-            ● BRAND SCAN · ZDARMA
-          </span>
+            ● Brand Scan · Zdarma
+          </div>
           <h1
-            className="hero-child leading-tight"
             style={{
               fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(42px, 7vw, 84px)",
+              fontSize: 52,
               fontWeight: 900,
+              lineHeight: 1.1,
               color: TEXT,
-              lineHeight: 1.08,
-              letterSpacing: "-0.025em",
-              marginBottom: 22,
-              animationDelay: "0.15s",
+              marginBottom: 18,
+              letterSpacing: "-0.02em",
             }}
           >
             Víš jak tvoje značka vypadá <em style={{ fontStyle: "italic", color: LIME_DARK }}>zvenku?</em>
           </h1>
-          <p
-            className="hero-child"
-            style={{ fontSize: 18, color: MUTED, lineHeight: 1.7, marginBottom: 36, maxWidth: 500, animationDelay: "0.25s" }}
-          >
+          <p style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, marginBottom: 24, maxWidth: 460 }}>
             Zadej web. Za pár minut máš konkrétní čísla — kde ztrácíš zákazníky dřív než tě vůbec poznají.
           </p>
-          <ul className="hero-child space-y-4 mb-10" style={{ animationDelay: "0.35s" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
             {HERO_CHECKLIST.map((item) => (
-              <li key={item} className="flex items-center gap-3">
+              <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: MUTED }}>
                 <span
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
-                  style={{ background: LIME, color: TEXT, width: 20, height: 20 }}
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    background: LIME,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 10,
+                    color: TEXT,
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
                 >
                   ✓
                 </span>
-                <span style={{ color: TEXT }}>{item}</span>
-              </li>
+                {item}
+              </div>
             ))}
-          </ul>
-          <div className="hero-child flex flex-wrap gap-3 mb-8" style={{ animationDelay: "0.42s" }}>
+          </div>
+          <p style={{ fontSize: 12, color: "#bbb", marginBottom: 28 }}>Zdarma · Bez registrace · Výsledky během minut</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Link
               href="#analyzer"
-              className="inline-flex items-center justify-center rounded-[10px] px-6 py-[13px] text-[15px] font-bold no-underline transition-opacity hover:opacity-90"
-              style={{ background: LIME, color: TEXT }}
+              style={{
+                background: LIME,
+                color: TEXT,
+                borderRadius: 8,
+                padding: "12px 28px",
+                fontSize: 15,
+                fontWeight: 700,
+                textDecoration: "none",
+              }}
             >
               Analyzovat značku →
             </Link>
             <Link
               href="#jak-to-funguje"
-              className="inline-flex items-center justify-center rounded-[10px] px-[22px] py-[13px] text-[15px] no-underline transition-colors"
               style={{
                 background: "transparent",
-                border: "1.5px solid rgba(0,0,0,0.18)",
+                border: "1.5px solid " + BORDER,
+                borderRadius: 8,
+                padding: "9px 20px",
+                fontSize: 13,
+                fontWeight: 600,
                 color: MUTED,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = TEXT;
-                e.currentTarget.style.borderColor = BORDER;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = MUTED;
-                e.currentTarget.style.borderColor = "rgba(0,0,0,0.18)";
+                textDecoration: "none",
               }}
             >
               Jak to funguje
             </Link>
           </div>
-          <p className="hero-child text-[12px]" style={{ color: "#ccc", animationDelay: "0.5s" }}>
-            Zdarma · Bez registrace · Výsledky během minut
-          </p>
         </div>
 
-        {/* Pravý sloupec — mockup karta (ilustrace: studiolucifera.cz) */}
-        <div className="flex flex-1 items-center justify-center min-h-[400px]">
+        <div style={{ position: "relative" }}>
+          {/* Floating karta 1 — Identita nalezena */}
           <div
-            className="relative w-full max-w-[420px] rounded-[20px] p-7"
+            className="float-badge"
             style={{
+              position: "absolute",
+              top: -20,
+              right: -20,
               background: BG,
-              boxShadow: "0 8px 40px rgba(0,0,0,0.10)",
-              padding: 28,
+              border: `1px solid ${BORDER}`,
+              borderRadius: 12,
+              padding: "12px 16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              fontSize: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              zIndex: 2,
             }}
           >
             <div
-              className="absolute -top-3 right-4 rounded-[12px] px-4 py-2 text-[12px]"
               style={{
-                background: BG,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: "rgba(183,233,76,0.1)",
+                border: "1px solid rgba(183,233,76,0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
               }}
             >
-              🍎 Identita nalezena / Brand DNA kompletní
+              🎯
             </div>
-            <div className="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: TEXT }}>Identita nalezena</div>
+              <div style={{ fontSize: 10, color: FAINT }}>Brand DNA kompletní</div>
+            </div>
+          </div>
+
+          {/* Karta skóre */}
+          <div
+            style={{
+              background: BG,
+              border: `1px solid ${BORDER}`,
+              borderRadius: 20,
+              padding: 28,
+              boxShadow: "0 8px 40px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
               <div>
-                <p className="text-[14px] font-semibold mb-1" style={{ color: TEXT }}>
-                  {MOCKUP_DOMAIN}
-                </p>
-                <p className="text-[12px]" style={{ color: FAINT }}>
-                  Analýza dokončena · právě teď
-                </p>
+                <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{MOCKUP_DOMAIN}</div>
+                <span style={{ fontSize: 11, color: FAINT, display: "block", marginTop: 1 }}>Analýza dokončena · právě teď</span>
               </div>
-              <div className="flex flex-col items-center shrink-0">
-                <div
-                  className="flex h-[52px] w-[52px] items-center justify-center rounded-full border-[3px]"
-                  style={{ borderColor: LIME }}
-                >
-                  <span className="text-[20px] font-bold" style={{ color: TEXT }}>55</span>
-                </div>
-                <span className="text-[10px] mt-1" style={{ color: FAINT }}>/100</span>
+              <div
+                className="ring-glow"
+                style={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: "50%",
+                  border: "4px solid " + LIME,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(183,233,76,0.06)",
+                }}
+              >
+                <span style={{ fontSize: 22, fontWeight: 900, color: LIME_DARK, lineHeight: 1 }}>55</span>
+                <span style={{ fontSize: 9, color: FAINT }}>/100</span>
               </div>
             </div>
-            <div className="space-y-4 mb-6">
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
               {MOCKUP_PILLARS.map((p) => (
-                <div key={p.label} className="flex items-center gap-3">
-                  <span className="text-base">{p.icon}</span>
-                  <span className="flex-1 text-[13px]" style={{ color: TEXT }}>{p.label}</span>
-                  <div
-                    className="h-1.5 rounded-full overflow-hidden flex-1 max-w-[120px]"
-                    style={{ background: "rgba(0,0,0,0.08)" }}
-                  >
+                <div key={p.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ fontSize: 12, color: MUTED, width: 100, flexShrink: 0 }}>{p.icon} {p.label}</div>
+                  <div style={{ flex: 1, height: 6, background: BG2, borderRadius: 3, overflow: "hidden" }}>
                     <div
-                      className="h-full rounded-full"
                       style={{
-                        width: `${(p.value / 10) * 100}%`,
+                        height: "100%",
+                        width: `${p.pct}%`,
                         background: p.color,
+                        borderRadius: 3,
                       }}
                     />
                   </div>
-                  <span className="text-[12px] font-medium w-5" style={{ color: MUTED }}>{p.value}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: TEXT, width: 18, textAlign: "right" }}>{p.value}</span>
                 </div>
               ))}
             </div>
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               <span
-                className="rounded-lg px-3 py-1.5 text-[11px]"
-                style={{ background: "rgba(212,69,122,0.15)", color: PINK }}
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: 100,
+                  letterSpacing: "0.04em",
+                  background: "rgba(183,233,76,0.12)",
+                  color: LIME_DARK,
+                  border: "1px solid rgba(183,233,76,0.3)",
+                }}
               >
-                ⚠ Slabá architektura
+                ✓ Silná identita
               </span>
               <span
-                className="rounded-lg px-3 py-1.5 text-[11px]"
-                style={{ background: "rgba(0,0,0,0.06)", color: MUTED }}
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: 100,
+                  letterSpacing: "0.04em",
+                  background: "rgba(220,60,60,0.08)",
+                  color: TAG_RED,
+                  border: "1px solid rgba(220,60,60,0.2)",
+                }}
+              >
+                ↓ Slabá architektura
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: 100,
+                  letterSpacing: "0.04em",
+                  background: BG1,
+                  color: MUTED,
+                  border: `1px solid ${BORDER}`,
+                }}
               >
                 Průměrná energie
               </span>
             </div>
-            <p className="text-[12px]" style={{ color: FAINT }}>
-              🍊 Stratég doporučen / Architekt · 87% shoda
-            </p>
+          </div>
+
+          {/* Floating karta 2 — Stratég doporučen */}
+          <div
+            className="float-badge"
+            style={{
+              position: "absolute",
+              bottom: -16,
+              left: -20,
+              background: BG,
+              border: `1px solid ${BORDER}`,
+              borderRadius: 12,
+              padding: "12px 16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              fontSize: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: "rgba(183,233,76,0.1)",
+                border: "1px solid rgba(183,233,76,0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
+              }}
+            >
+              🧠
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: TEXT }}>Stratég doporučen</div>
+              <div style={{ fontSize: 10, color: FAINT }}>Architekt · 87% shoda</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* StartAnalyzer — formulář pod hero */}
-      <section id="analyzer" className="px-6 py-16 md:py-20" style={{ background: BG1 }}>
-        <div className="mx-auto w-full max-w-[880px]" style={analyzerWrapperStyle}>
-          <StartAnalyzer diagnostika hideIntro />
+      {/* FORMULÁŘ — Spustit analýzu */}
+      <section
+        id="analyzer"
+        style={{
+          background: BG1,
+          borderTop: `1px solid ${BORDER}`,
+          borderBottom: `1px solid ${BORDER}`,
+          padding: "80px 40px",
+        }}
+      >
+        <div style={{ maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
+            Spustit analýzu
+          </p>
+          <h2 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: TEXT, marginBottom: 12, letterSpacing: "-0.02em" }}>
+            Zadejte web.
+          </h2>
+          <p style={{ fontSize: 16, color: MUTED, marginBottom: 32, lineHeight: 1.6 }}>Zbytek uděláme za vás.</p>
+          <div style={analyzerWrapperStyle}>
+            <StartAnalyzer diagnostika hideIntro />
+          </div>
+          <p style={{ fontSize: 12, color: "#ccc", marginTop: 12 }}>Zdarma · Bez registrace · Výsledky během minut</p>
         </div>
-        <p className="mt-5 text-center text-[12px]" style={{ color: "#ccc" }}>
-          Zdarma · Bez registrace · Výsledky během minut
-        </p>
       </section>
-
-      {/* DIVIDER */}
-      <div style={{ padding: "0 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", height: 1, background: BORDER }} />
-      </div>
 
       {/* SEKCE PROBLÉM */}
       <section
@@ -343,40 +494,40 @@ export default function BrandScanPage() {
           background: BG1,
           borderTop: `1px solid ${BORDER}`,
           borderBottom: `1px solid ${BORDER}`,
+          padding: "80px 40px",
         }}
       >
-        <div style={{ padding: "96px 24px", maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>
-            PROBLÉM
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
+            Problém
           </p>
           <h2
             style={{
               fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(28px, 3.5vw, 42px)",
+              fontSize: 36,
               fontWeight: 900,
               color: TEXT,
-              marginBottom: 48,
+              marginBottom: 40,
               letterSpacing: "-0.02em",
-              lineHeight: 1.15,
+              lineHeight: 1.2,
             }}
           >
             Máš značku. Ale nikdo to nevidí tak, jak ty.
           </h2>
-          <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
-            {PROBLEM_CARDS.map((card) => (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3" style={{ gap: 20 }}>
+            {PROBLEM_CARDS.map((card, i) => (
               <div
                 key={card.title}
-                className="rounded-[16px] border bg-white transition-shadow duration-200"
                 style={{
-                  border: `1px solid ${BORDER2}`,
+                  background: BG,
+                  border: i === 2 ? "1px solid rgba(183,233,76,0.4)" : `1px solid ${BORDER}`,
+                  borderRadius: 16,
                   padding: 28,
-                  borderLeft: `3px solid ${card.accent}`,
                   boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
+                  ...(i === 2 && { background: "rgba(183,233,76,0.04)" }),
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.07)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 6px rgba(0,0,0,0.04)"; }}
               >
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 10 }}>{card.title}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: i === 2 ? LIME_DARK : TEXT, marginBottom: 10, lineHeight: 1.3 }}>{card.title}</h3>
                 <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7 }}>{card.text}</p>
               </div>
             ))}
@@ -385,48 +536,43 @@ export default function BrandScanPage() {
       </section>
 
       {/* SEKCE PILÍŘE */}
-      <section style={{ background: BG }}>
-        <div style={{ padding: "96px 24px", maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>
-            CO MĚŘÍME
+      <section style={{ background: BG, padding: "80px 40px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
+            Co měříme
           </p>
           <h2
             style={{
               fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(28px, 3.5vw, 42px)",
+              fontSize: 36,
               fontWeight: 900,
               color: TEXT,
-              marginBottom: 48,
+              marginBottom: 40,
               letterSpacing: "-0.02em",
-              lineHeight: 1.15,
+              lineHeight: 1.2,
             }}
           >
             Pět pilířů které rozhodují.
           </h2>
-          <div className="grid grid-cols-2 gap-[14px] lg:grid-cols-5">
+          <p style={{ fontSize: 15, color: MUTED, marginTop: -28, marginBottom: 0, maxWidth: 560 }}>
+            Každý pilíř říká něco konkrétního o tom proč zákazníci zůstávají — nebo odcházejí.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16, marginTop: 40 }}>
             {PILLARS.map((item) => (
               <div
                 key={item.title}
-                className="rounded-[14px] border bg-white text-center transition-all duration-200"
                 style={{
-                  border: `1px solid ${BORDER2}`,
-                  padding: "22px 16px",
-                  boxShadow: "0 1px 5px rgba(0,0,0,0.04)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = LIME;
-                  e.currentTarget.style.transform = "translateY(-3px)";
-                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.07)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = BORDER2;
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 1px 5px rgba(0,0,0,0.04)";
+                  background: BG,
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 14,
+                  padding: "24px 18px",
+                  textAlign: "center",
+                  boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
                 }}
               >
-                <span className="block text-[26px] mb-2.5" style={{ marginBottom: 10 }} aria-hidden>{item.icon}</span>
-                <h3 style={{ fontSize: 13, fontWeight: 700, color: TEXT, marginBottom: 6 }}>{item.title}</h3>
-                <p style={{ fontSize: 11, color: MUTED, lineHeight: 1.55 }}>{item.desc}</p>
+                <div style={{ fontSize: 28, marginBottom: 12 }} aria-hidden>{item.icon}</div>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 8 }}>{item.title}</h3>
+                <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.5 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -440,61 +586,57 @@ export default function BrandScanPage() {
           background: BG1,
           borderTop: `1px solid ${BORDER}`,
           borderBottom: `1px solid ${BORDER}`,
+          padding: "80px 40px",
         }}
       >
-        <div style={{ padding: "96px 24px", maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>
-            JAK TO FUNGUJE
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
+            Jak to funguje
           </p>
           <h2
             style={{
               fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(28px, 3.5vw, 42px)",
+              fontSize: 36,
               fontWeight: 900,
               color: TEXT,
-              marginBottom: 48,
+              marginBottom: 40,
               letterSpacing: "-0.02em",
-              lineHeight: 1.15,
+              lineHeight: 1.2,
             }}
           >
             Tři kroky. Výsledky hned.
           </h2>
-          <div
-            className="mb-12 h-0.5 rounded-sm"
-            style={{
-              height: 2,
-              borderRadius: 2,
-              background: `linear-gradient(to right, ${LIME}, ${PURPLE}, ${PINK})`,
-              opacity: 0.2,
-            }}
-            aria-hidden
-          />
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <p style={{ fontSize: 14, color: FAINT, marginTop: -28 }}>Žádná registrace. Žádné čekání. Jen URL a výsledky.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, marginTop: 40 }}>
             {STEPS.map((step) => (
               <div
                 key={step.num}
-                className="rounded-[16px] border bg-white transition-all duration-200"
                 style={{
-                  border: `1px solid ${BORDER2}`,
+                  background: BG,
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 16,
                   padding: 28,
-                  boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-3px)";
-                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.07)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 1px 6px rgba(0,0,0,0.04)";
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}
               >
                 <div
-                  className="mb-4 flex h-[38px] w-[38px] items-center justify-center rounded-full border-2 font-bold"
-                  style={{ borderColor: LIME, fontSize: 13, color: LIME_DARK }}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: LIME,
+                    color: TEXT,
+                    fontSize: 14,
+                    fontWeight: 900,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 16,
+                  }}
                 >
                   {step.num}
                 </div>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 8 }}>{step.title}</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: TEXT, marginBottom: 8 }}>{step.title}</h3>
                 <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.6 }}>{step.text}</p>
               </div>
             ))}
@@ -503,169 +645,163 @@ export default function BrandScanPage() {
       </section>
 
       {/* SEKCE CO DOSTANEŠ */}
-      <section style={{ background: BG }}>
-        <div style={{ padding: "96px 24px", maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>
-            CO DOSTANEŠ
+      <section style={{ background: BG1, borderTop: `1px solid ${BORDER}`, padding: "80px 40px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
+            Co dostaneš
           </p>
           <h2
             style={{
               fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(28px, 3.5vw, 42px)",
+              fontSize: 36,
               fontWeight: 900,
               color: TEXT,
-              marginBottom: 48,
+              marginBottom: 40,
               letterSpacing: "-0.02em",
-              lineHeight: 1.15,
+              lineHeight: 1.2,
             }}
           >
             Výsledky Brand Scan.
           </h2>
-          <ul className="flex flex-col" style={{ gap: 12, maxWidth: 640 }}>
-            {BENEFITS.map((item) => (
-              <li key={item} className="flex items-start gap-3" style={{ fontSize: 14, color: MUTED, lineHeight: 1.5 }}>
-                <span
-                  className="flex shrink-0 items-center justify-center rounded-full font-bold"
+          <p style={{ fontSize: 15, color: MUTED, marginTop: -28 }}>Kompletní obraz tvé značky — zdarma, bez závazku.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 40 }}>
+            {[
+              { icon: "📊", title: "Celkové skóre značky (0–100)", desc: "Hodnocení pěti pilířů s komentářem — konkrétní čísla, ne obecné rady." },
+              { icon: "🧬", title: "Brand DNA", desc: "Positioning, tón komunikace, unikátní hodnota — přesně jak tě vidí zákazník." },
+              { icon: "🎯", title: "Doporučení AI stratéga", desc: "Systém doporučí nejvhodnějšího stratéga pro tvoji značku a situaci." },
+              { icon: "👥", title: "Cílová skupina", desc: "Kdo tě sleduje a jak ji oslovit — uložené výsledky, kdykoli se vrátíš." },
+            ].map((item) => (
+              <div
+                key={item.title}
+                style={{
+                  background: BG,
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 14,
+                  padding: 24,
+                  display: "flex",
+                  gap: 16,
+                  alignItems: "flex-start",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                }}
+              >
+                <div
                   style={{
-                    width: 22,
-                    height: 22,
-                    background: "rgba(183,233,76,0.15)",
-                    border: "1px solid rgba(183,233,76,0.4)",
-                    fontSize: 11,
-                    color: LIME_DARK,
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: "rgba(183,233,76,0.1)",
+                    border: "1px solid rgba(183,233,76,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 18,
+                    flexShrink: 0,
                   }}
                 >
-                  ✓
-                </span>
-                <span>{item}</span>
-              </li>
+                  {item.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{item.title}</div>
+                  <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.6 }}>{item.desc}</div>
+                </div>
+              </div>
             ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* SEKCE PREMIUM CTA */}
-      <section
-        style={{
-          background: BG1,
-          borderTop: `1px solid ${BORDER}`,
-          borderBottom: `1px solid ${BORDER}`,
-        }}
-      >
-        <div style={{ padding: "96px 24px", maxWidth: 1100, margin: "0 auto" }}>
-          <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>
-            DALŠÍ KROK
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-playfair), serif",
-              fontSize: "clamp(28px, 3.5vw, 42px)",
-              fontWeight: 900,
-              color: TEXT,
-              marginBottom: 28,
-              letterSpacing: "-0.02em",
-              lineHeight: 1.15,
-            }}
-          >
-            Výsledky jsou jen začátek.
-          </h2>
+          </div>
           <div
-            className="grid grid-cols-1 gap-8 rounded-[20px] border md:grid-cols-[1fr_auto] md:items-center"
             style={{
+              marginTop: 32,
               background: BG,
-              border: `1px solid ${BORDER2}`,
-              padding: 40,
-              gap: 32,
-              boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+              border: `1px solid ${BORDER}`,
+              borderRadius: 20,
+              padding: 36,
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              gap: 24,
+              alignItems: "center",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
             }}
           >
             <div>
-              <h3
-                style={{
-                  fontFamily: "var(--font-playfair), serif",
-                  fontSize: 28,
-                  fontWeight: 900,
-                  color: TEXT,
-                  marginBottom: 12,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Premium Brand hovor.
-              </h3>
-              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.65, marginBottom: 12 }}>
-                Pokud chceš vědět co s tím — rezervuj Premium Brand hovor. Hodina která změní jak o značce přemýšlíš.
-              </p>
-              <p style={{ fontSize: 13, color: FAINT, marginBottom: 6 }}>
-                7 800 Kč · strategický hovor · vizuální board · 3 Canva šablony na míru
-              </p>
-              <p style={{ fontSize: 12, color: FAINT }}>
-                Pokud nebudete spokojeni — vrátíme celou částku. <span style={{ color: LIME_DARK, fontWeight: 700 }}>Obsah vám zůstane.</span>
-              </p>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 8 }}>Další krok</p>
+              <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 26, fontWeight: 900, color: TEXT, marginBottom: 10, letterSpacing: "-0.02em" }}>Výsledky jsou jen začátek.</h3>
+              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, marginBottom: 12 }}>Pokud chceš vědět co s tím — rezervuj Premium Brand hovor. Hodina která změní jak o značce přemýšlíš.</p>
+              <p style={{ fontSize: 12, color: FAINT }}>7 800 Kč · strategický hovor · vizuální board · 3 Canva šablony na míru</p>
+              <p style={{ fontSize: 11, color: "#bbb", marginTop: 6 }}>Pokud nebudete spokojeni — vrátíme celou částku. Obsah vám zůstane.</p>
             </div>
-            <div>
-              <Link
-                href="/premiova-vizualni-identita"
-                className="inline-block rounded-[10px] px-[22px] py-3 text-[13px] font-bold no-underline transition-colors"
-                style={{ border: "1.5px solid " + LIME, color: LIME_DARK, background: "transparent" }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = LIME;
-                  e.currentTarget.style.color = TEXT;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = LIME_DARK;
-                }}
-              >
-                Zjistit více o Premium Brand →
-              </Link>
-            </div>
+            <Link
+              href="/premiova-vizualni-identita"
+              style={{
+                padding: "13px 26px",
+                fontSize: 14,
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+                background: LIME,
+                color: TEXT,
+                borderRadius: 8,
+                textDecoration: "none",
+              }}
+            >
+              Zjistit více o Premium Brand →
+            </Link>
           </div>
         </div>
       </section>
 
       {/* ZÁVĚREČNÉ CTA */}
-      <section style={{ padding: "96px 24px", maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
+      <section style={{ padding: "80px 40px", maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
         <h2
           style={{
             fontFamily: "var(--font-playfair), serif",
-            fontSize: "clamp(26px, 3.5vw, 38px)",
+            fontSize: 36,
             fontWeight: 900,
             color: TEXT,
-            marginBottom: 32,
+            marginBottom: 16,
             letterSpacing: "-0.02em",
             lineHeight: 1.2,
           }}
         >
-          Než investuješ do obsahu —
-          <br />
-          zjisti co skutečně nefunguje.
+          Než investuješ do obsahu — zjisti co skutečně nefunguje.
         </h2>
-        <div className="mx-auto w-full max-w-[600px] text-left" style={analyzerWrapperStyle}>
-          <StartAnalyzer diagnostika hideIntro />
-        </div>
-        <p style={{ fontSize: 12, color: FAINT, marginTop: 16 }}>
-          Studio Lucifera · Kampa, Praha · AI u nás vychází z reálných fotek
-        </p>
+        <p style={{ fontSize: 16, color: MUTED, marginBottom: 32, lineHeight: 1.6 }}>Zdarma. Bez registrace. Výsledky do 2 minut.</p>
+        <Link
+          href="#analyzer"
+          style={{
+            display: "inline-block",
+            padding: "14px 36px",
+            fontSize: 16,
+            fontWeight: 700,
+            background: LIME,
+            color: TEXT,
+            borderRadius: 12,
+            textDecoration: "none",
+          }}
+        >
+          Spustit Brand Scan →
+        </Link>
+        <p style={{ fontSize: 12, color: FAINT, marginTop: 14 }}>Ukázková analýza je vstupní fází před strategickou konzultací.</p>
       </section>
 
-      {/* FOOTER */}
+      {/* FOOTER — tmavý jako v referenci */}
       <footer
         style={{
-          borderTop: `1px solid ${BORDER}`,
-          padding: "24px 40px",
+          background: "#111",
+          color: "rgba(255,255,255,0.5)",
+          padding: "32px 40px",
           display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 8,
+          gap: 12,
           fontSize: 12,
-          color: FAINT,
         }}
       >
-        <Link href="/" className="no-underline" style={{ color: FAINT }}>
+        <div style={{ color: "white", fontWeight: 700, letterSpacing: "0.05em" }}>
+          LUCIFERA <span style={{ color: LIME }}>·</span> AI Content System
+        </div>
+        <div>Studio Lucifera · Kampa, Praha · AI u nás vychází z reálných fotek</div>
+        <Link href="/" style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>
           ← Zpět na úvod
         </Link>
-        <span>© 2026 Studio Lucifera</span>
-        <span>Brand Scan · Zdarma</span>
       </footer>
     </main>
   );
