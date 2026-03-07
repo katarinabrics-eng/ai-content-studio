@@ -305,14 +305,15 @@ export default function PremioveVizualniIdentitaPage() {
             style={{ position: "relative", minHeight: 420 }}
           >
             <div
-              className="hero-float-card hero-card-1 premiove-hero-entry delay-5"
+              className="hero-float-card hero-card-1"
               style={{
                 position: "absolute",
                 top: 24,
                 left: 0,
                 borderRadius: 18,
                 padding: "14px 20px",
-                animation: "float1 3.5s ease-in-out infinite",
+                opacity: 0,
+                animation: "fadeUp .7s ease .4s forwards, float1 3.5s ease-in-out 1.1s infinite",
                 zIndex: 3,
                 ...heroCardGlass,
               }}
@@ -325,7 +326,7 @@ export default function PremioveVizualniIdentitaPage() {
             </div>
 
             <div
-              className="hero-float-card hero-card-2 premiove-hero-entry delay-5"
+              className="hero-float-card hero-card-2"
               style={{
                 position: "absolute",
                 top: 24,
@@ -333,7 +334,8 @@ export default function PremioveVizualniIdentitaPage() {
                 borderRadius: 18,
                 padding: "16px 20px",
                 textAlign: "center",
-                animation: "float2 4s ease-in-out 0.8s infinite",
+                opacity: 0,
+                animation: "fadeUp .7s ease .4s forwards, float2 4s ease-in-out 1.1s infinite",
                 zIndex: 3,
                 ...heroCardGlass,
               }}
@@ -357,14 +359,15 @@ export default function PremioveVizualniIdentitaPage() {
             </div>
 
             <div
-              className="hero-float-card hero-card-3 premiove-hero-entry delay-6"
+              className="hero-float-card hero-card-3"
               style={{
                 position: "absolute",
                 bottom: 100,
                 left: 20,
                 borderRadius: 18,
                 padding: "16px 22px",
-                animation: "float3 4.5s ease-in-out 1.5s infinite",
+                opacity: 0,
+                animation: "fadeUp .7s ease .48s forwards, float3 4.5s ease-in-out 1.18s infinite",
                 zIndex: 3,
                 ...heroCardGlass,
               }}
@@ -381,14 +384,15 @@ export default function PremioveVizualniIdentitaPage() {
             </div>
 
             <div
-              className="hero-float-card hero-card-4 premiove-hero-entry delay-7"
+              className="hero-float-card hero-card-4"
               style={{
                 position: "absolute",
                 bottom: 200,
                 right: 24,
                 borderRadius: 14,
                 padding: "14px 18px",
-                animation: "float4 3.8s ease-in-out 0.4s infinite",
+                opacity: 0,
+                animation: "fadeUp .7s ease .56s forwards, float4 3.8s ease-in-out 1.26s infinite",
                 zIndex: 3,
                 ...heroCardGlass,
               }}
