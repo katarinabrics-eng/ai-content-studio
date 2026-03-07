@@ -72,11 +72,14 @@ const MOCKUP_PILLARS = [
 const MOCKUP_DOMAIN = "contentpro.cz";
 
 const analyzerWrapperStyle: React.CSSProperties = {
-  background: BG1,
-  border: `1px solid ${BORDER}`,
-  borderRadius: 18,
-  padding: "28px 32px",
-  boxShadow: "0 2px 20px rgba(0,0,0,0.05)",
+  maxWidth: 860,
+  width: "100%",
+  margin: "0 auto",
+  background: "linear-gradient(180deg, #fafaf8 0%, #f5f4f0 100%)",
+  border: "1px solid rgba(0,0,0,0.12)",
+  borderRadius: 20,
+  padding: "32px 36px",
+  boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.5) inset",
 };
 
 export default function BrandScanPage() {
@@ -107,6 +110,9 @@ export default function BrandScanPage() {
         @media (max-width: 900px) {
           .hero-section { grid-template-columns: 1fr !important; padding: 100px 24px 60px !important; }
           .hero-section > div:last-child { order: -1; justify-self: center; max-width: 100%; }
+        }
+        @media (max-width: 640px) {
+          .brand-scan-analyzer-card { padding: 24px 20px !important; border-radius: 16px !important; }
         }
       `}</style>
 
@@ -454,7 +460,7 @@ export default function BrandScanPage() {
           padding: "80px 40px",
         }}
       >
-        <div style={{ maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto", textAlign: "center" }}>
           <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
             Spustit analýzu
           </p>
@@ -462,7 +468,7 @@ export default function BrandScanPage() {
             Zadejte web.
           </h2>
           <p style={{ fontSize: 16, color: MUTED, marginBottom: 32, lineHeight: 1.6 }}>Zbytek uděláme za vás.</p>
-          <div style={analyzerWrapperStyle}>
+          <div style={analyzerWrapperStyle} className="brand-scan-analyzer-card">
             <StartAnalyzer diagnostika hideIntro />
           </div>
           <p style={{ fontSize: 12, color: "#ccc", marginTop: 12 }}>Zdarma · Bez registrace · Výsledky během minut</p>

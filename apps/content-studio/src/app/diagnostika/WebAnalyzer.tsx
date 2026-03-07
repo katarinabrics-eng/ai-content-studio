@@ -31,25 +31,33 @@ const C = {
   inp: {
     width: "100%",
     background: "#ffffff",
-    border: "1px solid rgba(0,0,0,0.12)",
-    borderRadius: 10,
-    padding: "12px 14px",
+    border: "1px solid rgba(0,0,0,0.10)",
+    borderRadius: 12,
+    padding: "14px 18px",
     color: "#111111",
-    fontSize: 14,
+    fontSize: 15,
     outline: "none",
     boxSizing: "border-box" as const,
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+  },
+  inpPremium: {
+    border: "1px solid rgba(0,0,0,0.08)",
+    padding: "16px 20px",
+    borderRadius: 12,
   },
   btn: {
     width: "100%",
-    padding: 13,
+    padding: 16,
     background: LIME_MAIN,
     color: "#111",
     fontWeight: 700,
-    fontSize: 14,
+    fontSize: 15,
     border: "none",
-    borderRadius: 10,
+    borderRadius: 12,
     cursor: "pointer" as const,
-    marginTop: 10,
+    marginTop: 12,
+    transition: "opacity 0.2s ease, box-shadow 0.2s ease",
+    boxShadow: "0 2px 12px rgba(183,233,76,0.35)",
   },
 };
 
@@ -136,11 +144,15 @@ export function WebAnalyzer({
   const urlStr = typeof url === "string" ? url : "";
   const canSubmit = (mode === "web" && urlStr.trim()) || (diagnostika && mode === "manual" && hasManualInput);
   const showIntro = diagnostika && !hideIntro;
+  const isBrandScan = diagnostika && hideIntro;
   return (
     <div className="analyzer-fade">
       <style>{`
-        .analyzer-inp:focus { border-color: #b7e94c !important; box-shadow: 0 0 0 3px rgba(183,233,76,0.18); }
+        .analyzer-inp:focus { border-color: #b7e94c !important; box-shadow: 0 0 0 3px rgba(183,233,76,0.2); outline: none; }
         .analyzer-inp::placeholder { color: #bbbbbb; }
+        .analyzer-toggle-btn-active { background: #b7e94c !important; color: #111 !important; font-weight: 700 !important; box-shadow: 0 2px 10px rgba(183,233,76,0.35); }
+        .analyzer-checklist-item { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #555; }
+        @media (max-width: 560px) { .analyzer-checklist-wrap { flex-direction: column; align-items: center; gap: 12px; } }
       `}</style>
       {showIntro && (
         <section className="relative max-w-4xl mx-auto mb-20 px-6">
@@ -203,23 +215,23 @@ export function WebAnalyzer({
         </div>
       )}
 
-      <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-10" : ""} style={diagnostika ? { background: "#ffffff", border: `1px solid ${CARD_BORDER}` } : C.card}>
+      <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-10" : ""} style={diagnostika ? { background: isBrandScan ? "transparent" : "#ffffff", border: isBrandScan ? "none" : `1px solid ${CARD_BORDER}` } : C.card}>
         {diagnostika && (
           <div className="flex justify-center mb-6">
-            <div className="inline-flex rounded-full p-1 border" style={{ background: lightTokens.bg, borderColor: lightTokens.border }}>
+            <div className="inline-flex rounded-full p-1.5 border" style={{ background: lightTokens.bg, borderColor: "rgba(0,0,0,0.1)" }}>
               <button
                 type="button"
                 onClick={() => setMode("web")}
-                className="px-6 py-2 rounded-full text-sm transition"
-                style={mode === "web" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0efeb", color: lightTokens.muted }}
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${mode === "web" ? "analyzer-toggle-btn-active" : ""}`}
+                style={mode === "web" ? undefined : { background: "transparent", color: lightTokens.muted }}
               >
                 Mám web
               </button>
               <button
                 type="button"
                 onClick={() => setMode("manual")}
-                className="px-6 py-2 rounded-full text-sm transition"
-                style={mode === "manual" ? { background: LIME_MAIN, color: "#111" } : { background: "#f0efeb", color: lightTokens.muted }}
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${mode === "manual" ? "analyzer-toggle-btn-active" : ""}`}
+                style={mode === "manual" ? undefined : { background: "transparent", color: lightTokens.muted }}
               >
                 Nemám web
               </button>
@@ -232,7 +244,7 @@ export function WebAnalyzer({
             <label style={C.lbl}>URL webu klienta</label>
             <input
               className="analyzer-inp"
-              style={C.inp}
+              style={isBrandScan ? { ...C.inp, ...C.inpPremium } : C.inp}
               placeholder="Zde zadejte adresu webu"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
@@ -474,7 +486,7 @@ export function WebAnalyzer({
         )}
         <button
           type="button"
-          style={{ ...C.btn, opacity: canSubmit ? 1 : 0.3 }}
+          style={{ ...C.btn, opacity: canSubmit ? 1 : 0.45 }}
           onClick={onAnalyze}
           disabled={!canSubmit}
         >
@@ -482,9 +494,12 @@ export function WebAnalyzer({
         </button>
       </div>
 
-      <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
-        {["Screenshot webu", "Analýza textu", "Claude Vision", "Brand DNA"].map((t) => (
-          <span key={t} style={{ fontSize: 10, color: lightTokens.muted }}>✓ {t}</span>
+      <div className={`analyzer-checklist-wrap ${isBrandScan ? "analyzer-checklist-wrap" : ""}`} style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
+        {["Screenshot webu", "Analýza textu", "Brand DNA", "Skóre čitelnosti"].map((t) => (
+          <span key={t} className="analyzer-checklist-item" style={{ color: lightTokens.muted }}>
+            <span style={{ width: 18, height: 18, borderRadius: "50%", background: LIME_MAIN, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#111", flexShrink: 0 }}>✓</span>
+            {t}
+          </span>
         ))}
       </div>
     </div>
