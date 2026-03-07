@@ -680,7 +680,7 @@ export default function BrandScanPage() {
       <section style={{ background: BG1, borderTop: `1px solid ${BORDER}`, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
-            Co dostaneš
+            Co dostanete
           </p>
           <h2
             style={{
@@ -695,13 +695,13 @@ export default function BrandScanPage() {
           >
             Výsledky Brand Scan.
           </h2>
-          <p style={{ fontSize: 15, color: MUTED, marginTop: -28 }}>Kompletní obraz tvé značky — zdarma, bez závazku.</p>
+          <p style={{ fontSize: 15, color: MUTED, marginTop: -28 }}>Kompletní obraz vaší značky — zdarma, bez závazku.</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 40 }}>
             {[
               { icon: "📊", title: "Celkové skóre značky (0–100)", desc: "Hodnocení pěti pilířů s komentářem — konkrétní čísla, ne obecné rady." },
-              { icon: "🧬", title: "Brand DNA", desc: "Positioning, tón komunikace, unikátní hodnota — přesně jak tě vidí zákazník." },
-              { icon: "🎯", title: "Doporučení AI stratéga", desc: "Systém doporučí nejvhodnějšího stratéga pro tvoji značku a situaci." },
-              { icon: "👥", title: "Cílová skupina", desc: "Kdo tě sleduje a jak ji oslovit — uložené výsledky, kdykoli se vrátíš." },
+              { icon: "🧬", title: "Brand DNA", desc: "Positioning, tón komunikace, unikátní hodnota — přesně jak vás vidí zákazník." },
+              { icon: "🎯", title: "Doporučení AI stratéga", desc: "Systém doporučí nejvhodnějšího stratéga pro vaši značku a situaci." },
+              { icon: "👥", title: "Cílová skupina", desc: "Kdo vás sleduje a jak ji oslovit — výsledky se uloží po zadání e-mailu. Bez něj se po analýze smažou." },
             ].map((item) => (
               <div
                 key={item.title}
@@ -756,8 +756,8 @@ export default function BrandScanPage() {
             <div>
               <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 8 }}>Další krok</p>
               <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 26, fontWeight: 900, color: TEXT, marginBottom: 10, letterSpacing: "-0.02em" }}>Výsledky jsou jen začátek.</h3>
-              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, marginBottom: 12 }}>Pokud chceš vědět co s tím — rezervuj Premium Brand hovor. Hodina která změní jak o značce přemýšlíš.</p>
-              <p style={{ fontSize: 12, color: FAINT }}>7 800 Kč · strategický hovor · vizuální board · 3 Canva šablony na míru</p>
+              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, marginBottom: 12 }}>Pokud chcete vědět co s tím — rezervujte Premium Brand hovor. Hodina která změní jak o značce přemýšlíte.</p>
+              <p style={{ fontSize: 12, color: FAINT }}>7 800 Kč · strategický hovor · vizuální board - podrobná prezentace · 3 Canva šablony na míru</p>
               <p style={{ fontSize: 11, color: "#bbb", marginTop: 6 }}>Pokud nebudete spokojeni — vrátíme celou částku. Obsah vám zůstane.</p>
             </div>
             <Link
