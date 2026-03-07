@@ -57,7 +57,7 @@ const BENEFITS = [
   "Uložené výsledky — kdykoli se vrátíš",
 ];
 
-const HERO_CHECKLIST = ["Screenshot webu", "Analýza textu", "Claude Vision", "Brand DNA"];
+const HERO_CHECKLIST = ["Screenshot webu", "Analýza textu", "Brand DNA", "Skóre čitelnosti"];
 
 const ORANGE_REF = "#e87040";
 const YELLOW_REF = "#e8c000";
@@ -220,10 +220,10 @@ export default function BrandScanPage() {
               letterSpacing: "-0.02em",
             }}
           >
-            Víš jak tvoje značka vypadá <em style={{ fontStyle: "italic", color: LIME_DARK }}>zvenku?</em>
+            Zadáš web. Za pár minut víš, kde ztrácíš zákazníky.
           </h1>
           <p style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, marginBottom: 24, maxWidth: 460 }}>
-            Zadej web. Za pár minut máš konkrétní čísla — kde ztrácíš zákazníky dřív než tě vůbec poznají.
+            Bezplatná diagnostika značky v konkrétních číslech. Bez registrace. Výsledky, které zůstanou.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
             {HERO_CHECKLIST.map((item) => (
@@ -263,7 +263,7 @@ export default function BrandScanPage() {
                 textDecoration: "none",
               }}
             >
-              Analyzovat značku →
+              Spustit diagnostiku zdarma →
             </Link>
             <Link
               href="#jak-to-funguje"
