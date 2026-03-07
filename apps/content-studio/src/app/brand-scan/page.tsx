@@ -792,7 +792,7 @@ export default function BrandScanPage() {
             lineHeight: 1.2,
           }}
         >
-          Než investuješ do obsahu — zjisti co skutečně nefunguje.
+          Než investujete do obsahu — zjistěte co skutečně nefunguje.
         </h2>
         <p style={{ fontSize: 16, color: MUTED, marginBottom: 32, lineHeight: 1.6 }}>Zdarma. Bez registrace. Výsledky do 2 minut.</p>
         <Link
