@@ -171,8 +171,12 @@ export default function PremioveVizualniIdentitaPage() {
           .premiove-hero{min-height:auto;padding:0 !important;background-position:0 0, right bottom !important;}
           .premiove-hero .hero-mobile-overlay{display:block !important;}
           .premiove-hero .hero-content{grid-template-columns:1fr !important;padding:100px 24px 60px !important;}
-          .premiove-hero .hero-cards-wrap{min-height:180px;position:relative;}
-          .premiove-hero .hero-card-3,.premiove-hero .hero-card-4{display:none !important;}
+          .premiove-hero .hero-cards-wrap{min-height:220px;position:relative;}
+        }
+        @media (max-width: 768px) {
+          .premiove-hero .hero-card-2,.premiove-hero .hero-card-3{display:none !important;}
+          .premiove-hero .hero-card-1{top:15% !important;left:auto !important;right:4% !important;}
+          .premiove-hero .hero-card-4{bottom:20% !important;right:3% !important;}
         }
       `}</style>
 
@@ -302,14 +306,14 @@ export default function PremioveVizualniIdentitaPage() {
 
           <div
             className="hero-cards-wrap"
-            style={{ position: "relative", minHeight: 420 }}
+            style={{ position: "relative", width: "100%", height: "100%", minHeight: 420 }}
           >
             <div
               className="hero-float-card hero-card-1"
               style={{
                 position: "absolute",
-                top: 24,
-                left: 0,
+                top: "20%",
+                left: "42%",
                 borderRadius: 18,
                 padding: "14px 20px",
                 opacity: 0,
@@ -329,8 +333,8 @@ export default function PremioveVizualniIdentitaPage() {
               className="hero-float-card hero-card-2"
               style={{
                 position: "absolute",
-                top: 24,
-                right: 0,
+                top: "15%",
+                right: "4%",
                 borderRadius: 18,
                 padding: "16px 20px",
                 textAlign: "center",
@@ -362,8 +366,8 @@ export default function PremioveVizualniIdentitaPage() {
               className="hero-float-card hero-card-3"
               style={{
                 position: "absolute",
-                bottom: 100,
-                left: 20,
+                bottom: "28%",
+                left: "40%",
                 borderRadius: 18,
                 padding: "16px 22px",
                 opacity: 0,
@@ -387,8 +391,8 @@ export default function PremioveVizualniIdentitaPage() {
               className="hero-float-card hero-card-4"
               style={{
                 position: "absolute",
-                bottom: 200,
-                right: 24,
+                bottom: "20%",
+                right: "3%",
                 borderRadius: 14,
                 padding: "14px 18px",
                 opacity: 0,
