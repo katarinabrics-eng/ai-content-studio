@@ -35,11 +35,11 @@ const PROBLEM_CARDS = [
 ];
 
 const PILLARS = [
-  { icon: "💡", title: "Světlo", desc: "Jak jasná je tvoje hodnota zákazníkovi." },
-  { icon: "⚡", title: "Energie", desc: "Jak silná je tvoje pozice na trhu." },
-  { icon: "🏗", title: "Architektura", desc: "Jak dobře vedeš zákazníka k akci." },
-  { icon: "🎯", title: "Identita", desc: "Jak rozpoznatelná je tvoje značka." },
-  { icon: "🤝", title: "Důvěra", desc: "Proč by ti zákazník měl věřit." },
+  { icon: "💡", title: "Hodnota", desc: "Jak jasná je vaše nabídka zákazníkovi." },
+  { icon: "⚡", title: "Pozice", desc: "Jak silné je vaše místo na trhu." },
+  { icon: "🏗", title: "Architektura", desc: "Jak dobře vedete zákazníka k akci." },
+  { icon: "🎯", title: "Identita", desc: "Jak rozpoznatelná je vaše značka." },
+  { icon: "🤝", title: "Důvěra", desc: "Proč by vám zákazník měl věřit." },
 ];
 
 const STEPS = [
