@@ -77,8 +77,8 @@ export function DiagnostikaResultsView({
   const summary = result.summary?.trim() ?? "";
   const pillarAnalysis: Record<string, PillarAnalysisItem> = result.pillarAnalysis ?? {};
   const suggested = result.suggested_strategists ?? [];
-  const brandName = displayName || (result.brandDna as { name?: string } | undefined)?.name ?? "Vaše značka";
-  const webUrl = displayWeb || scraped?.url ?? "";
+  const brandName = displayName || ((result.brandDna as { name?: string } | undefined)?.name ?? "Vaše značka");
+  const webUrl = displayWeb || (scraped?.url ?? "");
 
   const [scoreAnimated, setScoreAnimated] = useState(0);
   const [scoreVisible, setScoreVisible] = useState(false);
