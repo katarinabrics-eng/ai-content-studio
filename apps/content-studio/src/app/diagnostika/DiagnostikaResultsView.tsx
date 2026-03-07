@@ -75,7 +75,7 @@ export function DiagnostikaResultsView({
 }: DiagnostikaResultsViewProps) {
   const total = Math.min(100, Math.max(0, result.brandScore?.total ?? 0));
   const summary = result.summary?.trim() ?? "";
-  const pillarAnalysis = result.pillarAnalysis ?? {};
+  const pillarAnalysis = result.pillarAnalysis ?? ({} as Record<string, PillarAnalysisItem>);
   const suggested = result.suggested_strategists ?? [];
   const brandName = displayName || (result.brandDna as { name?: string } | undefined)?.name ?? "Vaše značka";
   const webUrl = displayWeb || scraped?.url ?? "";
