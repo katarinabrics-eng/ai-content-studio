@@ -190,25 +190,6 @@ export default function BrandScanPage() {
         }}
       >
         <div className="hero-left" style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              background: "rgba(183,233,76,0.12)",
-              border: "1px solid rgba(183,233,76,0.4)",
-              borderRadius: 100,
-              padding: "5px 14px",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: LIME_DARK,
-              marginBottom: 22,
-            }}
-          >
-            ● Brand Scan · Zdarma
-          </div>
           <h1
             style={{
               fontFamily: "var(--font-playfair), serif",
