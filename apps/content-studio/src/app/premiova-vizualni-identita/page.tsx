@@ -147,20 +147,30 @@ export default function PremioveVizualniIdentitaPage() {
         .faq-details details[open] summary{background:rgba(183,233,76,.06)}
         .faq-details details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
         .faq-details summary:hover{background:rgba(183,233,76,.05);color:#5a8a00}
+        @media (max-width: 900px) {
+          .premiove-hero{grid-template-columns:1fr !important; padding:100px 24px 60px !important;}
+          .premiove-hero .premiove-hero-visual{order:-1;}
+        }
       `}</style>
 
       <Header />
 
-      {/* HERO */}
+      {/* HERO — centrovaný blok, symetrický padding */}
       <section
+        className="premiove-hero"
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1.1fr",
-          padding: "0 0 0 80px",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 60,
+          padding: "120px 80px 80px",
+          maxWidth: 1280,
+          width: "100%",
+          margin: "0 auto",
           overflow: "hidden",
           position: "relative",
           background: BG,
           minHeight: "100vh",
+          alignItems: "center",
         }}
       >
         <div
@@ -201,7 +211,7 @@ export default function PremioveVizualniIdentitaPage() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            padding: "120px 60px 80px 0",
+            padding: "0 40px 0 0",
             zIndex: 2,
           }}
         >
@@ -305,7 +315,7 @@ export default function PremioveVizualniIdentitaPage() {
           <p style={{ fontSize: 12, color: FAINT }}>Vstupní hovor · 7 800 Kč · Bez závazku Fáze 1</p>
         </div>
 
-        <div style={{ position: "relative", display: "flex", alignItems: "stretch" }}>
+        <div className="premiove-hero-visual" style={{ position: "relative", display: "flex", alignItems: "stretch" }}>
           <div style={{ position: "relative", flex: 1, minHeight: "100vh", width: "100%" }}>
             <HeroImageFull />
             <div

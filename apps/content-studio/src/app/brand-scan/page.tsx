@@ -173,17 +173,17 @@ export default function BrandScanPage() {
         </div>
       </nav>
 
-      {/* HERO — centrovaný grid dle reference */}
+      {/* HERO — centrovaný grid, vyvážené rozestupy */}
       <section
         className="hero-section"
         style={{
-          padding: "110px 40px 80px",
-          maxWidth: 1100,
+          padding: "110px 48px 80px",
+          maxWidth: 1200,
           margin: "0 auto",
           width: "100%",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: 60,
+          gap: 56,
           alignItems: "center",
           minHeight: "100vh",
           background: BG,
