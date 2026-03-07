@@ -33,14 +33,13 @@ export function Header() {
       <div className="mx-auto flex h-full max-w-[1360px] items-center justify-between gap-4 px-6 xl:px-10">
         <a
           href="/"
-          className="flex shrink-0 items-center focus:outline-none"
+          style={{ display: "flex", alignItems: "center", textDecoration: "none" }}
           aria-label="Lucifera"
-          style={{ color: "#111111" }}
         >
           <img
             src="/placeholders/LUCIFERA-Logo-Left.png"
             alt="Lucifera"
-            className="h-7 w-auto shrink-0 object-contain sm:h-9 lg:h-10"
+            style={{ height: "32px", width: "auto" }}
           />
         </a>
 

@@ -88,16 +88,12 @@ export default function BrandScanPage() {
           justifyContent: "space-between",
         }}
       >
-        <Link href="/" className="flex shrink-0 items-center gap-3 no-underline">
-          <div
-            className="flex shrink-0 items-center justify-center rounded-[6px] font-black text-black"
-            style={{ background: LIME, width: 28, height: 28, fontSize: 13 }}
-          >
-            L
-          </div>
-          <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.06em", color: TEXT }}>
-            LUCIFERA
-          </span>
+        <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <img
+            src="/placeholders/LUCIFERA-Logo-Left.png"
+            alt="Lucifera"
+            style={{ height: "32px", width: "auto" }}
+          />
         </Link>
         <div className="hidden items-center lg:flex" style={{ gap: 26 }}>
           {navItems.map((item) => (
