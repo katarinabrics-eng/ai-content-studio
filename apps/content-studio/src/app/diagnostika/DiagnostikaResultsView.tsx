@@ -179,6 +179,10 @@ export function DiagnostikaResultsView({
     return () => obs.disconnect();
   }, []);
 
+  const screenshotSrc = scraped?.screenshot
+    ? (scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`)
+    : null;
+
   // Screenshot: skeleton 1.5s then reveal image with fade + scale
   useEffect(() => {
     if (!screenshotSrc) {
@@ -188,10 +192,6 @@ export function DiagnostikaResultsView({
     const t = setTimeout(() => setScreenshotReveal(true), 1500);
     return () => clearTimeout(t);
   }, [screenshotSrc]);
-
-  const screenshotSrc = scraped?.screenshot
-    ? (scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`)
-    : null;
 
   return (
     <div
