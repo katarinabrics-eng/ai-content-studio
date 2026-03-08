@@ -35,11 +35,11 @@ const heroCardGlass: React.CSSProperties = {
 };
 
 const faqs = [
-  { q: "Musím začít vstupním hovorem?", a: "Brand Scan diagnostiku můžete spustit kdykoliv — zdarma, bez závazku, bez hovoru. Poskytne vám konkrétní data o vaší značce a je samostatnou hodnotou bez ohledu na další spolupráci.\n\nPokud se rozhodnete pokračovat do plné spolupráce, vstupní hovor je jejím povinným prvním krokem. Je to prostor kde zachytíme nuance a esenci vašeho projektu — věci které AI nedokáže sama načíst ze vstupních dat. Výsledek spolupráce je pak přesněji na míru vaší značce." },
-  { q: "Co dostanu po dvou měsících?", a: "Vytrénovaného AI agenta vaší značky, vizuální banku a systém pro publikování. Agent zná vaši strategii, tón a vizuální standard. Funguje bez vaší neustálé přítomnosti — vy pouze kontrolujete a schvalujete výstupy." },
-  { q: "Je v ceně focení?", a: "Ano. Foto/video den v ateliéru na Kampě je součástí Fáze 1 (49 000 Kč). Tvoříme vizuální banku — ne jednotlivé snímky, ale obsah který funguje jako systém." },
-  { q: "Pracujete jen s ženami?", a: "Ne. Přístup je genderově neutrální — záleží na typu značky a úrovni podnikání, ne na pohlaví." },
-  { q: "Co když budu chtít pokračovat po dvou měsících?", a: "Většina klientů přechází do formátu kurátorského dohledu. Značka není jednorázový počin — je to živý systém. Rádi se domluvíme na pokračující spolupráci." },
+  { q: "Musím začít vstupním hovorem?", a: "Brand Scan diagnostiku můžete spustit kdykoliv — zdarma, bez závazku, bez hovoru. Poskytne vám konkrétní data o vaší značce a je samostatnou hodnotou bez ohledu na další spolupráci. Pokud se rozhodnete pokračovat do plné spolupráce, vstupní hovor je jejím povinným prvním krokem. Je to prostor kde zachytíme nuance a esenci vašeho projektu — věci které AI nedokáže sama načíst ze vstupních dat. Výsledek spolupráce je pak přesněji na míru vaší značce." },
+  { q: "Co dostanu po dvou měsících?", a: "Vytrénovaného AI agenta vaší značky, vizuální banku a funkční systém pro publikování. Agent zná vaši strategii, tón a vizuální standard — průběžně připravuje hotové výstupy: příspěvky, grafiky, texty. Vy volíte jaké výstupy chcete, jak často a v jakém stylu. Jakmile je výstup připravený, dostanete upozornění a můžete ho rovnou publikovat. V pozadí je vždy přítomen kurátor který namátkově kontroluje chod agentů i grafického týmu." },
+  { q: "Je v ceně focení?", a: "Ano. Foto/video den v ateliéru na Kampě je součástí Fáze 1. Nevytváříme jednotlivé snímky — budujeme vizuální banku která funguje jako systém. 500+ fotografií a video záběry pro Reels a b-roll z jednoho dne focení." },
+  { q: "Pracujete jen s ženami?", a: "Ne. Spolupráce je genderově neutrální — záleží na typu značky a úrovni podnikání, ne na pohlaví. Pracujeme s lídry a podnikateli kteří berou vizuální prezentaci jako součást své hodnoty na trhu." },
+  { q: "Co když budete chtít pokračovat po dvou měsících?", a: "Po dvou měsících přecházíte do živého ekosystému naší aplikace. AI agenti vytrénovaní na vaši značku průběžně produkují hotové výstupy podle nastavené strategie. Vy si volíte jaké výstupy chcete, jak často a v jakém stylu. V pozadí je vždy přítomen kurátor — namátkově kontroluje chod agentů a na vyžádání se může vašemu projektu věnovat podrobněji. Nejde o autonomní AI — naši kurátoři mají systém pevně v rukou." },
 ];
 
 const PRO_KOHO_ITEMS = [
