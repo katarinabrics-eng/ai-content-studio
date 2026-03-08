@@ -43,7 +43,7 @@ export function VibeSection() {
             opacity: 0.6,
           }}
         >
-          To funguje, dokud vás znají osobně.
+          Dokud vás zákazníci sledují dlouho a znají vás osobně, vizuál může počkat.
         </p>
         <h2
           className="mt-8 leading-[1.05] tracking-tight text-[#fff] md:mt-12"

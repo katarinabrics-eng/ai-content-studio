@@ -259,7 +259,7 @@ export default function PremioveVizualniIdentitaPage() {
               className="premiove-hero-entry delay-2"
               style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, maxWidth: 480, marginBottom: 36, fontFamily: "var(--font-dm-sans), sans-serif" }}
             >
-              Fotografie, video, AI agent natrénovaný na vaši značku a dva měsíce kurátorovaného obsahu — vše z jedné spolupráce.
+              Vaše práce je skvělá. Ale zákazník který vás nezná, to nevidí. Rozhoduje první dojem — a ten tvoří vizuál.
             </p>
 
             <div className="premiove-hero-entry delay-3" style={{ display: "flex", gap: 14, marginBottom: 24 }}>
