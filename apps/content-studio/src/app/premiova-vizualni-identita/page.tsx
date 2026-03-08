@@ -50,16 +50,6 @@ const PRO_KOHO_ITEMS = [
   "Hledáte systém který pracuje i když vy právě nepracujete.",
 ];
 
-const FASE1_ITEMS = [
-  "Strategický plán + Brand DNA",
-  "Foto/video den v ateliéru na Kampě",
-  "Vstup do aplikace Lucifera",
-  "2měsíční výcvik AI agenta vaší značky",
-  "Tvorba příspěvků a textů dle strategie",
-  "Vlastní vizuální agentura — agent plánuje, připravuje, publikuje",
-  "2měsíční kurátorování obsahu",
-];
-
 export default function PremioveVizualniIdentitaPage() {
   const parallaxRefs = useRef<HTMLElement[]>([]);
   const statsRef = useRef<HTMLDivElement | null>(null);
@@ -178,6 +168,9 @@ export default function PremioveVizualniIdentitaPage() {
           .premiove-hero .hero-card-2,.premiove-hero .hero-card-3{display:none !important;}
           .premiove-hero .hero-card-1{top:15% !important;left:auto !important;right:4% !important;}
           .premiove-hero .hero-card-4{bottom:20% !important;right:3% !important;}
+        }
+        @media (max-width: 900px) {
+          .premiove-faze-grid{grid-template-columns:1fr !important;}
         }
       `}</style>
 
@@ -574,19 +567,19 @@ export default function PremioveVizualniIdentitaPage() {
         </div>
       </section>
 
-      {/* SEKCE FÁZE */}
+      {/* SEKCE FÁZE — tři karty */}
       <section id="faze" style={{ background: BG1, padding: "96px 80px", maxWidth: 1260, margin: "0 auto" }}>
         <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Struktura spolupráce</p>
         <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 16 }}>
-          Jedna investice. Dvě fáze. Výsledek který zůstane.
+          Jedna spolupráce. Tři fáze. Výsledek který zůstane.
         </h2>
         <p className="reveal reveal-delay-2" style={{ fontSize: 16, color: MUTED, marginBottom: 48 }}>
-          Celková investice 56 800 Kč rozdělená do dvou po sobě jdoucích fází.
+          Celková investice 56 800 Kč rozdělená do tří po sobě jdoucích fází.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        <div className="premiove-faze-grid reveal" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          {/* Fáze 0 — světlá karta */}
           <div
-            className="reveal"
             style={{
               borderRadius: 24,
               padding: 48,
@@ -597,10 +590,9 @@ export default function PremioveVizualniIdentitaPage() {
               overflow: "hidden",
             }}
           >
-            <p style={{ fontSize: 11, textTransform: "uppercase", color: FAINT, marginBottom: 12 }}>Fáze 0 · Vstupní hovor</p>
-            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: TEXT, marginBottom: 8 }}>7 800 Kč</p>
+            <p style={{ fontSize: 11, textTransform: "uppercase", color: FAINT, marginBottom: 12 }}>Fáze 0 · Strategický vstup</p>
+            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME_DARK, marginBottom: 8 }}>7 800 Kč</p>
             <p style={{ fontSize: 13, color: MUTED, marginBottom: 24 }}>Samostatná hodnota · Povinný první krok</p>
-            <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 22, fontWeight: 900, color: TEXT, marginBottom: 20 }}>Strategický rozhovor o vaší značce.</h3>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {["Vstupní strategický rozhovor (56 min)", "Vizuální board — kam vaše značka směřuje", "3 Canva šablony připravené na míru", "Podklad pro Fázi 1"].map((item, i) => (
                 <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
@@ -609,24 +601,9 @@ export default function PremioveVizualniIdentitaPage() {
                 </li>
               ))}
             </ul>
-            <a
-              href="/rezervace"
-              style={{
-                display: "inline-block",
-                marginTop: 24,
-                background: LIME,
-                color: TEXT,
-                borderRadius: 11,
-                padding: "14px 24px",
-                fontSize: 14,
-                fontWeight: 700,
-                textDecoration: "none",
-              }}
-            >
-              Rezervovat vstupní hovor →
-            </a>
           </div>
 
+          {/* Fáze 1 — tmavá karta */}
           <div
             className="reveal reveal-delay-1"
             style={{
@@ -638,22 +615,69 @@ export default function PremioveVizualniIdentitaPage() {
               overflow: "hidden",
             }}
           >
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,.35)", textTransform: "uppercase", marginBottom: 12 }}>Fáze 1 · Luxus Vizuál Content</p>
-            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>49 000 Kč</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,.35)", textTransform: "uppercase", marginBottom: 12 }}>Fáze 1 · Reálný obsah</p>
+            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>25 000 Kč</p>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 24 }}>Navazuje na Fázi 0</p>
-            <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 22, fontWeight: 900, color: "#fff", marginBottom: 20 }}>Systém který pracuje za vás.</h3>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {FASE1_ITEMS.map((item, i) => (
+              {["Strategický plán + Brand DNA", "Foto/video den v ateliéru na Kampě", "500+ fotografií, video záběry pro Reels a b-roll"].map((item, i) => (
                 <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                   <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME }} />
                   <span style={{ fontSize: 14, color: "rgba(255,255,255,.6)" }}>{item}</span>
                 </li>
               ))}
             </ul>
-            <div style={{ borderTop: "1px solid rgba(255,255,255,.1)", paddingTop: 20, marginTop: 20 }}>
-              <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 30, fontWeight: 900, color: "#fff" }}>56 800 Kč</p>
-            </div>
           </div>
+
+          {/* Fáze 2 — tmavá karta */}
+          <div
+            className="reveal reveal-delay-2"
+            style={{
+              borderRadius: 24,
+              padding: 48,
+              background: "#111",
+              color: "#fff",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,.35)", textTransform: "uppercase", marginBottom: 12 }}>Fáze 2 · Systém který pracuje za vás</p>
+            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>24 000 Kč</p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 24 }}>Navazuje na Fázi 1</p>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {[
+                "2měsíční výcvik AI agenta vaší značky",
+                "Tvorba příspěvků, grafiky Canva, Reels, UGC video",
+                "Vlastní vizuální agentura — agent plánuje, připravuje, publikuje",
+                "Vstup do aplikace Lucifera",
+                "2měsíční kurátorování obsahu",
+              ].map((item, i) => (
+                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME }} />
+                  <span style={{ fontSize: 14, color: "rgba(255,255,255,.6)" }}>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="reveal reveal-delay-3" style={{ marginTop: 40, textAlign: "center" }}>
+          <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 30, fontWeight: 900, color: TEXT, marginBottom: 24 }}>56 800 Kč</p>
+          <a
+            href="/rezervace"
+            style={{
+              display: "inline-block",
+              background: LIME,
+              color: TEXT,
+              borderRadius: 11,
+              padding: "15px 28px",
+              fontSize: 15,
+              fontWeight: 700,
+              boxShadow: `0 4px 24px ${GLOW_STRONG}`,
+              textDecoration: "none",
+            }}
+          >
+            Rezervovat vstupní hovor →
+          </a>
         </div>
       </section>
 
