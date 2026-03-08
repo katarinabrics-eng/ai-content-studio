@@ -88,7 +88,7 @@ export function VibeSection() {
           Obraz musí unést vaši úroveň.
         </p>
         <a
-          href="/diagnostika"
+          href="#co-je-soucasti"
           className="mt-12 inline-block rounded px-6 py-3 text-[15px] font-medium transition-colors hover:opacity-90 md:mt-14"
           style={{
             background: LIME_VIBE,

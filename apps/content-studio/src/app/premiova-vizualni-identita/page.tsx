@@ -282,7 +282,7 @@ export default function PremioveVizualniIdentitaPage() {
                 Rezervovat vstupní hovor →
               </a>
               <a
-                href="#jak-to-funguje"
+                href="#faze"
                 style={{
                   background: "transparent",
                   border: "1.5px solid rgba(0,0,0,.2)",
@@ -571,7 +571,7 @@ export default function PremioveVizualniIdentitaPage() {
       </section>
 
       {/* SEKCE CO JE SOUČÁSTÍ */}
-      <section style={{ background: BG1, padding: "96px 0", width: "100%", position: "relative", overflow: "hidden" }}>
+      <section id="co-je-soucasti" style={{ background: BG1, padding: "96px 0", width: "100%", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
           <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Co je součástí</p>
           <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48 }}>
