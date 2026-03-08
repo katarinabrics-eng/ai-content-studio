@@ -802,8 +802,19 @@ export default function PremioveVizualniIdentitaPage() {
         </div>
       </section>
 
-      {/* SEKCE KATARÍNA */}
-      <section style={{ background: BG1, padding: "96px 80px", maxWidth: 1260, margin: "0 auto" }}>
+      {/* SEKCE KATARÍNA — pozadí edge-to-edge, obsah centrovaný */}
+      <section
+        style={{
+          background: "#f5f4ef",
+          padding: "96px 0",
+          width: "100vw",
+          position: "relative",
+          left: "50%",
+          marginLeft: "-50vw",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 80, alignItems: "center" }}>
           <div>
             <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Kdo za tím stojí</p>
@@ -860,11 +871,11 @@ export default function PremioveVizualniIdentitaPage() {
                 width: "100%",
                 maxHeight: "75vh",
                 objectFit: "contain",
-                borderRadius: 22,
-                boxShadow: "0 16px 60px rgba(0,0,0,.1)",
+                background: "transparent",
               }}
             />
           </div>
+        </div>
         </div>
       </section>
 
