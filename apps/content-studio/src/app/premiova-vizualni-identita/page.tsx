@@ -35,7 +35,7 @@ const heroCardGlass: React.CSSProperties = {
 };
 
 const faqs = [
-  { q: "Musím začít vstupním hovorem?", a: "Ano. Je to povinný první krok — bez něj nedokážeme nastavit správný vizuální směr. Zároveň má vstupní hovor samostatnou hodnotu: dostanete vizuální board a Canva šablony bez ohledu na to, zda se rozhodnete pokračovat do Fáze 1." },
+  { q: "Musím začít vstupním hovorem?", a: "Brand Scan diagnostiku můžete spustit kdykoliv — zdarma, bez závazku, bez hovoru. Poskytne vám konkrétní data o vaší značce a je samostatnou hodnotou bez ohledu na další spolupráci.\n\nPokud se rozhodnete pokračovat do plné spolupráce, vstupní hovor je jejím povinným prvním krokem. Je to prostor kde zachytíme nuance a esenci vašeho projektu — věci které AI nedokáže sama načíst ze vstupních dat. Výsledek spolupráce je pak přesněji na míru vaší značce." },
   { q: "Co dostanu po dvou měsících?", a: "Vytrénovaného AI agenta vaší značky, vizuální banku a systém pro publikování. Agent zná vaši strategii, tón a vizuální standard. Funguje bez vaší neustálé přítomnosti — vy pouze kontrolujete a schvalujete výstupy." },
   { q: "Je v ceně focení?", a: "Ano. Foto/video den v ateliéru na Kampě je součástí Fáze 1 (49 000 Kč). Tvoříme vizuální banku — ne jednotlivé snímky, ale obsah který funguje jako systém." },
   { q: "Pracujete jen s ženami?", a: "Ne. Přístup je genderově neutrální — záleží na typu značky a úrovni podnikání, ne na pohlaví." },
@@ -916,6 +916,7 @@ export default function PremioveVizualniIdentitaPage() {
                   color: MUTED,
                   lineHeight: 1.7,
                   margin: 0,
+                  whiteSpace: "pre-line",
                 }}
               >
                 {faq.a}
