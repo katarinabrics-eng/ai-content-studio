@@ -130,8 +130,9 @@ export default function PremioveVizualniIdentitaPage() {
   }, []);
 
   return (
-    <main style={{ background: BG, color: TEXT }}>
+    <main className="premiove-vizualni-identita" style={{ background: BG, color: TEXT, fontFamily: "var(--font-dm-sans), sans-serif" }}>
       <style>{`
+        .premiove-vizualni-identita h1,.premiove-vizualni-identita h2,.premiove-vizualni-identita h3{font-family:var(--font-playfair),serif}
         @keyframes orbFloat1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-30px,20px) scale(1.05)} 66%{transform:translate(20px,-15px) scale(0.97)} }
         @keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
         @keyframes orbFloat3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-15px,20px) scale(1.1)} }
@@ -238,6 +239,7 @@ export default function PremioveVizualniIdentitaPage() {
                 letterSpacing: ".12em",
                 color: "#7ab82e",
                 marginBottom: 28,
+                fontFamily: "var(--font-dm-sans), sans-serif",
               }}
             >
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ab82e", animation: "pulseDot 2s infinite", flexShrink: 0 }} />
@@ -262,7 +264,7 @@ export default function PremioveVizualniIdentitaPage() {
 
             <p
               className="premiove-hero-entry delay-2"
-              style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, maxWidth: 480, marginBottom: 36 }}
+              style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, maxWidth: 480, marginBottom: 36, fontFamily: "var(--font-dm-sans), sans-serif" }}
             >
               Fotografie, video, AI agent natrénovaný na vaši značku a dva měsíce kurátorovaného obsahu — vše z jedné spolupráce.
             </p>
@@ -465,7 +467,7 @@ export default function PremioveVizualniIdentitaPage() {
               }}
             >
               <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>01 ·</p>
-              <h4 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Vaše ceny rostou. Váš obraz ne.</h4>
+              <h4 style={{ fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Vaše ceny rostou. Váš obraz ne.</h4>
               <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Trh vás vidí tak, jak se prezentujete. Pokud vaše vizuální úroveň zaostává za cenou — ztrácíte důvěru.</p>
             </div>
             <div
@@ -479,7 +481,7 @@ export default function PremioveVizualniIdentitaPage() {
               }}
             >
               <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>02 ·</p>
-              <h4 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Hodiny v nástrojích místo v práci.</h4>
+              <h4 style={{ fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Hodiny v nástrojích místo v práci.</h4>
               <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Jedna AI píše, druhá generuje obrázky. Vy sedíte uprostřed a místo strategie řešíte nástroje.</p>
             </div>
           </div>
@@ -713,7 +715,7 @@ export default function PremioveVizualniIdentitaPage() {
               >
                 {s.num}
               </div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>{s.title}</h3>
+              <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>{s.title}</h3>
               <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>{s.text}</p>
             </div>
           ))}
