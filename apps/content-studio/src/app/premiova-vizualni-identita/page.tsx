@@ -863,14 +863,17 @@ export default function PremioveVizualniIdentitaPage() {
               </div>
             </div>
           </div>
-          <div className="reveal reveal-delay-3" style={{ position: "relative" }}>
+          <div className="reveal reveal-delay-3" style={{ position: "relative", overflow: "visible", display: "flex", alignItems: "flex-end" }}>
             <img
               src="/placeholders/KDOJSEM_01.png"
               alt=""
               style={{
-                width: "100%",
-                maxHeight: "75vh",
+                width: "auto",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                height: 600,
                 objectFit: "contain",
+                objectPosition: "center bottom",
                 background: "transparent",
               }}
             />
