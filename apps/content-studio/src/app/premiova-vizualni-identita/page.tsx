@@ -46,7 +46,7 @@ const PRO_KOHO_ITEMS = [
   "Vaše ceny rostou — ale váš obraz ještě ne.",
   "Přerostli jste vizuál z počátků podnikání.",
   "Trávíte hodiny v nástrojích místo ve své práci.",
-  "Chcete hybridní přístup — vaše tvář, vaše světlo, AI která to zesiluje.",
+  "Chcete hybridní přístup — vaše tvář, váš příběh, AI která to zesiluje.",
   "Hledáte systém který pracuje i když vy právě nepracujete.",
 ];
 
@@ -171,6 +171,9 @@ export default function PremioveVizualniIdentitaPage() {
         }
         @media (max-width: 900px) {
           .premiove-faze-grid{grid-template-columns:1fr !important;}
+        }
+        @media (max-width: 768px) {
+          .premiove-soucasti-grid{grid-template-columns:1fr !important;}
         }
       `}</style>
 
@@ -567,8 +570,60 @@ export default function PremioveVizualniIdentitaPage() {
         </div>
       </section>
 
-      {/* SEKCE FÁZE — tři karty */}
-      <section id="faze" style={{ background: BG1, padding: "96px 80px", maxWidth: 1260, margin: "0 auto" }}>
+      {/* SEKCE CO JE SOUČÁSTÍ */}
+      <section style={{ background: BG1, padding: "96px 0", width: "100%", position: "relative", overflow: "hidden" }}>
+        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
+          <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Co je součástí</p>
+          <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48 }}>
+            Jedna spolupráce. Vše co vaše značka potřebuje.
+          </h2>
+          <div
+            className="reveal reveal-delay-2 premiove-soucasti-grid"
+            style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}
+          >
+            {[
+              "Brand Scan + diagnostika",
+              "Vizuální board + strategická cesta",
+              "Jeden den focení — 500+ fotografií, video záběry pro Reels a b-roll",
+              "Návrhy příspěvků a kampaně",
+              "Výcvik AI agenta — pracuje samostatně",
+              "2 měsíce kurátorování — příspěvky, grafiky Canva, Reels, UGC video",
+              "Přístup do AI Content Kreator",
+            ].map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 12,
+                  padding: "18px 22px",
+                  background: BG,
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 14,
+                }}
+              >
+                <span style={{ color: LIME_DARK, fontSize: 18, lineHeight: 1.4, flexShrink: 0 }}>✦</span>
+                <span style={{ fontSize: 15, color: TEXT, lineHeight: 1.5 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEKCE FÁZE — tři karty, full-width (pozadí na celou šířku viewportu) */}
+      <section
+        id="faze"
+        style={{
+          background: BG1,
+          padding: "96px 0",
+          width: "100vw",
+          position: "relative",
+          left: "50%",
+          marginLeft: "-50vw",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
         <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Struktura spolupráce</p>
         <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 16 }}>
           Jedna spolupráce. Tři fáze. Výsledek který zůstane.
@@ -615,14 +670,14 @@ export default function PremioveVizualniIdentitaPage() {
               overflow: "hidden",
             }}
           >
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,.35)", textTransform: "uppercase", marginBottom: 12 }}>Fáze 1 · Reálný obsah</p>
+            <p style={{ fontSize: 11, color: "#fff", textTransform: "uppercase", marginBottom: 12, opacity: 0.8 }}>Fáze 1 · Reálný obsah</p>
             <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>25 000 Kč</p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 24 }}>Navazuje na Fázi 0</p>
+            <p style={{ fontSize: 13, color: "#fff", marginBottom: 24, opacity: 0.9 }}>Navazuje na Fázi 0</p>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {["Strategický plán + Brand DNA", "Foto/video den v ateliéru na Kampě", "500+ fotografií, video záběry pro Reels a b-roll"].map((item, i) => (
                 <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                   <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME }} />
-                  <span style={{ fontSize: 14, color: "rgba(255,255,255,.6)" }}>{item}</span>
+                  <span style={{ fontSize: 14, color: "#fff" }}>{item}</span>
                 </li>
               ))}
             </ul>
@@ -640,9 +695,9 @@ export default function PremioveVizualniIdentitaPage() {
               overflow: "hidden",
             }}
           >
-            <p style={{ fontSize: 11, color: "rgba(255,255,255,.35)", textTransform: "uppercase", marginBottom: 12 }}>Fáze 2 · Systém který pracuje za vás</p>
+            <p style={{ fontSize: 11, color: "#fff", textTransform: "uppercase", marginBottom: 12, opacity: 0.8 }}>Fáze 2 · Systém který pracuje za vás</p>
             <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>24 000 Kč</p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 24 }}>Navazuje na Fázi 1</p>
+            <p style={{ fontSize: 13, color: "#fff", marginBottom: 24, opacity: 0.9 }}>Navazuje na Fázi 1</p>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {[
                 "2měsíční výcvik AI agenta vaší značky",
@@ -653,7 +708,7 @@ export default function PremioveVizualniIdentitaPage() {
               ].map((item, i) => (
                 <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                   <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME }} />
-                  <span style={{ fontSize: 14, color: "rgba(255,255,255,.6)" }}>{item}</span>
+                  <span style={{ fontSize: 14, color: "#fff" }}>{item}</span>
                 </li>
               ))}
             </ul>
@@ -678,6 +733,7 @@ export default function PremioveVizualniIdentitaPage() {
           >
             Rezervovat vstupní hovor →
           </a>
+        </div>
         </div>
       </section>
 
