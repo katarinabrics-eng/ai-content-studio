@@ -267,7 +267,7 @@ export default function PremioveVizualniIdentitaPage() {
 
             <div className="premiove-hero-entry delay-3" style={{ display: "flex", gap: 14, marginBottom: 24 }}>
               <a
-                href="/rezervace"
+                href="/diagnostika"
                 style={{
                   background: LIME,
                   color: TEXT,
@@ -279,7 +279,7 @@ export default function PremioveVizualniIdentitaPage() {
                   textDecoration: "none",
                 }}
               >
-                Rezervovat vstupní hovor →
+                Rezervovat vstupní rozhovor s diagnostikou →
               </a>
               <a
                 href="#faze"
