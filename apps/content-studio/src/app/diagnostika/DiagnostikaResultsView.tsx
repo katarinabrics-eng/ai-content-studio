@@ -10,10 +10,10 @@ const C = {
   text: "#111111",
   textMuted: "#888888",
   textMuted2: "#555555",
-  lime: "#b7e94c",
+  lime: "#b4e842",
   limeDark: "#8fc42a",
   limeBg: "#f2fcd8",
-  warn: "#f59e0b",
+  warn: "#f0b429",
   danger: "#ef4444",
 } as const;
 
@@ -26,10 +26,11 @@ const PILLAR_LABELS: Record<string, { title: string; sub: string }> = {
   trust: { title: "DŮVĚRA", sub: "" },
 };
 
+/** 8–10: limetková #b4e842, 5–7: žlutooranžová #f0b429, 1–4: červená #ef4444 */
 function getScoreColor(score: number): string {
-  if (score >= 8) return C.lime;
-  if (score >= 5) return C.warn;
-  return C.danger;
+  if (score >= 8) return "#b4e842";
+  if (score >= 5) return "#f0b429";
+  return "#ef4444";
 }
 
 type Scraped = {
@@ -86,7 +87,12 @@ export function DiagnostikaResultsView({
   const pillarRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [pillarVisible, setPillarVisible] = useState<number>(-1);
   const [expandedPillar, setExpandedPillar] = useState<string | null>(null);
+  const recsRef = useRef<HTMLDivElement>(null);
+  const [recsVisible, setRecsVisible] = useState(false);
+  const dnaRef = useRef<HTMLDivElement>(null);
+  const [dnaVisible, setDnaVisible] = useState(false);
   const [screenshotLoaded, setScreenshotLoaded] = useState(false);
+  const [screenshotReveal, setScreenshotReveal] = useState(false);
   const [placeholderGone, setPlaceholderGone] = useState(false);
 
   const [leadEmail, setLeadEmail] = useState("");
@@ -98,7 +104,7 @@ export function DiagnostikaResultsView({
     setLeadWeb(displayWeb);
   }, [displayName, displayWeb]);
 
-  // Score ring + countUp animation (delay 0.3s, duration 1.8s)
+  // Score: when in view, animate counter 0→total over 1.5s easeOut (ring animates in sync)
   useEffect(() => {
     const el = scoreRef.current;
     if (!el) return;
@@ -115,25 +121,20 @@ export function DiagnostikaResultsView({
   useEffect(() => {
     if (!scoreVisible) return;
     const start = performance.now();
-    const duration = 1800;
-    const delay = 300;
+    const duration = 1500;
     let raf = 0;
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 4);
     const tick = (now: number) => {
-      const elapsed = (now - start - delay) / duration;
-      if (elapsed < 0) {
-        raf = requestAnimationFrame(tick);
-        return;
-      }
+      const elapsed = (now - start) / duration;
       const t = Math.min(elapsed, 1);
-      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      setScoreAnimated(Math.round(total * eased));
+      setScoreAnimated(Math.round(total * easeOut(t)));
       if (t < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [scoreVisible, total]);
 
-  // Pillar cards stagger on scroll
+  // Pillar cards stagger on scroll (each reveals with 150ms delay between)
   useEffect(() => {
     const refs = pillarRefs.current;
     const obs = new IntersectionObserver(
@@ -150,12 +151,43 @@ export function DiagnostikaResultsView({
     return () => obs.disconnect();
   }, [pillarVisible]);
 
-  // Screenshot placeholder: skeleton 1.5s then replace
+  // Brand DNA tags: in view → stagger fade-in
   useEffect(() => {
-    if (scraped?.screenshot) return;
-    const t = setTimeout(() => setPlaceholderGone(true), 1500);
+    const el = dnaRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setDnaVisible(true);
+      },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Doporučení section: scroll-triggered fade-in + translateY
+  useEffect(() => {
+    const el = recsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setRecsVisible(true);
+      },
+      { threshold: 0.12 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Screenshot: skeleton 1.5s then reveal image with fade + scale
+  useEffect(() => {
+    if (!screenshotSrc) {
+      const t = setTimeout(() => setPlaceholderGone(true), 1500);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setScreenshotReveal(true), 1500);
     return () => clearTimeout(t);
-  }, [scraped?.screenshot]);
+  }, [screenshotSrc]);
 
   const screenshotSrc = scraped?.screenshot
     ? (scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`)
@@ -180,14 +212,14 @@ export function DiagnostikaResultsView({
         .diag-browser-dots { display: flex; gap: 6px; }
         .diag-browser-dots span { width: 10px; height: 10px; border-radius: 50%; }
         .diag-browser-url { flex: 1; font-size: 11px; color: ${C.textMuted}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; }
-        .diag-preview-img { width: 100%; max-height: 200px; object-fit: cover; display: block; filter: blur(12px); transform: scale(1.04); opacity: 0.5; }
-        .diag-preview-img.animate-in { animation: diagImgReveal 1.4s ease-out forwards; }
-        .diag-preview-placeholder { min-height: 140px; background: #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
-        .diag-preview-skeleton { height: 8px; background: linear-gradient(90deg, #ddd 25%, #e8e8e0 50%, #ddd 75%); background-size: 200% 100%; animation: diagSkeleton 1s ease-in-out infinite; border-radius: 4px; margin-bottom: 8px; width: 80%; }
+        .diag-preview-img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+        .diag-preview-img.animate-in { animation: diagImgReveal 0.6s ease-out forwards; opacity: 0; transform: scale(0.95); }
+        .diag-preview-placeholder { min-height: 140px; background: #e8e8e4; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+        .diag-preview-skeleton { height: 8px; background: linear-gradient(90deg, #ddd 25%, #e0e0dc 50%, #ddd 75%); background-size: 200% 100%; animation: diagSkeleton 1.2s ease-in-out infinite; border-radius: 4px; margin-bottom: 8px; width: 80%; }
         .diag-badge { position: absolute; top: 8px; right: 8px; background: #111; color: ${C.lime}; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px; }
         @keyframes diagImgReveal {
-          from { filter: blur(12px); transform: scale(1.04); opacity: 0.5; }
-          to { filter: blur(0); transform: scale(1); opacity: 1; }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
         @keyframes diagSkeleton {
           0% { background-position: 200% 0; }
@@ -201,6 +233,18 @@ export function DiagnostikaResultsView({
         .diag-pillar-card.visible { animation: diagFadeUp 0.5s ease forwards; }
         @keyframes diagFadeUp {
           from { opacity: 0; transform: translateY(32px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .diag-score-pillar-row { opacity: 0; transform: translateY(10px); }
+        .diag-score-pillar-row.visible { animation: diagTagReveal 0.4s ease forwards; }
+        @keyframes diagTagReveal {
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .diag-dna-tag { opacity: 0; transform: translateY(10px); }
+        .diag-dna-tag.visible { animation: diagTagReveal 0.4s ease forwards; }
+        .diag-rec-card { opacity: 0; transform: translateY(20px); }
+        .diag-rec-card.visible { animation: diagRecReveal 0.5s ease forwards; }
+        @keyframes diagRecReveal {
           to { opacity: 1; transform: translateY(0); }
         }
         .diag-strategist-card { background: ${C.surface}; border: 1px solid ${C.border}; border-radius: 16px; padding: 20px; }
@@ -244,12 +288,22 @@ export function DiagnostikaResultsView({
               <span className="diag-browser-url">{webUrl || "—"}</span>
             </div>
             {screenshotSrc ? (
-              <img
-                src={screenshotSrc}
-                alt=""
-                className={`diag-preview-img ${screenshotLoaded ? "animate-in" : ""}`}
-                onLoad={() => setScreenshotLoaded(true)}
-              />
+              <>
+                {!screenshotReveal ? (
+                  <div className="diag-preview-placeholder">
+                    <div className="diag-preview-skeleton" />
+                    <div className="diag-preview-skeleton" style={{ width: "60%" }} />
+                    <div className="diag-preview-skeleton" style={{ width: "70%" }} />
+                  </div>
+                ) : (
+                  <img
+                    src={screenshotSrc}
+                    alt=""
+                    className={`diag-preview-img ${screenshotLoaded ? "animate-in" : ""}`}
+                    onLoad={() => setScreenshotLoaded(true)}
+                  />
+                )}
+              </>
             ) : placeholderGone ? (
               <div className="diag-preview-placeholder" style={{ background: C.surface }}>
                 <p style={{ fontSize: 13, color: C.textMuted, margin: 0 }}>Web byl analyzován</p>
@@ -277,12 +331,23 @@ export function DiagnostikaResultsView({
               <span style={{ fontSize: 14, color: C.textMuted, marginTop: -4 }}>/100</span>
             </div>
             <div>
-              {PILLAR_IDS.map((id) => {
+              {PILLAR_IDS.map((id, idx) => {
                 const p = pillarAnalysis[id] as PillarAnalysisItem | undefined;
                 const score = p?.score ?? 0;
                 const label = PILLAR_LABELS[id];
+                const rowVisible = scoreVisible;
                 return (
-                  <div key={id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <div
+                    key={id}
+                    className={`diag-score-pillar-row ${rowVisible ? "visible" : ""}`}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 10,
+                      animationDelay: `${idx * 80}ms`,
+                    }}
+                  >
                     <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>{label?.title ?? id}</span>
                     <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 18, color: getScoreColor(score) }}>
                       {score}/10
@@ -302,6 +367,48 @@ export function DiagnostikaResultsView({
           </section>
         )}
 
+        {/* 3b. BRAND DNA — tagy s fade-in + translateY, stagger 80ms */}
+        {(() => {
+          const d = result.brandDna as Record<string, unknown> | undefined;
+          if (!d) return null;
+          const tags: { label: string; value: string }[] = [];
+          if (d.positioning && String(d.positioning).trim()) tags.push({ label: "Positioning", value: String(d.positioning).trim() });
+          if (d.tone && String(d.tone).trim()) tags.push({ label: "Tón", value: String(d.tone).trim() });
+          if (d.targetAudience && String(d.targetAudience).trim()) tags.push({ label: "Cílová skupina", value: String(d.targetAudience).trim() });
+          if (d.communicationStyle && String(d.communicationStyle).trim()) tags.push({ label: "Komunikace", value: String(d.communicationStyle).trim() });
+          if (d.uniqueValue && String(d.uniqueValue).trim()) tags.push({ label: "Unikátní hodnota", value: String(d.uniqueValue).trim() });
+          const vs = d.visualStyle as Record<string, string> | undefined;
+          if (vs?.primaryColor) tags.push({ label: "Barva", value: vs.primaryColor });
+          if (vs?.typography) tags.push({ label: "Typografie", value: vs.typography });
+          if (tags.length === 0) return null;
+          return (
+            <section ref={dnaRef} style={{ marginBottom: 32 }}>
+              <p className="diag-section-label">BRAND DNA</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {tags.map((tag, idx) => (
+                  <div
+                    key={tag.label}
+                    className={`diag-dna-tag ${dnaVisible ? "visible" : ""}`}
+                    style={{
+                      background: C.surface,
+                      border: `1px solid ${C.border}`,
+                      borderRadius: 10,
+                      padding: "10px 14px",
+                      fontSize: 13,
+                      color: C.text,
+                      animationDelay: `${idx * 80}ms`,
+                    }}
+                  >
+                    <span style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: C.textMuted, display: "block", marginBottom: 4 }}>{tag.label}</span>
+                    <span style={{ lineHeight: 1.4 }}>{tag.value}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="diag-divider" style={{ marginTop: 24 }} />
+            </section>
+          );
+        })()}
+
         {/* 4. PILÍŘE */}
         <section style={{ marginBottom: 40 }}>
           <p className="diag-section-label">PĚT PILÍŘŮ ZNAČKY — KOMPLETNÍ DIAGNOSTIKA</p>
@@ -320,7 +427,7 @@ export function DiagnostikaResultsView({
                 style={{
                   opacity: isVisible ? 1 : 0,
                   transform: isVisible ? "translateY(0)" : "translateY(32px)",
-                  animationDelay: `${index * 100}ms`,
+                  animationDelay: `${index * 150}ms`,
                 }}
               >
                 <PillarCard
@@ -332,22 +439,29 @@ export function DiagnostikaResultsView({
                   isExpanded={isExpanded}
                   onToggle={() => setExpandedPillar(isExpanded ? null : id)}
                   isVisible={isVisible}
+                  staggerDelayMs={index * 150}
                 />
               </div>
             );
           })}
         </section>
 
-        {/* 5. STRATÉGOVÉ */}
+        {/* 5. STRATÉGOVÉ — scroll-triggered fade-in + translateY */}
         {suggested.length > 0 && (
-          <section style={{ marginBottom: 40 }}>
+          <section ref={recsRef} style={{ marginBottom: 40 }}>
             <p style={{ fontSize: 13, color: C.textMuted2, textAlign: "center", marginBottom: 16, fontStyle: "italic" }}>
               Pokud vás zajímá konkrétní strategický směr, můžeme ho probrat na strategickém hovoru.
             </p>
             <p className="diag-section-label">AI DOPORUČUJE PRO TUTO ZNAČKU</p>
             <div className="diag-strategist-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {suggested.slice(0, 2).map((s) => (
-                <StrategistCard key={s.id} strategist={s} />
+              {suggested.slice(0, 2).map((s, idx) => (
+                <div
+                  key={s.id}
+                  className={`diag-rec-card ${recsVisible ? "visible" : ""}`}
+                  style={{ animationDelay: `${idx * 80}ms` }}
+                >
+                  <StrategistCard strategist={s} />
+                </div>
               ))}
             </div>
           </section>
@@ -462,8 +576,7 @@ function ScoreRingSVG({ value }: { value: number }) {
         strokeDashoffset={circ - dash}
         strokeLinecap="round"
         style={{
-          transition: "stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1)",
-          transitionDelay: "0.3s",
+          transition: "stroke-dashoffset 1.5s cubic-bezier(0, 0, 0.2, 1)",
         }}
       />
     </svg>
@@ -479,6 +592,7 @@ function PillarCard({
   isExpanded,
   onToggle,
   isVisible,
+  staggerDelayMs = 0,
 }: {
   id: string;
   title: string;
@@ -488,15 +602,37 @@ function PillarCard({
   isExpanded: boolean;
   onToggle: () => void;
   isVisible: boolean;
+  staggerDelayMs?: number;
 }) {
-  const barRef = useRef<HTMLDivElement>(null);
   const [barWidth, setBarWidth] = useState(0);
+  const [scoreAnimated, setScoreAnimated] = useState(0);
+
   useEffect(() => {
     if (!isVisible) return;
-    const target = score * 10;
-    const t = setTimeout(() => setBarWidth(target), 100);
-    return () => clearTimeout(t);
-  }, [isVisible, score]);
+    const startBar = setTimeout(() => setBarWidth(score * 10), staggerDelayMs);
+    return () => clearTimeout(startBar);
+  }, [isVisible, score, staggerDelayMs]);
+
+  useEffect(() => {
+    if (!isVisible) return;
+    const start = performance.now();
+    const delay = staggerDelayMs;
+    const duration = 800;
+    let raf = 0;
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 4);
+    const tick = (now: number) => {
+      const elapsed = (now - start - delay) / duration;
+      if (elapsed < 0) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const t = Math.min(elapsed, 1);
+      setScoreAnimated(Math.round(score * easeOut(t)));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isVisible, score, staggerDelayMs]);
 
   const color = getScoreColor(score);
   const observed = pillar?.observed ?? [];
@@ -512,17 +648,17 @@ function PillarCard({
             <span style={{ fontWeight: 700, fontSize: 14, color: C.text }}>{title}</span>
             {subTitle && <span style={{ fontSize: 12, color: C.textMuted, marginLeft: 6 }}>— {subTitle}</span>}
           </div>
-          <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 24, color }}>{score}/10</span>
+          <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 24, color }}>{scoreAnimated}/10</span>
         </div>
         <div style={{ height: 3, background: C.border, borderRadius: 2, marginTop: 12, overflow: "hidden" }}>
           <div
-            ref={barRef}
             style={{
               height: "100%",
               width: `${barWidth}%`,
               background: color,
               borderRadius: 2,
-              transition: "width 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "width 0.8s cubic-bezier(0, 0, 0.2, 1)",
+              transitionDelay: `${staggerDelayMs}ms`,
             }}
           />
         </div>
