@@ -31,7 +31,10 @@ export function VibeSection() {
       }}
     >
       <div className="mx-auto max-w-[900px] px-6 text-center xl:px-10">
-        <p className="text-[15px] font-normal tracking-wide text-[#a0a0a0] md:text-base">
+        <p
+          className="tracking-tight text-[#f2f2f2] md:text-[18px]"
+          style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: "clamp(1rem, 2vw, 1.125rem)" }}
+        >
           To funguje, dokud vás znají osobně.
         </p>
         <h2

@@ -312,8 +312,8 @@ export default function PremioveVizualniIdentitaPage() {
               className="hero-float-card hero-card-1"
               style={{
                 position: "absolute",
-                top: "20%",
-                left: "42%",
+                top: "12%",
+                left: "22%",
                 borderRadius: 18,
                 padding: "14px 20px",
                 opacity: 0,
@@ -366,8 +366,8 @@ export default function PremioveVizualniIdentitaPage() {
               className="hero-float-card hero-card-3"
               style={{
                 position: "absolute",
-                bottom: "28%",
-                left: "40%",
+                bottom: "32%",
+                left: "25%",
                 borderRadius: 18,
                 padding: "16px 22px",
                 opacity: 0,
