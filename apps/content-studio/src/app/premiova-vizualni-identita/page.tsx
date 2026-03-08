@@ -718,7 +718,7 @@ export default function PremioveVizualniIdentitaPage() {
         <div className="reveal reveal-delay-3" style={{ marginTop: 40, textAlign: "center" }}>
           <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 30, fontWeight: 900, color: TEXT, marginBottom: 24 }}>56 800 Kč</p>
           <a
-            href="/rezervace"
+            href="/diagnostika"
             style={{
               display: "inline-block",
               background: LIME,
