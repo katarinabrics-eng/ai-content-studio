@@ -981,7 +981,7 @@ export default function PremioveVizualniIdentitaPage() {
           Vstupní hovor trvá 56 minut. Výsledek pracuje za vás dál.
         </p>
         <a
-          href="/rezervace"
+          href="/diagnostika"
           style={{
             display: "inline-block",
             background: LIME,
