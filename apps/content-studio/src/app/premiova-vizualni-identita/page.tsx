@@ -948,6 +948,9 @@ export default function PremioveVizualniIdentitaPage() {
             animation: "orbFloat2 8s infinite",
           }}
         />
+        <p style={{ fontSize: 15, color: "#fff", opacity: 1, marginBottom: 20, position: "relative", zIndex: 1, letterSpacing: ".02em" }}>
+          Jeden den. Systém na měsíce.
+        </p>
         <h2
           style={{
             fontFamily: "var(--font-playfair), serif",
@@ -959,12 +962,12 @@ export default function PremioveVizualniIdentitaPage() {
             zIndex: 1,
           }}
         >
-          <span style={{ color: "rgba(255,255,255,0.35)", fontStyle: "normal" }}>Silná značka nepracuje hlasitěji.</span>
+          <span style={{ color: "#fff", fontStyle: "normal" }}>Váš obsah nemůže čekat,</span>
           <br />
-          <em style={{ color: LIME, fontStyle: "italic", textShadow: "0 0 30px rgba(183,233,76,.4)" }}>Tvořte chytřeji.</em>
+          <em style={{ color: LIME, fontStyle: "italic", textShadow: "0 0 30px rgba(183,233,76,.4)" }}>až ho zákazník pochopí.</em>
         </h2>
-        <p style={{ fontSize: 17, color: "rgba(255,255,255,.5)", marginBottom: 44, position: "relative", zIndex: 1 }}>
-          První krok je vstupní hovor. 56 minut které změní způsob, jakým o své značce přemýšlíte.
+        <p style={{ fontSize: 17, color: "#fff", opacity: 1, marginBottom: 44, position: "relative", zIndex: 1 }}>
+          Vstupní hovor trvá 56 minut. Výsledek pracuje za vás dál.
         </p>
         <a
           href="/rezervace"
