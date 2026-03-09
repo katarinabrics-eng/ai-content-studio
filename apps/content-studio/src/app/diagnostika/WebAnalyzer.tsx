@@ -166,9 +166,37 @@ export function WebAnalyzer({
             </p>
           </div>
           <div className="rounded-3xl p-10 backdrop-blur-xl border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
-            <p className="leading-relaxed mb-8" style={{ color: lightTokens.muted }}>
-              Tato ukázková analýza je vstupní fází před strategickou konzultací. Plná diagnostika a vizuální board jsou součástí placené spolupráce.
-            </p>
+            <div className="space-y-8 mb-8">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wider mb-2" style={{ color: lightTokens.accent }}>Úvod</p>
+                <p className="leading-relaxed" style={{ color: lightTokens.muted }}>
+                  Spolupráce může začít hned.
+                  Stačí vyplnit svůj web nebo přidat základní informace o projektu a sledovat, jak u nás vzniká první pohled na vaši značku.
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wider mb-2" style={{ color: lightTokens.accent }}>Diagnostika a rozhovor</p>
+                <p className="leading-relaxed" style={{ color: lightTokens.muted }}>
+                  Žádné čekání. Okamžitě získáte první diagnostiku — pohled na to, jak vaši značku čteme my.
+                  Stačí doplnit jméno a e-mail a na společném rozhovoru už budeme pracovat s konkrétními návrhy, jak může vaše vizuální prezentace vypadat.
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wider mb-2" style={{ color: lightTokens.accent }}>Kdo za tím stojí</p>
+                <p className="leading-relaxed" style={{ color: lightTokens.muted }}>
+                  Na začátku pracují naši agenti a AI grafici, kteří připraví první návrhy a strategické směry.
+                  Celý proces ale vede kurátor. Katarina nic nepustí ven bez osobního posouzení a finálního rozhodnutí.
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wider mb-2" style={{ color: lightTokens.accent }}>Proč rozhovor</p>
+                <p className="leading-relaxed" style={{ color: lightTokens.muted }}>
+                  Web nebo text řeknou hodně, ale ne všechno.
+                  Na rozhovoru se ukážou nuance, motivace a směr, který za projektem skutečně stojí. Právě tyto detaily rozhodují o tom, jak bude značka působit.
+                  Proto je součástí procesu vždy i reálný člověk, který dokáže tyto informace zachytit a proměnit je ve správné rozhodnutí.
+                </p>
+              </div>
+            </div>
             <div className="h-px mb-8" style={{ background: `linear-gradient(to right, transparent, ${lightTokens.border}, transparent)` }} />
             <p className="text-sm uppercase tracking-widest mb-6" style={{ color: lightTokens.muted }}>Jak to probíhá</p>
             <div className="grid md:grid-cols-3 gap-6 text-sm">
