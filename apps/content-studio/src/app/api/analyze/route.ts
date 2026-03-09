@@ -36,7 +36,10 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
     },
     body: JSON.stringify({
       url: normalized,
-      formats: ["markdown", { type: "screenshot" }],
+      formats: [
+        { type: "markdown" },
+        { type: "screenshot", viewport: { width: 1280, height: 800 } },
+      ],
       onlyMainContent: true,
       waitFor: 2000,
     }),
@@ -46,9 +49,12 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
 
   if (!res.ok) {
     const e = (await res.json().catch(() => ({}))) as { error?: string; message?: string; param?: string };
-    const msg = e?.message ?? e?.error ?? `Firecrawl error ${res.status}`;
+    const raw = e?.message ?? e?.error ?? `Firecrawl error ${res.status}`;
+    const msg = raw.toLowerCase().includes("bad request") || res.status === 400
+      ? "URL není platná nebo web se nepodařilo načíst. Zkuste zkontrolovat adresu a zkusit znovu."
+      : raw;
     if (process.env.NODE_ENV !== "production") {
-      console.error("[analyze] Firecrawl error:", { message: msg, param: e?.param });
+      console.error("[analyze] Firecrawl error:", { raw, message: msg, param: e?.param });
     }
     throw new Error(msg);
   }
