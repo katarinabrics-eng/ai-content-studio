@@ -19,10 +19,17 @@ function generateShortCode(): string {
   return s;
 }
 
-function getAccessExpiresAt(): string {
-  const d = new Date();
+/** Vrací datum expirace přístupu (created + ACCESS_DAYS). Exportováno pro admin PATCH. */
+export type AccessType = "FREE" | "PAID" | "ACTIVE";
+
+export function getAccessExpiresAt(accessType: AccessType, created: Date): string {
+  const d = new Date(created);
   d.setDate(d.getDate() + ACCESS_DAYS);
   return d.toISOString();
+}
+
+function getDefaultAccessExpiresAt(): string {
+  return getAccessExpiresAt("FREE", new Date());
 }
 
 export type PaymentStatus = "none" | "pending" | "paid";
@@ -58,7 +65,7 @@ export async function createClientProject(params: {
 }): Promise<{ id: string }> {
   const supabase = getSupabaseClient();
   const access_token = generateAccessToken();
-  const access_expires_at = getAccessExpiresAt();
+  const access_expires_at = getDefaultAccessExpiresAt();
   const short_code = generateShortCode();
   const workflow_status = params.workflow_status ?? "DIAG_AWAITING_CURATOR";
   const { data, error } = await supabase
@@ -150,9 +157,23 @@ export async function updateClientProjectScanResult(
 }
 
 /** Aktualizuje editovatelná pole záznamu diagnostiky (admin i klient). */
+export type UpdateClientProjectParams = {
+  name?: string | null;
+  email?: string | null;
+  web_url?: string | null;
+  manual_input?: string | null;
+  last_contact_at?: string | null;
+  access_type?: AccessType | null;
+  access_expires_at?: string | null;
+  outputs_activated?: boolean;
+  outputs_activated_at?: string | null;
+  access_sent_at?: string | null;
+  brief_submitted_at?: string | null;
+};
+
 export async function updateClientProject(
   projectId: string,
-  updates: { name?: string | null; email?: string | null; web_url?: string | null; manual_input?: string | null }
+  updates: UpdateClientProjectParams
 ): Promise<ClientProjectRow | null> {
   const supabase = getSupabaseClient();
   const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -160,6 +181,13 @@ export async function updateClientProject(
   if (updates.email !== undefined) payload.email = updates.email;
   if (updates.web_url !== undefined) payload.web_url = updates.web_url;
   if (updates.manual_input !== undefined) payload.manual_input = updates.manual_input;
+  if (updates.last_contact_at !== undefined) payload.last_contact_at = updates.last_contact_at;
+  if (updates.access_type !== undefined) payload.access_type = updates.access_type;
+  if (updates.access_expires_at !== undefined) payload.access_expires_at = updates.access_expires_at;
+  if (updates.outputs_activated !== undefined) payload.outputs_activated = updates.outputs_activated;
+  if (updates.outputs_activated_at !== undefined) payload.outputs_activated_at = updates.outputs_activated_at;
+  if (updates.access_sent_at !== undefined) payload.access_sent_at = updates.access_sent_at;
+  if (updates.brief_submitted_at !== undefined) payload.brief_submitted_at = updates.brief_submitted_at;
   const { data, error } = await supabase
     .from("client_projects")
     .update(payload)
@@ -254,6 +282,19 @@ export async function getClientProjectByEmail(email: string): Promise<ClientProj
   return data as ClientProjectRow | null;
 }
 
+/** Vrací projekt se shodným e-mailem a web_url (oba musí sedět). Pro upsert při save-scan. */
+export async function getClientProjectByEmailAndWeb(
+  email: string,
+  webUrl: string | null
+): Promise<ClientProjectRow | null> {
+  const project = await getClientProjectByEmail(email);
+  if (!project) return null;
+  const a = (project.web_url ?? "").trim().toLowerCase();
+  const b = (webUrl ?? "").trim().toLowerCase();
+  if (a !== b) return null;
+  return project;
+}
+
 /** Vrací projekt při platném tokenu. Pokud token chybí nebo je po access_expires_at, vrací null. */
 export async function getClientProjectByAccessToken(token: string): Promise<ClientProjectRow | null> {
   if (!token?.trim()) return null;
@@ -285,4 +326,45 @@ export async function getClientProjectByShortCode(shortCode: string): Promise<Cl
   const expiresAt = row.access_expires_at ? new Date(row.access_expires_at).getTime() : 0;
   if (expiresAt > 0 && Date.now() > expiresAt) return null;
   return row;
+}
+
+/** Uloží novou verzi diagnostiky k projektu (stub – tabulka diagnostic_versions může být doplněna později). */
+export async function insertDiagnosticVersion(
+  _projectId: string,
+  _scanResult: Record<string, unknown>
+): Promise<void> {
+  // Stub: bez tabulky diagnostic_versions nic neukládáme
+}
+
+export type DiagnosticVersionRow = {
+  id: string;
+  project_id: string;
+  scan_result: Record<string, unknown>;
+  created_at: string;
+  status: "pending" | "accepted" | "ignored";
+};
+
+/** Vrací pending verzi diagnostiky pro projekt (stub). */
+export async function getPendingDiagnosticVersion(_projectId: string): Promise<DiagnosticVersionRow | null> {
+  return null;
+}
+
+/** Vrací seznam verzí diagnostiky projektu (stub). */
+export async function listDiagnosticVersions(_projectId: string): Promise<DiagnosticVersionRow[]> {
+  return [];
+}
+
+/** Vrací verzi diagnostiky podle id (stub). */
+export async function getDiagnosticVersionById(_versionId: string): Promise<DiagnosticVersionRow | null> {
+  return null;
+}
+
+/** Přijme verzi a přepíše scan_result projektu (stub). */
+export async function acceptDiagnosticVersion(_versionId: string): Promise<boolean> {
+  return true;
+}
+
+/** Označí verzi jako ignorovanou (stub). */
+export async function ignoreDiagnosticVersion(_versionId: string): Promise<boolean> {
+  return true;
 }
