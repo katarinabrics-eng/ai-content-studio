@@ -179,8 +179,13 @@ export function DiagnostikaResultsView({
     return () => obs.disconnect();
   }, []);
 
+  // Firecrawl v2 vrací screenshot jako URL; base64 jen když už máme data: nebo raw base64
   const screenshotSrc = scraped?.screenshot
-    ? (scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`)
+    ? scraped.screenshot.startsWith("data:")
+      ? scraped.screenshot
+      : scraped.screenshot.startsWith("http://") || scraped.screenshot.startsWith("https://")
+        ? scraped.screenshot
+        : `data:image/png;base64,${scraped.screenshot}`
     : null;
 
   // Screenshot: skeleton 1.5s then reveal image with fade + scale
@@ -212,7 +217,7 @@ export function DiagnostikaResultsView({
         .diag-browser-dots { display: flex; gap: 6px; }
         .diag-browser-dots span { width: 10px; height: 10px; border-radius: 50%; }
         .diag-browser-url { flex: 1; font-size: 11px; color: ${C.textMuted}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; }
-        .diag-preview-img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+        .diag-preview-img { width: 100%; max-height: 280px; object-fit: cover; display: block; }
         .diag-preview-img.animate-in { animation: diagImgReveal 0.6s ease-out forwards; opacity: 0; transform: scale(0.95); }
         .diag-preview-placeholder { min-height: 140px; background: #e8e8e4; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
         .diag-preview-skeleton { height: 8px; background: linear-gradient(90deg, #ddd 25%, #e0e0dc 50%, #ddd 75%); background-size: 200% 100%; animation: diagSkeleton 1.2s ease-in-out infinite; border-radius: 4px; margin-bottom: 8px; width: 80%; }
@@ -250,6 +255,7 @@ export function DiagnostikaResultsView({
         .diag-strategist-card { background: ${C.surface}; border: 1px solid ${C.border}; border-radius: 16px; padding: 20px; }
         .diag-cta-dark { background: #111; color: #fff; border-radius: 20px; padding: 32px; text-align: center; }
         .diag-email-card { background: ${C.surface}; border: 1px solid ${C.border}; border-radius: 16px; padding: 24px; }
+        .diag-float-badge { position: absolute; background: #fff; border: 1px solid rgba(0,0,0,0.09); border-radius: 12px; padding: 12px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); font-size: 12px; display: flex; align-items: center; gap: 8px; z-index: 2; }
         @media (max-width: 600px) {
           .diag-score-card { grid-template-columns: 1fr; }
           .diag-strategist-grid { grid-template-columns: 1fr !important; }
@@ -320,9 +326,38 @@ export function DiagnostikaResultsView({
           </div>
         </section>
 
-        {/* 2. SCORE */}
+        {/* 2. SCORE + plovoucí kartičky */}
         <section ref={scoreRef} style={{ marginBottom: 40 }}>
-          <div className="diag-score-card">
+          <div style={{ position: "relative" }}>
+            {/* Plovoucí kartička: Identita nalezena */}
+            {result.brandDna && (result.brandDna.positioning || (result.brandDna as { name?: string }).name) && (
+              <div
+                className="diag-float-badge"
+                style={{ top: -20, right: -20 }}
+              >
+                <span style={{ fontSize: 16 }}>🎯</span>
+                <div>
+                  <div style={{ fontWeight: 700, color: C.text }}>Identita nalezena</div>
+                  <div style={{ fontSize: 11, color: C.textMuted }}>Brand DNA kompletní</div>
+                </div>
+              </div>
+            )}
+            {/* Plovoucí kartička: Stratég doporučen */}
+            {suggested.length > 0 && (
+              <div
+                className="diag-float-badge"
+                style={{ bottom: -16, left: -20 }}
+              >
+                <span style={{ fontSize: 16 }}>🧠</span>
+                <div>
+                  <div style={{ fontWeight: 700, color: C.text }}>Stratég doporučen</div>
+                  <div style={{ fontSize: 11, color: C.textMuted }}>
+                    {suggested[0].label} · {(suggested[0].fit_score ?? 87)}% shoda
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="diag-score-card">
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <ScoreRingSVG value={scoreVisible ? scoreAnimated : 0} />
               <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 42, color: C.text, marginTop: -80 }}>
@@ -356,6 +391,7 @@ export function DiagnostikaResultsView({
                 );
               })}
             </div>
+          </div>
           </div>
         </section>
 
