@@ -70,7 +70,7 @@ const MOCKUP_PILLARS = [
   { icon: "🎯", label: "Identita", color: PURPLE, value: 7, pct: 70 },
   { icon: "🤝", label: "Důvěra", color: LIME, value: 5, pct: 55 },
 ];
-const MOCKUP_DOMAIN = "contentpro.cz";
+const MOCKUP_DOMAIN = "studiolucifera.cz";
 
 const analyzerWrapperStyle: React.CSSProperties = {
   maxWidth: 860,
