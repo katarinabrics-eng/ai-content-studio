@@ -4,26 +4,36 @@ import { useEffect, useRef, useState } from "react";
 import type { ScanResult, PillarAnalysisItem, SuggestedStrategistItem } from "@/app/start/ScanResultScrollExperience";
 
 const C = {
-  bg: "#fafaf8",
+  bg: "#f5f4ef",
   surface: "#ffffff",
-  border: "#e8e8e0",
+  border: "#e8e8e3",
   text: "#111111",
-  textMuted: "#888888",
+  textMuted: "#777777",
   textMuted2: "#555555",
   lime: "#b4e842",
-  limeDark: "#8fc42a",
-  limeBg: "#f2fcd8",
+  limeDark: "#8fb82e",
+  limeBg: "rgba(180,232,66,0.08)",
+  limeBorder: "rgba(180,232,66,0.25)",
   warn: "#f0b429",
   danger: "#ef4444",
+  black: "#111111",
+  grayLight: "#e8e8e3",
 } as const;
 
 const PILLAR_IDS = ["light", "energy", "architecture", "identity", "trust"] as const;
+const PILLAR_DISPLAY: Record<string, { label: string; icon: string; sub: string }> = {
+  light: { label: "Hodnota", icon: "💡", sub: "Clarity of Value" },
+  energy: { label: "Energie", icon: "⚡", sub: "Brand Energy" },
+  architecture: { label: "Architektura", icon: "🏛", sub: "UX & Structure" },
+  identity: { label: "Identita", icon: "💎", sub: "Brand Identity" },
+  trust: { label: "Důvěra", icon: "🤝", sub: "Social Proof" },
+};
 const PILLAR_LABELS: Record<string, { title: string; sub: string }> = {
-  light: { title: "SVĚTLO", sub: "Clarity of Value" },
-  energy: { title: "ENERGIE", sub: "" },
-  architecture: { title: "ARCHITEKTURA", sub: "" },
-  identity: { title: "IDENTITA", sub: "" },
-  trust: { title: "DŮVĚRA", sub: "" },
+  light: { title: "Hodnota", sub: "Clarity of Value" },
+  energy: { title: "Energie", sub: "Brand Energy" },
+  architecture: { title: "Architektura", sub: "UX & Structure" },
+  identity: { title: "Identita", sub: "Brand Identity" },
+  trust: { title: "Důvěra", sub: "Social Proof" },
 };
 
 /** 8–10: limetková #b4e842, 5–7: žlutooranžová #f0b429, 1–4: červená #ef4444 */
@@ -198,6 +208,13 @@ export function DiagnostikaResultsView({
     return () => clearTimeout(t);
   }, [screenshotSrc]);
 
+  const scoreInterpretation = total >= 70 ? "Solidní základ" : total >= 50 ? "Potenciál růstu" : "Prostor ke zlepšení";
+  const scoreDesc = total >= 65
+    ? "Největší prostor je v důvěře a diferenciaci."
+    : total >= 45
+      ? "Největší prostor je v oblasti důvěry a diferenciace."
+      : "Největší prostor je v jasnosti nabídky a důvěře.";
+
   return (
     <div
       style={{
@@ -208,239 +225,224 @@ export function DiagnostikaResultsView({
       }}
     >
       <style>{`
-        .diag-results-container { max-width: 720px; margin: 0 auto; padding: 24px; }
-        .diag-hero-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: ${C.textMuted}; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-        .diag-hero-label-dot { width: 6px; height: 6px; border-radius: 50%; background: ${C.lime}; }
-        .diag-h1 { font-family: var(--font-playfair), serif; font-weight: 700; font-size: clamp(28px, 4vw, 36px); color: ${C.text}; margin: 0 0 6px 0; }
-        .diag-web-preview { border: 1px solid ${C.border}; border-radius: 12px; overflow: hidden; background: ${C.surface}; position: relative; margin-top: 16px; }
-        .diag-browser-chrome { height: 36px; background: #f0f0ec; border-bottom: 1px solid ${C.border}; display: flex; align-items: center; gap: 8px; padding: 0 12px; }
+        .diag-results-container { max-width: 900px; margin: 0 auto; padding: 84px 32px 80px; }
+        .diag-hero-label { font-size: 11px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: ${C.limeDark}; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .diag-hero-label-dot { width: 6px; height: 6px; border-radius: 50%; background: ${C.lime}; animation: diagPulse 2s ease infinite; }
+        @keyframes diagPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+        .diag-h1 { font-family: var(--font-playfair), serif; font-weight: 700; font-size: 32px; line-height: 1.2; color: ${C.text}; margin: 0 0 6px 0; }
+        .diag-web-preview { border-radius: 14px; overflow: hidden; box-shadow: 0 16px 60px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.08); }
+        .diag-browser-chrome { background: #2a2a2a; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
         .diag-browser-dots { display: flex; gap: 6px; }
-        .diag-browser-dots span { width: 10px; height: 10px; border-radius: 50%; }
-        .diag-browser-url { flex: 1; font-size: 11px; color: ${C.textMuted}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; }
-        .diag-preview-img { width: 100%; max-height: 280px; object-fit: cover; display: block; }
-        .diag-preview-img.animate-in { animation: diagImgReveal 0.6s ease-out forwards; opacity: 0; transform: scale(0.95); }
-        .diag-preview-placeholder { min-height: 140px; background: #e8e8e4; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
-        .diag-preview-skeleton { height: 8px; background: linear-gradient(90deg, #ddd 25%, #e0e0dc 50%, #ddd 75%); background-size: 200% 100%; animation: diagSkeleton 1.2s ease-in-out infinite; border-radius: 4px; margin-bottom: 8px; width: 80%; }
-        .diag-badge { position: absolute; top: 8px; right: 8px; background: #111; color: ${C.lime}; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px; }
-        @keyframes diagImgReveal {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes diagSkeleton {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        .diag-score-card { background: ${C.surface}; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); padding: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
-        .diag-pullquote { text-align: center; font-family: var(--font-playfair), serif; font-style: italic; font-size: 20px; color: #aaa; margin: 32px 0; }
+        .diag-browser-dots span { width: 11px; height: 11px; border-radius: 50%; }
+        .diag-browser-url { flex: 1; background: #1e1e1e; border-radius: 5px; padding: 5px 12px; font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px; }
+        .diag-browser-body { position: relative; min-height: 210px; overflow: hidden; }
+        .diag-preview-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, #ebebeb 0%, #f5f5f5 50%, #ebebeb 100%); background-size: 200% 100%; animation: diagSkeleton 1.4s ease infinite; }
+        .diag-preview-img { width: 100%; min-height: 210px; object-fit: cover; display: block; }
+        .diag-preview-img.animate-in { animation: diagImgReveal 0.8s ease forwards; opacity: 0; transform: scale(0.98); }
+        .diag-preview-placeholder { min-height: 210px; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+        @keyframes diagImgReveal { to { opacity: 1; transform: scale(1); } }
+        @keyframes diagSkeleton { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .diag-main-grid { display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: start; }
+        @media (max-width: 700px) { .diag-main-grid { grid-template-columns: 1fr; } }
+        .diag-score-card-dark { background: ${C.black}; border-radius: 20px; padding: 36px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .diag-pillars-card { background: ${C.surface}; border-radius: 20px; padding: 28px; border: 1px solid ${C.grayLight}; }
+        .diag-pullquote { text-align: center; font-family: var(--font-playfair), serif; font-style: italic; font-size: 18px; color: rgba(0,0,0,0.25); margin: 32px 0; line-height: 1.6; }
         .diag-divider { height: 1px; background: ${C.border}; margin: 24px 0; }
-        .diag-section-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: ${C.textMuted}; margin-bottom: 16px; }
-        .diag-pillar-card { background: ${C.surface}; border: 1px solid ${C.border}; border-radius: 16px; margin-bottom: 12px; overflow: hidden; transition: max-height 0.4s ease; }
+        .diag-section-label { font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase; color: ${C.textMuted}; margin-bottom: 16px; }
+        .diag-pillar-card { background: ${C.surface}; border: 1px solid ${C.grayLight}; border-radius: 16px; margin-bottom: 16px; overflow: hidden; }
         .diag-pillar-card.visible { animation: diagFadeUp 0.5s ease forwards; }
-        @keyframes diagFadeUp {
-          from { opacity: 0; transform: translateY(32px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .diag-score-pillar-row { opacity: 0; transform: translateY(10px); }
-        .diag-score-pillar-row.visible { animation: diagTagReveal 0.4s ease forwards; }
-        @keyframes diagTagReveal {
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .diag-dna-tag { opacity: 0; transform: translateY(10px); }
-        .diag-dna-tag.visible { animation: diagTagReveal 0.4s ease forwards; }
+        @keyframes diagFadeUp { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
+        .diag-dna-tag { opacity: 0; transform: translateY(6px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .diag-dna-tag.visible { opacity: 1; transform: translateY(0); }
         .diag-rec-card { opacity: 0; transform: translateY(20px); }
         .diag-rec-card.visible { animation: diagRecReveal 0.5s ease forwards; }
-        @keyframes diagRecReveal {
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .diag-strategist-card { background: ${C.surface}; border: 1px solid ${C.border}; border-radius: 16px; padding: 20px; }
-        .diag-cta-dark { background: #111; color: #fff; border-radius: 20px; padding: 32px; text-align: center; }
-        .diag-email-card { background: ${C.surface}; border: 1px solid ${C.border}; border-radius: 16px; padding: 24px; }
+        @keyframes diagRecReveal { to { opacity: 1; transform: translateY(0); } }
+        .diag-strategist-card { background: #fafaf8; border: 1px solid ${C.grayLight}; border-radius: 10px; padding: 18px; }
+        .diag-cta-dark { background: ${C.black}; color: #fff; border-radius: 24px; padding: 56px 48px; text-align: center; position: relative; overflow: hidden; }
+        .diag-email-card { background: ${C.surface}; border: 1px solid ${C.grayLight}; border-radius: 20px; padding: 32px; }
         .diag-float-badge { position: absolute; background: #fff; border: 1px solid rgba(0,0,0,0.09); border-radius: 12px; padding: 12px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); font-size: 12px; display: flex; align-items: center; gap: 8px; z-index: 2; }
-        @media (max-width: 600px) {
-          .diag-score-card { grid-template-columns: 1fr; }
-          .diag-strategist-grid { grid-template-columns: 1fr !important; }
-        }
+        .diag-brand-dna-dark { background: ${C.black}; border-radius: 20px; padding: 32px; }
+        .diag-strategic-card { background: ${C.surface}; border: 1px solid ${C.grayLight}; border-radius: 20px; padding: 32px; }
+        .diag-save-section { background: ${C.surface}; border: 1px solid ${C.grayLight}; border-radius: 20px; padding: 32px; }
+        @media (max-width: 600px) { .diag-results-container { padding: 24px 20px 48px; } .diag-strategist-grid { grid-template-columns: 1fr !important; } }
       `}</style>
 
       {onBack && (
-        <div style={{ marginBottom: 16 }}>
-          <button
-            type="button"
-            onClick={onBack}
-            style={{ background: "none", border: "none", color: C.textMuted, fontSize: 12, cursor: "pointer", padding: 0 }}
-          >
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 32px 0" }}>
+          <button type="button" onClick={onBack} style={{ background: "none", border: "none", color: C.textMuted, fontSize: 13, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 6 }}>
             ← Analyzovat jiný web
           </button>
         </div>
       )}
-
       <div className="diag-results-container">
-        {/* 1. HERO */}
-        <section style={{ marginBottom: 32 }}>
+        {/* 1. HEADER */}
+        <section className="results-header" style={{ textAlign: "center", marginBottom: 40 }}>
           <p className="diag-hero-label">
             <span className="diag-hero-label-dot" />
-            VÝSLEDKY DIAGNOSTIKY
+            Výsledky diagnostiky
           </p>
-          <h1 className="diag-h1">{brandName}</h1>
-          {webUrl && <p style={{ fontSize: 13, color: C.textMuted, margin: 0 }}>{webUrl}</p>}
+          <h1 className="diag-h1">Vaše značka byla analyzována.</h1>
+          <p className="diag-results-sub" style={{ fontSize: 14, color: C.textMuted, margin: 0 }}>
+            {webUrl ? `${webUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}` : "—"} · Analýza dokončena právě teď
+          </p>
+        </section>
 
+        {/* 2. BROWSER MOCKUP */}
+        <section style={{ marginBottom: 40 }}>
           <div className="diag-web-preview">
             <div className="diag-browser-chrome">
               <div className="diag-browser-dots">
-                <span style={{ background: "#ef4444" }} />
-                <span style={{ background: "#f59e0b" }} />
-                <span style={{ background: "#22c55e" }} />
+                <span style={{ background: "#ff5f57" }} />
+                <span style={{ background: "#ffbd2e" }} />
+                <span style={{ background: "#28c940" }} />
               </div>
-              <span className="diag-browser-url">{webUrl || "—"}</span>
+              <div className="diag-browser-url">🔒 {webUrl ? webUrl.replace(/^https?:\/\//, "").replace(/\/$/, "") : "—"}</div>
             </div>
-            {screenshotSrc ? (
-              <>
-                {!screenshotReveal ? (
-                  <div className="diag-preview-placeholder">
-                    <div className="diag-preview-skeleton" />
-                    <div className="diag-preview-skeleton" style={{ width: "60%" }} />
-                    <div className="diag-preview-skeleton" style={{ width: "70%" }} />
-                  </div>
-                ) : (
+            <div className="diag-browser-body">
+              {screenshotSrc ? (
+                <>
+                  {!screenshotReveal && <div className="diag-preview-skeleton" />}
                   <img
                     src={screenshotSrc}
                     alt=""
-                    className={`diag-preview-img ${screenshotLoaded ? "animate-in" : ""}`}
+                    className={`diag-preview-img ${screenshotReveal && screenshotLoaded ? "animate-in" : ""}`}
                     onLoad={() => setScreenshotLoaded(true)}
+                    style={{ opacity: screenshotReveal ? 1 : 0, position: screenshotReveal ? "relative" : "absolute", inset: 0 }}
                   />
-                )}
-              </>
-            ) : placeholderGone ? (
-              <div className="diag-preview-placeholder" style={{ background: C.surface }}>
-                <p style={{ fontSize: 13, color: C.textMuted, margin: 0 }}>Web byl analyzován</p>
-                {webUrl && <p style={{ fontSize: 11, color: C.textMuted2, marginTop: 4 }}>{webUrl}</p>}
-              </div>
-            ) : (
-              <div className="diag-preview-placeholder">
+                </>
+              ) : placeholderGone ? (
+                <div className="diag-preview-placeholder">
+                  <p style={{ fontSize: 13, color: C.textMuted, margin: 0 }}>Web byl analyzován</p>
+                  {webUrl && <p style={{ fontSize: 11, color: C.textMuted2, marginTop: 4 }}>{webUrl}</p>}
+                </div>
+              ) : (
                 <div className="diag-preview-skeleton" />
-                <div className="diag-preview-skeleton" style={{ width: "60%" }} />
-                <div className="diag-preview-skeleton" style={{ width: "70%" }} />
-              </div>
-            )}
-            <span className="diag-badge">✓ ANALYZOVÁNO</span>
+              )}
+            </div>
           </div>
         </section>
 
-        {/* 2. SCORE + plovoucí kartičky */}
-        <section ref={scoreRef} style={{ marginBottom: 40 }}>
-          <div style={{ position: "relative" }}>
-            {/* Plovoucí kartička: Identita nalezena */}
-            {result.brandDna && (result.brandDna.positioning || (result.brandDna as { name?: string }).name) && (
-              <div
-                className="diag-float-badge"
-                style={{ top: -20, right: -20 }}
-              >
-                <span style={{ fontSize: 16 }}>🎯</span>
-                <div>
-                  <div style={{ fontWeight: 700, color: C.text }}>Identita nalezena</div>
-                  <div style={{ fontSize: 11, color: C.textMuted }}>Brand DNA kompletní</div>
-                </div>
+        {/* 3. SCORE + PILLARS GRID (260px + 1fr) */}
+        <section ref={scoreRef} style={{ marginBottom: 32, position: "relative" }}>
+          {result.brandDna && (result.brandDna.positioning || (result.brandDna as { name?: string }).name) && (
+            <div className="diag-float-badge" style={{ top: -12, right: 0 }}>
+              <span style={{ fontSize: 16 }}>🎯</span>
+              <div>
+                <div style={{ fontWeight: 700, color: C.text }}>Identita nalezena</div>
+                <div style={{ fontSize: 11, color: C.textMuted }}>Brand DNA kompletní</div>
               </div>
-            )}
-            {/* Plovoucí kartička: Stratég doporučen */}
-            {suggested.length > 0 && (
-              <div
-                className="diag-float-badge"
-                style={{ bottom: -16, left: -20 }}
-              >
-                <span style={{ fontSize: 16 }}>🧠</span>
-                <div>
-                  <div style={{ fontWeight: 700, color: C.text }}>Stratég doporučen</div>
-                  <div style={{ fontSize: 11, color: C.textMuted }}>
-                    {suggested[0].label} · {(suggested[0].fit_score ?? 87)}% shoda
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="diag-score-card">
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <ScoreRingSVG value={scoreVisible ? scoreAnimated : 0} />
-              <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 42, color: C.text, marginTop: -80 }}>
-                {scoreAnimated}
-              </span>
-              <span style={{ fontSize: 14, color: C.textMuted, marginTop: -4 }}>/100</span>
             </div>
-            <div>
+          )}
+          {suggested.length > 0 && (
+            <div className="diag-float-badge" style={{ bottom: -12, left: 0 }}>
+              <span style={{ fontSize: 16 }}>🧠</span>
+              <div>
+                <div style={{ fontWeight: 700, color: C.text }}>Stratég doporučen</div>
+                <div style={{ fontSize: 11, color: C.textMuted }}>{suggested[0].label} · {(suggested[0].fit_score ?? 87)}% shoda</div>
+              </div>
+            </div>
+          )}
+          <div className="diag-main-grid">
+            {/* LEFT: INDEX VIZUÁLNÍ ÚROVNĚ (dark card) */}
+            <div className="diag-score-card-dark">
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 24 }}>Index vizuální úrovně</div>
+              <div style={{ position: "relative", width: 150, height: 150, marginBottom: 20 }}>
+                <ScoreRingSVG value={scoreVisible ? scoreAnimated : 0} dark />
+                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+                  <div style={{ fontFamily: "var(--font-playfair), serif", fontSize: 52, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{scoreAnimated}</div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.3)" }}>/ 100</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.lime, marginBottom: 6 }}>{scoreInterpretation}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", lineHeight: 1.5 }}>{scoreDesc}</div>
+            </div>
+            {/* RIGHT: PĚT PILÍŘŮ ZNAČKY (light card) */}
+            <div className="diag-pillars-card">
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase", color: C.textMuted, marginBottom: 22 }}>Pět pilířů značky</div>
               {PILLAR_IDS.map((id, idx) => {
                 const p = pillarAnalysis[id] as PillarAnalysisItem | undefined;
-                const score = p?.score ?? 0;
-                const label = PILLAR_LABELS[id];
+                const score = typeof p?.score === "number" ? p.score : 5;
+                const disp = PILLAR_DISPLAY[id];
                 const rowVisible = scoreVisible;
+                const barW = rowVisible ? score * 10 : 0;
+                const col = getScoreColor(score);
                 return (
                   <div
                     key={id}
-                    className={`diag-score-pillar-row ${rowVisible ? "visible" : ""}`}
                     style={{
                       display: "flex",
-                      justifyContent: "space-between",
                       alignItems: "center",
-                      marginBottom: 10,
-                      animationDelay: `${idx * 80}ms`,
+                      gap: 12,
+                      marginBottom: 16,
                     }}
                   >
-                    <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>{label?.title ?? id}</span>
-                    <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 18, color: getScoreColor(score) }}>
-                      {score}/10
-                    </span>
+                    <div style={{ fontSize: 15, width: 20, textAlign: "center", flexShrink: 0 }}>{disp?.icon ?? "•"}</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, width: 108, flexShrink: 0, color: "#444" }}>{disp?.label ?? id}</div>
+                    <div style={{ flex: 1, height: 7, background: C.grayLight, borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${barW}%`, background: col, borderRadius: 4, transition: "width 0.9s cubic-bezier(0.4,0,0.2,1)" }} />
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, width: 28, textAlign: "right", flexShrink: 0, color: col }}>{score}/10</div>
                   </div>
                 );
               })}
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: `1px solid ${C.grayLight}` }}>
+                <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 8, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Vaše značka není slabá.</div>
+                <div style={{ fontSize: 13, color: C.textMuted2, lineHeight: 1.5 }}>Ale není ještě strategicky sladěná.</div>
+              </div>
             </div>
-          </div>
           </div>
         </section>
 
-        {/* 3. PULLQUOTE */}
-        {summary && (
-          <section style={{ marginBottom: 24 }}>
-            <p className="diag-pullquote">&ldquo;{summary}&rdquo;</p>
-            <div className="diag-divider" />
-          </section>
-        )}
+        {/* 4. DIVIDER QUOTE */}
+        <section style={{ marginBottom: 24 }}>
+          <p className="diag-pullquote">Značka není jen vizuál.<br />Je to systém.</p>
+        </section>
 
-        {/* 3b. BRAND DNA — tagy s fade-in + translateY, stagger 80ms */}
+        {/* 5. BRAND DNA — dark card */}
         {(() => {
           const d = result.brandDna as Record<string, unknown> | undefined;
           if (!d) return null;
-          const tags: { label: string; value: string }[] = [];
-          if (d.positioning && String(d.positioning).trim()) tags.push({ label: "Positioning", value: String(d.positioning).trim() });
-          if (d.tone && String(d.tone).trim()) tags.push({ label: "Tón", value: String(d.tone).trim() });
-          if (d.targetAudience && String(d.targetAudience).trim()) tags.push({ label: "Cílová skupina", value: String(d.targetAudience).trim() });
-          if (d.communicationStyle && String(d.communicationStyle).trim()) tags.push({ label: "Komunikace", value: String(d.communicationStyle).trim() });
-          if (d.uniqueValue && String(d.uniqueValue).trim()) tags.push({ label: "Unikátní hodnota", value: String(d.uniqueValue).trim() });
-          const vs = d.visualStyle as Record<string, string> | undefined;
-          if (vs?.primaryColor) tags.push({ label: "Barva", value: vs.primaryColor });
-          if (vs?.typography) tags.push({ label: "Typografie", value: vs.typography });
-          if (tags.length === 0) return null;
+          const tags: { label: string; lime?: boolean }[] = [];
+          if (d.positioning && String(d.positioning).trim()) tags.push({ label: String(d.positioning).trim().slice(0, 30), lime: true });
+          if (d.uniqueValue && String(d.uniqueValue).trim()) tags.push({ label: String(d.uniqueValue).trim().slice(0, 28), lime: false });
+          (d.contentPillars as string[] | undefined)?.slice(0, 4).forEach((t) => tags.push({ label: t.slice(0, 24), lime: tags.length % 2 === 0 }));
+          if (d.targetAudience && String(d.targetAudience).trim()) tags.push({ label: String(d.targetAudience).trim().slice(0, 24), lime: false });
+          const desc = (d.positioning || d.uniqueValue || summary) ? (summary || String(d.positioning || d.uniqueValue || "").slice(0, 200)) : "Vaše značka komunikuje svou pozici. Zákazník vidí potenciál — chybí mu důkaz, že to funguje.";
+          if (tags.length === 0 && !desc) return null;
           return (
-            <section ref={dnaRef} style={{ marginBottom: 32 }}>
-              <p className="diag-section-label">BRAND DNA</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {tags.map((tag, idx) => (
-                  <div
-                    key={tag.label}
-                    className={`diag-dna-tag ${dnaVisible ? "visible" : ""}`}
-                    style={{
-                      background: C.surface,
-                      border: `1px solid ${C.border}`,
-                      borderRadius: 10,
-                      padding: "10px 14px",
-                      fontSize: 13,
-                      color: C.text,
-                      animationDelay: `${idx * 80}ms`,
-                    }}
-                  >
-                    <span style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: C.textMuted, display: "block", marginBottom: 4 }}>{tag.label}</span>
-                    <span style={{ lineHeight: 1.4 }}>{tag.value}</span>
+            <section ref={dnaRef} style={{ marginBottom: 24 }}>
+              <div className="diag-brand-dna-dark">
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 10, background: C.limeBg, border: `1px solid ${C.limeBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🧬</div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>Brand DNA</div>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Jak vás vidí zákazník</div>
                   </div>
-                ))}
+                </div>
+                {tags.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+                    {tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className={`diag-dna-tag ${dnaVisible ? "visible" : ""}`}
+                        style={{
+                          padding: "6px 14px",
+                          borderRadius: 20,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          background: tag.lime ? "rgba(180,232,66,0.1)" : "rgba(255,255,255,0.06)",
+                          color: tag.lime ? C.lime : "rgba(255,255,255,0.6)",
+                          border: `1px solid ${tag.lime ? "rgba(180,232,66,0.2)" : "rgba(255,255,255,0.1)"}`,
+                          transitionDelay: `${idx * 80}ms`,
+                        }}
+                      >
+                        {tag.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>{desc}</div>
               </div>
-              <div className="diag-divider" style={{ marginTop: 24 }} />
             </section>
           );
         })()}
@@ -482,20 +484,42 @@ export function DiagnostikaResultsView({
           })}
         </section>
 
-        {/* 5. STRATÉGOVÉ — scroll-triggered fade-in + translateY */}
+        {/* 6. STRATEGICKÝ PROFIL (2 karty: rizika / akce) */}
+        {(summary || suggested.length > 0) && (
+          <section style={{ marginBottom: 24 }}>
+            <div className="diag-strategic-card">
+              <div style={{ fontFamily: "var(--font-playfair), serif", fontSize: 22, marginBottom: 24 }}>Strategický profil vaší značky</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+                <div style={{ background: "#fafaf8", borderRadius: 10, padding: 18, border: `1px solid ${C.grayLight}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase", color: C.danger, marginBottom: 10 }}>3 klíčová rizika</div>
+                  <ul style={{ margin: 0, paddingLeft: 14, listStyle: "none", fontSize: 13, color: "#666" }}>
+                    <li style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#ccc" }}>—</span> Absence reálných referencí klientů</li>
+                    <li style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#ccc" }}>—</span> Chybí případové studie s výsledky</li>
+                    <li style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#ccc" }}>—</span> Žádný manifesto-moment nebo slogan</li>
+                  </ul>
+                </div>
+                <div style={{ background: "#fafaf8", borderRadius: 10, padding: 18, border: `1px solid ${C.grayLight}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase", color: C.limeDark, marginBottom: 10 }}>Okamžité akce</div>
+                  <ul style={{ margin: 0, paddingLeft: 14, listStyle: "none", fontSize: 13, color: "#666" }}>
+                    <li style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#ccc" }}>—</span> Přidat 2–3 přímé citace klientů s výsledky</li>
+                    <li style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#ccc" }}>—</span> Vytvořit jednu případovou studii</li>
+                    <li style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#ccc" }}>—</span> Doplnit přehled obsahu před ceník</li>
+                  </ul>
+                </div>
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase", color: C.warn, marginBottom: 10 }}>Doporučený strategický posun</div>
+              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.7 }}>{summary || "Vaše značka má potenciál. Největší příležitost je v oblasti sociálního důkazu — přidání reálných výsledků klientů by výrazně zvýšilo konverzní potenciál."}</div>
+            </div>
+          </section>
+        )}
+
+        {/* 7. AI DOPORUČUJE STRATÉGY */}
         {suggested.length > 0 && (
-          <section ref={recsRef} style={{ marginBottom: 40 }}>
-            <p style={{ fontSize: 13, color: C.textMuted2, textAlign: "center", marginBottom: 16, fontStyle: "italic" }}>
-              Pokud vás zajímá konkrétní strategický směr, můžeme ho probrat na strategickém hovoru.
-            </p>
+          <section ref={recsRef} style={{ marginBottom: 24 }}>
             <p className="diag-section-label">AI DOPORUČUJE PRO TUTO ZNAČKU</p>
             <div className="diag-strategist-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {suggested.slice(0, 2).map((s, idx) => (
-                <div
-                  key={s.id}
-                  className={`diag-rec-card ${recsVisible ? "visible" : ""}`}
-                  style={{ animationDelay: `${idx * 80}ms` }}
-                >
+                <div key={s.id} className={`diag-rec-card ${recsVisible ? "visible" : ""}`} style={{ animationDelay: `${idx * 80}ms` }}>
                   <StrategistCard strategist={s} />
                 </div>
               ))}
@@ -503,89 +527,95 @@ export function DiagnostikaResultsView({
           </section>
         )}
 
-        {/* 6. CTA */}
-        {!hideCta && (
-          <section style={{ marginBottom: 40 }}>
-            <div className="diag-cta-dark">
-              <h2 style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 24, margin: "0 0 8px 0" }}>
-                Značka má potenciál.
-              </h2>
-              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", margin: "0 0 24px 0" }}>
-                Otázka je, zda ho chcete využít.
-              </p>
-              <a
-                href="/rezervace"
-                style={{
-                  display: "block",
-                  width: "100%",
-                  padding: "14px 24px",
-                  background: C.lime,
-                  color: C.text,
-                  fontWeight: 700,
-                  fontSize: 15,
-                  borderRadius: 12,
-                  textAlign: "center",
-                  textDecoration: "none",
-                }}
-              >
-                Rezervovat strategický hovor
-              </a>
+        {/* 8. ULOŽIT VÝSLEDKY (save section) */}
+        {!hideCta && showEmailCapture && onSaveLead && (
+          <section style={{ marginBottom: 24 }}>
+            <div className="diag-save-section">
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 24 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: C.limeBg, border: `1px solid ${C.limeBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💾</div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Uložte výsledky pod svým projektem</div>
+                  <div style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.55 }}>Výsledky diagnostiky zůstanou dostupné 7 dní. Zadejte e-mail a získáte přístupový odkaz kdykoliv se vrátit.</div>
+                </div>
+              </div>
+              {leadSubmitted && accessUrl ? (
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: 16, background: "rgba(180,232,66,0.06)", border: `1px solid ${C.limeBorder}`, borderRadius: 12 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: C.lime, color: C.black, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, flexShrink: 0 }}>✓</div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Diagnostika uložena.</div>
+                    <div style={{ fontSize: 13, color: C.textMuted, marginBottom: 8, lineHeight: 1.5 }}>Odkaz pro návrat k výsledkům byl odeslán na váš e-mail. Platnost odkazu je 7 dní.</div>
+                    <div style={{ fontSize: 11, color: C.textMuted, fontFamily: "monospace", background: "#f0f0eb", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{accessUrl}</div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: C.textMuted, marginBottom: 6 }}>Jméno projektu</label>
+                      <input
+                        type="text"
+                        value={leadName}
+                        onChange={(e) => setLeadName(e.target.value)}
+                        placeholder="např. Studio Lucifera — web 2026"
+                        style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: `1px solid ${C.grayLight}`, fontSize: 14, fontFamily: "inherit", background: "#fafaf8", color: C.text, boxSizing: "border-box" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: C.textMuted, marginBottom: 6 }}>Váš e-mail</label>
+                      <input
+                        type="email"
+                        value={leadEmail}
+                        onChange={(e) => setLeadEmail(e.target.value)}
+                        placeholder="vas@email.cz"
+                        style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: `1px solid ${C.grayLight}`, fontSize: 14, fontFamily: "inherit", background: "#fafaf8", color: C.text, boxSizing: "border-box" }}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={leadSubmitting || !leadEmail.trim()}
+                    onClick={() => onSaveLead({ email: leadEmail.trim(), name: leadName || undefined, web: leadWeb || undefined })}
+                    style={{ padding: "13px 28px", background: C.black, color: C.surface, border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: leadSubmitting ? "wait" : "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
+                  >
+                    {leadSubmitting ? "Ukládám…" : "Uložit diagnostiku →"}
+                  </button>
+                  {leadError && <p style={{ fontSize: 13, color: C.danger, marginTop: 12 }}>{leadError}</p>}
+                  {leadSubmitted && !accessUrl && <p style={{ fontSize: 13, color: C.lime, marginTop: 12 }}>Odesláno. Brzy vám pošleme odkaz.</p>}
+                </>
+              )}
             </div>
           </section>
         )}
 
-        {/* 7. EMAIL CAPTURE */}
-        {!hideCta && showEmailCapture && onSaveLead && (
-          <section>
-            <div className="diag-email-card">
-              <h3 style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 18, margin: "0 0 16px 0", color: C.text }}>
-                Nechte nám e-mail
-              </h3>
-              {leadSubmitted && accessUrl ? (
-                <p style={{ fontSize: 13, color: C.textMuted2, marginBottom: 8 }}>
-                  Váš odkaz pro návrat k výsledkům (platný 7 dní):{" "}
-                  <a href={accessUrl} style={{ color: C.lime, wordBreak: "break-all" }}>{accessUrl}</a>
-                </p>
-              ) : (
-                <>
-                  <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                    <input
-                      type="email"
-                      value={leadEmail}
-                      onChange={(e) => setLeadEmail(e.target.value)}
-                      placeholder="vas@email.cz"
-                      style={{
-                        flex: 1,
-                        minWidth: 180,
-                        padding: "10px 14px",
-                        border: `1px solid ${C.border}`,
-                        borderRadius: 10,
-                        fontSize: 14,
-                        background: C.surface,
-                      }}
-                    />
-                    <button
-                      type="button"
-                      disabled={leadSubmitting || !leadEmail.trim()}
-                      onClick={() => onSaveLead({ email: leadEmail.trim(), name: leadName || undefined, web: leadWeb || undefined })}
-                      style={{
-                        padding: "10px 20px",
-                        background: C.text,
-                        color: C.surface,
-                        border: "none",
-                        borderRadius: 10,
-                        fontWeight: 600,
-                        fontSize: 14,
-                        cursor: leadSubmitting ? "wait" : "pointer",
-                      }}
-                    >
-                      {leadSubmitting ? "Odesílám…" : "Uložit"}
-                    </button>
-                  </div>
-                  {leadError && <p style={{ fontSize: 13, color: C.danger, marginTop: 8 }}>{leadError}</p>}
-                  {leadSubmitted && !accessUrl && <p style={{ fontSize: 13, color: C.lime, marginTop: 8 }}>Odesláno. Brzy vám pošleme odkaz.</p>}
-                </>
-              )}
+        {/* 9. CTA */}
+        {!hideCta && (
+          <section style={{ marginBottom: 40 }}>
+            <div className="diag-cta-dark">
+              <div style={{ position: "absolute", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(180,232,66,0.07) 0%, transparent 70%)", top: "50%", left: "50%", transform: "translate(-50%,-50%)", pointerEvents: "none" }} />
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase", color: C.lime, marginBottom: 14 }}>Další krok</div>
+              <h2 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 34, color: "#fff", lineHeight: 1.25, margin: "0 0 10px 0" }}>
+                Značka má potenciál.<br /><em style={{ color: C.lime, fontStyle: "italic" }}>Otázka je, zda ho chcete využít.</em>
+              </h2>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.3)", marginBottom: 32 }}>Vstupní hovor · 56 minut · Vizuální board + 3 Canva šablony</p>
+              <a
+                href="/premiova-vizualni-identita"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "16px 40px",
+                  background: C.lime,
+                  color: C.black,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  borderRadius: 10,
+                  textDecoration: "none",
+                  boxShadow: "0 0 40px rgba(180,232,66,0.3)",
+                }}
+              >
+                Rezervovat vstupní hovor →
+              </a>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 16 }}>7 800 Kč · Bez závazku Fáze 1</div>
             </div>
           </section>
         )}
@@ -594,25 +624,27 @@ export function DiagnostikaResultsView({
   );
 }
 
-function ScoreRingSVG({ value }: { value: number }) {
-  const r = 44;
+function ScoreRingSVG({ value, dark = false }: { value: number; dark?: boolean }) {
+  const r = 60;
   const circ = 2 * Math.PI * r;
   const dash = (value / 100) * circ;
+  const bgStroke = dark ? "rgba(255,255,255,0.07)" : C.border;
   return (
-    <svg width={120} height={120} style={{ transform: "rotate(-90deg)" }}>
-      <circle cx={60} cy={60} r={r} fill="none" stroke={C.border} strokeWidth={8} />
+    <svg width={150} height={150} style={{ transform: "rotate(-90deg)" }} className="score-svg">
+      <circle cx={75} cy={75} r={r} fill="none" stroke={bgStroke} strokeWidth={9} />
       <circle
-        cx={60}
-        cy={60}
+        cx={75}
+        cy={75}
         r={r}
         fill="none"
         stroke={C.lime}
-        strokeWidth={8}
+        strokeWidth={9}
         strokeDasharray={circ}
         strokeDashoffset={circ - dash}
         strokeLinecap="round"
         style={{
-          transition: "stroke-dashoffset 1.5s cubic-bezier(0, 0, 0.2, 1)",
+          transition: "stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1)",
+          filter: dark ? "drop-shadow(0 0 10px rgba(180,232,66,0.5))" : undefined,
         }}
       />
     </svg>
@@ -640,14 +672,7 @@ function PillarCard({
   isVisible: boolean;
   staggerDelayMs?: number;
 }) {
-  const [barWidth, setBarWidth] = useState(0);
   const [scoreAnimated, setScoreAnimated] = useState(0);
-
-  useEffect(() => {
-    if (!isVisible) return;
-    const startBar = setTimeout(() => setBarWidth(score * 10), staggerDelayMs);
-    return () => clearTimeout(startBar);
-  }, [isVisible, score, staggerDelayMs]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -676,72 +701,60 @@ function PillarCard({
   const strategicOpportunity = pillar?.strategicOpportunity?.trim();
   const interpretation = pillar?.interpretation?.trim();
 
+  const disp = PILLAR_DISPLAY[id];
   return (
     <>
-      <div style={{ padding: "20px 20px 16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
-          <div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: C.text }}>{title}</span>
-            {subTitle && <span style={{ fontSize: 12, color: C.textMuted, marginLeft: 6 }}>— {subTitle}</span>}
+      <div style={{ padding: "24px 24px 20px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.13em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>{title}{subTitle ? ` · ${subTitle}` : ""}</div>
+            <div style={{ fontFamily: "var(--font-playfair), serif", fontSize: 18, fontWeight: 700, marginBottom: 10, color }}>{(disp?.label ?? title).toUpperCase()}: {scoreAnimated}/10</div>
+            {interpretation && <div style={{ fontSize: 14, color: "#555", lineHeight: 1.65 }}>{interpretation}</div>}
           </div>
-          <span style={{ fontFamily: "var(--font-playfair), serif", fontWeight: 700, fontSize: 24, color }}>{scoreAnimated}/10</span>
         </div>
-        <div style={{ height: 3, background: C.border, borderRadius: 2, marginTop: 12, overflow: "hidden" }}>
-          <div
-            style={{
-              height: "100%",
-              width: `${barWidth}%`,
-              background: color,
-              borderRadius: 2,
-              transition: "width 0.8s cubic-bezier(0, 0, 0.2, 1)",
-              transitionDelay: `${staggerDelayMs}ms`,
-            }}
-          />
-        </div>
-        {interpretation && <p style={{ fontSize: 14, color: C.textMuted2, marginTop: 12, lineHeight: 1.5 }}>{interpretation}</p>}
-        <button
-          type="button"
+        <div
+          role="button"
+          tabIndex={0}
           onClick={onToggle}
-          style={{ background: "none", border: "none", color: C.textMuted, fontSize: 12, cursor: "pointer", marginTop: 12, padding: 0 }}
+          onKeyDown={(e) => e.key === "Enter" && onToggle()}
+          style={{ fontSize: 12, color: C.limeDark, marginTop: 10, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4, borderBottom: `1px solid ${C.limeBorder}`, paddingBottom: 1 }}
         >
-          {isExpanded ? "↑ Skrýt detail" : "↓ Zobrazit detail"}
-        </button>
+          {isExpanded ? "— Skrýt metodiku" : "Zjistit jak jsme hodnotili →"}
+        </div>
       </div>
       <div
         className="diag-pillar-detail"
         style={{
-          borderTop: `1px solid #f0f0e8`,
-          background: C.bg,
-          padding: 20,
-          maxHeight: isExpanded ? 800 : 0,
+          borderTop: `1px solid ${C.grayLight}`,
+          background: "#fafaf8",
+          padding: isExpanded ? "20px 24px 28px" : 0,
+          maxHeight: isExpanded ? 700 : 0,
           overflow: "hidden",
-          transition: "max-height 0.4s ease",
+          transition: "max-height 0.5s ease, padding 0.3s ease",
         }}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 16 }}>
-          <div>
-            <p style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: C.textMuted, marginBottom: 8 }}>CO JSME ZAZNAMENALI</p>
-            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: C.text, lineHeight: 1.6 }}>
-              {observed.map((item, i) => (
-                <li key={i} style={{ marginBottom: 4 }}><span style={{ color: C.lime, marginRight: 6 }}>✓</span>{item}</li>
-              ))}
-              {observed.length === 0 && <li style={{ color: C.textMuted }}>—</li>}
-            </ul>
-          </div>
-          <div>
-            <p style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: C.textMuted, marginBottom: 8 }}>CO CHYBÍ / CO ZLEPŠIT</p>
-            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: C.text, lineHeight: 1.6, listStyle: "circle" }}>
-              {notObserved.map((item, i) => (
-                <li key={i} style={{ marginBottom: 4 }}><span style={{ color: C.danger, marginRight: 6 }}>○</span>{item}</li>
-              ))}
-              {notObserved.length === 0 && <li style={{ color: C.textMuted }}>—</li>}
-            </ul>
-          </div>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: C.limeDark, marginBottom: 10 }}>↗ Co jsme zaznamenali</div>
+          <ul style={{ margin: 0, paddingLeft: 18, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
+            {observed.map((item, i) => (
+              <li key={i} style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: C.limeDark }}>↗</span> {item}</li>
+            ))}
+            {observed.length === 0 && <li style={{ color: "#bbb" }}>—</li>}
+          </ul>
+        </div>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#aaa", marginBottom: 10 }}>→ Co jsme nezaznamenali</div>
+          <ul style={{ margin: 0, paddingLeft: 18, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
+            {notObserved.map((item, i) => (
+              <li key={i} style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#bbb" }}>→</span> {item}</li>
+            ))}
+            {notObserved.length === 0 && <li style={{ color: "#bbb" }}>—</li>}
+          </ul>
         </div>
         {strategicOpportunity && (
-          <div style={{ borderLeft: `3px solid ${color}`, background: C.surface, padding: "12px 16px", marginBottom: 16 }}>
-            <p style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: C.textMuted, marginBottom: 6 }}>DOPORUČENÝ SMĚR</p>
-            <p style={{ fontSize: 14, color: C.text, margin: 0, lineHeight: 1.5 }}>{strategicOpportunity}</p>
+          <div style={{ fontSize: 13, color: "#666", lineHeight: 1.65, padding: "14px 16px", background: "rgba(240,180,41,0.06)", borderLeft: "2px solid rgba(240,180,41,0.4)", borderRadius: "0 8px 8px 0" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: C.warn, marginBottom: 6 }}>Proč to ovlivnilo skóre</div>
+            {strategicOpportunity}
           </div>
         )}
       </div>
