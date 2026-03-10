@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { DiagnostikaResultsView } from "@/app/diagnostika/DiagnostikaResultsView";
+import { ClientOutputsDashboard } from "@/app/diagnostika/ClientOutputsDashboard";
 import type { ScanResult } from "@/app/start/ScanResultScrollExperience";
 
 type ProjectData = {
@@ -213,13 +214,10 @@ function DiagnostikaViewContent() {
           </p>
         </div>
       ) : (
-        <DiagnostikaResultsView
-          result={result}
-          scraped={null}
-          displayName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
-          displayWeb={project.web_url ?? ""}
-          projectId={state.project.id}
-          hideCta
+        <ClientOutputsDashboard
+          result={result as import("@/app/diagnostika/ClientOutputsDashboard").ExtendedScanResult}
+          projectName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
+          projectCreated={null}
         />
       )}
     </main>
