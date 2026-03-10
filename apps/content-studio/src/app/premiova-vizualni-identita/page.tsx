@@ -50,6 +50,61 @@ const PRO_KOHO_ITEMS = [
   "Hledáte systém který pracuje i když vy právě nepracujete.",
 ];
 
+const UKAZKY_BRANDU_SLIDES = [
+  "01.JPG", "02.JPG", "04.JPG", "05.JPG", "06.JPG", "07.JPG", "08.JPG", "09.JPG", "10.JPG", "11.JPG", "12.JPG", "13.JPG", "14.JPG",
+].map((name) => `/placeholders/UKAZKY BRANDU/${name}`);
+
+function ProKohoCarousel({ slides }: { slides: string[] }) {
+  const [index, setIndex] = useState(0);
+  const n = slides.length;
+
+  useEffect(() => {
+    if (n <= 1) return;
+    const t = setInterval(() => setIndex((i) => (i + 1) % n), 4500);
+    return () => clearInterval(t);
+  }, [n]);
+
+  return (
+    <div style={{ width: "100%" }}>
+      <img
+        key={slides[index]}
+        src={slides[index]}
+        alt="Ukázka značky"
+        style={{
+          width: "100%",
+          maxHeight: "75vh",
+          objectFit: "contain",
+          objectPosition: "center",
+          borderRadius: 22,
+          boxShadow: "0 16px 50px rgba(0,0,0,.1)",
+          display: "block",
+        }}
+      />
+      {n > 1 && (
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-label={`Slide ${i + 1}`}
+              style={{
+                width: i === index ? 24 : 8,
+                height: 8,
+                borderRadius: 4,
+                border: "none",
+                background: i === index ? LIME_DARK : "rgba(0,0,0,.15)",
+                cursor: "pointer",
+                transition: "width 0.2s ease, background 0.2s ease",
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PremioveVizualniIdentitaPage() {
   const parallaxRefs = useRef<HTMLElement[]>([]);
   const statsRef = useRef<HTMLDivElement | null>(null);
@@ -554,18 +609,7 @@ export default function PremioveVizualniIdentitaPage() {
             </div>
           </div>
           <div className="reveal reveal-delay-2" style={{ position: "relative" }}>
-            <img
-              src="/placeholders/KDOJSEM_01.png"
-              alt=""
-              style={{
-                width: "100%",
-                maxHeight: "75vh",
-                objectFit: "contain",
-                objectPosition: "center",
-                borderRadius: 22,
-                boxShadow: "0 16px 50px rgba(0,0,0,.1)",
-              }}
-            />
+            <ProKohoCarousel slides={UKAZKY_BRANDU_SLIDES} />
           </div>
         </div>
       </section>
