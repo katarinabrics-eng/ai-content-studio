@@ -617,11 +617,249 @@ const TABS = [
   { id: "diagnostika", label: "Diagnostika", icon: "◎", accent: C.purple },
   { id: "strategie", label: "Strategie", icon: "◇", accent: C.purple },
   { id: "vystup", label: "Výstup", icon: "◉", accent: C.pink },
+  { id: "vizualy", label: "Vizuály", icon: "✦", accent: C.lime },
   { id: "poznamky", label: "Poznámky", icon: "◻", accent: C.yellow },
 ];
 
 const scoreColor = (s: number) => (s >= 8 ? C.lime : s >= 6 ? C.yellow : s >= 4 ? C.pink : "#ff5577");
 const scoreLabel = (s: number) => (s >= 8 ? "Silné" : s >= 6 ? "Dobré" : s >= 4 ? "Slabé" : "Kritické");
+
+const CONTENT_TYPES = [
+  { id: "static", label: "Statický post" },
+  { id: "reels", label: "Reels / Video" },
+  { id: "carousel", label: "Carousel" },
+  { id: "linkedin", label: "LinkedIn článek" },
+  { id: "ai_ad", label: "AI Reklama" },
+  { id: "story", label: "Story" },
+] as const;
+
+type GeneratedPost = {
+  hookType: string;
+  hookLabel: string;
+  headline: string;
+  bodyText: string;
+  cta: string;
+  visualDirection: string;
+  platform: "instagram" | "linkedin" | "oboje";
+  adReady: boolean;
+};
+
+const HOOK_COLORS: Record<string, string> = {
+  výsledek: C.lime,
+  problém: "#ff5577",
+  otázka: "#e67e22",
+  číslo: C.lime,
+  provokace: C.purple,
+};
+
+function VisualTab({ client }: { client: Client }) {
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [generatedPosts, setGeneratedPosts] = useState<GeneratedPost[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingStatus, setGeneratingStatus] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [selectedPosts, setSelectedPosts] = useState<Set<number>>(new Set());
+
+  const brandDnaTags = client.tags?.length ? client.tags : client.pillars.map((p) => p.label);
+  const datum = client.created ?? "—";
+
+  useEffect(() => {
+    if (!isGenerating) return;
+    const messages = ["Čtu Brand DNA...", "Vytvářím hooky...", "Píšu texty..."];
+    let i = 0;
+    setGeneratingStatus(messages[0]);
+    const t = setInterval(() => {
+      i = (i + 1) % messages.length;
+      setGeneratingStatus(messages[i]);
+    }, 900);
+    return () => clearInterval(t);
+  }, [isGenerating]);
+
+  const generateContent = async () => {
+    setError(null);
+    setIsGenerating(true);
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: client.id,
+          brandDna: client.dna,
+          pillars: client.pillars,
+          score: client.score,
+          positioning: client.dna?.positioning ?? "",
+          contentTypes: selectedTypes.length ? selectedTypes : CONTENT_TYPES.map((c) => c.id),
+          prompt: `Jsi expert na social media content pro české podnikatele.
+Na základě Brand DNA značky ${client.name} vygeneruj 5 různých příspěvků. Každý musí mít jiný hook typ z:
+[výsledek, problém, otázka, číslo, provokace].
+
+Vrať JSON array s objekty:
+{
+  "hookType": string,
+  "hookLabel": string,
+  "headline": string (max 8 slov, silný hook),
+  "bodyText": string (2-3 věty, tón značky),
+  "cta": string,
+  "visualDirection": string (popis vizuálu pro fotografa),
+  "platform": "instagram" | "linkedin" | "oboje",
+  "adReady": boolean
+}`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error ?? "Generování selhalo");
+      }
+      const posts = Array.isArray(data?.posts) ? data.posts : [];
+      setGeneratedPosts(posts);
+      setSelectedPosts(new Set());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Chyba při generování");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const togglePost = (idx: number) => {
+    setSelectedPosts((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: "0 0 4px 0" }}>Obsah z diagnostiky</h2>
+        <p style={{ fontSize: 12, color: C.muted, margin: 0 }}>{client.name} · Brand Scan {datum}</p>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: "10px 12px", borderRadius: 10, background: C.bg2, border: `1px solid ${C.border}` }}>
+        {brandDnaTags.map((tag, i) => (
+          <span key={i} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 10, fontWeight: 600, color: C.muted, background: C.bg3, border: `1px solid ${C.border}` }}>
+            {tag}
+          </span>
+        ))}
+        <div style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: scoreColor(client.score) }}>Skóre: {client.score}</div>
+      </div>
+
+      <div style={{ padding: "12px 0", borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ fontSize: 11, color: C.faint, marginBottom: 8, letterSpacing: "0.06em" }}>TYPY OBSAHU</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {CONTENT_TYPES.map((ct) => (
+            <label key={ct.id} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.text }}>
+              <input
+                type="checkbox"
+                checked={selectedTypes.includes(ct.id) || selectedTypes.length === 0}
+                onChange={(e) => {
+                  if (e.target.checked) setSelectedTypes((prev) => (prev.includes(ct.id) ? prev : [...prev, ct.id]));
+                  else setSelectedTypes((prev) => prev.filter((id) => id !== ct.id));
+                }}
+                style={{ accentColor: C.lime }}
+              />
+              {ct.label}
+            </label>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={generateContent}
+          disabled={isGenerating}
+          style={{
+            marginTop: 12,
+            padding: "10px 20px",
+            borderRadius: 8,
+            border: "none",
+            background: isGenerating ? C.faint : C.lime,
+            color: isGenerating ? C.bg2 : "#000",
+            fontWeight: 700,
+            fontSize: 12,
+            cursor: isGenerating ? "not-allowed" : "pointer",
+          }}
+        >
+          {isGenerating ? generatingStatus : "✦ Generovat obsah"}
+        </button>
+      </div>
+
+      {error && (
+        <div style={{ padding: 12, borderRadius: 8, background: "#ff557722", border: `1px solid #ff5577`, color: "#ff5577", fontSize: 12 }}>
+          {error}
+          <button type="button" onClick={() => { setError(null); generateContent(); }} style={{ marginLeft: 12, padding: "4px 12px", borderRadius: 6, border: "none", background: "#fff", color: "#ff5577", fontWeight: 700, cursor: "pointer" }}>
+            Zkusit znovu
+          </button>
+        </div>
+      )}
+
+      {isGenerating && (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 24 }}>
+          <span style={{ width: 24, height: 24, border: `2px solid ${C.lime}`, borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <span style={{ fontSize: 12, color: C.muted }}>{generatingStatus}</span>
+        </div>
+      )}
+
+      {!isGenerating && generatedPosts.length === 0 && !error && (
+        <div style={{ padding: 32, textAlign: "center", background: C.bg2, borderRadius: 12, border: `1px dashed ${C.border}`, fontSize: 12, color: C.faint }}>
+          Vyberte typy obsahu a klikněte na „Generovat obsah“ pro vytvoření 5 návrhů příspěvků.
+        </div>
+      )}
+
+      {!isGenerating && generatedPosts.length > 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
+          {generatedPosts.map((post, idx) => {
+            const isSelected = selectedPosts.has(idx);
+            const badgeColor = HOOK_COLORS[post.hookType] ?? C.lime;
+            return (
+              <div
+                key={idx}
+                onClick={() => togglePost(idx)}
+                style={{
+                  borderRadius: 12,
+                  border: `2px solid ${isSelected ? C.lime : C.border}`,
+                  background: C.bg2,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  transition: "border-color 0.2s, transform 0.2s",
+                  boxShadow: isSelected ? `0 0 0 1px ${C.lime}` : undefined,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = C.lime;
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) e.currentTarget.style.borderColor = C.border;
+                  e.currentTarget.style.transform = "";
+                }}
+              >
+                <div style={{ height: 100, background: "linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%)", display: "flex", alignItems: "flex-end", padding: 10, position: "relative" }}>
+                  <span style={{ position: "absolute", top: 8, right: 8, padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 700, background: badgeColor, color: "#000" }}>
+                    {post.hookLabel || post.hookType}
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.2, textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>{post.headline}</span>
+                </div>
+                <div style={{ padding: 10 }}>
+                  <div style={{ fontSize: 10, color: C.muted, marginBottom: 4 }}>{client.name}</div>
+                  <div style={{ fontSize: 11, color: C.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{post.bodyText}</div>
+                  <button type="button" style={{ marginTop: 8, width: "100%", padding: "6px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: C.bg3, color: C.text, fontSize: 10, cursor: "pointer" }}>
+                    ↗ Sdílet nyní
+                  </button>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 10, color: C.muted, cursor: "pointer" }}>
+                    <input type="checkbox" checked={post.adReady} readOnly style={{ accentColor: C.lime }} />
+                    🎯 Reklamy
+                  </label>
+                  <button type="button" style={{ marginTop: 4, width: "100%", padding: "6px 10px", borderRadius: 6, border: "none", background: C.lime, color: "#000", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
+                    🚀 Propagovat 50Kč/d
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function PipelineDashboardPage() {
   const router = useRouter();
@@ -1365,6 +1603,8 @@ export default function PipelineDashboardPage() {
               ))}
             </div>
           )}
+
+          {activeTab === "vizualy" && client && <VisualTab client={client} />}
 
           {activeTab === "poznamky" && (
             <Section title="INTERNÍ POZNÁMKY" accent={C.yellow}>
