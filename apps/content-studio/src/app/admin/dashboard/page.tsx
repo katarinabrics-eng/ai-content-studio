@@ -9,30 +9,30 @@ import type { StrategistId } from "@/lib/strategists/config";
 import AIDoporuceni from "@/components/AIDoporuceni";
 
 const C = {
-  lime: "#c8ff00",
-  purple: "#b57bee",
-  pink: "#f06ba8",
-  yellow: "#e8d44d",
-  lilac: "#d4b8f0",
-  bg0: "#080808",
-  bg1: "#0f0f0f",
-  bg2: "#141414",
-  bg3: "#1c1c1c",
-  border: "#1f1f1f",
-  text: "#e8e8e8",
-  muted: "#888",
-  faint: "#444",
+  lime: "#a8d800",
+  purple: "#7c4dbe",
+  pink: "#c4447a",
+  yellow: "#b8920a",
+  lilac: "#9b7bc9",
+  bg0: "#ffffff",
+  bg1: "#f7f7f7",
+  bg2: "#f0f0f0",
+  bg3: "#e8e8e8",
+  border: "rgba(0,0,0,0.07)",
+  text: "#111111",
+  muted: "#555555",
+  faint: "#999999",
 };
 
 const PIPELINE: { id: PipelineStatus; label: string; short: string; color: string; bg: string; icon: string; step: number }[] = [
-  { id: "LEAD", label: "Nový lead", short: "Lead", color: "#888", bg: "#1a1a1a", icon: "◉", step: 1 },
-  { id: "HOVOR", label: "Před hovorem", short: "Hovor", color: C.lilac, bg: "#16101e", icon: "◎", step: 2 },
-  { id: "AKTIVNI", label: "Aktivní zakázka", short: "Aktivní", color: C.lime, bg: "#0f1a00", icon: "◈", step: 3 },
-  { id: "HOTOVO", label: "Hotovo", short: "Hotovo", color: C.purple, bg: "#160f22", icon: "✦", step: 4 },
+  { id: "LEAD", label: "Nový lead", short: "Lead", color: C.muted, bg: "rgba(168,216,0,0.12)", icon: "◉", step: 1 },
+  { id: "HOVOR", label: "Před hovorem", short: "Hovor", color: C.lilac, bg: "rgba(124,77,190,0.1)", icon: "◎", step: 2 },
+  { id: "AKTIVNI", label: "Aktivní zakázka", short: "Aktivní", color: C.lime, bg: "rgba(168,216,0,0.15)", icon: "◈", step: 3 },
+  { id: "HOTOVO", label: "Hotovo", short: "Hotovo", color: C.purple, bg: "rgba(124,77,190,0.1)", icon: "✦", step: 4 },
 ];
 const SPECIAL: { id: PipelineStatus; label: string; short?: string; color: string; bg: string; icon: string }[] = [
-  { id: "SUPLIK", label: "Šuplík", short: "Šuplík", color: C.yellow, bg: "#1a1600", icon: "⊡" },
-  { id: "ARCHIV", label: "Archiv", short: "Archiv", color: C.faint, bg: "#111", icon: "◫" },
+  { id: "SUPLIK", label: "Šuplík", short: "Šuplík", color: C.yellow, bg: "rgba(184,146,10,0.12)", icon: "⊡" },
+  { id: "ARCHIV", label: "Archiv", short: "Archiv", color: C.faint, bg: C.bg2, icon: "◫" },
 ];
 const ALL = [...PIPELINE, ...SPECIAL];
 function getS(id: string) {

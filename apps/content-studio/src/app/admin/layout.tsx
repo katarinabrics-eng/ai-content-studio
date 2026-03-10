@@ -12,37 +12,36 @@ export default function AdminLayout({
 
   return (
     <div
-      className="dark-theme"
       style={{
         minHeight: "100vh",
-        background: "#0a0a0a",
-        color: "#fff",
+        background: "#f8f8f8",
+        color: "#111111",
         display: "flex",
         flexDirection: "column",
+        fontFamily: "'DM Sans', system-ui, sans-serif",
       }}
     >
-      {/* Jediný sloupec: horní lišta s LUCIFERA (jednou) + Odhlásit */}
       <header
         style={{
-          height: 52,
+          height: 48,
           flexShrink: 0,
-          background: "#0d0d0d",
-          borderBottom: "1px solid #1a1a1a",
+          background: "rgba(245,244,240,0.92)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(0,0,0,0.12)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 24px",
+          padding: "0 20px 0 0",
         }}
       >
-        <Link href="/admin/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-          <img
-            src="/placeholders/LUCIFERA-Logo-Left-Neg.webp"
-            alt="Lucifera"
-            style={{ height: 32, width: "auto", display: "block" }}
-          />
+        <Link href="/admin/dashboard" style={{ display: "flex", alignItems: "center", height: "100%", paddingLeft: 16, textDecoration: "none" }}>
+          <span style={{ fontFamily: "var(--font-playfair), 'Playfair Display', serif", fontWeight: 700, fontSize: 15, letterSpacing: "0.04em", color: "#111" }}>LUCIFERA</span>
+          <span style={{ marginLeft: 6, color: "#a8d800" }}>·</span>
+          <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 600, color: "#555" }}>Admin</span>
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <a href="/diagnostika" style={{ fontSize: 12, color: "#888", textDecoration: "none" }}>+ Nová diagnostika</a>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <a href="/diagnostika" style={{ fontSize: 11, color: "#555", textDecoration: "none", padding: "5px 12px", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 6 }}>+ Nová diagnostika</a>
           <button
             type="button"
             onClick={async () => {
@@ -50,13 +49,14 @@ export default function AdminLayout({
               router.push("/admin/login");
             }}
             style={{
-              padding: "8px 14px",
-              background: "transparent",
-              border: "1px solid #333",
-              color: "#888",
-              borderRadius: 8,
+              padding: "5px 12px",
+              background: "#a8d800",
+              border: "none",
+              color: "#111",
+              borderRadius: 6,
               cursor: "pointer",
-              fontSize: 12,
+              fontSize: 11,
+              fontWeight: 700,
             }}
           >
             Odhlásit
