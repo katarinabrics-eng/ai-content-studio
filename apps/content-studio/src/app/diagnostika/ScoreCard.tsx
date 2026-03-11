@@ -38,6 +38,7 @@ export function ScoreCard({
       {screenshot && (
         <div style={{ ...cardStyle, padding: 10, marginBottom: 12 }}>
           <span style={lblStyle}>Náhled webu</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={screenshot.startsWith("data:") ? screenshot : `data:image/png;base64,${screenshot}`}
             alt="screenshot webu"

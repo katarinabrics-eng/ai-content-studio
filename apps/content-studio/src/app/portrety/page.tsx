@@ -37,6 +37,7 @@ export default function PortretyPage() {
               </p>
             </div>
             <div className="relative lg:col-span-6 lg:col-start-7 overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/placeholders/PORTFOLIO PORTRET/vyber/7.JPG"
                 alt=""
@@ -64,6 +65,7 @@ export default function PortretyPage() {
               </p>
             </div>
             <div className="lg:col-span-5 lg:col-start-8 overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/placeholders/PORTFOLIO PORTRET/vyber/25.JPG"
                 alt=""
@@ -138,6 +140,7 @@ export default function PortretyPage() {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6 order-2 lg:order-1">
               <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/placeholders/home.png"
                   alt=""

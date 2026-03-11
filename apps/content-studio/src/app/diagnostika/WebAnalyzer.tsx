@@ -471,6 +471,7 @@ export function WebAnalyzer({
                 {imageFile ? `Vybrán obrázek: ${imageFile.name}` : "Nahrajte jednu ukázku grafiky nebo fotografie (max 1 MB). Ideálně reprezentativní vizuál vaší značky."}
               </label>
               {imageFile && (
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={URL.createObjectURL(imageFile)} alt="Náhled" className="mt-3 rounded-md max-h-40 mx-auto object-contain" />
               )}
             </div>

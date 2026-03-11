@@ -302,6 +302,7 @@ export function DiagnostikaResultsView({
               {screenshotSrc ? (
                 <>
                   {!screenshotReveal && <div className="diag-preview-skeleton" />}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={screenshotSrc}
                     alt=""
