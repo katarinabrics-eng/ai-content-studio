@@ -603,6 +603,7 @@ export function StartAnalyzer({
       setMode("web");
       analyze(u);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialUrl]);
 
   useEffect(() => {
@@ -617,6 +618,7 @@ export function StartAnalyzer({
       }, 200);
       return () => clearTimeout(t);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialManualText]);
 
   const embedCompact = Boolean(diagnostika && hideIntro);
