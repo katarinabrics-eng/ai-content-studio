@@ -1,1069 +1,696 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Header } from "../components/Header";
-import { VibeSection } from "../components/VibeSection";
+import { useEffect } from "react";
 
-// barevná paleta
-const LIME = "#b7e94c";
-const LIME2 = "#d0ec78";
-const LIME_DARK = "#5a8a00";
-const TEXT = "#111";
-const MUTED = "#555";
-const FAINT = "#999";
-const BG = "#fff";
-const BG1 = "#f7f7f5";
-const BORDER = "rgba(0,0,0,0.09)";
-const BORDER2 = "rgba(0,0,0,0.13)";
-const GLOW_LIME = "rgba(183,233,76,0.18)";
-const GLOW_STRONG = "rgba(183,233,76,0.32)";
-
-const glassStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.82)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  border: "1px solid rgba(255,255,255,0.9)",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
-};
-
-const heroCardGlass: React.CSSProperties = {
-  background: "rgba(255,255,255,0.88)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  border: "1px solid rgba(255,255,255,0.9)",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
-};
-
-const faqs = [
-  { q: "Musím začít vstupním hovorem?", a: "Brand Scan diagnostiku můžete spustit kdykoliv — zdarma, bez závazku, bez hovoru. Poskytne vám konkrétní data o vaší značce a je samostatnou hodnotou bez ohledu na další spolupráci. Pokud se rozhodnete pokračovat do plné spolupráce, vstupní hovor je jejím povinným prvním krokem. Je to prostor kde zachytíme nuance a esenci vašeho projektu — věci které AI nedokáže sama načíst ze vstupních dat. Výsledek spolupráce je pak přesněji na míru vaší značce." },
-  { q: "Co dostanu po dvou měsících?", a: "Vytrénovaného AI agenta vaší značky, vizuální banku a funkční systém pro publikování. Agent zná vaši strategii, tón a vizuální standard — průběžně připravuje hotové výstupy: příspěvky, grafiky, texty. Vy volíte jaké výstupy chcete, jak často a v jakém stylu. Jakmile je výstup připravený, dostanete upozornění a můžete ho rovnou publikovat. V pozadí je vždy přítomen kurátor který namátkově kontroluje chod agentů i grafického týmu." },
-  { q: "Je v ceně focení?", a: "Ano. Foto/video den v ateliéru na Kampě je součástí Fáze 1. Nevytváříme jednotlivé snímky — budujeme vizuální banku která funguje jako systém. 500+ fotografií a video záběry pro Reels a b-roll z jednoho dne focení." },
-  { q: "Pracujete jen s ženami?", a: "Ne. Spolupráce je genderově neutrální — záleží na typu značky a úrovni podnikání, ne na pohlaví. Pracujeme s lídry a podnikateli kteří berou vizuální prezentaci jako součást své hodnoty na trhu." },
-  { q: "Co když budete chtít pokračovat po dvou měsících?", a: "Po dvou měsících přecházíte do živého ekosystému naší aplikace. AI agenti vytrénovaní na vaši značku průběžně produkují hotové výstupy podle nastavené strategie. Vy si volíte jaké výstupy chcete, jak často a v jakém stylu. V pozadí je vždy přítomen kurátor — namátkově kontroluje chod agentů a na vyžádání se může vašemu projektu věnovat podrobněji. Nejde o autonomní AI — naši kurátoři mají systém pevně v rukou." },
-];
-
-const PRO_KOHO_ITEMS = [
-  "Vaše ceny rostou — ale váš obraz ještě ne.",
-  "Přerostli jste vizuál z počátků podnikání.",
-  "Trávíte hodiny v nástrojích místo ve své práci.",
-  "Chcete hybridní přístup — vaše tvář, váš příběh, AI která to zesiluje.",
-  "Hledáte systém který pracuje i když vy právě nepracujete.",
-];
-
-const UKAZKY_BRANDU_SLIDES = [
-  "01.JPG", "02.JPG", "04.JPG", "05.JPG", "06.JPG", "07.JPG", "08.JPG", "09.JPG", "10.JPG", "11.JPG", "12.JPG", "13.JPG", "14.JPG",
-].map((name) => `/placeholders/UKAZKY BRANDU/${name}`);
-
-function ProKohoCarousel({ slides }: { slides: string[] }) {
-  const [index, setIndex] = useState(0);
-  const n = slides.length;
-
+export default function PremiovaVizualniIdentita() {
   useEffect(() => {
-    if (n <= 1) return;
-    const t = setInterval(() => setIndex((i) => (i + 1) % n), 4500);
-    return () => clearInterval(t);
-  }, [n]);
-
-  return (
-    <div style={{ width: "100%" }}>
-      <img
-        key={slides[index]}
-        src={slides[index]}
-        alt="Ukázka značky"
-        style={{
-          width: "100%",
-          maxHeight: "75vh",
-          objectFit: "contain",
-          objectPosition: "center",
-          borderRadius: 22,
-          boxShadow: "0 16px 50px rgba(0,0,0,.1)",
-          display: "block",
-        }}
-      />
-      {n > 1 && (
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Slide ${i + 1}`}
-              style={{
-                width: i === index ? 24 : 8,
-                height: 8,
-                borderRadius: 4,
-                border: "none",
-                background: i === index ? LIME_DARK : "rgba(0,0,0,.15)",
-                cursor: "pointer",
-                transition: "width 0.2s ease, background 0.2s ease",
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function PremioveVizualniIdentitaPage() {
-  const parallaxRefs = useRef<HTMLElement[]>([]);
-  const statsRef = useRef<HTMLDivElement | null>(null);
-  const [parallaxTransforms, setParallaxTransforms] = useState<Record<number, string>>({});
-
-  useEffect(() => {
-    const reveal = document.querySelectorAll(".reveal");
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add("visible");
+          if (e.isIntersecting) {
+            e.target.classList.add("vis");
+            obs.unobserve(e.target);
+          }
         });
       },
       { threshold: 0.12 }
     );
-    reveal.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const dx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
-      const dy = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
-      const next: Record<number, string> = {};
-      parallaxRefs.current.forEach((el, i) => {
-        if (el) {
-          const m = (i + 1) * 4;
-          next[i] = `translate(${dx * m}px, ${dy * m}px)`;
-        }
-      });
-      setParallaxTransforms(next);
-    };
-    document.addEventListener("mousemove", onMove);
-    return () => document.removeEventListener("mousemove", onMove);
-  }, []);
-
-  useEffect(() => {
-    const container = statsRef.current;
-    if (!container) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const box = entry.target as HTMLElement;
-          const stats = box.querySelectorAll(".stat-num[data-idx]");
-          const values = [25, 500];
-          stats.forEach((el, i) => {
-            const target = values[i];
-            if (!target || (el as HTMLElement).dataset.animated === "1") return;
-            (el as HTMLElement).dataset.animated = "1";
-            const start = performance.now();
-            const anim = (now: number) => {
-              const t = Math.min((now - start) / 1200, 1);
-              const ease = 1 - Math.pow(1 - t, 3);
-              const v = Math.round(target * ease);
-              const span = el.querySelector("span:first-child");
-              if (span) span.textContent = String(v);
-              if (t < 1) requestAnimationFrame(anim);
-            };
-            requestAnimationFrame(anim);
-          });
-        });
-      },
-      { threshold: 0.5 }
-    );
-    obs.observe(container);
+    document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
 
   return (
-    <main className="premiove-vizualni-identita" style={{ background: BG, color: TEXT, fontFamily: "var(--font-dm-sans), sans-serif" }}>
+    <div className="pvi-page">
       <style>{`
-        .premiove-vizualni-identita h1,.premiove-vizualni-identita h2,.premiove-vizualni-identita h3{font-family:var(--font-playfair),serif}
-        @keyframes orbFloat1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-30px,20px) scale(1.05)} 66%{transform:translate(20px,-15px) scale(0.97)} }
-        @keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
-        @keyframes orbFloat3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-15px,20px) scale(1.1)} }
-        @keyframes floatBadge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes floatBadge2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-        @keyframes float1 { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
-        @keyframes float2 { 0%,100%{transform:translateY(4px)} 50%{transform:translateY(-6px)} }
-        @keyframes float3 { 0%,100%{transform:translateY(2px)} 50%{transform:translateY(-10px)} }
-        @keyframes float4 { 0%,100%{transform:translateY(3px)} 50%{transform:translateY(-7px)} }
-        @keyframes pulseDot { 0%{box-shadow:0 0 0 0 rgba(183,233,76,.5)} 70%{box-shadow:0 0 0 8px rgba(183,233,76,0)} 100%{box-shadow:0 0 0 0 rgba(183,233,76,0)} }
-        @keyframes ringGlow { 0%,100%{box-shadow:0 0 16px rgba(183,233,76,.32),inset 0 0 12px rgba(183,233,76,.1)} 50%{box-shadow:0 0 28px rgba(183,233,76,.5),inset 0 0 18px rgba(183,233,76,.2)} }
-        @keyframes barGrow { from{width:30px} to{width:60px} }
-        @keyframes barGrow2 { from{width:50px} to{width:25px} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes lineGrow { from{transform:scaleX(0);transform-origin:left} to{transform:scaleX(1)} }
-        .premiove-hero-entry{opacity:0;transform:translateY(20px);animation:fadeUp .7s ease forwards}
-        .premiove-hero-entry.delay-0{animation-delay:0s}
-        .premiove-hero-entry.delay-1{animation-delay:.08s}
-        .premiove-hero-entry.delay-2{animation-delay:.16s}
-        .premiove-hero-entry.delay-3{animation-delay:.24s}
-        .premiove-hero-entry.delay-4{animation-delay:.32s}
-        .premiove-hero-entry.delay-5{animation-delay:.4s}
-        .premiove-hero-entry.delay-6{animation-delay:.48s}
-        .premiove-hero-entry.delay-7{animation-delay:.56s}
-        .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
-        .reveal.visible{opacity:1;transform:translateY(0)}
-        .reveal-delay-1{transition-delay:.1s}
-        .reveal-delay-2{transition-delay:.2s}
-        .reveal-delay-3{transition-delay:.3s}
-        .faq-details summary::-webkit-details-marker{display:none}
-        .faq-details summary{position:relative;padding-right:40px}
-        .faq-details summary::after{content:'+';position:absolute;right:30px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:400;transition:transform .25s ease}
-        .faq-details details[open] summary{background:rgba(183,233,76,.06)}
-        .faq-details details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
-        .faq-details summary:hover{background:rgba(183,233,76,.05);color:#5a8a00}
-        @media (max-width: 900px) {
-          .premiove-hero{min-height:auto;padding:0 !important;background-position:0 0, right bottom !important;}
-          .premiove-hero .hero-mobile-overlay{display:block !important;}
-          .premiove-hero .hero-content{grid-template-columns:1fr !important;padding:100px 24px 60px !important;}
-          .premiove-hero .hero-cards-wrap{min-height:220px;position:relative;}
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+
+        .pvi-page {
+          --lime:#b4e842; --lime-dark:#8fb82e; --lime-bg:rgba(180,232,66,0.08); --lime-border:rgba(180,232,66,0.25);
+          --black:#0e0e0e; --dark:#1a1a1a; --cream:#f5f4ef; --sand:#ece9e1; --white:#fff;
+          --gray:#888; --gray-light:#e0ddd5; --warm:#c9a96e;
+          --r:16px;
+          font-family:'DM Sans',sans-serif;
+          background:var(--cream);
+          color:var(--black);
+          overflow-x:hidden;
         }
-        @media (max-width: 768px) {
-          .premiove-hero .hero-card-2,.premiove-hero .hero-card-3{display:none !important;}
-          .premiove-hero .hero-card-1{top:15% !important;left:auto !important;right:4% !important;}
-          .premiove-hero .hero-card-4{bottom:20% !important;right:3% !important;}
+        html { scroll-behavior:smooth; }
+
+        /* ── NAV ── */
+        .pvi-page nav {
+          position:fixed;top:0;left:0;right:0;z-index:100;
+          padding:0 48px;height:60px;
+          display:flex;align-items:center;justify-content:space-between;
+          background:rgba(245,244,239,0.92);backdrop-filter:blur(20px);
+          border-bottom:1px solid rgba(0,0,0,0.06);
         }
-        @media (max-width: 900px) {
-          .premiove-faze-grid{grid-template-columns:1fr !important;}
+        .pvi-page .nav-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:0.06em;}
+        .pvi-page .nav-logo span{color:var(--lime-dark);}
+        .pvi-page .nav-cta{
+          background:var(--black);color:#fff;padding:9px 22px;border-radius:8px;
+          font-size:13px;font-weight:600;cursor:pointer;border:none;
+          transition:all 0.2s;
         }
-        @media (max-width: 768px) {
-          .premiove-soucasti-grid{grid-template-columns:1fr !important;}
+        .pvi-page .nav-cta:hover{background:var(--dark);}
+
+        /* ── HERO ── */
+        .pvi-page .hero{
+          min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
+          padding-top:60px;
         }
+        .pvi-page .hero-left{
+          display:flex;flex-direction:column;justify-content:center;
+          padding:80px 64px 80px 80px;
+        }
+        .pvi-page .hero-badge{
+          display:inline-flex;align-items:center;gap:6px;
+          font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+          color:var(--lime-dark);margin-bottom:24px;
+        }
+        .pvi-page .hero-badge::before{content:'';width:24px;height:1px;background:var(--lime-dark);}
+        .pvi-page h1{
+          font-family:'Cormorant Garamond',serif;
+          font-size:clamp(44px,5vw,68px);font-weight:700;line-height:1.08;
+          margin-bottom:24px;
+        }
+        .pvi-page h1 em{font-style:italic;font-weight:300;color:var(--lime-dark);}
+        .pvi-page .hero-sub{font-size:16px;color:#555;line-height:1.7;max-width:440px;margin-bottom:36px;}
+        .pvi-page .hero-actions{display:flex;flex-direction:column;gap:10px;}
+        .pvi-page .btn-primary{
+          display:inline-flex;align-items:center;gap:10px;
+          background:var(--black);color:#fff;
+          padding:16px 32px;border-radius:10px;
+          font-size:15px;font-weight:600;border:none;cursor:pointer;
+          width:fit-content;transition:all 0.2s;
+        }
+        .pvi-page .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.2);}
+        .pvi-page .btn-secondary{
+          display:inline-flex;align-items:center;gap:8px;
+          color:var(--gray);font-size:13px;cursor:pointer;
+          border:none;background:none;padding:0;
+          transition:color 0.2s;width:fit-content;
+        }
+        .pvi-page .btn-secondary:hover{color:var(--black);}
+        .pvi-page .hero-note{font-size:12px;color:#bbb;margin-top:6px;}
+
+        /* HERO RIGHT */
+        .pvi-page .hero-right{
+          position:relative;background:var(--black);overflow:hidden;
+        }
+        .pvi-page .hero-video-wrap{
+          position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        }
+        .pvi-page .video-placeholder{
+          width:100%;height:100%;
+          background:
+            radial-gradient(ellipse at 30% 40%,rgba(180,232,66,0.06) 0%,transparent 60%),
+            radial-gradient(ellipse at 70% 70%,rgba(201,169,110,0.08) 0%,transparent 55%),
+            #0e0e0e;
+          display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+        }
+        .pvi-page .play-btn{
+          width:72px;height:72px;border-radius:50%;
+          background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+          display:flex;align-items:center;justify-content:center;
+          font-size:24px;cursor:pointer;transition:all 0.25s;
+          backdrop-filter:blur(8px);
+        }
+        .pvi-page .play-btn:hover{background:rgba(180,232,66,0.15);border-color:var(--lime-border);transform:scale(1.08);}
+        .pvi-page .video-label{font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;}
+
+        /* FLOATING CARDS */
+        .pvi-page .float-card{
+          position:absolute;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);
+          border-radius:12px;padding:14px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.25);
+        }
+        .pvi-page .fc-1{bottom:80px;left:32px;animation:float1 4s ease-in-out infinite;}
+        .pvi-page .fc-2{top:100px;right:32px;animation:float2 5s ease-in-out infinite;}
+        .pvi-page .fc-3{bottom:160px;right:28px;animation:float3 4.5s ease-in-out infinite;}
+        @keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+        @keyframes float3{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .pvi-page .fc-dot{width:7px;height:7px;border-radius:50%;background:var(--lime);display:inline-block;margin-right:6px;animation:pulse 1.8s ease infinite;}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .pvi-page .fc-title{font-size:11px;font-weight:700;color:var(--black);margin-bottom:2px;}
+        .pvi-page .fc-sub{font-size:10px;color:var(--gray);}
+        .pvi-page .fc-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--lime-dark);line-height:1;}
+
+        /* ── SECTION BASE ── */
+        .pvi-page section{padding:96px 80px;}
+        .pvi-page .label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--lime-dark);margin-bottom:10px;}
+        .pvi-page h2{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,3.5vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px;}
+        .pvi-page h2 em{font-style:italic;font-weight:300;}
+        .pvi-page .section-sub{font-size:15px;color:var(--gray);line-height:1.7;max-width:580px;}
+
+        /* ── PROBLEM ── */
+        .pvi-page .problem{background:var(--black);padding:96px 80px;}
+        .pvi-page .problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto;}
+        .pvi-page .problem-left h2{color:#fff;}
+        .pvi-page .problem-left h2 em{color:var(--lime);}
+        .pvi-page .problem-quote{
+          font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;
+          color:rgba(255,255,255,0.4);line-height:1.4;
+          border-left:2px solid var(--lime-border);padding-left:24px;margin-top:32px;
+        }
+        .pvi-page .problem-list{list-style:none;display:flex;flex-direction:column;gap:16px;}
+        .pvi-page .problem-list li{
+          display:flex;gap:14px;align-items:flex-start;
+          font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;
+        }
+        .pvi-page .pl-icon{
+          width:32px;height:32px;border-radius:8px;flex-shrink:0;
+          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+          display:flex;align-items:center;justify-content:center;font-size:14px;
+        }
+
+        /* ── WOW ── */
+        .pvi-page .wow{background:var(--cream);padding:96px 80px;max-width:none;}
+        .pvi-page .wow-inner{max-width:1200px;margin:0 auto;}
+        .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px;}
+
+        /* BOARD MOCKUP */
+        .pvi-page .board-mockup{
+          background:var(--black);border-radius:20px;padding:24px;
+          box-shadow:0 32px 80px rgba(0,0,0,0.2);position:relative;overflow:hidden;
+        }
+        .pvi-page .bm-header{display:flex;align-items:center;gap:6px;margin-bottom:18px;}
+        .pvi-page .bm-dot{width:9px;height:9px;border-radius:50%;}
+        .pvi-page .bm-title{font-size:11px;color:rgba(255,255,255,0.25);margin-left:8px;letter-spacing:0.06em;}
+        .pvi-page .bm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .pvi-page .bm-cell{border-radius:12px;overflow:hidden;position:relative;}
+        .pvi-page .bm-cell-main{grid-column:span 2;height:200px;}
+        .pvi-page .bm-cell-sub{height:120px;}
+        .pvi-page .bc-1{background:radial-gradient(ellipse at 35% 40%,#c9a96e 0%,#1a1208 70%);display:flex;align-items:flex-end;padding:12px;}
+        .pvi-page .bc-2{background:linear-gradient(135deg,#e8d5b0 0%,#c9a96e 100%);}
+        .pvi-page .bc-3{background:#1a2820;display:flex;align-items:center;justify-content:center;}
+        .pvi-page .bc-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.6);letter-spacing:0.08em;text-transform:uppercase;}
+        .pvi-page .bm-outfit-tag{
+          position:absolute;top:10px;right:10px;
+          background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);
+          padding:4px 10px;border-radius:6px;font-size:10px;color:rgba(255,255,255,0.7);
+        }
+        .pvi-page .bm-score{
+          position:absolute;bottom:16px;right:16px;
+          background:var(--black);border:1px solid var(--lime-border);
+          border-radius:10px;padding:10px 14px;text-align:center;
+        }
+        .pvi-page .bm-score-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--lime);}
+        .pvi-page .bm-score-label{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;}
+
+        /* WOW TEXT */
+        .pvi-page .wow-text .label{margin-bottom:8px;}
+        .pvi-page .wow-text h2{margin-bottom:16px;}
+        .pvi-page .wow-text .section-sub{margin-bottom:32px;}
+        .pvi-page .wow-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:32px;}
+        .pvi-page .ws{display:flex;gap:14px;align-items:flex-start;}
+        .pvi-page .ws-num{
+          width:28px;height:28px;border-radius:7px;flex-shrink:0;
+          background:var(--lime-bg);border:1px solid var(--lime-border);
+          display:flex;align-items:center;justify-content:center;
+          font-size:11px;font-weight:700;color:var(--lime-dark);
+        }
+        .pvi-page .ws-text{font-size:14px;color:#555;line-height:1.6;padding-top:4px;}
+        .pvi-page .ws-text strong{color:var(--black);font-weight:600;}
+
+        /* ── PROCESS ── */
+        .pvi-page .process{background:var(--sand);padding:96px 80px;}
+        .pvi-page .process-inner{max-width:1200px;margin:0 auto;}
+        .pvi-page .process-phases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:56px;}
+        .pvi-page .phase-card{border-radius:20px;overflow:hidden;}
+        .pvi-page .ph-0{background:var(--white);border:1px solid var(--gray-light);padding:36px;}
+        .pvi-page .ph-1{background:var(--black);padding:36px;}
+        .pvi-page .ph-2{background:#111827;padding:36px;border:1px solid rgba(180,232,66,0.08);}
+        .pvi-page .ph-badge{
+          display:inline-flex;align-items:center;gap:6px;
+          padding:4px 12px;border-radius:10px;font-size:10px;font-weight:700;
+          letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px;
+        }
+        .pvi-page .pb-light{background:var(--sand);color:#888;}
+        .pvi-page .pb-dark{background:var(--lime-bg);color:var(--lime);}
+        .pvi-page .pb-violet{background:rgba(167,139,250,0.1);color:#a78bfa;}
+        .pvi-page .ph-when{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+        .pvi-page .ph-0 .ph-when{color:#bbb;}
+        .pvi-page .ph-1 .ph-when,.pvi-page .ph-2 .ph-when{color:rgba(255,255,255,0.25);}
+        .pvi-page .ph-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1.2;margin-bottom:6px;}
+        .pvi-page .ph-0 .ph-title{color:var(--black);}
+        .pvi-page .ph-1 .ph-title,.pvi-page .ph-2 .ph-title{color:#fff;}
+        .pvi-page .ph-price{font-size:13px;font-weight:600;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid;}
+        .pvi-page .ph-0 .ph-price{color:var(--black);border-color:var(--gray-light);}
+        .pvi-page .ph-1 .ph-price{color:var(--lime);border-color:rgba(255,255,255,0.08);}
+        .pvi-page .ph-2 .ph-price{color:#a78bfa;border-color:rgba(255,255,255,0.06);}
+        .pvi-page .ph-items{list-style:none;display:flex;flex-direction:column;gap:10px;}
+        .pvi-page .ph-items li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.55;}
+        .pvi-page .ph-0 .ph-items li{color:#555;}
+        .pvi-page .ph-1 .ph-items li,.pvi-page .ph-2 .ph-items li{color:rgba(255,255,255,0.45);}
+        .pvi-page .ph-0 .ph-items li::before{content:'·';color:var(--lime-dark);font-size:16px;line-height:1;flex-shrink:0;}
+        .pvi-page .ph-1 .ph-items li::before,.pvi-page .ph-2 .ph-items li::before{content:'·';color:var(--lime);font-size:16px;line-height:1;flex-shrink:0;}
+        .pvi-page .ph-items li strong{font-weight:600;}
+        .pvi-page .ph-0 .ph-items li strong{color:var(--black);}
+        .pvi-page .ph-1 .ph-items li strong,.pvi-page .ph-2 .ph-items li strong{color:#fff;}
+
+        /* ── DELIVERABLES ── */
+        .pvi-page .deliverables{padding:96px 80px;background:var(--cream);}
+        .pvi-page .del-inner{max-width:1200px;margin:0 auto;}
+        .pvi-page .del-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px;}
+        .pvi-page .del-card{
+          background:var(--white);border:1px solid var(--gray-light);
+          border-radius:16px;padding:24px;
+          transition:transform 0.25s,box-shadow 0.25s;
+        }
+        .pvi-page .del-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08);}
+        .pvi-page .del-icon{font-size:28px;margin-bottom:14px;}
+        .pvi-page .del-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--lime-dark);line-height:1;margin-bottom:4px;}
+        .pvi-page .del-unit{font-size:11px;color:var(--gray);margin-bottom:10px;}
+        .pvi-page .del-title{font-size:14px;font-weight:600;margin-bottom:6px;}
+        .pvi-page .del-desc{font-size:12px;color:var(--gray);line-height:1.6;}
+        .pvi-page .extras{
+          margin-top:32px;padding:24px;background:var(--sand);
+          border-radius:14px;border:1px solid var(--gray-light);
+        }
+        .pvi-page .extras-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;}
+        .pvi-page .extras-row{display:flex;gap:10px;flex-wrap:wrap;}
+        .pvi-page .extra-tag{
+          padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;
+          background:var(--white);color:#555;border:1px solid var(--gray-light);
+        }
+        .pvi-page .extra-tag span{color:var(--lime-dark);font-weight:600;}
+
+        /* ── PRICING ── */
+        .pvi-page .pricing{background:var(--black);padding:96px 80px;}
+        .pvi-page .pricing-inner{max-width:900px;margin:0 auto;text-align:center;}
+        .pvi-page .pricing-inner h2{color:#fff;}
+        .pvi-page .pricing-inner h2 em{color:var(--lime);}
+        .pvi-page .pricing-inner .section-sub{color:rgba(255,255,255,0.35);margin:0 auto 56px;}
+        .pvi-page .price-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left;margin-bottom:32px;}
+        .pvi-page .price-card{border-radius:18px;padding:32px;}
+        .pvi-page .pc-entry{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);}
+        .pvi-page .pc-full{background:var(--lime-bg);border:1px solid var(--lime-border);}
+        .pvi-page .pc-badge{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;}
+        .pvi-page .pc-entry .pc-badge{color:rgba(255,255,255,0.3);}
+        .pvi-page .pc-full .pc-badge{color:var(--lime);}
+        .pvi-page .pc-price{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;line-height:1;margin-bottom:6px;}
+        .pvi-page .pc-entry .pc-price{color:#fff;}
+        .pvi-page .pc-full .pc-price{color:var(--lime);}
+        .pvi-page .pc-period{font-size:13px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid;}
+        .pvi-page .pc-entry .pc-period{color:rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.08);}
+        .pvi-page .pc-full .pc-period{color:rgba(180,232,66,0.5);border-color:var(--lime-border);}
+        .pvi-page .pc-items{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+        .pvi-page .pc-items li{font-size:13px;display:flex;align-items:center;gap:8px;}
+        .pvi-page .pc-entry .pc-items li{color:rgba(255,255,255,0.45);}
+        .pvi-page .pc-full .pc-items li{color:rgba(255,255,255,0.7);}
+        .pvi-page .pc-items li::before{content:'✓';font-size:11px;font-weight:700;flex-shrink:0;}
+        .pvi-page .pc-entry .pc-items li::before{color:rgba(255,255,255,0.2);}
+        .pvi-page .pc-full .pc-items li::before{color:var(--lime);}
+        .pvi-page .pc-btn{
+          width:100%;padding:13px;border-radius:10px;font-size:13px;font-weight:600;
+          cursor:pointer;border:none;transition:all 0.2s;
+        }
+        .pvi-page .pc-entry .pc-btn{background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.1);}
+        .pvi-page .pc-entry .pc-btn:hover{background:rgba(255,255,255,0.1);}
+        .pvi-page .pc-full .pc-btn{background:var(--lime);color:var(--black);}
+        .pvi-page .pc-full .pc-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(180,232,66,0.25);}
+        .pvi-page .pricing-note{font-size:12px;color:rgba(255,255,255,0.2);text-align:center;}
+
+        /* ── SCAN CTA ── */
+        .pvi-page .scan-cta{background:var(--cream);padding:96px 80px;text-align:center;}
+        .pvi-page .scan-inner{max-width:700px;margin:0 auto;}
+        .pvi-page .scan-inner h2{margin-bottom:12px;}
+        .pvi-page .scan-inner .section-sub{margin:0 auto 40px;}
+        .pvi-page .scan-input-wrap{
+          display:flex;gap:10px;background:var(--white);
+          border:1px solid var(--gray-light);border-radius:14px;
+          padding:8px 8px 8px 20px;
+          box-shadow:0 4px 24px rgba(0,0,0,0.06);
+          max-width:540px;margin:0 auto;
+        }
+        .pvi-page .scan-input{
+          flex:1;border:none;background:none;font-size:14px;
+          font-family:'DM Sans',sans-serif;outline:none;color:var(--black);
+        }
+        .pvi-page .scan-input::placeholder{color:#bbb;}
+        .pvi-page .scan-btn{
+          background:var(--black);color:#fff;padding:12px 24px;
+          border-radius:9px;font-size:14px;font-weight:600;border:none;cursor:pointer;
+          white-space:nowrap;transition:all 0.2s;
+        }
+        .pvi-page .scan-btn:hover{background:var(--dark);}
+        .pvi-page .scan-note{font-size:12px;color:#bbb;margin-top:12px;}
+
+        /* ── TEAM ── */
+        .pvi-page .team{background:var(--black);padding:96px 80px;}
+        .pvi-page .team-inner{max-width:1200px;margin:0 auto;}
+        .pvi-page .team-inner h2{color:#fff;text-align:center;margin-bottom:8px;}
+        .pvi-page .team-inner .section-sub{color:rgba(255,255,255,0.3);text-align:center;margin:0 auto 56px;}
+        .pvi-page .team-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;}
+        .pvi-page .team-card{
+          background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+          border-radius:18px;padding:32px;text-align:center;
+        }
+        .pvi-page .team-avatar{
+          width:80px;height:80px;border-radius:50%;margin:0 auto 16px;
+          display:flex;align-items:center;justify-content:center;font-size:32px;
+          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+        }
+        .pvi-page .team-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;}
+        .pvi-page .team-role{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:12px;}
+        .pvi-page .team-desc{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.65;}
+
+        /* ── FOOTER CTA ── */
+        .pvi-page .footer-cta{
+          background:var(--cream);padding:120px 80px;text-align:center;
+          position:relative;overflow:hidden;
+        }
+        .pvi-page .footer-cta::before{
+          content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+          background:radial-gradient(circle,rgba(180,232,66,0.06),transparent 70%);
+          top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
+        }
+        .pvi-page .footer-cta h2{font-size:clamp(40px,5vw,72px);margin-bottom:16px;position:relative;}
+        .pvi-page .footer-cta h2 em{color:var(--lime-dark);}
+        .pvi-page .footer-cta .section-sub{margin:0 auto 48px;position:relative;}
+        .pvi-page .footer-cta .btn-primary{margin:0 auto;font-size:16px;padding:18px 40px;}
+        .pvi-page .footer-note{font-size:12px;color:#bbb;margin-top:16px;position:relative;}
+        .pvi-page .footer-bottom{
+          background:var(--black);padding:24px 80px;
+          display:flex;align-items:center;justify-content:space-between;
+        }
+        .pvi-page .fb-logo{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em;}
+        .pvi-page .fb-logo span{color:var(--lime);}
+        .pvi-page .fb-note{font-size:12px;color:rgba(255,255,255,0.2);}
+
+        /* ── SCROLL REVEAL ── */
+        .pvi-page .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease;}
+        .pvi-page .reveal.vis{opacity:1;transform:translateY(0);}
+        .pvi-page .reveal-d1{transition-delay:0.1s;}
+        .pvi-page .reveal-d2{transition-delay:0.2s;}
+        .pvi-page .reveal-d3{transition-delay:0.3s;}
+        .pvi-page .reveal-d4{transition-delay:0.4s;}
       `}</style>
 
-      <Header />
+      {/* NAV */}
+      <nav>
+        <div className="nav-logo">△ <span>LUCIFERA</span></div>
+        <button className="nav-cta">Rezervovat hovor · 9 900 Kč →</button>
+      </nav>
 
-      {/* HERO — pozadí hlavnycover_02, gradient zleva, text vlevo, plovoucí kartičky vpravo */}
-      <section
-        className="premiove-hero"
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          minHeight: "100vh",
-          backgroundColor: BG,
-          backgroundImage: `linear-gradient(95deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.90) 35%, rgba(255,255,255,0.40) 55%, transparent 70%), url("/placeholders/hlavnycover_02.png")`,
-          backgroundSize: "auto, contain",
-          backgroundPosition: "0 0, right center",
-          backgroundRepeat: "no-repeat, no-repeat",
-        }}
-      >
-        {/* Mobil: overlay zesvětlí shora */}
-        <div
-          className="hero-mobile-overlay"
-          aria-hidden
-          style={{
-            display: "none",
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to bottom, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.2) 50%, transparent 70%)",
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-        <div
-          className="hero-content"
-          style={{
-            position: "relative",
-            zIndex: 2,
-            maxWidth: 1440,
-            margin: "0 auto",
-            paddingLeft: 80,
-            paddingRight: 80,
-            paddingTop: 120,
-            paddingBottom: 80,
-            minHeight: "100vh",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 48,
-            alignItems: "center",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div
-              className="premiove-hero-entry delay-0"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                fontSize: 11,
-                letterSpacing: ".12em",
-                color: "#7ab82e",
-                marginBottom: 28,
-                fontFamily: "var(--font-dm-sans), sans-serif",
-              }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7ab82e", animation: "pulseDot 2s infinite", flexShrink: 0 }} />
-              prémiová vizuální identita
-            </div>
-
-            <h1
-              className="premiove-hero-entry delay-1"
-              style={{
-                fontFamily: "var(--font-playfair), serif",
-                fontSize: "clamp(40px, 5vw, 68px)",
-                fontWeight: 900,
-                lineHeight: 1.08,
-                letterSpacing: "-.03em",
-                marginBottom: 24,
-              }}
-            >
-              Jeden den focení.
-              <br />
-              <em style={{ fontStyle: "italic", color: LIME_DARK }}>Obsah na měsíce dopředu.</em>
-            </h1>
-
-            <p
-              className="premiove-hero-entry delay-2"
-              style={{ fontSize: 17, color: MUTED, lineHeight: 1.7, maxWidth: 480, marginBottom: 36, fontFamily: "var(--font-dm-sans), sans-serif" }}
-            >
-              Vaše práce je skvělá. Ale zákazník který vás nezná, to nevidí. Rozhoduje první dojem — a ten tvoří vizuál.
-            </p>
-
-            <div className="premiove-hero-entry delay-3" style={{ display: "flex", gap: 14, marginBottom: 24 }}>
-              <a
-                href="/diagnostika"
-                style={{
-                  background: LIME,
-                  color: TEXT,
-                  borderRadius: 11,
-                  padding: "15px 28px",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  boxShadow: `0 4px 24px ${GLOW_STRONG}`,
-                  textDecoration: "none",
-                }}
-              >
-                Rezervovat vstupní rozhovor s diagnostikou →
-              </a>
-              <a
-                href="#faze"
-                style={{
-                  background: "transparent",
-                  border: "1.5px solid rgba(0,0,0,.2)",
-                  borderRadius: 11,
-                  padding: "14px 24px",
-                  fontSize: 15,
-                  color: MUTED,
-                  textDecoration: "none",
-                }}
-              >
-                Jak to funguje
-              </a>
-            </div>
-
-            <p className="premiove-hero-entry delay-4" style={{ fontSize: 12, color: FAINT }}>
-              Vstupní hovor · 7 800 Kč · Bez závazku Fáze 1
-            </p>
+      {/* HERO */}
+      <section className="hero" style={{padding:0}}>
+        <div className="hero-left">
+          <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
+          <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
+          <p className="hero-sub">Přijdete do ateliéru. Odejdete s 500 fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
+          <div className="hero-actions">
+            <button className="btn-primary">Spustit bezplatnou analýzu značky →</button>
+            <button className="btn-secondary">nebo Rezervovat strategický hovor ↓</button>
+            <div className="hero-note">Analýza webu · Zdarma · Výsledky za 2 minuty</div>
           </div>
-
-          <div
-            className="hero-cards-wrap"
-            style={{ position: "relative", width: "100%", height: "100%", minHeight: 420 }}
-          >
-            <div
-              className="hero-float-card hero-card-1"
-              style={{
-                position: "absolute",
-                top: "12%",
-                left: "10%",
-                borderRadius: 18,
-                padding: "14px 20px",
-                opacity: 0,
-                animation: "fadeUp .7s ease .4s forwards, float1 3.5s ease-in-out 1.1s infinite",
-                zIndex: 3,
-                ...heroCardGlass,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ width: 9, height: 9, borderRadius: "50%", background: LIME, animation: "pulseDot 2s infinite" }} />
-                <strong style={{ fontSize: 13 }}>Agent aktivní</strong>
-              </div>
-              <span style={{ fontSize: 11, color: FAINT }}>Právě připravuje obsah</span>
+        </div>
+        <div className="hero-right">
+          <div className="hero-video-wrap">
+            <div className="video-placeholder">
+              <div className="play-btn">▶</div>
+              <div className="video-label">Podívejte se jak to funguje</div>
             </div>
-
-            <div
-              className="hero-float-card hero-card-2"
-              style={{
-                position: "absolute",
-                top: "15%",
-                right: "4%",
-                borderRadius: 18,
-                padding: "16px 20px",
-                textAlign: "center",
-                opacity: 0,
-                animation: "fadeUp .7s ease .4s forwards, float2 4s ease-in-out 1.1s infinite",
-                zIndex: 3,
-                ...heroCardGlass,
-              }}
-            >
-              <div
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "50%",
-                  border: "3px solid " + LIME,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 8px",
-                  animation: "ringGlow 3s infinite",
-                }}
-              >
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 18, fontWeight: 900, color: TEXT }}>87</span>
-              </div>
-              <span style={{ fontSize: 10, color: FAINT }}>Brand skóre</span>
-            </div>
-
-            <div
-              className="hero-float-card hero-card-3"
-              style={{
-                position: "absolute",
-                bottom: "18%",
-                left: "12%",
-                borderRadius: 18,
-                padding: "16px 22px",
-                opacity: 0,
-                animation: "fadeUp .7s ease .48s forwards, float3 4.5s ease-in-out 1.18s infinite",
-                zIndex: 3,
-                ...heroCardGlass,
-              }}
-            >
-              <div style={{ fontSize: 10, textTransform: "uppercase", color: FAINT, marginBottom: 8 }}>Týdenní výstupy</div>
-              <div style={{ marginBottom: 6 }}>
-                <span style={{ fontSize: 12, color: TEXT }}>Příspěvky</span>
-                <div style={{ height: 4, background: LIME, borderRadius: 2, marginTop: 4, width: 60, animation: "barGrow 2s infinite alternate" }} />
-              </div>
-              <div>
-                <span style={{ fontSize: 12, color: TEXT }}>Vizuály</span>
-                <div style={{ height: 4, background: "rgba(183,233,76,.35)", borderRadius: 2, marginTop: 4, width: 50, animation: "barGrow2 2.5s infinite alternate" }} />
-              </div>
-            </div>
-
-            <div
-              className="hero-float-card hero-card-4"
-              style={{
-                position: "absolute",
-                bottom: "20%",
-                right: "3%",
-                borderRadius: 14,
-                padding: "14px 18px",
-                opacity: 0,
-                animation: "fadeUp .7s ease .56s forwards, float4 3.8s ease-in-out 1.26s infinite",
-                zIndex: 3,
-                ...heroCardGlass,
-              }}
-            >
-              <div style={{ fontSize: 10, textTransform: "uppercase", color: FAINT, marginBottom: 4 }}>Výstupy</div>
-              <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 22, fontWeight: 900, color: LIME_DARK }}>500+ fotek</span>
-              <div style={{ fontSize: 11, color: FAINT, marginTop: 4 }}>z jednoho dne</div>
-            </div>
+          </div>
+          <div className="float-card fc-1">
+            <div><span className="fc-dot"></span><span className="fc-title">Systém aktivní</span></div>
+            <div className="fc-sub">Právě připravuje obsah</div>
+          </div>
+          <div className="float-card fc-2" style={{textAlign:"center"}}>
+            <div className="fc-num">500+</div>
+            <div className="fc-sub">fotek z jednoho dne</div>
+          </div>
+          <div className="float-card fc-3">
+            <div className="fc-title" style={{marginBottom:"4px"}}>Týdenní výstupy</div>
+            <div className="fc-sub">Příspěvky · Vizuály · Reels</div>
           </div>
         </div>
       </section>
 
-      {/* DIVIDER */}
-      <div style={{ height: 1, background: "linear-gradient(to right, transparent, #b7e94c, rgba(183,233,76,.3), transparent)" }} />
-
-      <VibeSection />
-
-      {/* SEKCE PROBLÉM — full-width pozadí, obsah v containeru */}
-      <section style={{ background: BG1, padding: "96px 0", position: "relative", overflow: "hidden", width: "100%" }}>
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            width: 400,
-            height: 400,
-            background: "radial-gradient(circle, rgba(183,233,76,.08), transparent)",
-            top: -100,
-            right: "10%",
-            filter: "blur(80px)",
-          }}
-        />
-        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
-          <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Problém</p>
-          <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48, letterSpacing: "-.02em", lineHeight: 1.15 }}>
-            Za tři sekundy si o vás udělají názor. Otázka je, jaký.
-          </h2>
-          <p className="reveal reveal-delay-2" style={{ fontSize: 17, color: MUTED, marginBottom: 40 }}>Trh nečte co umíte. Čte co vidí.</p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            <div
-              className="reveal reveal-delay-3"
-              style={{
-                gridColumn: "1 / -1",
-                background: "#111",
-                borderRadius: 24,
-                padding: 52,
-                overflow: "hidden",
-                position: "relative",
-              }}
-            >
-              <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3vw,42px)", color: "#fff", position: "relative", zIndex: 1 }}>
-                Web říká jedno. Fotky druhé. Příspěvky <em style={{ color: LIME, fontStyle: "italic" }}>třetí.</em>
-              </h3>
-              <p style={{ fontSize: 16, color: "rgba(255,255,255,.6)", maxWidth: 600, marginTop: 16, position: "relative", zIndex: 1 }}>
-                Zákazník přijde, nepochopí — a odejde. Ne proto že ho to nezajímá. Ale proto že za tři sekundy neviděl důvod zůstat. To není problém tvorby. Je to problém systému.
-              </p>
-            </div>
-            <div
-              className="reveal"
-              style={{
-                background: BG,
-                border: `1px solid ${BORDER2}`,
-                borderRadius: 20,
-                padding: 36,
-                overflow: "hidden",
-              }}
-            >
-              <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>01 ·</p>
-              <h4 style={{ fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Vaše ceny rostou. Váš obraz ne.</h4>
-              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Trh vás vidí tak, jak se prezentujete. Pokud vaše vizuální úroveň zaostává za cenou — ztrácíte důvěru.</p>
-            </div>
-            <div
-              className="reveal"
-              style={{
-                background: BG,
-                border: `1px solid ${BORDER2}`,
-                borderRadius: 20,
-                padding: 36,
-                overflow: "hidden",
-              }}
-            >
-              <p style={{ fontSize: 11, color: FAINT, marginBottom: 8 }}>02 ·</p>
-              <h4 style={{ fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Hodiny v nástrojích místo v práci.</h4>
-              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Jedna AI píše, druhá generuje obrázky. Vy sedíte uprostřed a místo strategie řešíte nástroje.</p>
-            </div>
+      {/* PROBLEM */}
+      <section className="problem">
+        <div className="problem-grid">
+          <div className="problem-left">
+            <div className="label" style={{color:"rgba(180,232,66,0.6)"}}>Problém který znáte</div>
+            <h2>Vaše práce je skvělá.<br /><em>Ale nikdo to nevidí.</em></h2>
+            <div className="problem-quote">&ldquo;Tohle není problém tvorby. Je to problém obrazu.&rdquo;</div>
           </div>
-        </div>
-      </section>
-
-      {/* SEKCE PRO KOHO */}
-      <section style={{ background: BG, padding: "96px 80px", maxWidth: 1260, margin: "0 auto", position: "relative", overflow: "hidden" }}>
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            width: 350,
-            height: 350,
-            background: "radial-gradient(circle, rgba(183,233,76,.07), transparent)",
-            bottom: -50,
-            right: -50,
-            filter: "blur(40px)",
-            animation: "orbFloat2 9s infinite",
-          }}
-        />
-        <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Pro koho</p>
-        <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48 }}>
-          Tato spolupráce je pro vás, pokud:
-        </h2>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
           <div>
-            {PRO_KOHO_ITEMS.map((item, i) => (
-              <div
-                key={i}
-                className="reveal"
-                style={{
-                  display: "flex",
-                  gap: 14,
-                  padding: "18px 20px",
-                  background: BG,
-                  border: `1px solid ${BORDER}`,
-                  borderRadius: 14,
-                  marginBottom: 12,
-                }}
-              >
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: "50%",
-                    background: "rgba(183,233,76,.15)",
-                    border: "1px solid rgba(183,233,76,.4)",
-                    color: LIME_DARK,
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                >
-                  ✓
-                </span>
-                <span style={{ fontSize: 14, color: TEXT }}>{item}</span>
-              </div>
-            ))}
-            <div
-              style={{
-                marginTop: 20,
-                background: "rgba(0,0,0,.03)",
-                borderLeft: "3px solid rgba(0,0,0,.1)",
-                padding: "18px 22px",
-              }}
-            >
-              <p style={{ fontSize: 14, color: MUTED }}>Není pro vás</p>
-              <p style={{ fontSize: 13, color: FAINT, marginTop: 4 }}>Hledáte jen hezké fotky nebo rychlé, jednorázové řešení.</p>
-            </div>
-          </div>
-          <div className="reveal reveal-delay-2" style={{ position: "relative" }}>
-            <ProKohoCarousel slides={UKAZKY_BRANDU_SLIDES} />
-          </div>
-        </div>
-      </section>
-
-      {/* SEKCE CO JE SOUČÁSTÍ */}
-      <section id="co-je-soucasti" style={{ background: BG1, padding: "96px 0", width: "100%", position: "relative", overflow: "hidden" }}>
-        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
-          <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Co je součástí</p>
-          <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48 }}>
-            Jedna spolupráce. Vše co vaše značka potřebuje.
-          </h2>
-          <div
-            className="reveal reveal-delay-2 premiove-soucasti-grid"
-            style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}
-          >
-            {[
-              "Brand Scan + diagnostika",
-              "Vizuální board + strategická cesta",
-              "Jeden den focení — 500+ fotografií, video záběry pro Reels a b-roll",
-              "Návrhy příspěvků a kampaně",
-              "Výcvik AI agenta — pracuje samostatně",
-              "2 měsíce kurátorování — příspěvky, grafiky Canva, Reels, UGC video",
-              "Přístup do AI Content Kreator",
-            ].map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
-                  padding: "18px 22px",
-                  background: BG,
-                  border: `1px solid ${BORDER}`,
-                  borderRadius: 14,
-                }}
-              >
-                <span style={{ color: LIME_DARK, fontSize: 18, lineHeight: 1.4, flexShrink: 0 }}>✦</span>
-                <span style={{ fontSize: 15, color: TEXT, lineHeight: 1.5 }}>{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SEKCE FÁZE — tři karty, full-width (pozadí na celou šířku viewportu) */}
-      <section
-        id="faze"
-        style={{
-          background: BG1,
-          padding: "96px 0",
-          width: "100vw",
-          position: "relative",
-          left: "50%",
-          marginLeft: "-50vw",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
-        <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Struktura spolupráce</p>
-        <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 16 }}>
-          Jedna spolupráce. Tři fáze. Výsledek který zůstane.
-        </h2>
-        <p className="reveal reveal-delay-2" style={{ fontSize: 16, color: MUTED, marginBottom: 48 }}>
-          Celková investice 56 800 Kč rozdělená do tří po sobě jdoucích fází.
-        </p>
-
-        <div className="premiove-faze-grid reveal" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-          {/* Fáze 0 — světlá karta */}
-          <div
-            style={{
-              borderRadius: 24,
-              padding: 48,
-              background: "rgba(255,255,255,.8)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(183,233,76,.25)",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <p style={{ fontSize: 11, textTransform: "uppercase", color: FAINT, marginBottom: 12 }}>Fáze 0 · Strategický vstup</p>
-            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME_DARK, marginBottom: 8 }}>7 800 Kč</p>
-            <p style={{ fontSize: 13, color: MUTED, marginBottom: 24 }}>Samostatná hodnota · Povinný první krok</p>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {["Vstupní strategický rozhovor (56 min)", "Vizuální board — kam vaše značka směřuje", "3 Canva šablony připravené na míru", "Podklad pro Fázi 1"].map((item, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME, boxShadow: `0 0 8px ${GLOW_LIME}` }} />
-                  <span style={{ fontSize: 14, color: TEXT }}>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Fáze 1 — tmavá karta */}
-          <div
-            className="reveal reveal-delay-1"
-            style={{
-              borderRadius: 24,
-              padding: 48,
-              background: "#111",
-              color: "#fff",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <p style={{ fontSize: 11, color: "#fff", textTransform: "uppercase", marginBottom: 12, opacity: 0.8 }}>Fáze 1 · Reálný obsah</p>
-            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>25 000 Kč</p>
-            <p style={{ fontSize: 13, color: "#fff", marginBottom: 24, opacity: 0.9 }}>Navazuje na Fázi 0</p>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {["Strategický plán + Brand DNA", "Foto/video den v ateliéru na Kampě", "500+ fotografií, video záběry pro Reels a b-roll"].map((item, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME }} />
-                  <span style={{ fontSize: 14, color: "#fff" }}>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Fáze 2 — tmavá karta */}
-          <div
-            className="reveal reveal-delay-2"
-            style={{
-              borderRadius: 24,
-              padding: 48,
-              background: "#111",
-              color: "#fff",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <p style={{ fontSize: 11, color: "#fff", textTransform: "uppercase", marginBottom: 12, opacity: 0.8 }}>Fáze 2 · Systém který pracuje za vás</p>
-            <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: LIME, textShadow: "0 0 24px rgba(183,233,76,.3)", marginBottom: 8 }}>24 000 Kč</p>
-            <p style={{ fontSize: 13, color: "#fff", marginBottom: 24, opacity: 0.9 }}>Navazuje na Fázi 1</p>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {[
-                "2měsíční výcvik AI agenta vaší značky",
-                "Tvorba příspěvků, grafiky Canva, Reels, UGC video",
-                "Vlastní vizuální agentura — agent plánuje, připravuje, publikuje",
-                "Vstup do aplikace Lucifera",
-                "2měsíční kurátorování obsahu",
-              ].map((item, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: LIME }} />
-                  <span style={{ fontSize: 14, color: "#fff" }}>{item}</span>
-                </li>
-              ))}
+            <ul className="problem-list">
+              <li><div className="pl-icon">📱</div>Web říká jedno, Instagram druhé, LinkedIn třetí. Zákazník neví jestli jste to vy — a odejde.</li>
+              <li><div className="pl-icon">⏰</div>Tvoříte obsah místo toho abyste dělali svou práci. Každý týden znovu od nuly.</li>
+              <li><div className="pl-icon">🤖</div>20 aplikací na generování, texty, plánování. Místo tvorby řešíte systémy.</li>
+              <li><div className="pl-icon">📷</div>Fotky z loňska. Styl který vás nepředstavuje. Vizuál který neodpovídá vaší ceně.</li>
             </ul>
           </div>
         </div>
-
-        <div className="reveal reveal-delay-3" style={{ marginTop: 40, textAlign: "center" }}>
-          <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 30, fontWeight: 900, color: TEXT, marginBottom: 24 }}>56 800 Kč</p>
-          <a
-            href="/diagnostika"
-            style={{
-              display: "inline-block",
-              background: LIME,
-              color: TEXT,
-              borderRadius: 11,
-              padding: "15px 28px",
-              fontSize: 15,
-              fontWeight: 700,
-              boxShadow: `0 4px 24px ${GLOW_STRONG}`,
-              textDecoration: "none",
-            }}
-          >
-            Rezervovat vstupní hovor →
-          </a>
-        </div>
-        </div>
       </section>
 
-      {/* SEKCE JAK TO FUNGUJE */}
-      <section id="jak-to-funguje" style={{ background: BG, padding: "96px 80px", maxWidth: 1260, margin: "0 auto", position: "relative", overflow: "hidden" }}>
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            width: 300,
-            height: 300,
-            background: "radial-gradient(circle, rgba(183,233,76,.09), transparent)",
-            top: -50,
-            left: "50%",
-            transform: "translateX(-50%)",
-            filter: "blur(40px)",
-            animation: "orbFloat3 9s infinite",
-          }}
-        />
-        <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Co se změní</p>
-        <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 16 }}>
-          Co se stane po dvou měsících.
-        </h2>
-        <p className="reveal reveal-delay-2" style={{ fontSize: 17, color: MUTED, marginBottom: 56 }}>
-          Vytrénovaný agent zná vaši značku, váš hlas a vaši strategii.
-        </p>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-          {[
-            { num: "01", title: "Zadáte co potřebujete.", text: "Žádné briefy, žádné vysvětlování. Agent zná vaši strategii, tón i vizuální standard." },
-            { num: "02", title: "Agent naplánuje a připraví.", text: "Každý týden dostanete hotové výstupy — příspěvky, texty, vizuály." },
-            { num: "03", title: "Vy zkontrolujete a schválíte.", text: "Vaše role je kontrolní. Přestanete řídit obsah. Začnete řídit značku." },
-          ].map((s, i) => (
-            <div
-              key={s.num}
-              className="reveal"
-              style={{
-                background: BG,
-                border: `1px solid ${BORDER2}`,
-                borderRadius: 20,
-                padding: 34,
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: "50%",
-                  border: "2px solid " + LIME,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: LIME_DARK,
-                  marginBottom: 20,
-                }}
-              >
-                {s.num}
+      {/* WOW — VIZUÁLNÍ BOARD */}
+      <section className="wow">
+        <div className="wow-inner">
+          <div className="label reveal">Naše největší přednost</div>
+          <h2 className="reveal">Víte jak budete vypadat<br /><em>ještě před focením.</em></h2>
+          <div className="wow-grid">
+            <div className="board-mockup reveal">
+              <div className="bm-header">
+                <div className="bm-dot" style={{background:"#ff5f57"}}></div>
+                <div className="bm-dot" style={{background:"#ffbd2e"}}></div>
+                <div className="bm-dot" style={{background:"#28c940"}}></div>
+                <div className="bm-title">Vizuální board · Jana Procházková · Před focením</div>
               </div>
-              <h3 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 10 }}>{s.title}</h3>
-              <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>{s.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* SEKCE KATARÍNA — pozadí edge-to-edge, obsah centrovaný */}
-      <section
-        style={{
-          background: "#f5f4ef",
-          padding: "96px 0",
-          width: "100vw",
-          position: "relative",
-          left: "50%",
-          marginLeft: "-50vw",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ maxWidth: 1260, margin: "0 auto", paddingLeft: 24, paddingRight: 24 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 80, alignItems: "center" }}>
-          <div>
-            <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>Kdo za tím stojí</p>
-            <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 24 }}>
-              25 let práce s obrazem. Reálné značky.
-            </h2>
-            <p className="reveal reveal-delay-2" style={{ fontSize: 16, color: MUTED, lineHeight: 1.75, marginBottom: 16 }}>
-              Spolupracovala jsem s Komerční bankou, Vodafone, Oriflame. Dnes pracuji s lídry a podnikateli, kteří vědí že vizuální prezentace je součást ceny, kterou si účtují.
-            </p>
-            <p className="reveal reveal-delay-3" style={{ fontSize: 16, color: MUTED }}>
-              Technologie navrhuje. Zkušenost vybírá. AI používám jako nástroj — ne jako náhradu za úsudek který se nedá naučit za týden.
-            </p>
-
-            <div
-              ref={statsRef}
-              className="katarina-stats"
-              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 36 }}
-            >
-              <div
-                className="stat-num"
-                data-idx="0"
-                style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "20px 22px" }}
-              >
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: TEXT }}>0</span>
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: LIME_DARK }}>+</span>
-                <div style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>let práce s obrazem</div>
-              </div>
-              <div
-                className="stat-num"
-                data-idx="1"
-                style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "20px 22px" }}
-              >
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: TEXT }}>0</span>
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: LIME_DARK }}>+</span>
-                <div style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>realizovaných projektů</div>
-              </div>
-              <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "20px 22px" }}>
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: TEXT }}>2</span>
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: LIME_DARK }}>měs</span>
-                <div style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>výcvik AI agenta</div>
-              </div>
-              <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "20px 22px" }}>
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: TEXT }}>1</span>
-                <span style={{ fontFamily: "var(--font-playfair), serif", fontSize: 32, fontWeight: 900, color: LIME_DARK }}>systém</span>
-                <div style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>který pracuje za vás</div>
+              <div className="bm-grid">
+                <div className="bm-cell bm-cell-main bc-1">
+                  <div className="bc-label">Tmavé sako · Ateliér Kampa · Záběr č. 1</div>
+                  <div className="bm-outfit-tag">Outfit A · Tmavě zelená</div>
+                  <div className="bm-score">
+                    <div className="bm-score-num">87</div>
+                    <div className="bm-score-label">Brand skóre</div>
+                  </div>
+                </div>
+                <div className="bm-cell bm-cell-sub bc-2">
+                  <div className="bm-outfit-tag" style={{color:"rgba(0,0,0,0.5)"}}>Detail · ruce + notes</div>
+                </div>
+                <div className="bm-cell bm-cell-sub bc-3">
+                  <div style={{textAlign:"center"}}>
+                    <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"16px",color:"rgba(255,255,255,0.5)",fontStyle:"italic"}}>&ldquo;Vaše vize.&rdquo;</div>
+                    <div style={{fontSize:"10px",color:"rgba(255,255,255,0.2)",marginTop:"4px"}}>Faceless záběr</div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="reveal reveal-delay-3" style={{ position: "relative", overflow: "visible", display: "flex", alignItems: "flex-end" }}>
-            <img
-              src="/placeholders/KDOJSEM_01.png"
-              alt=""
-              style={{
-                width: "auto",
-                maxWidth: "100%",
-                maxHeight: "100%",
-                height: 600,
-                objectFit: "contain",
-                objectPosition: "center bottom",
-                background: "transparent",
-              }}
-            />
+            <div className="wow-text reveal reveal-d2">
+              <div className="label">Vizuální board s vaší podobou</div>
+              <h2>AI náhledovky.<br /><em>Váš obličej. Váš styl.</em></h2>
+              <p className="section-sub" style={{marginBottom:"28px"}}>Ještě před tím než vstoupíte do ateliéru víte přesně jak výsledek bude vypadat. Modré sako nebo hnědé? Kampa nebo interiér? Vše vidíte dopředu — na sobě.</p>
+              <div className="wow-steps">
+                <div className="ws"><div className="ws-num">1</div><div className="ws-text"><strong>Pošlete fotografie.</strong> Stačí několik běžných fotek.</div></div>
+                <div className="ws"><div className="ws-num">2</div><div className="ws-text"><strong>AI vás zasadí do scén.</strong> Různé outfity, prostory, rekvizity — přesně podle strategie vaší značky.</div></div>
+                <div className="ws"><div className="ws-num">3</div><div className="ws-text"><strong>Vyberete co se vám líbí.</strong> A přesně tak pak focení proběhne.</div></div>
+                <div className="ws"><div className="ws-num">4</div><div className="ws-text"><strong>Výsledek je garantovaný.</strong> Žádné překvapení. Žádné fotky které pak nechcete použít.</div></div>
+              </div>
+              <button className="btn-primary">Chci vidět ukázku →</button>
+            </div>
           </div>
         </div>
+      </section>
+
+      {/* PROCESS */}
+      <section className="process">
+        <div className="process-inner">
+          <div className="reveal">
+            <div className="label">Jak to funguje</div>
+            <h2>Tři kroky.<br /><em>Jeden výsledek.</em></h2>
+          </div>
+          <div className="process-phases">
+            <div className="phase-card ph-0 reveal reveal-d1">
+              <div className="ph-badge pb-light">Před focením</div>
+              <div className="ph-when">Krok 1 · Strategický hovor</div>
+              <div className="ph-title">Pochopíme vaši značku.</div>
+              <div className="ph-price">9 900 Kč · Bez závazku focení</div>
+              <ul className="ph-items">
+                <li><strong>Analýza vaší online přítomnosti</strong> — web, Instagram, LinkedIn</li>
+                <li><strong>Strategický hovor 90 minut</strong> — co chcete říkat a komu</li>
+                <li><strong>20stránková prezentace</strong> rozvoje značky a kampaní</li>
+                <li><strong>Vizuální board s vaší podobou</strong> — náhledovky jak budete vypadat</li>
+                <li><strong>3 Canva šablony na míru</strong> s ukázkou v reálných příspěvcích</li>
+              </ul>
+            </div>
+            <div className="phase-card ph-1 reveal reveal-d2">
+              <div className="ph-badge pb-dark">Den focení · Praha Kampa</div>
+              <div className="ph-when">Krok 2 · Reálný obsah</div>
+              <div className="ph-title" style={{color:"#fff"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
+              <div className="ph-price">Cena dle rozsahu</div>
+              <ul className="ph-items">
+                <li><strong>5 stylů focení</strong> — každý 15 fotografií</li>
+                <li><strong>10 faceless fotek</strong> pro grafiku a kampaně</li>
+                <li><strong>1 minuta b-rollu</strong> pro Reels a LinkedIn video</li>
+                <li>Focení přesně dle vizuálního boardu</li>
+                <li>Prostor pro improvizaci a nápady</li>
+                <li>Za příplatek: promo video, Reels, grafika</li>
+              </ul>
+            </div>
+            <div className="phase-card ph-2 reveal reveal-d3">
+              <div className="ph-badge pb-violet">Po focení · Autopilot</div>
+              <div className="ph-when">Krok 3 · Systém za vás</div>
+              <div className="ph-title" style={{color:"#fff"}}>Značka pracuje.<br />Vy žijete.</div>
+              <div className="ph-price">Měsíční spolupráce</div>
+              <ul className="ph-items">
+                <li>Aplikace která <strong>zná vaši značku</strong></li>
+                <li>Hotové příspěvky, vizuály, Reels — každý týden</li>
+                <li>Vy schválíte. Systém publikuje.</li>
+                <li>Kurátor hlídá strategii a náladu</li>
+                <li>Obsah který vypadá jako vy — protože je to vy</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* SEKCE FAQ */}
-      <section style={{ background: BG, padding: "96px 80px", maxWidth: 1260, margin: "0 auto" }}>
-        <p className="reveal" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 14 }}>FAQ</p>
-        <h2 className="reveal reveal-delay-1" style={{ fontFamily: "var(--font-playfair), serif", fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 900, color: TEXT, marginBottom: 48 }}>
-          Nejčastější otázky.
-        </h2>
-
-        <div className="faq-details" style={{ border: `1px solid ${BORDER2}`, borderRadius: 20, overflow: "hidden" }}>
-          {faqs.map((faq, i) => (
-            <details
-              key={faq.q}
-              style={{
-                borderBottom: i < faqs.length - 1 ? `1px solid ${BORDER}` : "none",
-              }}
-            >
-              <summary
-                style={{
-                  padding: "24px 30px",
-                  fontSize: 15,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  listStyle: "none",
-                }}
-              >
-                {faq.q}
-              </summary>
-              <p
-                className="faq-answer"
-                style={{
-                  padding: "0 30px 24px",
-                  fontSize: 14,
-                  color: MUTED,
-                  lineHeight: 1.7,
-                  margin: 0,
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {faq.a}
-              </p>
-            </details>
-          ))}
+      {/* DELIVERABLES */}
+      <section className="deliverables">
+        <div className="del-inner">
+          <div className="reveal">
+            <div className="label">Co konkrétně dostanete</div>
+            <h2>Čísla. Ne přísliby.</h2>
+          </div>
+          <div className="del-grid">
+            <div className="del-card reveal reveal-d1">
+              <div className="del-icon">📷</div>
+              <div className="del-num">500+</div>
+              <div className="del-unit">fotografií z jednoho dne</div>
+              <div className="del-title">5 stylů · 15 fotek každý</div>
+              <div className="del-desc">Portréty, pracovní momenty, detail záběry, faceless — vše dle vizuálního boardu.</div>
+            </div>
+            <div className="del-card reveal reveal-d2">
+              <div className="del-icon">🎬</div>
+              <div className="del-num">1 min</div>
+              <div className="del-unit">b-roll video záběrů</div>
+              <div className="del-title">Reels, LinkedIn, stories</div>
+              <div className="del-desc">Autentické klipy pro Reels a video obsah. Teplý grading dle vaší palety.</div>
+            </div>
+            <div className="del-card reveal reveal-d3">
+              <div className="del-icon">🎨</div>
+              <div className="del-num">3</div>
+              <div className="del-unit">Canva šablony na míru</div>
+              <div className="del-title">Grafika připravená k použití</div>
+              <div className="del-desc">Ukázka jak fotky žijí v reálných příspěvcích — fonty, barvy, styl.</div>
+            </div>
+            <div className="del-card reveal reveal-d4">
+              <div className="del-icon">📋</div>
+              <div className="del-num">20</div>
+              <div className="del-unit">stran strategické prezentace</div>
+              <div className="del-title">Rozvoj značky + kampaně</div>
+              <div className="del-desc">Positioning, cílová skupina, obsahový plán, todolist — vše konkrétní.</div>
+            </div>
+          </div>
+          <div className="extras reveal" style={{marginTop:"20px"}}>
+            <div className="extras-label">Za příplatek</div>
+            <div className="extras-row">
+              <div className="extra-tag">Promo video <span>+</span></div>
+              <div className="extra-tag">Reels produkce <span>+</span></div>
+              <div className="extra-tag">Grafika kampaní <span>+</span></div>
+              <div className="extra-tag">Měsíční autopilot <span>+</span></div>
+              <div className="extra-tag">AI avatar <span>+</span></div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section
-        style={{
-          background: "#111",
-          textAlign: "center",
-          padding: "110px 80px",
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            width: 600,
-            height: 600,
-            background: "radial-gradient(circle, rgba(183,233,76,.1), transparent)",
-            top: -100,
-            left: "50%",
-            transform: "translateX(-50%)",
-            filter: "blur(60px)",
-            animation: "orbFloat1 10s infinite",
-          }}
-        />
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            width: 300,
-            height: 300,
-            background: "radial-gradient(circle, rgba(183,233,76,.07), transparent)",
-            bottom: -80,
-            right: "10%",
-            filter: "blur(60px)",
-            animation: "orbFloat2 8s infinite",
-          }}
-        />
-        <p style={{ fontSize: 15, color: "#fff", opacity: 1, marginBottom: 20, position: "relative", zIndex: 1, letterSpacing: ".02em" }}>
-          Jeden den. Systém na měsíce.
-        </p>
-        <h2
-          style={{
-            fontFamily: "var(--font-playfair), serif",
-            fontSize: "clamp(28px,3.5vw,52px)",
-            fontWeight: 900,
-            maxWidth: 700,
-            margin: "0 auto",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          <span style={{ color: "#fff", fontStyle: "normal" }}>Váš obsah nemůže čekat,</span>
-          <br />
-          <em style={{ color: LIME, fontStyle: "italic", textShadow: "0 0 30px rgba(183,233,76,.4)" }}>až ho zákazník pochopí.</em>
-        </h2>
-        <p style={{ fontSize: 17, color: "#fff", opacity: 1, marginBottom: 44, position: "relative", zIndex: 1 }}>
-          Vstupní hovor trvá 56 minut. Výsledek pracuje za vás dál.
-        </p>
-        <a
-          href="/diagnostika"
-          style={{
-            display: "inline-block",
-            background: LIME,
-            color: TEXT,
-            borderRadius: 11,
-            padding: "18px 40px",
-            fontSize: 16,
-            fontWeight: 700,
-            boxShadow: "0 0 40px rgba(183,233,76,.35)",
-            textDecoration: "none",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          Rezervovat vstupní hovor →
-        </a>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,.25)", marginTop: 24, position: "relative", zIndex: 1 }}>7 800 Kč · Bez závazku Fáze 1</p>
+      {/* PRICING */}
+      <section className="pricing">
+        <div className="pricing-inner">
+          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Investice</div>
+          <h2>Jasná cena.<br /><em>Bez překvapení.</em></h2>
+          <p className="section-sub">Začněte strategickým hovorem. Focení a autopilot jsou váš další krok — pokud budete chtít.</p>
+          <div className="price-cards">
+            <div className="price-card pc-entry">
+              <div className="pc-badge">Krok 1 · Vstup</div>
+              <div className="pc-price">9 900</div>
+              <div className="pc-period">Kč · Strategický hovor + Vizuální board</div>
+              <ul className="pc-items">
+                <li>Analýza vaší online přítomnosti</li>
+                <li>Strategický hovor 90 minut</li>
+                <li>20stránková prezentace značky</li>
+                <li>Vizuální board s vaší podobou</li>
+                <li>3 Canva šablony</li>
+              </ul>
+              <button className="pc-btn">Rezervovat hovor →</button>
+            </div>
+            <div className="price-card pc-full">
+              <div className="pc-badge">Krok 1 + 2 · Komplet</div>
+              <div className="pc-price">49 900</div>
+              <div className="pc-period">Kč · Hovor + Focení + Výstupy</div>
+              <ul className="pc-items">
+                <li>Vše ze Kroku 1</li>
+                <li>Den focení v ateliéru Praha Kampa</li>
+                <li>500+ fotografií · 5 stylů</li>
+                <li>B-roll video záběry</li>
+                <li>Měsíc autopilotu zdarma</li>
+              </ul>
+              <button className="pc-btn">Chci kompletní spolupráci →</button>
+            </div>
+          </div>
+          <div className="pricing-note">Autopilot — měsíční spolupráce — domlouváme individuálně. Žádné dlouhodobé závazky.</div>
+        </div>
       </section>
 
-      <footer
-        style={{
-          borderTop: `1px solid ${BORDER}`,
-          padding: "24px 40px",
-          textAlign: "center",
-          fontSize: 12,
-          color: FAINT,
-        }}
-      >
-        <a href="/obchodni-podminky" style={{ color: FAINT, textDecoration: "underline" }}>Obchodní podmínky</a>
-        <span style={{ margin: "0 8px" }}>·</span>
-        <a href="/gdpr" style={{ color: FAINT, textDecoration: "underline" }}>Ochrana osobních údajů</a>
-        <span style={{ margin: "0 8px" }}>·</span>
-        © {new Date().getFullYear()} Studio Lucifera
-      </footer>
-    </main>
+      {/* BRAND SCAN CTA */}
+      <section className="scan-cta">
+        <div className="scan-inner">
+          <div className="label reveal">Začněte zdarma</div>
+          <h2 className="reveal">Zjistěte kde vaše značka<br /><em>ztrácí zákazníky.</em></h2>
+          <p className="section-sub reveal">Zadejte adresu webu. Za dvě minuty víte přesně na čem pracovat — a zda má smysl se potkat.</p>
+          <div className="scan-input-wrap reveal">
+            <input className="scan-input" type="url" placeholder="vasweb.cz" />
+            <button className="scan-btn">Spustit analýzu →</button>
+          </div>
+          <div className="scan-note reveal">Zdarma · Bez registrace · Výsledky okamžitě</div>
+        </div>
+      </section>
+
+      {/* TEAM */}
+      <section className="team">
+        <div className="team-inner">
+          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Za Luciferous stojí</div>
+          <h2>52 let zkušeností.<br /><em>Nejsme agentura. Jsme studio.</em></h2>
+          <p className="section-sub">Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI. Jedno místo kde se to celé skládá dohromady.</p>
+          <div className="team-grid">
+            <div className="team-card reveal reveal-d1">
+              <div className="team-avatar">📷</div>
+              <div className="team-name">Katarína</div>
+              <div className="team-role">Obraz &amp; Strategie</div>
+              <div className="team-desc">26 let fotografie, videa a vizuální identity. Stovky značek. Komerční banka, Vodafone, Oriflame. Ateliér na Praze Kampě.</div>
+            </div>
+            <div className="team-card reveal reveal-d2">
+              <div className="team-avatar">⚡</div>
+              <div className="team-name">Luboš</div>
+              <div className="team-role">Systémy &amp; AI</div>
+              <div className="team-desc">26 let v technologiích. Skládá desítky AI nástrojů do jednoho funkčního celku. Systém který pracuje místo vás.</div>
+            </div>
+            <div className="team-card reveal reveal-d3">
+              <div className="team-avatar">✨</div>
+              <div className="team-name">Eska</div>
+              <div className="team-role">Duše &amp; Kresba</div>
+              <div className="team-desc">Kousek skutečného života který dává obsahu duši. Ilustrace, kresby, vizuální svět který AI sama nevymyslí.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER CTA */}
+      <section className="footer-cta">
+        <div className="label reveal">Jeden krok</div>
+        <h2 className="reveal">Váš obsah nemůže čekat,<br /><em>až ho zákazník pochopí.</em></h2>
+        <p className="section-sub reveal">Strategický hovor trvá 90 minut. Výsledek pracuje za vás měsíce dopředu.</p>
+        <button className="btn-primary reveal">Rezervovat hovor · 9 900 Kč →</button>
+        <div className="footer-note reveal">nebo začněte bezplatnou analýzou značky — žádný závazek</div>
+      </section>
+
+      <div className="footer-bottom">
+        <div className="fb-logo">△ <span>LUCIFERA</span> · Studio</div>
+        <div className="fb-note">Praha, Kampa · studio@lucifera.cz · Prémiová vizuální identita pro osobní značky</div>
+      </div>
+    </div>
   );
 }
