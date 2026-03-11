@@ -77,7 +77,7 @@ export function ClientOutputsDashboard({
         ? JSON.stringify(result.strategic_plan)
         : "";
   const savedStrategies = result.saved_strategies ?? [];
-  const displayName = projectName || (brandDna as { name?: string } | undefined)?.name ?? "Vaše značka";
+  const displayName = (projectName || (brandDna as { name?: string } | undefined)?.name) ?? "Vaše značka";
   const datum = projectCreated
     ? new Date(projectCreated).toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" })
     : "—";
