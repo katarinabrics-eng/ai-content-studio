@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "content-studio",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd '/Users/katarina/Documents/AI Content Studio/apps/content-studio' && node_modules/.bin/next dev --port $PORT"],
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }
