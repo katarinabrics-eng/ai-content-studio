@@ -851,8 +851,7 @@ export default function PremiovaVizualniIdentita() {
           background:var(--black);padding:24px 80px;
           display:flex;align-items:center;justify-content:space-between;
         }
-        .pvi-page .fb-logo{font-family:var(--font-playfair),serif;font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em;}
-        .pvi-page .fb-logo span{color:var(--lime);}
+        .pvi-page .fb-logo img{height:32px;width:auto;display:block;opacity:0.9;}
         .pvi-page .fb-note{font-size:12px;color:rgba(255,255,255,0.2);}
 
         /* ── SCROLL REVEAL ── */
@@ -1209,7 +1208,10 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       <div className="footer-bottom">
-        <div className="fb-logo">△ <span>LUCIFERA</span> · Studio</div>
+        <div className="fb-logo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/placeholders/LUCIFERA-Logo-Left-Neg.webp" alt="Lucifera Studio" />
+        </div>
         <div className="fb-note">Praha, Kampa · studio@lucifera.cz · Prémiová vizuální identita pro osobní značky</div>
       </div>
     </div>
