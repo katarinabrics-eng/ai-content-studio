@@ -1182,7 +1182,7 @@ export default function PremiovaVizualniIdentita() {
             <div className="team-card reveal reveal-d1">
               <div className="team-avatar">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_02.png" alt="Katarína" />
+                <img src="/placeholders/KDOJSEM_04.png" alt="Katarína" />
               </div>
               <div className="team-name">Katarína</div>
               <div className="team-role">Obraz · Strategie · AI</div>
@@ -1191,7 +1191,7 @@ export default function PremiovaVizualniIdentita() {
             <div className="team-card reveal reveal-d2">
               <div className="team-avatar">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_06.png" alt="Luboš" />
+                <img src="/placeholders/KDOJSEM_05.png" alt="Luboš" />
               </div>
               <div className="team-name">Luboš</div>
               <div className="team-role">Světlo · Kompozice · Technologie</div>
