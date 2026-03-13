@@ -8,7 +8,7 @@ const navItems = [
   { href: "/portrety", label: "Portréty" },
   { href: "/premiova-vizualni-identita", label: "Prémiová identita" },
   { href: "/premiova-vizualni-identita#faq", label: "FAQ" },
-  { href: "/#zaver", label: "Kontakt" },
+  { href: "/kontakt", label: "Kontakt" },
 ];
 
 export function Header() {
