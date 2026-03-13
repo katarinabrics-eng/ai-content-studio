@@ -60,14 +60,19 @@ export default function PremiovaVizualniIdentita() {
 
         /* ── HERO ── */
         .pvi-page .hero{
-          min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
+          position:relative;min-height:100vh;
+          display:flex;align-items:center;overflow:hidden;
+        }
+        .pvi-page .hero-container{
+          width:100%;max-width:1360px;margin:0 auto;
+          padding:80px 40px;position:relative;z-index:2;
         }
         .pvi-page .hero-left{
-          display:flex;flex-direction:column;justify-content:center;
-          padding:80px 56px 80px 64px;
+          display:flex;flex-direction:column;max-width:540px;
         }
-        .pvi-page .hero-left-inner{
-          max-width:520px;
+        .pvi-page .hero-right{
+          position:absolute;right:0;top:0;bottom:0;width:50%;
+          background:var(--black);overflow:hidden;
         }
         .pvi-page .hero-badge{
           display:inline-flex;align-items:center;gap:6px;
@@ -389,8 +394,8 @@ export default function PremiovaVizualniIdentita() {
 
       {/* HERO */}
       <section className="hero" style={{padding:0}}>
-        <div className="hero-left">
-          <div className="hero-left-inner">
+        <div className="hero-container">
+          <div className="hero-left">
             <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
             <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
             <p className="hero-sub">Přijdete do ateliéru. Odejdete s 500 fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
