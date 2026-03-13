@@ -824,9 +824,9 @@ export default function PremiovaVizualniIdentita() {
           border-radius:18px;padding:36px;text-align:center;
         }
         .pvi-page .team-avatar{
-          width:110px;height:110px;border-radius:50%;margin:0 auto 20px;
+          width:180px;height:180px;border-radius:50%;margin:0 auto 20px;
           overflow:hidden;border:2px solid rgba(255,255,255,0.1);
-          background:rgba(255,255,255,0.05);
+          background:#111;
         }
         .pvi-page .team-avatar img{
           width:100%;height:100%;object-fit:cover;object-position:center top;display:block;
@@ -1182,7 +1182,7 @@ export default function PremiovaVizualniIdentita() {
             <div className="team-card reveal reveal-d1">
               <div className="team-avatar">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_02.png" alt="Katarína" />
+                <img src="/placeholders/KDOJSEM_04.png" alt="Katarína" />
               </div>
               <div className="team-name">Katarína</div>
               <div className="team-role">Obraz · Strategie · AI</div>
@@ -1191,7 +1191,7 @@ export default function PremiovaVizualniIdentita() {
             <div className="team-card reveal reveal-d2">
               <div className="team-avatar">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_01.png" alt="Luboš" />
+                <img src="/placeholders/KDOJSEM_05.png" alt="Luboš" />
               </div>
               <div className="team-name">Luboš</div>
               <div className="team-role">Světlo · Kompozice · Technologie</div>
