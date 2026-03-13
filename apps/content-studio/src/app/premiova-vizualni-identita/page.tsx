@@ -1,8 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Header } from "../components/Header";
+
+const CAROUSEL_PHOTOS = [
+  "/placeholders/UKAZKY BRANDU/01.JPG",
+  "/placeholders/UKAZKY BRANDU/02.JPG",
+  "/placeholders/UKAZKY BRANDU/04.JPG",
+  "/placeholders/UKAZKY BRANDU/05.JPG",
+  "/placeholders/UKAZKY BRANDU/06.JPG",
+  "/placeholders/UKAZKY BRANDU/07.JPG",
+  "/placeholders/UKAZKY BRANDU/08.JPG",
+  "/placeholders/UKAZKY BRANDU/09.JPG",
+];
 
 export default function PremiovaVizualniIdentita() {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIdx((i) => (i + 1) % CAROUSEL_PHOTOS.length);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, []);
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
@@ -20,6 +40,8 @@ export default function PremiovaVizualniIdentita() {
   }, []);
 
   return (
+    <>
+    <Header />
     <div className="pvi-page">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
@@ -36,31 +58,16 @@ export default function PremiovaVizualniIdentita() {
         }
         html { scroll-behavior:smooth; }
 
-        /* ── NAV ── */
-        .pvi-page nav {
-          position:fixed;top:0;left:0;right:0;z-index:100;
-          padding:0 48px;height:60px;
-          display:flex;align-items:center;justify-content:space-between;
-          background:rgba(245,244,239,0.92);backdrop-filter:blur(20px);
-          border-bottom:1px solid rgba(0,0,0,0.06);
-        }
-        .pvi-page .nav-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:0.06em;}
-        .pvi-page .nav-logo span{color:var(--lime-dark);}
-        .pvi-page .nav-cta{
-          background:var(--black);color:#fff;padding:9px 22px;border-radius:8px;
-          font-size:13px;font-weight:600;cursor:pointer;border:none;
-          transition:all 0.2s;
-        }
-        .pvi-page .nav-cta:hover{background:var(--dark);}
-
         /* ── HERO ── */
         .pvi-page .hero{
           min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
-          padding-top:60px;
         }
         .pvi-page .hero-left{
           display:flex;flex-direction:column;justify-content:center;
-          padding:80px 64px 80px 80px;
+          padding:80px 56px 80px 64px;
+        }
+        .pvi-page .hero-left-inner{
+          max-width:520px;
         }
         .pvi-page .hero-badge{
           display:inline-flex;align-items:center;gap:6px;
@@ -93,30 +100,22 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .btn-secondary:hover{color:var(--black);}
         .pvi-page .hero-note{font-size:12px;color:#bbb;margin-top:6px;}
 
-        /* HERO RIGHT */
+        /* HERO RIGHT — CROSSFADE CAROUSEL */
         .pvi-page .hero-right{
           position:relative;background:var(--black);overflow:hidden;
         }
-        .pvi-page .hero-video-wrap{
-          position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        .pvi-page .carousel-img{
+          position:absolute;inset:0;width:100%;height:100%;
+          object-fit:cover;object-position:center top;
+          opacity:0;transition:opacity 1.4s ease;
+          pointer-events:none;
         }
-        .pvi-page .video-placeholder{
-          width:100%;height:100%;
-          background:
-            radial-gradient(ellipse at 30% 40%,rgba(180,232,66,0.06) 0%,transparent 60%),
-            radial-gradient(ellipse at 70% 70%,rgba(201,169,110,0.08) 0%,transparent 55%),
-            #0e0e0e;
-          display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+        .pvi-page .carousel-img.active{opacity:1;}
+        .pvi-page .carousel-overlay{
+          position:absolute;inset:0;pointer-events:none;
+          background:linear-gradient(to right,rgba(0,0,0,0.18) 0%,transparent 40%),
+                      linear-gradient(to top,rgba(0,0,0,0.35) 0%,transparent 50%);
         }
-        .pvi-page .play-btn{
-          width:72px;height:72px;border-radius:50%;
-          background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
-          display:flex;align-items:center;justify-content:center;
-          font-size:24px;cursor:pointer;transition:all 0.25s;
-          backdrop-filter:blur(8px);
-        }
-        .pvi-page .play-btn:hover{background:rgba(180,232,66,0.15);border-color:var(--lime-border);transform:scale(1.08);}
-        .pvi-page .video-label{font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;}
 
         /* FLOATING CARDS */
         .pvi-page .float-card{
@@ -387,31 +386,31 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .reveal-d4{transition-delay:0.4s;}
       `}</style>
 
-      {/* NAV */}
-      <nav>
-        <div className="nav-logo">△ <span>LUCIFERA</span></div>
-        <button className="nav-cta">Rezervovat hovor · 9 900 Kč →</button>
-      </nav>
-
       {/* HERO */}
       <section className="hero" style={{padding:0}}>
         <div className="hero-left">
-          <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
-          <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
-          <p className="hero-sub">Přijdete do ateliéru. Odejdete s 500 fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
-          <div className="hero-actions">
-            <button className="btn-primary">Spustit bezplatnou analýzu značky →</button>
-            <button className="btn-secondary">nebo Rezervovat strategický hovor ↓</button>
-            <div className="hero-note">Analýza webu · Zdarma · Výsledky za 2 minuty</div>
+          <div className="hero-left-inner">
+            <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
+            <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
+            <p className="hero-sub">Přijdete do ateliéru. Odejdete s 500 fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
+            <div className="hero-actions">
+              <button className="btn-primary">Spustit bezplatnou analýzu značky →</button>
+              <button className="btn-secondary">nebo Rezervovat strategický hovor ↓</button>
+              <div className="hero-note">Analýza webu · Zdarma · Výsledky za 2 minuty</div>
+            </div>
           </div>
         </div>
         <div className="hero-right">
-          <div className="hero-video-wrap">
-            <div className="video-placeholder">
-              <div className="play-btn">▶</div>
-              <div className="video-label">Podívejte se jak to funguje</div>
-            </div>
-          </div>
+          {CAROUSEL_PHOTOS.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt=""
+              className={`carousel-img${i === activeIdx ? " active" : ""}`}
+            />
+          ))}
+          <div className="carousel-overlay" />
           <div className="float-card fc-1">
             <div><span className="fc-dot"></span><span className="fc-title">Systém aktivní</span></div>
             <div className="fc-sub">Právě připravuje obsah</div>
@@ -692,5 +691,6 @@ export default function PremiovaVizualniIdentita() {
         <div className="fb-note">Praha, Kampa · studio@lucifera.cz · Prémiová vizuální identita pro osobní značky</div>
       </div>
     </div>
+    </>
   );
 }
