@@ -116,7 +116,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
           color: rgba(255,255,255,0.6); margin-bottom: 4px;
         }
         .vbd-shot-quote {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-playfair),serif;
           font-size: 22px; font-style: italic; color: rgba(255,255,255,0.85);
         }
         .vbd-outfit-pill {
@@ -131,7 +131,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
           position: absolute; top: 20px; right: 20px;
         }
         .vbd-score-num {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-playfair),serif;
           font-size: 32px; font-weight: 700; color: #a8eb12; line-height: 1;
         }
         .vbd-score-lbl {
@@ -169,7 +169,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
         }
         .vbd-stat { text-align: center; }
         .vbd-stat-num {
-          font-family: 'Cormorant Garamond', serif;
+          font-family: var(--font-playfair),serif;
           font-size: 20px; font-weight: 700; color: #a8eb12; line-height: 1;
         }
         .vbd-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
@@ -369,14 +369,12 @@ export default function PremiovaVizualniIdentita() {
     <Header />
     <div className="pvi-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
-
         .pvi-page {
           --lime:#b4e842; --lime-dark:#8fb82e; --lime-bg:rgba(180,232,66,0.08); --lime-border:rgba(180,232,66,0.25);
           --black:#0e0e0e; --dark:#1a1a1a; --cream:#f5f4ef; --sand:#ece9e1; --white:#fff;
           --gray:#888; --gray-light:#e0ddd5; --warm:#c9a96e;
           --r:16px;
-          font-family:'DM Sans',sans-serif;
+          font-family:var(--font-dm-sans),sans-serif;
           background:var(--cream);
           color:var(--black);
           overflow-x:hidden;
@@ -406,12 +404,12 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .hero-badge::before{content:'';width:24px;height:1px;background:var(--lime-dark);}
         .pvi-page h1{
-          font-family:'DM Sans',sans-serif;
-          font-size:clamp(40px,4.8vw,66px);font-weight:900;line-height:1.05;
+          font-family:var(--font-playfair),serif;
+          font-size:clamp(40px,4.8vw,66px);font-weight:700;line-height:1.05;
           letter-spacing:-0.03em;
           margin-bottom:24px;
         }
-        .pvi-page h1 em{font-style:italic;font-weight:900;color:var(--lime-dark);}
+        .pvi-page h1 em{font-style:italic;font-weight:400;color:var(--lime-dark);}
         .pvi-page .hero-sub{font-size:16px;color:#555;line-height:1.7;max-width:440px;margin-bottom:36px;}
         .pvi-page .hero-actions{display:flex;flex-direction:column;gap:10px;}
         .pvi-page .btn-primary{
@@ -460,12 +458,12 @@ export default function PremiovaVizualniIdentita() {
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
         .pvi-page .fc-title{font-size:11px;font-weight:700;color:var(--black);margin-bottom:2px;}
         .pvi-page .fc-sub{font-size:10px;color:var(--gray);}
-        .pvi-page .fc-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--lime-dark);line-height:1;}
+        .pvi-page .fc-num{font-family:var(--font-playfair),serif;font-size:28px;font-weight:700;color:var(--lime-dark);line-height:1;}
 
         /* ── SECTION BASE ── */
         .pvi-page section{padding:96px 80px;}
         .pvi-page .label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--lime-dark);margin-bottom:10px;}
-        .pvi-page h2{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,3.5vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px;}
+        .pvi-page h2{font-family:var(--font-playfair),serif;font-size:clamp(32px,3.5vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px;}
         .pvi-page h2 em{font-style:italic;font-weight:300;}
         .pvi-page .section-sub{font-size:15px;color:var(--gray);line-height:1.7;max-width:580px;}
 
@@ -475,7 +473,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .problem-left h2{color:#fff;}
         .pvi-page .problem-left h2 em{color:var(--lime);}
         .pvi-page .problem-quote{
-          font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;
+          font-family:var(--font-playfair),serif;font-size:28px;font-style:italic;
           color:rgba(255,255,255,0.4);line-height:1.4;
           border-left:2px solid var(--lime-border);padding-left:24px;margin-top:32px;
         }
@@ -521,7 +519,7 @@ export default function PremiovaVizualniIdentita() {
           background:var(--black);border:1px solid var(--lime-border);
           border-radius:10px;padding:10px 14px;text-align:center;
         }
-        .pvi-page .bm-score-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--lime);}
+        .pvi-page .bm-score-num{font-family:var(--font-playfair),serif;font-size:26px;font-weight:700;color:var(--lime);}
         .pvi-page .bm-score-label{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;}
 
         /* WOW TEXT */
@@ -558,7 +556,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .ph-when{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
         .pvi-page .ph-0 .ph-when{color:#bbb;}
         .pvi-page .ph-1 .ph-when,.pvi-page .ph-2 .ph-when{color:rgba(255,255,255,0.25);}
-        .pvi-page .ph-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1.2;margin-bottom:6px;}
+        .pvi-page .ph-title{font-family:var(--font-playfair),serif;font-size:24px;font-weight:700;line-height:1.2;margin-bottom:6px;}
         .pvi-page .ph-0 .ph-title{color:var(--black);}
         .pvi-page .ph-1 .ph-title,.pvi-page .ph-2 .ph-title{color:#fff;}
         .pvi-page .ph-price{font-size:13px;font-weight:600;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid;}
@@ -586,7 +584,7 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .del-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.08);}
         .pvi-page .del-icon{font-size:28px;margin-bottom:14px;}
-        .pvi-page .del-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--lime-dark);line-height:1;margin-bottom:4px;}
+        .pvi-page .del-num{font-family:var(--font-playfair),serif;font-size:36px;font-weight:700;color:var(--lime-dark);line-height:1;margin-bottom:4px;}
         .pvi-page .del-unit{font-size:11px;color:var(--gray);margin-bottom:10px;}
         .pvi-page .del-title{font-size:14px;font-weight:600;margin-bottom:6px;}
         .pvi-page .del-desc{font-size:12px;color:var(--gray);line-height:1.6;}
@@ -615,7 +613,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .pc-badge{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px;}
         .pvi-page .pc-entry .pc-badge{color:rgba(255,255,255,0.3);}
         .pvi-page .pc-full .pc-badge{color:var(--lime);}
-        .pvi-page .pc-price{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;line-height:1;margin-bottom:6px;}
+        .pvi-page .pc-price{font-family:var(--font-playfair),serif;font-size:48px;font-weight:700;line-height:1;margin-bottom:6px;}
         .pvi-page .pc-entry .pc-price{color:#fff;}
         .pvi-page .pc-full .pc-price{color:var(--lime);}
         .pvi-page .pc-period{font-size:13px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid;}
@@ -652,7 +650,7 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .scan-input{
           flex:1;border:none;background:none;font-size:14px;
-          font-family:'DM Sans',sans-serif;outline:none;color:var(--black);
+          font-family:var(--font-dm-sans),sans-serif;outline:none;color:var(--black);
         }
         .pvi-page .scan-input::placeholder{color:#bbb;}
         .pvi-page .scan-btn{
@@ -678,7 +676,7 @@ export default function PremiovaVizualniIdentita() {
           display:flex;align-items:center;justify-content:center;font-size:32px;
           background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
         }
-        .pvi-page .team-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;}
+        .pvi-page .team-name{font-family:var(--font-playfair),serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;}
         .pvi-page .team-role{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:12px;}
         .pvi-page .team-desc{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.65;}
 
@@ -701,7 +699,7 @@ export default function PremiovaVizualniIdentita() {
           background:var(--black);padding:24px 80px;
           display:flex;align-items:center;justify-content:space-between;
         }
-        .pvi-page .fb-logo{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em;}
+        .pvi-page .fb-logo{font-family:var(--font-playfair),serif;font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em;}
         .pvi-page .fb-logo span{color:var(--lime);}
         .pvi-page .fb-note{font-size:12px;color:rgba(255,255,255,0.2);}
 
@@ -800,7 +798,7 @@ export default function PremiovaVizualniIdentita() {
                 </div>
                 <div className="bm-cell bm-cell-sub bc-3">
                   <div style={{textAlign:"center"}}>
-                    <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"16px",color:"rgba(255,255,255,0.5)",fontStyle:"italic"}}>&ldquo;Vaše vize.&rdquo;</div>
+                    <div style={{fontFamily:"var(--font-playfair),serif",fontSize:"16px",color:"rgba(255,255,255,0.5)",fontStyle:"italic"}}>&ldquo;Vaše vize.&rdquo;</div>
                     <div style={{fontSize:"10px",color:"rgba(255,255,255,0.2)",marginTop:"4px"}}>Faceless záběr</div>
                   </div>
                 </div>
