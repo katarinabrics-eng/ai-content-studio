@@ -818,19 +818,22 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .team-inner{max-width:1200px;margin:0 auto;}
         .pvi-page .team-inner h2{color:#fff;text-align:center;margin-bottom:8px;}
         .pvi-page .team-inner .section-sub{color:rgba(255,255,255,0.3);text-align:center;margin:0 auto 56px;}
-        .pvi-page .team-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;}
+        .pvi-page .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:800px;margin:0 auto;}
         .pvi-page .team-card{
           background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
-          border-radius:18px;padding:32px;text-align:center;
+          border-radius:18px;padding:36px;text-align:center;
         }
         .pvi-page .team-avatar{
-          width:80px;height:80px;border-radius:50%;margin:0 auto 16px;
-          display:flex;align-items:center;justify-content:center;font-size:32px;
-          background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+          width:110px;height:110px;border-radius:50%;margin:0 auto 20px;
+          overflow:hidden;border:2px solid rgba(255,255,255,0.1);
+          background:rgba(255,255,255,0.05);
         }
-        .pvi-page .team-name{font-family:var(--font-playfair),serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;}
-        .pvi-page .team-role{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:12px;}
-        .pvi-page .team-desc{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.65;}
+        .pvi-page .team-avatar img{
+          width:100%;height:100%;object-fit:cover;object-position:center top;display:block;
+        }
+        .pvi-page .team-name{font-family:var(--font-playfair),serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:6px;}
+        .pvi-page .team-role{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:14px;}
+        .pvi-page .team-desc{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.7;}
 
         /* ── FOOTER CTA ── */
         .pvi-page .footer-cta{
@@ -1177,22 +1180,22 @@ export default function PremiovaVizualniIdentita() {
           <p className="section-sub">Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI. Jedno místo kde se to celé skládá dohromady.</p>
           <div className="team-grid">
             <div className="team-card reveal reveal-d1">
-              <div className="team-avatar">📷</div>
+              <div className="team-avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/KDOJSEM_02.png" alt="Katarína" />
+              </div>
               <div className="team-name">Katarína</div>
-              <div className="team-role">Obraz &amp; Strategie</div>
-              <div className="team-desc">26 let fotografie, videa a vizuální identity. Stovky značek. Komerční banka, Vodafone, Oriflame. Ateliér na Praze Kampě.</div>
+              <div className="team-role">Obraz · Strategie · AI</div>
+              <div className="team-desc">26 let práce s fotografií a vizuální tvorbou. Projekce pro divadla, festivaly a konference. Dnes propojuje vizuální tvorbu s AI technologiemi a vytváří procesy, které klientům šetří čas a zjednodušují práci s obsahem.</div>
             </div>
             <div className="team-card reveal reveal-d2">
-              <div className="team-avatar">⚡</div>
+              <div className="team-avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/KDOJSEM_01.png" alt="Luboš" />
+              </div>
               <div className="team-name">Luboš</div>
-              <div className="team-role">Systémy &amp; AI</div>
-              <div className="team-desc">26 let v technologiích. Skládá desítky AI nástrojů do jednoho funkčního celku. Systém který pracuje místo vás.</div>
-            </div>
-            <div className="team-card reveal reveal-d3">
-              <div className="team-avatar">✨</div>
-              <div className="team-name">Eska</div>
-              <div className="team-role">Duše &amp; Kresba</div>
-              <div className="team-desc">Kousek skutečného života který dává obsahu duši. Ilustrace, kresby, vizuální svět který AI sama nevymyslí.</div>
+              <div className="team-role">Světlo · Kompozice · Technologie</div>
+              <div className="team-desc">26 let ve fotografii, filmu a postprodukci. Technický fotograf, který řeší světlo, kompozici a kvalitu obrazu – aby každý výstup fungoval profesionálně v každém médiu.</div>
             </div>
           </div>
         </div>
