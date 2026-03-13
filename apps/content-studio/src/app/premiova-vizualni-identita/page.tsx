@@ -462,8 +462,9 @@ export default function PremiovaVizualniIdentita() {
 
         /* FLOATING CARDS */
         .pvi-page .float-card{
-          position:absolute;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);
-          border-radius:12px;padding:14px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.25);
+          position:absolute;background:rgba(255,255,255,0.97);backdrop-filter:blur(16px);
+          border-radius:16px;padding:18px 24px;box-shadow:0 16px 48px rgba(0,0,0,0.28),0 2px 8px rgba(0,0,0,0.1);
+          min-width:160px;
         }
         .pvi-page .fc-1{bottom:80px;left:32px;animation:float1 4s ease-in-out infinite;}
         .pvi-page .fc-2{top:100px;right:32px;animation:float2 5s ease-in-out infinite;}
@@ -471,11 +472,11 @@ export default function PremiovaVizualniIdentita() {
         @keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
         @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
         @keyframes float3{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-        .pvi-page .fc-dot{width:7px;height:7px;border-radius:50%;background:var(--lime);display:inline-block;margin-right:6px;animation:pulse 1.8s ease infinite;}
+        .pvi-page .fc-dot{width:9px;height:9px;border-radius:50%;background:var(--lime);display:inline-block;margin-right:8px;animation:pulse 1.8s ease infinite;}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-        .pvi-page .fc-title{font-size:11px;font-weight:700;color:var(--black);margin-bottom:2px;}
-        .pvi-page .fc-sub{font-size:10px;color:var(--gray);}
-        .pvi-page .fc-num{font-family:var(--font-playfair),serif;font-size:28px;font-weight:700;color:var(--lime-dark);line-height:1;}
+        .pvi-page .fc-title{font-size:13px;font-weight:700;color:var(--black);margin-bottom:3px;}
+        .pvi-page .fc-sub{font-size:12px;color:var(--gray);}
+        .pvi-page .fc-num{font-family:var(--font-playfair),serif;font-size:38px;font-weight:700;color:var(--lime-dark);line-height:1;}
 
         /* ── SECTION BASE ── */
         .pvi-page section{padding:96px 80px;}
