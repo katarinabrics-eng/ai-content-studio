@@ -91,7 +91,7 @@ export function Header() {
             className="rounded-lg px-4 py-2.5 text-sm font-semibold sm:px-5"
             style={{ background: "#b7e94c", color: "#111" }}
           >
-            Domluvit konzultaci
+            Vybrat termín
           </a>
         </div>
       </div>
