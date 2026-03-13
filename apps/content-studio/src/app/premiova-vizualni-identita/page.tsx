@@ -935,23 +935,27 @@ export default function PremiovaVizualniIdentita() {
               <div className="pc-period">Kč · Strategický hovor + Vizuální board</div>
               <ul className="pc-items">
                 <li>Analýza vaší online přítomnosti</li>
-                <li>Strategický hovor 90 minut</li>
-                <li>20stránková prezentace značky</li>
-                <li>Vizuální board s vaší podobou</li>
-                <li>3 Canva šablony</li>
+                <li>Strategický hovor 60 minut</li>
+                <li>20stránková prezentace – Marketingový plán a strategie</li>
+                <li>Vizuál board vašich budoucích fotografií</li>
+                <li>3 Canva šablony vycházející z vaší Brand DNA</li>
               </ul>
               <button className="pc-btn">Rezervovat hovor →</button>
             </div>
             <div className="price-card pc-full">
               <div className="pc-badge">Krok 1 + 2 · Komplet</div>
-              <div className="pc-price">49 900</div>
+              <div className="pc-price">39 900</div>
               <div className="pc-period">Kč · Hovor + Focení + Výstupy</div>
               <ul className="pc-items">
                 <li>Vše ze Kroku 1</li>
                 <li>Den focení v ateliéru Praha Kampa</li>
-                <li>500+ fotografií · 5 stylů</li>
-                <li>B-roll video záběry</li>
-                <li>Měsíc autopilotu zdarma</li>
+                <li>5 stylů focení — každý cca 20 fotografií</li>
+                <li>10 faceless fotek pro grafiku a kampaně</li>
+                <li>1 minuta b-rollu pro Reels a video</li>
+                <li>Focení přesně dle vizuálního boardu!</li>
+                <li>Prostor pro improvizaci a nápady</li>
+                <li>Za příplatek: promo video, Reels, grafika</li>
+                <li>Měsíc autopilota zdarma (vstup do naší aplikace)</li>
               </ul>
               <button className="pc-btn">Chci kompletní spolupráci →</button>
             </div>
