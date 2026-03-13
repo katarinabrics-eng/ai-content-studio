@@ -718,7 +718,7 @@ export default function PremiovaVizualniIdentita() {
           <div className="hero-left">
             <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
             <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
-            <p className="hero-sub">Přijdete do ateliéru. Odejdete s 500 fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
+            <p className="hero-sub">Přijdete do ateliéru. Odejdete s cca 150 pečlivě vybranými fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
             <div className="hero-actions">
               <button className="btn-primary">Spustit bezplatnou analýzu značky →</button>
               <button className="btn-secondary">nebo Rezervovat strategický hovor ↓</button>
@@ -742,8 +742,8 @@ export default function PremiovaVizualniIdentita() {
             <div className="fc-sub">Právě připravuje obsah</div>
           </div>
           <div className="float-card fc-2" style={{textAlign:"center"}}>
-            <div className="fc-num">500+</div>
-            <div className="fc-sub">fotek z jednoho dne</div>
+            <div className="fc-num">~150</div>
+            <div className="fc-sub">fotek pečlivě vybraných</div>
           </div>
           <div className="float-card fc-3">
             <div className="fc-title" style={{marginBottom:"4px"}}>Týdenní výstupy</div>
@@ -835,7 +835,7 @@ export default function PremiovaVizualniIdentita() {
               <div className="ph-price">9 900 Kč · Bez závazku focení</div>
               <ul className="ph-items">
                 <li><strong>Analýza vaší online přítomnosti</strong> — web, Instagram, LinkedIn</li>
-                <li><strong>Strategický hovor 90 minut</strong> — co chcete říkat a komu</li>
+                <li><strong>Strategický hovor 60 minut</strong> — co chcete říkat a komu</li>
                 <li><strong>20stránková prezentace</strong> rozvoje značky a kampaní</li>
                 <li><strong>Vizuální board s vaší podobou</strong> — náhledovky jak budete vypadat</li>
                 <li><strong>3 Canva šablony na míru</strong> s ukázkou v reálných příspěvcích</li>
@@ -847,7 +847,7 @@ export default function PremiovaVizualniIdentita() {
               <div className="ph-title" style={{color:"#fff"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
               <div className="ph-price">Cena dle rozsahu</div>
               <ul className="ph-items">
-                <li><strong>5 stylů focení</strong> — každý 15 fotografií</li>
+                <li><strong>5 stylů focení</strong> — každý cca 20 fotografií</li>
                 <li><strong>10 faceless fotek</strong> pro grafiku a kampaně</li>
                 <li><strong>1 minuta b-rollu</strong> pro Reels a LinkedIn video</li>
                 <li>Focení přesně dle vizuálního boardu</li>
@@ -882,10 +882,10 @@ export default function PremiovaVizualniIdentita() {
           <div className="del-grid">
             <div className="del-card reveal reveal-d1">
               <div className="del-icon">📷</div>
-              <div className="del-num">500+</div>
-              <div className="del-unit">fotografií z jednoho dne</div>
-              <div className="del-title">5 stylů · 15 fotek každý</div>
-              <div className="del-desc">Portréty, pracovní momenty, detail záběry, faceless — vše dle vizuálního boardu.</div>
+              <div className="del-num">~150</div>
+              <div className="del-unit">fotek pečlivě vybraných</div>
+              <div className="del-title">5 stylů · cca 20 fotek každý</div>
+              <div className="del-desc">Portréty, pracovní momenty, detail záběry, faceless — vše pečlivě vybrané dle vizuálního boardu.</div>
             </div>
             <div className="del-card reveal reveal-d2">
               <div className="del-icon">🎬</div>
@@ -1011,7 +1011,7 @@ export default function PremiovaVizualniIdentita() {
       <section className="footer-cta">
         <div className="label reveal">Jeden krok</div>
         <h2 className="reveal">Váš obsah nemůže čekat,<br /><em>až ho zákazník pochopí.</em></h2>
-        <p className="section-sub reveal">Strategický hovor trvá 90 minut. Výsledek pracuje za vás měsíce dopředu.</p>
+        <p className="section-sub reveal">Strategický hovor trvá 60 minut. Výsledek pracuje za vás měsíce dopředu.</p>
         <button className="btn-primary reveal">Rezervovat hovor · 9 900 Kč →</button>
         <div className="footer-note reveal">nebo začněte bezplatnou analýzou značky — žádný závazek</div>
       </section>
