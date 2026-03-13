@@ -324,6 +324,16 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
   );
 }
 
+const WOW_PHOTOS = [
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/01.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/02.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/03.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/04.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg",
+];
+
 const CAROUSEL_PHOTOS = [
   "/placeholders/UKAZKY BRANDU/01.JPG",
   "/placeholders/UKAZKY BRANDU/02.JPG",
@@ -337,6 +347,7 @@ const CAROUSEL_PHOTOS = [
 
 export default function PremiovaVizualniIdentita() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [wowIdx, setWowIdx] = useState(0);
   const [showDashboard, setShowDashboard] = useState(false);
   const openDashboard = useCallback(() => setShowDashboard(true), []);
   const closeDashboard = useCallback(() => setShowDashboard(false), []);
@@ -345,6 +356,12 @@ export default function PremiovaVizualniIdentita() {
     const timer = setInterval(() => {
       setActiveIdx((i) => (i + 1) % CAROUSEL_PHOTOS.length);
     }, 3800);
+    return () => clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWowIdx((i) => (i + 1) % WOW_PHOTOS.length);
+    }, 3200);
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
@@ -493,22 +510,60 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .wow-inner{max-width:1200px;margin:0 auto;}
         .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px;}
 
-        /* BOARD MOCKUP */
-        .pvi-page .board-mockup{
-          background:var(--black);border-radius:20px;padding:24px;
-          box-shadow:0 32px 80px rgba(0,0,0,0.2);position:relative;overflow:hidden;
+        /* WOW PHOTO FRAME — Mac-style */
+        .pvi-page .wow-frame{
+          border-radius:16px;overflow:hidden;
+          background:#1c1c1e;
+          box-shadow:0 40px 100px rgba(0,0,0,0.28),0 8px 32px rgba(0,0,0,0.14),0 0 0 1px rgba(255,255,255,0.06);
+          position:relative;
         }
-        .pvi-page .bm-header{display:flex;align-items:center;gap:6px;margin-bottom:18px;}
-        .pvi-page .bm-dot{width:9px;height:9px;border-radius:50%;}
-        .pvi-page .bm-title{font-size:11px;color:rgba(255,255,255,0.25);margin-left:8px;letter-spacing:0.06em;}
-        .pvi-page .bm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-        .pvi-page .bm-cell{border-radius:12px;overflow:hidden;position:relative;}
-        .pvi-page .bm-cell-main{grid-column:span 2;height:200px;}
-        .pvi-page .bm-cell-sub{height:120px;}
-        .pvi-page .bc-1{background:radial-gradient(ellipse at 35% 40%,#c9a96e 0%,#1a1208 70%);display:flex;align-items:flex-end;padding:12px;}
-        .pvi-page .bc-2{background:linear-gradient(135deg,#e8d5b0 0%,#c9a96e 100%);}
-        .pvi-page .bc-3{background:#1a2820;display:flex;align-items:center;justify-content:center;}
-        .pvi-page .bc-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.6);letter-spacing:0.08em;text-transform:uppercase;}
+        .pvi-page .wf-titlebar{
+          display:flex;align-items:center;gap:6px;
+          padding:11px 16px;background:#2a2a2c;
+          border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .pvi-page .wf-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+        .pvi-page .wf-label{
+          flex:1;text-align:center;font-size:11px;letter-spacing:0.04em;
+          color:rgba(255,255,255,0.25);margin-left:-28px;
+        }
+        .pvi-page .wf-photos{
+          position:relative;width:100%;aspect-ratio:4/3;background:#111;overflow:hidden;
+        }
+        .pvi-page .wf-photo{
+          position:absolute;inset:0;width:100%;height:100%;
+          object-fit:cover;object-position:center top;
+          opacity:0;transition:opacity 1.1s ease;
+        }
+        .pvi-page .wf-photo.active{opacity:1;}
+        .pvi-page .wf-overlay{
+          position:absolute;inset:0;pointer-events:none;
+          background:linear-gradient(to top,rgba(0,0,0,0.45) 0%,transparent 55%);
+        }
+        .pvi-page .wf-caption{
+          position:absolute;bottom:14px;left:16px;right:16px;
+          display:flex;align-items:center;justify-content:space-between;
+        }
+        .pvi-page .wf-cap-label{
+          font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+          color:rgba(255,255,255,0.55);font-weight:600;
+        }
+        .pvi-page .wf-dots{display:flex;gap:5px;align-items:center;}
+        .pvi-page .wf-dot-nav{
+          width:5px;height:5px;border-radius:50%;
+          background:rgba(255,255,255,0.25);transition:all 0.3s;cursor:pointer;border:none;padding:0;
+        }
+        .pvi-page .wf-dot-nav.active{background:#fff;width:16px;border-radius:3px;}
+        .pvi-page .wf-badge{
+          position:absolute;top:14px;right:14px;
+          background:rgba(0,0,0,0.55);backdrop-filter:blur(12px);
+          border:1px solid rgba(255,255,255,0.1);
+          border-radius:8px;padding:7px 12px;text-align:center;
+        }
+        .pvi-page .wf-badge-num{font-family:var(--font-playfair),serif;font-size:22px;font-weight:700;color:var(--lime);line-height:1;}
+        .pvi-page .wf-badge-lbl{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:2px;}
+
+        /* BOARD MOCKUP (kept for possible reuse) */
         .pvi-page .bm-outfit-tag{
           position:absolute;top:10px;right:10px;
           background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);
@@ -777,29 +832,43 @@ export default function PremiovaVizualniIdentita() {
           <div className="label reveal">Naše největší přednost</div>
           <h2 className="reveal">Víte jak budete vypadat<br /><em>ještě před focením.</em></h2>
           <div className="wow-grid">
-            <div className="board-mockup reveal">
-              <div className="bm-header">
-                <div className="bm-dot" style={{background:"#ff5f57"}}></div>
-                <div className="bm-dot" style={{background:"#ffbd2e"}}></div>
-                <div className="bm-dot" style={{background:"#28c940"}}></div>
-                <div className="bm-title">Vizuální board · Jana Procházková · Před focením</div>
+            <div className="wow-frame reveal">
+              {/* Mac titlebar */}
+              <div className="wf-titlebar">
+                <div className="wf-dot" style={{background:"#ff5f57"}}/>
+                <div className="wf-dot" style={{background:"#ffbd2e"}}/>
+                <div className="wf-dot" style={{background:"#28c940"}}/>
+                <div className="wf-label">Vizuální board · Jana Procházková · Preview</div>
               </div>
-              <div className="bm-grid">
-                <div className="bm-cell bm-cell-main bc-1">
-                  <div className="bc-label">Tmavé sako · Ateliér Kampa · Záběr č. 1</div>
-                  <div className="bm-outfit-tag">Outfit A · Tmavě zelená</div>
-                  <div className="bm-score">
-                    <div className="bm-score-num">87</div>
-                    <div className="bm-score-label">Brand skóre</div>
-                  </div>
+              {/* Photo carousel */}
+              <div className="wf-photos">
+                {WOW_PHOTOS.map((src, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={src}
+                    src={src}
+                    alt=""
+                    className={`wf-photo${i === wowIdx ? " active" : ""}`}
+                  />
+                ))}
+                <div className="wf-overlay"/>
+                {/* Brand score badge */}
+                <div className="wf-badge">
+                  <div className="wf-badge-num">87</div>
+                  <div className="wf-badge-lbl">Brand skóre</div>
                 </div>
-                <div className="bm-cell bm-cell-sub bc-2">
-                  <div className="bm-outfit-tag" style={{color:"rgba(0,0,0,0.5)"}}>Detail · ruce + notes</div>
-                </div>
-                <div className="bm-cell bm-cell-sub bc-3">
-                  <div style={{textAlign:"center"}}>
-                    <div style={{fontFamily:"var(--font-playfair),serif",fontSize:"16px",color:"rgba(255,255,255,0.5)",fontStyle:"italic"}}>&ldquo;Vaše vize.&rdquo;</div>
-                    <div style={{fontSize:"10px",color:"rgba(255,255,255,0.2)",marginTop:"4px"}}>Faceless záběr</div>
+                {/* Caption + nav dots */}
+                <div className="wf-caption">
+                  <span className="wf-cap-label">Vizuální board · ukázka</span>
+                  <div className="wf-dots">
+                    {WOW_PHOTOS.map((_, i) => (
+                      <button
+                        key={i}
+                        className={`wf-dot-nav${i === wowIdx ? " active" : ""}`}
+                        onClick={() => setWowIdx(i)}
+                        aria-label={`Foto ${i + 1}`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
