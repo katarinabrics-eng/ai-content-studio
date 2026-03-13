@@ -50,8 +50,8 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
         .vbd-window {
           background: #0e0e0e;
           border-radius: 20px;
-          width: 100%;
-          max-width: 1120px;
+          width: calc(100vw - 48px);
+          max-width: 1480px;
           max-height: calc(100vh - 48px);
           overflow: hidden;
           display: flex;
@@ -69,8 +69,8 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
         .vbd-title { font-size: 12px; color: rgba(255,255,255,0.22); margin-left: 10px; letter-spacing: 0.05em; }
         .vbd-body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
         .vbd-sidebar {
-          width: 240px; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.06);
-          overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 6px;
+          width: 210px; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.06);
+          overflow-y: auto; padding: 16px 10px; display: flex; flex-direction: column; gap: 6px;
         }
         .vbd-sidebar::-webkit-scrollbar { width: 4px; }
         .vbd-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
