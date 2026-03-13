@@ -1,7 +1,328 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Header } from "../components/Header";
+
+// ─────────────────────────────────────────────
+// VIZUÁLNÍ BOARD DEMO — contact-sheet overlay
+// ─────────────────────────────────────────────
+const CONTACT_SHOTS = [
+  { id: 1, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/01.jpg", label: "Portrét · Tmavé sako", outfit: "Outfit A · Tmavě zelená", score: 87, main: true },
+  { id: 2, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/02.jpg", label: "Detail · ruce + notes", outfit: "Outfit A", main: false },
+  { id: 3, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/03.jpg", label: "Faceless záběr", quote: "Vaše vize.", main: false },
+  { id: 4, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/04.jpg", label: "Exteriér · Kampa", outfit: "Outfit B · Krémová", score: 92, main: true },
+  { id: 5, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg", label: "Portrét blízko", main: false },
+  { id: 6, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg", label: "Pohybový záběr", main: false },
+  { id: 7, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg", label: "Pracovní detail", outfit: "Outfit C · Antracit", main: false },
+];
+
+const PALETTE = [
+  { name: "Hluboká zelená", hex: "#1C2E25", role: "Hlavní" },
+  { name: "Krémová", hex: "#E8DFC8", role: "Světlý akcent" },
+  { name: "Zlatavá", hex: "#C9A84C", role: "Detail" },
+  { name: "Antracit", hex: "#2A2A2A", role: "Neutrál" },
+  { name: "Plátno", hex: "#F5F3EE", role: "Pozadí" },
+];
+
+function VizualniDashboard({ onClose }: { onClose: () => void }) {
+  const [activeShot, setActiveShot] = useState(0);
+  const [animIn, setAnimIn] = useState(false);
+
+  useEffect(() => {
+    requestAnimationFrame(() => setAnimIn(true));
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
+
+  const shot = CONTACT_SHOTS[activeShot];
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      background: "rgba(8,8,8,0.92)", backdropFilter: "blur(16px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: "24px",
+      opacity: animIn ? 1 : 0, transition: "opacity 0.35s ease",
+    }}>
+      <style>{`
+        .vbd-window {
+          background: #0e0e0e;
+          border-radius: 20px;
+          width: 100%;
+          max-width: 1120px;
+          max-height: calc(100vh - 48px);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
+          transform: ${animIn ? "translateY(0) scale(1)" : "translateY(32px) scale(0.97)"};
+          transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+        }
+        .vbd-titlebar {
+          display: flex; align-items: center; gap: 8px;
+          padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+          flex-shrink: 0;
+        }
+        .vbd-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .vbd-title { font-size: 12px; color: rgba(255,255,255,0.22); margin-left: 10px; letter-spacing: 0.05em; }
+        .vbd-body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+        .vbd-sidebar {
+          width: 240px; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.06);
+          overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 6px;
+        }
+        .vbd-sidebar::-webkit-scrollbar { width: 4px; }
+        .vbd-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+        .vbd-thumb {
+          border-radius: 10px; overflow: hidden; cursor: pointer;
+          position: relative; aspect-ratio: 4/3;
+          border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s;
+          background: #1a1a1a;
+        }
+        .vbd-thumb:hover { transform: scale(1.02); }
+        .vbd-thumb.active { border-color: rgba(180,232,66,0.7); }
+        .vbd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .vbd-thumb-label {
+          position: absolute; bottom: 0; left: 0; right: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+          padding: 12px 8px 6px;
+          font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .vbd-thumb-num {
+          position: absolute; top: 6px; left: 8px;
+          font-size: 9px; color: rgba(255,255,255,0.3); font-weight: 700;
+        }
+        .vbd-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .vbd-preview { flex: 1; position: relative; overflow: hidden; background: #111; min-height: 0; }
+        .vbd-preview img {
+          width: 100%; height: 100%; object-fit: cover; object-position: center top;
+          display: block;
+          transition: opacity 0.3s ease;
+        }
+        .vbd-preview-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 40%, transparent 70%);
+          pointer-events: none;
+        }
+        .vbd-preview-info {
+          position: absolute; bottom: 0; left: 0; right: 0;
+          padding: 24px 28px;
+          display: flex; align-items: flex-end; justify-content: space-between;
+        }
+        .vbd-shot-label {
+          font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+          color: rgba(255,255,255,0.6); margin-bottom: 4px;
+        }
+        .vbd-shot-quote {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 22px; font-style: italic; color: rgba(255,255,255,0.85);
+        }
+        .vbd-outfit-pill {
+          background: rgba(0,0,0,0.65); backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.12);
+          padding: 6px 14px; border-radius: 20px;
+          font-size: 11px; color: rgba(255,255,255,0.75); white-space: nowrap;
+        }
+        .vbd-score-badge {
+          background: #0e0e0e; border: 1px solid rgba(180,232,66,0.3);
+          border-radius: 12px; padding: 12px 16px; text-align: center;
+          position: absolute; top: 20px; right: 20px;
+        }
+        .vbd-score-num {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 32px; font-weight: 700; color: #a8eb12; line-height: 1;
+        }
+        .vbd-score-lbl {
+          font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase;
+          color: rgba(255,255,255,0.25); margin-top: 4px;
+        }
+        .vbd-bottom {
+          flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.06);
+          padding: 16px 20px; display: flex; gap: 12px; align-items: center;
+        }
+        .vbd-palette-swatch {
+          width: 36px; height: 36px; border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+          cursor: default; position: relative;
+          transition: transform 0.15s;
+        }
+        .vbd-palette-swatch:hover { transform: scale(1.15); }
+        .vbd-palette-swatch:hover .vbd-swatch-tip {
+          opacity: 1; transform: translateY(-4px);
+        }
+        .vbd-swatch-tip {
+          position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%) translateY(0);
+          background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 6px; padding: 4px 8px; white-space: nowrap;
+          font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 0.05em;
+          opacity: 0; transition: opacity 0.15s, transform 0.15s;
+          pointer-events: none;
+        }
+        .vbd-bottomlabel {
+          font-size: 10px; color: rgba(255,255,255,0.2);
+          letter-spacing: 0.12em; text-transform: uppercase; margin-right: 4px;
+        }
+        .vbd-stats {
+          margin-left: auto; display: flex; gap: 20px; align-items: center;
+        }
+        .vbd-stat { text-align: center; }
+        .vbd-stat-num {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 20px; font-weight: 700; color: #a8eb12; line-height: 1;
+        }
+        .vbd-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+        .vbd-nav-btn {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          width: 36px; height: 36px; border-radius: 50%;
+          background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+          border: 1px solid rgba(255,255,255,0.12); color: #fff;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; font-size: 14px; transition: background 0.15s;
+          z-index: 2;
+        }
+        .vbd-nav-btn:hover { background: rgba(0,0,0,0.75); }
+        .vbd-nav-prev { left: 14px; }
+        .vbd-nav-next { right: 14px; }
+        .vbd-close {
+          position: absolute; top: 14px; right: 14px; z-index: 10;
+          width: 32px; height: 32px; border-radius: 50%;
+          background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.5); cursor: pointer; display: flex;
+          align-items: center; justify-content: center; font-size: 16px;
+          transition: background 0.15s, color 0.15s;
+        }
+        .vbd-close:hover { background: rgba(255,255,255,0.14); color: #fff; }
+        .vbd-header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .vbd-badge-live {
+          display: flex; align-items: center; gap: 6px;
+          font-size: 10px; color: rgba(180,232,66,0.7); letter-spacing: 0.1em;
+        }
+        .vbd-live-dot {
+          width: 6px; height: 6px; border-radius: 50%; background: #a8eb12;
+          animation: vbdPulse 1.8s ease infinite;
+        }
+        @keyframes vbdPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .vbd-side-section { margin-top: 8px; }
+        .vbd-side-lbl {
+          font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+          color: rgba(255,255,255,0.2); padding: 0 4px; margin-bottom: 6px;
+        }
+      `}</style>
+
+      {/* Backdrop click to close */}
+      <div style={{ position: "absolute", inset: 0 }} onClick={onClose} />
+
+      <div className="vbd-window" style={{ position: "relative" }}>
+        {/* Titlebar */}
+        <div className="vbd-titlebar">
+          <div className="vbd-dot" style={{ background: "#ff5f57" }} onClick={onClose} title="Zavřít" role="button" tabIndex={0} />
+          <div className="vbd-dot" style={{ background: "#ffbd2e" }} />
+          <div className="vbd-dot" style={{ background: "#28c940" }} />
+          <div className="vbd-title">Vizuální board · Jana Procházková · Před focením · Lucifera Studio</div>
+          <div className="vbd-header-right">
+            <div className="vbd-badge-live"><span className="vbd-live-dot" />Ukázka výstupu</div>
+            <button className="vbd-close" onClick={onClose} aria-label="Zavřít">✕</button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="vbd-body">
+          {/* Sidebar — contact sheet thumbnails */}
+          <div className="vbd-sidebar">
+            <div className="vbd-side-lbl">Kontaktní sheet</div>
+            {CONTACT_SHOTS.map((s, i) => (
+              <div
+                key={s.id}
+                className={`vbd-thumb${activeShot === i ? " active" : ""}`}
+                onClick={() => setActiveShot(i)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.src} alt={s.label} />
+                <div className="vbd-thumb-num">#{String(s.id).padStart(2, "0")}</div>
+                <div className="vbd-thumb-label">{s.label}</div>
+              </div>
+            ))}
+            <div className="vbd-side-section">
+              <div className="vbd-side-lbl" style={{ marginTop: 12 }}>Barevná paleta</div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "0 4px" }}>
+                {PALETTE.map((c) => (
+                  <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex, width: 28, height: 28 }}>
+                    <div className="vbd-swatch-tip">{c.name}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Main preview */}
+          <div className="vbd-main">
+            <div className="vbd-preview">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img key={shot.src} src={shot.src} alt={shot.label} />
+              <div className="vbd-preview-overlay" />
+
+              {/* Nav arrows */}
+              <button
+                className="vbd-nav-btn vbd-nav-prev"
+                onClick={() => setActiveShot((i) => (i - 1 + CONTACT_SHOTS.length) % CONTACT_SHOTS.length)}
+                aria-label="Předchozí"
+              >‹</button>
+              <button
+                className="vbd-nav-btn vbd-nav-next"
+                onClick={() => setActiveShot((i) => (i + 1) % CONTACT_SHOTS.length)}
+                aria-label="Další"
+              >›</button>
+
+              {/* Score badge */}
+              {shot.score && (
+                <div className="vbd-score-badge">
+                  <div className="vbd-score-num">{shot.score}</div>
+                  <div className="vbd-score-lbl">Brand skóre</div>
+                </div>
+              )}
+
+              {/* Bottom info */}
+              <div className="vbd-preview-info">
+                <div>
+                  <div className="vbd-shot-label">#{String(shot.id).padStart(2, "0")} · {shot.label}</div>
+                  {shot.quote && <div className="vbd-shot-quote">&ldquo;{shot.quote}&rdquo;</div>}
+                </div>
+                {shot.outfit && <div className="vbd-outfit-pill">{shot.outfit}</div>}
+              </div>
+            </div>
+
+            {/* Bottom bar — palette + stats */}
+            <div className="vbd-bottom">
+              <span className="vbd-bottomlabel">Paleta</span>
+              {PALETTE.map((c) => (
+                <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex }}>
+                  <div className="vbd-swatch-tip">{c.name} · {c.role}</div>
+                </div>
+              ))}
+              <div className="vbd-stats">
+                <div className="vbd-stat"><div className="vbd-stat-num">7</div><div className="vbd-stat-lbl">záběrů</div></div>
+                <div className="vbd-stat"><div className="vbd-stat-num">3</div><div className="vbd-stat-lbl">outfity</div></div>
+                <div className="vbd-stat"><div className="vbd-stat-num" style={{ fontSize: 14 }}>Ke schválení</div><div className="vbd-stat-lbl">status</div></div>
+                <div style={{
+                  background: "rgba(180,232,66,0.1)", border: "1px solid rgba(180,232,66,0.25)",
+                  borderRadius: 8, padding: "8px 16px",
+                  fontSize: 12, fontWeight: 600, color: "#a8eb12", cursor: "pointer",
+                  transition: "background 0.15s",
+                }}
+                  onClick={onClose}
+                >
+                  Chci taky takový board →
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const CAROUSEL_PHOTOS = [
   "/placeholders/UKAZKY BRANDU/01.JPG",
@@ -16,6 +337,9 @@ const CAROUSEL_PHOTOS = [
 
 export default function PremiovaVizualniIdentita() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const openDashboard = useCallback(() => setShowDashboard(true), []);
+  const closeDashboard = useCallback(() => setShowDashboard(false), []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,6 +365,7 @@ export default function PremiovaVizualniIdentita() {
 
   return (
     <>
+    {showDashboard && <VizualniDashboard onClose={closeDashboard} />}
     <Header />
     <div className="pvi-page">
       <style>{`
@@ -107,9 +432,6 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .hero-note{font-size:12px;color:#bbb;margin-top:6px;}
 
         /* HERO RIGHT — CROSSFADE CAROUSEL */
-        .pvi-page .hero-right{
-          position:relative;background:var(--black);overflow:hidden;
-        }
         .pvi-page .carousel-img{
           position:absolute;inset:0;width:100%;height:100%;
           object-fit:cover;object-position:center top;
@@ -494,7 +816,7 @@ export default function PremiovaVizualniIdentita() {
                 <div className="ws"><div className="ws-num">3</div><div className="ws-text"><strong>Vyberete co se vám líbí.</strong> A přesně tak pak focení proběhne.</div></div>
                 <div className="ws"><div className="ws-num">4</div><div className="ws-text"><strong>Výsledek je garantovaný.</strong> Žádné překvapení. Žádné fotky které pak nechcete použít.</div></div>
               </div>
-              <button className="btn-primary">Chci vidět ukázku →</button>
+              <button className="btn-primary" onClick={openDashboard}>Chci vidět ukázku →</button>
             </div>
           </div>
         </div>
