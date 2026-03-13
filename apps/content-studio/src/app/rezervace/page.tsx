@@ -454,6 +454,7 @@ export default function RezervacePage() {
                                           padding: "7px 14px", border: `1.5px solid ${sel ? LIME : "#e8e7e2"}`,
                                           borderRadius: 8, cursor: "pointer", fontSize: 13,
                                           background: sel ? "#f6ffde" : "#fafaf8",
+                                          color: "#333",
                                           fontWeight: sel ? 600 : 400, transition: "all 0.15s",
                                         }}>
                                           <input type="radio" name={`${service.id}-${field.id}`} value={opt} checked={sel}
