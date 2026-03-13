@@ -161,18 +161,15 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
           pointer-events: none;
         }
         .vbd-bottomlabel {
-          font-size: 10px; color: rgba(255,255,255,0.2);
-          letter-spacing: 0.12em; text-transform: uppercase; margin-right: 4px;
+          font-size: 8px; color: rgba(255,255,255,0.25);
+          letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 5px;
         }
-        .vbd-stats {
-          margin-left: auto; display: flex; gap: 20px; align-items: center;
+        .vbd-bottom-block {
+          display: flex; flex-direction: column; flex-shrink: 0;
         }
-        .vbd-stat { text-align: center; }
-        .vbd-stat-num {
-          font-family: var(--font-playfair),serif;
-          font-size: 20px; font-weight: 700; color: #a8eb12; line-height: 1;
+        .vbd-bottom-sep {
+          width: 1px; background: rgba(255,255,255,0.07); align-self: stretch; flex-shrink: 0;
         }
-        .vbd-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
         .vbd-nav-btn {
           position: absolute; top: 50%; transform: translateY(-50%);
           width: 36px; height: 36px; border-radius: 50%;
@@ -299,23 +296,76 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               </div>
             </div>
 
-            {/* Bottom bar — palette + stats */}
+            {/* Bottom bar — outfits / props / mood / CTA */}
             <div className="vbd-bottom">
-              <span className="vbd-bottomlabel">Paleta</span>
-              {PALETTE.map((c) => (
-                <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex }}>
-                  <div className="vbd-swatch-tip">{c.name} · {c.role}</div>
+
+              {/* Paleta */}
+              <div className="vbd-bottom-block">
+                <div className="vbd-bottomlabel">Paleta</div>
+                <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+                  {PALETTE.map((c) => (
+                    <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex, width: 22, height: 22, borderRadius: 6 }}>
+                      <div className="vbd-swatch-tip">{c.name}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              <div className="vbd-stats">
-                <div className="vbd-stat"><div className="vbd-stat-num">7</div><div className="vbd-stat-lbl">záběrů</div></div>
-                <div className="vbd-stat"><div className="vbd-stat-num">3</div><div className="vbd-stat-lbl">outfity</div></div>
-                <div className="vbd-stat"><div className="vbd-stat-num" style={{ fontSize: 14 }}>Ke schválení</div><div className="vbd-stat-lbl">status</div></div>
+              </div>
+
+              <div className="vbd-bottom-sep" />
+
+              {/* Outfity */}
+              <div className="vbd-bottom-block">
+                <div className="vbd-bottomlabel">Outfity</div>
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                  {["Burgundy šaty", "Blush halenka", "Tmavý kabát"].map((o) => (
+                    <span key={o} style={{
+                      fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)",
+                      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 20, padding: "3px 9px", whiteSpace: "nowrap",
+                    }}>{o}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="vbd-bottom-sep" />
+
+              {/* Rekvizity */}
+              <div className="vbd-bottom-block">
+                <div className="vbd-bottomlabel">Rekvizity</div>
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                  {["Svíčky", "Staré knihy", "Keramický šálek", "Křeslo"].map((r) => (
+                    <span key={r} style={{
+                      fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)",
+                      background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 20, padding: "3px 9px", whiteSpace: "nowrap",
+                    }}>{r}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="vbd-bottom-sep" />
+
+              {/* Nálada */}
+              <div className="vbd-bottom-block">
+                <div className="vbd-bottomlabel">Nálada</div>
+                <div style={{ display: "flex", gap: 5 }}>
+                  {["Mystická", "Intimní", "Teplá"].map((n) => (
+                    <span key={n} style={{
+                      fontSize: 10, fontWeight: 600, color: "rgba(180,232,66,0.7)",
+                      background: "rgba(180,232,66,0.06)", border: "1px solid rgba(180,232,66,0.15)",
+                      borderRadius: 20, padding: "3px 9px", whiteSpace: "nowrap",
+                    }}>{n}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div style={{ marginLeft: "auto", flexShrink: 0 }}>
                 <div style={{
                   background: "rgba(180,232,66,0.1)", border: "1px solid rgba(180,232,66,0.25)",
-                  borderRadius: 8, padding: "8px 16px",
+                  borderRadius: 8, padding: "9px 18px",
                   fontSize: 12, fontWeight: 600, color: "#a8eb12", cursor: "pointer",
-                  transition: "background 0.15s",
+                  whiteSpace: "nowrap", transition: "background 0.15s",
                 }}
                   onClick={onClose}
                 >
