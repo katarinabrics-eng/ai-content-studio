@@ -76,11 +76,12 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .hero-badge::before{content:'';width:24px;height:1px;background:var(--lime-dark);}
         .pvi-page h1{
-          font-family:'Cormorant Garamond',serif;
-          font-size:clamp(44px,5vw,68px);font-weight:700;line-height:1.08;
+          font-family:'DM Sans',sans-serif;
+          font-size:clamp(40px,4.8vw,66px);font-weight:900;line-height:1.05;
+          letter-spacing:-0.03em;
           margin-bottom:24px;
         }
-        .pvi-page h1 em{font-style:italic;font-weight:300;color:var(--lime-dark);}
+        .pvi-page h1 em{font-style:italic;font-weight:900;color:var(--lime-dark);}
         .pvi-page .hero-sub{font-size:16px;color:#555;line-height:1.7;max-width:440px;margin-bottom:36px;}
         .pvi-page .hero-actions{display:flex;flex-direction:column;gap:10px;}
         .pvi-page .btn-primary{
