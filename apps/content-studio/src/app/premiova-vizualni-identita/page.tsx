@@ -567,6 +567,46 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .wow-inner{max-width:1200px;margin:0 auto;}
         .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px;}
 
+        /* WOW FRAME WRAPPER — before photos + arrows */
+        .pvi-page .wow-frame-wrap{
+          position:relative;
+          padding-left:140px;
+        }
+        .pvi-page .wow-pred-card{
+          position:absolute;
+          background:#fff;
+          padding:7px 7px 26px 7px;
+          border-radius:4px;
+          box-shadow:0 12px 36px rgba(0,0,0,0.22),0 3px 10px rgba(0,0,0,0.1);
+          width:118px;
+          z-index:10;
+        }
+        .pvi-page .wow-pred-card img{
+          width:100%;height:108px;
+          object-fit:cover;object-position:center top;
+          display:block;
+        }
+        .pvi-page .wow-pred-label{
+          text-align:center;font-size:9px;font-weight:700;
+          letter-spacing:0.1em;color:#bbb;text-transform:uppercase;
+          margin-top:7px;
+        }
+        .pvi-page .wow-pred-1{
+          top:50px;left:-14px;
+          transform:rotate(-7deg);
+          animation:float1 4.5s ease-in-out infinite;
+        }
+        .pvi-page .wow-pred-2{
+          top:220px;left:8px;
+          transform:rotate(5deg);
+          animation:float2 5s ease-in-out infinite;
+        }
+        .pvi-page .wow-arrow{
+          position:absolute;z-index:11;pointer-events:none;overflow:visible;
+        }
+        .pvi-page .wow-arrow-1{top:110px;left:82px;width:80px;height:56px;}
+        .pvi-page .wow-arrow-2{top:300px;left:96px;width:72px;height:52px;}
+
         /* WOW PHOTO FRAME — Mac-style */
         .pvi-page .wow-frame{
           border-radius:16px;overflow:hidden;
@@ -889,7 +929,32 @@ export default function PremiovaVizualniIdentita() {
           <div className="label reveal">Naše největší přednost</div>
           <h2 className="reveal">Víte jak budete vypadat<br /><em>ještě před focením.</em></h2>
           <div className="wow-grid">
-            <div className="wow-frame reveal">
+            <div className="wow-frame-wrap reveal">
+              {/* Before photo 1 */}
+              <div className="wow-pred-card wow-pred-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/VIZUALBOARD-CONTACTSHEET/VERU PRED.jpg" alt="Veronika před focením" />
+                <div className="wow-pred-label">Před</div>
+              </div>
+              {/* Arrow 1 */}
+              <svg className="wow-arrow wow-arrow-1" viewBox="0 0 80 56" fill="none">
+                <path d="M8,48 C20,48 38,14 72,10" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                <path d="M65,4 L74,11 L63,17" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              {/* Before photo 2 */}
+              <div className="wow-pred-card wow-pred-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/VIZUALBOARD-CONTACTSHEET/VERU PRED2.jpg" alt="Veronika před focením" />
+                <div className="wow-pred-label">Před</div>
+              </div>
+              {/* Arrow 2 */}
+              <svg className="wow-arrow wow-arrow-2" viewBox="0 0 72 52" fill="none">
+                <path d="M10,44 C22,44 40,14 66,10" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                <path d="M60,4 L68,11 L57,16" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+
+              {/* Mac window frame */}
+              <div className="wow-frame">
               {/* Mac titlebar */}
               <div className="wf-titlebar">
                 <div className="wf-dot" style={{background:"#ff5f57"}}/>
@@ -929,7 +994,8 @@ export default function PremiovaVizualniIdentita() {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>{/* /wow-frame */}
+            </div>{/* /wow-frame-wrap */}
             <div className="wow-text reveal reveal-d2">
               <div className="label">Vizuální board s vaší podobou</div>
               <h2>AI náhledovky.<br /><em>Váš obličej. Váš styl.</em></h2>
