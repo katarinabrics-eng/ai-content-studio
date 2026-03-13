@@ -838,7 +838,7 @@ export default function PremiovaVizualniIdentita() {
                 <div className="wf-dot" style={{background:"#ff5f57"}}/>
                 <div className="wf-dot" style={{background:"#ffbd2e"}}/>
                 <div className="wf-dot" style={{background:"#28c940"}}/>
-                <div className="wf-label">Vizuální board · Jana Procházková · Preview</div>
+                <div className="wf-label">Veronika</div>
               </div>
               {/* Photo carousel */}
               <div className="wf-photos">
