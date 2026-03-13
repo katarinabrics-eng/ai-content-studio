@@ -17,11 +17,11 @@ const CONTACT_SHOTS = [
 ];
 
 const PALETTE = [
-  { name: "Hluboká zelená", hex: "#1C2E25", role: "Hlavní" },
-  { name: "Krémová", hex: "#E8DFC8", role: "Světlý akcent" },
-  { name: "Zlatavá", hex: "#C9A84C", role: "Detail" },
-  { name: "Antracit", hex: "#2A2A2A", role: "Neutrál" },
-  { name: "Plátno", hex: "#F5F3EE", role: "Pozadí" },
+  { name: "Burgundy", hex: "#7D0021", role: "Hlavní" },
+  { name: "Blush", hex: "#C799A1", role: "Světlý akcent" },
+  { name: "Lion", hex: "#B28F70", role: "Detail" },
+  { name: "Seasalt", hex: "#FAFAFA", role: "Pozadí" },
+  { name: "Eerie Black", hex: "#171717", role: "Neutrál" },
 ];
 
 function VizualniDashboard({ onClose }: { onClose: () => void }) {
@@ -220,7 +220,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
           <div className="vbd-dot" style={{ background: "#ff5f57" }} onClick={onClose} title="Zavřít" role="button" tabIndex={0} />
           <div className="vbd-dot" style={{ background: "#ffbd2e" }} />
           <div className="vbd-dot" style={{ background: "#28c940" }} />
-          <div className="vbd-title">Vizuální board · Jana Procházková · Před focením · Lucifera Studio</div>
+          <div className="vbd-title">Vizuální board · Veronika · Před focením · Lucifera Studio</div>
           <div className="vbd-header-right">
             <div className="vbd-badge-live"><span className="vbd-live-dot" />Ukázka výstupu</div>
             <button className="vbd-close" onClick={onClose} aria-label="Zavřít">✕</button>
@@ -246,10 +246,16 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
             ))}
             <div className="vbd-side-section">
               <div className="vbd-side-lbl" style={{ marginTop: 12 }}>Barevná paleta</div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "0 4px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "0 4px" }}>
                 {PALETTE.map((c) => (
-                  <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex, width: 28, height: 28 }}>
-                    <div className="vbd-swatch-tip">{c.name}</div>
+                  <div key={c.hex} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div className="vbd-palette-swatch" style={{ background: c.hex, width: 28, height: 28, flexShrink: 0 }}>
+                      <div className="vbd-swatch-tip">{c.name} · {c.role}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.75)", letterSpacing: "0.04em" }}>{c.name}</div>
+                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.06em" }}>{c.hex}</div>
+                    </div>
                   </div>
                 ))}
               </div>
