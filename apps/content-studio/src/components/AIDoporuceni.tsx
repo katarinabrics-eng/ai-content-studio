@@ -77,25 +77,15 @@ export default function AIDoporuceni({ strategists = [], onSpustit, loading = fa
               {/* Důvod */}
               <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.5, marginBottom: 14 }}>{s.reason}</div>
 
-              {/* Tlačítko */}
-              <button
-                type="button"
-                onClick={() => onSpustit?.(s.id)}
-                disabled={loading}
-                style={{
-                  padding: "6px 16px",
-                  borderRadius: 7,
-                  border: `1px solid ${s.color}70`,
-                  background: "transparent",
-                  color: s.color,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  opacity: loading ? 0.7 : 1,
-                }}
-              >
-                {loading ? "◈ Generuji strategii…" : "Spustit →"}
-              </button>
+              {/* CTA text */}
+              <p style={{
+                fontSize: "0.8125rem",
+                color: "#888",
+                fontStyle: "italic",
+                margin: "0.5rem 0 0",
+              }}>
+                Víc se dozvíte na vstupním hovoru.
+              </p>
             </div>
           ))
         )}
