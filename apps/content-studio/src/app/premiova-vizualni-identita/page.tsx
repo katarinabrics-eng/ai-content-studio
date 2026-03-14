@@ -879,8 +879,8 @@ export default function PremiovaVizualniIdentita() {
             <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
             <p className="hero-sub">Přijdete do ateliéru. Odejdete s cca 150 pečlivě vybranými fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
             <div className="hero-actions">
-              <button className="btn-primary">Spustit bezplatnou analýzu značky →</button>
-              <button className="btn-secondary">nebo Rezervovat strategický hovor ↓</button>
+              <a href="/diagnostika" className="btn-primary" style={{textDecoration:"none"}}>Spustit bezplatnou analýzu značky →</a>
+              <a href="/rezervace" className="btn-secondary" style={{textDecoration:"none"}}>nebo Rezervovat strategický hovor ↓</a>
               <div className="hero-note">Analýza webu · Zdarma · Výsledky za 2 minuty</div>
             </div>
           </div>
@@ -1170,8 +1170,29 @@ export default function PremiovaVizualniIdentita() {
           <h2 className="reveal">Zjistěte kde vaše značka<br /><em>ztrácí zákazníky.</em></h2>
           <p className="section-sub reveal">Zadejte adresu webu. Za dvě minuty víte přesně na čem pracovat — a zda má smysl se potkat.</p>
           <div className="scan-input-wrap reveal">
-            <input className="scan-input" type="url" placeholder="vasweb.cz" />
-            <button className="scan-btn">Spustit analýzu →</button>
+            <input
+              id="scan-url-input"
+              className="scan-input"
+              type="url"
+              placeholder="vasweb.cz"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const val = (document.getElementById("scan-url-input") as HTMLInputElement)?.value?.trim();
+                  if (val) window.location.href = `/diagnostika?url=${encodeURIComponent(val)}`;
+                  else window.location.href = "/diagnostika";
+                }
+              }}
+            />
+            <button
+              className="scan-btn"
+              onClick={() => {
+                const val = (document.getElementById("scan-url-input") as HTMLInputElement)?.value?.trim();
+                if (val) window.location.href = `/diagnostika?url=${encodeURIComponent(val)}`;
+                else window.location.href = "/diagnostika";
+              }}
+            >
+              Spustit analýzu →
+            </button>
           </div>
           <div className="scan-note reveal">Zdarma · Bez registrace · Výsledky okamžitě</div>
         </div>
