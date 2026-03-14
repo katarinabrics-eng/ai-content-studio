@@ -4,13 +4,13 @@ const LIME = "#b7e94c";
 
 const POSTS = [
   {
-    img: "/placeholders/PRED:PO/PO.png",
+    img: "/placeholders/pred-po/PO.png",
     headline: "Vaše fotka je váš\nprvní dojem.\njako profík.",
     product: "START PACK –\n6 profesionálně\nretušovaných fotografií",
     caption: "studiolucifera První dojem rozhoduje za méně než 50 ms. Vaše fotka mluví dřív než vy. →",
   },
   {
-    img: "/placeholders/PRED:PO/PO2.png",
+    img: "/placeholders/pred-po/PO2.png",
     headline: "Už žádná trapná\nselfie na vašem\nLinkedIn profilu.",
     product: "START PACK –\n6 profesionálně\nretušovaných fotografií",
     caption: "studiolucifera LinkedIn s profesionální fotkou = 14× více zobrazení. Fakt. →",
