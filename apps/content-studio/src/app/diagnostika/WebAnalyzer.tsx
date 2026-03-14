@@ -155,7 +155,7 @@ export function WebAnalyzer({
         @media (max-width: 560px) { .analyzer-checklist-wrap { flex-direction: column; align-items: center; gap: 12px; } }
       `}</style>
       {showIntro && (
-        <section className="relative max-w-4xl mx-auto mb-20 px-6">
+        <section className="relative max-w-4xl mx-auto mb-10 md:mb-20 px-4 sm:px-6">
           <div className="absolute inset-0 -z-20 blur-[100px] opacity-25 rounded-full scale-150" style={{ background: `radial-gradient(ellipse 80% 50% at 50% 70%, ${lightTokens.accent}50, transparent 70%)` }} />
           <div className="absolute inset-0 -z-10 blur-3xl opacity-40 rounded-full" style={{ background: `linear-gradient(to right, ${lightTokens.accent}60, ${lightTokens.accent}60)` }} />
           <div className="text-center mb-10">
@@ -196,7 +196,7 @@ export function WebAnalyzer({
               </p>
             </div>
           </div>
-          <div className="rounded-3xl p-10 backdrop-blur-xl border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
+          <div className="rounded-3xl p-5 sm:p-10 backdrop-blur-xl border" style={{ background: lightTokens.card, borderColor: lightTokens.border }}>
             <p className="text-sm uppercase tracking-widest mb-6" style={{ color: lightTokens.muted }}>Jak to probíhá</p>
             <div className="grid md:grid-cols-3 gap-6 text-sm">
               <div className="rounded-2xl p-6 border" style={{ background: lightTokens.bg, borderColor: lightTokens.border }}>
@@ -242,7 +242,7 @@ export function WebAnalyzer({
         </div>
       )}
 
-      <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-10" : ""} style={diagnostika ? { background: isBrandScan ? "transparent" : "#ffffff", border: isBrandScan ? "none" : `1px solid ${CARD_BORDER}` } : C.card}>
+      <div className={diagnostika ? "backdrop-blur-xl rounded-3xl p-5 sm:p-10" : ""} style={diagnostika ? { background: isBrandScan ? "transparent" : "#ffffff", border: isBrandScan ? "none" : `1px solid ${CARD_BORDER}` } : C.card}>
         {diagnostika && (
           <div className="flex justify-center mb-6">
             <div className="inline-flex rounded-full p-1.5 border" style={{ background: lightTokens.bg, borderColor: "rgba(0,0,0,0.1)" }}>

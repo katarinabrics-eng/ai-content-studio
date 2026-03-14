@@ -631,18 +631,27 @@ export function StartAnalyzer({
         .analyzer-inp:focus{border-color:#b7e94c!important;box-shadow:0 0 0 3px rgba(183,233,76,0.18)!important}
         .analyzer-inp::placeholder{color:#bbbbbb}
         .manual-pill:hover:not(:disabled){box-shadow:0 0 24px rgba(183,233,76,0.15);border-color:rgba(183,233,76,0.4)!important}
+        @media (max-width: 768px) {
+          .analyzer-header-badge { display: none !important; }
+          .analyzer-grid-2col { grid-template-columns: 1fr !important; }
+          .analyzer-main-wrap { padding-left: 16px !important; padding-right: 16px !important; padding-top: 28px !important; }
+        }
+        @media (max-width: 480px) {
+          .analyzer-main-wrap { padding-left: 12px !important; padding-right: 12px !important; padding-top: 20px !important; padding-bottom: 32px !important; }
+          .analyzer-header-text { font-size: 10px !important; }
+        }
       `}</style>
 
       <header style={{ borderBottom: "1px solid rgba(0,0,0,0.09)", padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(183,233,76,0.12)", border: "1px solid rgba(183,233,76,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#5a8a00" }}>L</div>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555" }}>Lucifera <span style={{ color: "#b7e94c" }}>·</span> AI Content System</span>
-        <span style={{ marginLeft: "auto", fontSize: 10, color: "#555", background: "#f0efeb", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
+        <span className="analyzer-header-badge" style={{ marginLeft: "auto", fontSize: 10, color: "#555", background: "#f0efeb", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
       </header>
 
       {phase === "loading" && diagnostika && <ScanRitualLoading />}
 
       {phase === "nameForm" && diagnostika && result && (
-        <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
+        <div className="analyzer-main-wrap max-w-screen-xl mx-auto px-8 pt-11 pb-20">
           {saveError && (
             <div role="alert" style={{ background: "rgba(220,80,80,0.12)", borderBottom: "1px solid rgba(220,80,80,0.3)", padding: "12px 22px", color: "#e8a0a0", fontSize: 13 }}>
               {saveError}
@@ -744,7 +753,7 @@ export function StartAnalyzer({
           />
         </>
       ) : (
-      <div className="max-w-screen-xl mx-auto px-8 pt-11 pb-20">
+      <div className="analyzer-main-wrap max-w-screen-xl mx-auto px-8 pt-11 pb-20">
 
         {phase === "input" && (
           <WebAnalyzer
@@ -930,7 +939,7 @@ export function StartAnalyzer({
                 <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="screenshot" style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(0,0,0,0.09)", maxHeight: 260, objectFit: "cover", objectPosition: "top" }} />
               </div>
             )}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div className="analyzer-grid-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
               <div style={{ ...C.card, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, margin: 0 }}>
                 <ScoreRing score={score} />
                 <p style={{ fontSize: 10, color: "#555", textAlign: "center", wordBreak: "break-all" }}>{scraped?.url}</p>

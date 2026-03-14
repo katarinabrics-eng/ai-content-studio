@@ -23,7 +23,7 @@ export default function HomePage() {
             background: "linear-gradient(to right, rgba(245,245,245,0.95) 0%, rgba(245,245,245,0.85) 35%, rgba(245,245,245,0.3) 60%, rgba(245,245,245,0) 80%)",
           }}
         />
-        <div className="relative z-[2] mx-auto flex min-h-[90vh] w-full max-w-[1360px] flex-col justify-center px-6 xl:px-10">
+        <div className="relative z-[2] mx-auto flex min-h-[90vh] w-full max-w-[1360px] flex-col justify-center px-6 pt-20 pb-12 xl:px-10 md:pt-0 md:pb-0">
           <div className="max-w-[600px]">
           <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
             Řídíme váš vizuální obraz.
@@ -32,10 +32,10 @@ export default function HomePage() {
             Studio Lucifera je prostor, kde se podnikatelé, experti i osobnosti přestávají vizuálně podceňovat.{" "}
             <strong className="text-zinc-900">Neprodukujeme obsah. Nastavujeme pozici.</strong>
           </p>
-          <div className="mt-12 flex flex-col gap-4">
+          <div className="mt-10 md:mt-12 flex flex-col gap-4">
             <a
               href="#sluzby"
-              className="inline-block w-fit rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+              className="inline-block w-full sm:w-fit rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 text-center sm:text-left"
             >
               Prozkoumat služby
             </a>
@@ -54,7 +54,7 @@ export default function HomePage() {
       </section>
 
       {/* BLOK 2: Koncept Kreativního dvora */}
-      <section className="w-full py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
+      <section className="w-full py-14 md:py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]">
             <h2 className="font-bold leading-[1.08] text-[#111111]" style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "32px" }}>
@@ -77,9 +77,9 @@ export default function HomePage() {
       </section>
 
       {/* BLOK 3: Rozcestí služeb – 3 pilíře */}
-      <section id="sluzby" className="w-full bg-white py-[140px]">
+      <section id="sluzby" className="w-full bg-white py-14 md:py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 gap-16 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-12 md:gap-16 md:grid-cols-3">
             <div className="flex flex-col border-t border-stone-200 pt-8">
               <div className="overflow-hidden rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] mb-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -132,7 +132,7 @@ export default function HomePage() {
       </section>
 
       {/* BLOK 4: O nás – Zkušenost a kontext */}
-      <section className="w-full py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
+      <section className="w-full py-14 md:py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]">
             <h2 className="font-bold leading-[1.08] text-[#111111]" style={{ fontSize: "clamp(2rem, 4.5vw, 52px)", marginBottom: "28px" }}>
@@ -154,7 +154,7 @@ export default function HomePage() {
       </section>
 
       {/* BLOK 5: Inovace a Akademie */}
-      <section className="w-full bg-white py-[140px]">
+      <section className="w-full bg-white py-14 md:py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]">
             <p className="text-[22px] font-bold leading-[1.35] text-[#111111]">
@@ -177,14 +177,14 @@ export default function HomePage() {
       </section>
 
       {/* BLOK 6: Závěrečné CTA */}
-      <section id="zaver" className="w-full bg-[#111111] px-6 py-24 sm:px-8 lg:py-32">
+      <section id="zaver" className="w-full bg-[#111111] px-6 py-16 sm:px-8 lg:py-32">
         <div className="mx-auto max-w-[640px] text-center">
           <h2 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl md:leading-[1.15]">
             Čitelnost je otázka rozhodnutí.
           </h2>
           <a
             href="/brand-scan"
-            className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+            className="mt-10 inline-block w-full sm:w-auto rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
           >
             Spustit Brand Scan →
           </a>

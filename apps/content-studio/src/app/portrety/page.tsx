@@ -16,9 +16,9 @@ export default function PortretyPage() {
       <Header />
 
       {/* BLOK 1: HERO – Asymetrický, text vlevo, vizuál vpravo */}
-      <section className="w-full bg-white py-[140px]">
+      <section className="w-full bg-white pt-12 pb-12 md:py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
               <h1 className="font-sans font-black text-[clamp(2rem,5.2vw,4.5rem)] leading-[0.92] tracking-[-0.035em] text-zinc-900">
                 Portrét, který nese vaši pozici.
@@ -28,7 +28,7 @@ export default function PortretyPage() {
               </p>
               <Link
                 href="#kalendar"
-                className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+                className="mt-8 inline-block w-full sm:w-auto rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 text-center sm:text-left"
               >
                 Rezervovat termín
               </Link>
@@ -50,7 +50,7 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 2: UVĚDOMĚNÍ – Text vlevo, portrét vpravo */}
-      <section className="w-full py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
+      <section className="w-full py-14 md:py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6">
@@ -78,7 +78,7 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 3: GALERIE STANDARDU – Grid 2×2 */}
-      <section className="w-full bg-white py-[140px]">
+      <section className="w-full bg-white py-14 md:py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="max-w-[720px]" style={{ marginBottom: "56px" }}>
             <h2
@@ -98,9 +98,9 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 4: METODIKA – 3 sloupce, limetková linka */}
-      <section className="w-full py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
+      <section className="w-full py-14 md:py-[140px]" style={{ backgroundColor: "#F7F8F5" }}>
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="max-w-[720px]" style={{ marginBottom: "56px" }}>
+          <div className="max-w-[720px]" style={{ marginBottom: "40px" }}>
             <h2
               className="font-bold leading-[1.08] text-[#111111]"
               style={{ fontSize: "clamp(2rem, 4.5vw, 52px)" }}
@@ -108,7 +108,7 @@ export default function PortretyPage() {
               Jak přemýšlíme
             </h2>
           </div>
-          <div className="grid grid-cols-1 gap-14 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-10 md:gap-14 md:grid-cols-3">
             <div>
               <div className="mb-5 h-[2px] w-10 rounded-full bg-[#A8EB12]" aria-hidden />
               <h3 className="text-[22px] font-bold leading-tight text-[#111111]">Psychologie přítomnosti</h3>
@@ -135,7 +135,7 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 4b: PORTRÉT V PROSTŘEDÍ – Vizuál vlevo, text a nabídka vpravo */}
-      <section className="w-full bg-white py-[140px]">
+      <section className="w-full bg-white py-14 md:py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-6 order-2 lg:order-1">
@@ -189,7 +189,7 @@ export default function PortretyPage() {
                 </p>
                 <Link
                   href="/rezervace?from=portret"
-                  className="mt-8 inline-block rounded-lg border-2 border-[#111111] px-8 py-3.5 text-base font-semibold text-[#111111] hover:bg-[#111111] hover:text-white transition-colors"
+                  className="mt-8 inline-block w-full sm:w-auto rounded-lg border-2 border-[#111111] px-8 py-3.5 text-base font-semibold text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-center sm:text-left"
                 >
                   Rezervovat focení v prostředí
                 </Link>
@@ -200,7 +200,7 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 5: NABÍDKA – Autorský portrét + karusel vpravo */}
-      <section className="w-full bg-white py-[140px]">
+      <section className="w-full bg-white py-14 md:py-[140px]">
         <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
             <div
@@ -237,7 +237,7 @@ export default function PortretyPage() {
               </p>
               <Link
                 href="#kalendar"
-                className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+                className="mt-10 inline-block w-full sm:w-auto rounded-lg bg-[#A8EB12] px-8 py-3.5 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90 text-center sm:text-left"
               >
                 Rezervovat termín
               </Link>
@@ -253,9 +253,9 @@ export default function PortretyPage() {
       </section>
 
       {/* Výběr termínu – jednotný BookingCalendar (theme light, reserve flow) */}
-      <section id="kalendar" className="w-full bg-white py-16 md:py-24">
-        <div className="mx-auto max-w-[1360px] px-6 xl:px-10">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-10 shadow-xl">
+      <section id="kalendar" className="w-full bg-white py-12 md:py-24">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-6 xl:px-10">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-10 shadow-xl">
             <BookingCalendar
               service="portret"
               theme="light"
@@ -267,7 +267,7 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 6: KDY PORTRÉT NESTAČÍ – Cross-sell */}
-      <section className="w-full bg-[#111111] px-6 py-24 sm:px-8 lg:py-32">
+      <section className="w-full bg-[#111111] px-6 py-16 sm:px-8 lg:py-32">
         <div className="mx-auto max-w-[720px] text-center">
           <h2
             className="font-bold leading-[1.1] text-white"
@@ -280,7 +280,7 @@ export default function PortretyPage() {
           </p>
           <Link
             href="/premiova-vizualni-identita"
-            className="mt-10 inline-block rounded-lg border-2 border-white px-8 py-3.5 text-base font-semibold text-white hover:bg-white hover:text-[#111111] transition-colors"
+            className="mt-10 inline-block w-full sm:w-auto rounded-lg border-2 border-white px-8 py-3.5 text-base font-semibold text-white hover:bg-white hover:text-[#111111] transition-colors text-center"
           >
             Zjistit více o Prémiové identitě
           </Link>
@@ -288,14 +288,14 @@ export default function PortretyPage() {
       </section>
 
       {/* BLOK 7: ZÁVĚREČNÉ CTA */}
-      <section className="w-full bg-white py-[140px]">
+      <section className="w-full bg-white py-14 md:py-[140px]">
         <div className="mx-auto max-w-[640px] text-center px-6">
           <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#111111] sm:text-4xl md:text-5xl md:leading-[1.15]">
             Silná pozice začíná<br />u obrazu.
           </h2>
           <Link
             href="#kalendar"
-            className="mt-10 inline-block rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
+            className="mt-10 inline-block w-full sm:w-auto rounded-lg bg-[#A8EB12] px-8 py-4 text-base font-semibold text-zinc-900 hover:bg-[#A8EB12]/90"
           >
             Chci svůj portrét
           </Link>
