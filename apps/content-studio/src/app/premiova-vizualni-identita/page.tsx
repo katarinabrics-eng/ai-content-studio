@@ -1175,9 +1175,10 @@ export default function PremiovaVizualniIdentita() {
       {/* TEAM */}
       <section className="team">
         <div className="team-inner">
-          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Za Luciferous stojí</div>
+          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Kdo je duší a srdcem Studia Lucifera</div>
           <h2>52 let zkušeností.<br /><em>Nejsme agentura. Jsme studio.</em></h2>
-          <p className="section-sub">Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI. Jedno místo kde se to celé skládá dohromady.</p>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:620,margin:"0 auto 16px"}}>Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI.<br />Jedno místo, kde se to celé skládá dohromady.</p>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:560,margin:"0 auto 56px",fontStyle:"italic",color:"rgba(255,255,255,0.35)"}}>Lucifera je nositelkou světla. Přinášíme ho tam, kde má vaše práce začít zářit.</p>
           <div className="team-grid">
             <div className="team-card reveal reveal-d1">
               <div className="team-avatar">
