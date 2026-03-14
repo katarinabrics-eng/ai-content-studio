@@ -395,6 +395,14 @@ const CAROUSEL_PHOTOS = [
   "/placeholders/ukazky-brandu-new/Coverpremium01.jpg",
   "/placeholders/ukazky-brandu-new/Coverpremium02.jpg",
   "/placeholders/ukazky-brandu-new/Coverpremium03.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium04.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium05.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium06.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium07.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium08.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium09.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium10.jpg",
+  "/placeholders/ukazky-brandu-new/Coverpremium11.jpg",
 ];
 
 export default function PremiovaVizualniIdentita() {
