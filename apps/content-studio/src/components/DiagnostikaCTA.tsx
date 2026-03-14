@@ -20,7 +20,7 @@ export default function DiagnostikaCTA() {
             <li>3 Canva šablony na míru s ukázkou v reálných příspěvcích</li>
           </ul>
           <a
-            href="/rezervace?from=premiova&step=calendar"
+            href="/rezervace?open=identita"
             className="cta-tlacitko"
           >
             Rezervovat vstupní hovor →
