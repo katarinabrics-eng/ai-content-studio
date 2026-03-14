@@ -89,21 +89,27 @@ export default function DiagnostikaDemo() {
   ];
 
   return (
-    <section style={{ background: "#f7f6f1", borderRadius: 24, padding: "40px 32px 36px", margin: "0 0 64px", overflow: "hidden" }}>
+    <section style={{
+      background: "#111",
+      borderRadius: 20,
+      padding: "64px 48px 56px",
+      margin: "64px -80px 0",
+      overflow: "hidden",
+    }}>
       <style>{`
         @keyframes diagBlink  { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes diagPulse  { 0%,100%{opacity:.6} 50%{opacity:1} }
         @keyframes hexSpin    { to{transform:rotate(360deg)} }
       `}</style>
-      <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", textAlign: "center", margin: "0 0 8px" }}>
+      <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: LIME, textAlign: "center", margin: "0 0 10px" }}>
         Jak diagnostika funguje
       </p>
-      <h3 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 800, color: "#111", textAlign: "center", margin: "0 0 32px", lineHeight: 1.2 }}>
+      <h3 style={{ fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 800, color: "#fff", textAlign: "center", margin: "0 0 40px", lineHeight: 1.2 }}>
         Za 2 minuty víte, kde vaše značka stojí.
       </h3>
 
       <div style={{
-        maxWidth: 560, margin: "0 auto", minHeight: 280,
+        maxWidth: 760, margin: "0 auto", minHeight: 360,
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(12px)",
         transition: "opacity 0.35s ease, transform 0.35s ease",
@@ -326,18 +332,18 @@ export default function DiagnostikaDemo() {
       </div>
 
       {/* Progress dots */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 7, marginTop: 26 }}>
+      <div style={{ display: "flex", justifyContent: "center", gap: 7, marginTop: 32 }}>
         {Array.from({ length: STAGES }).map((_, i) => (
-          <div key={i} style={{ height: 7, borderRadius: 4, width: i === stage ? 22 : 7, background: i === stage ? LIME : "#d8d7d0", transition: "width .3s, background .3s" }} />
+          <div key={i} style={{ height: 7, borderRadius: 4, width: i === stage ? 22 : 7, background: i === stage ? LIME : "rgba(255,255,255,0.15)", transition: "width .3s, background .3s" }} />
         ))}
       </div>
 
       {/* CTA */}
-      <div style={{ textAlign: "center", marginTop: 26 }}>
-        <a href="/diagnostika" style={{ display: "inline-block", background: LIME, color: "#111", fontWeight: 800, fontSize: 14, padding: "12px 28px", borderRadius: 12, textDecoration: "none" }}>
+      <div style={{ textAlign: "center", marginTop: 32 }}>
+        <a href="/diagnostika" style={{ display: "inline-block", background: LIME, color: "#111", fontWeight: 800, fontSize: 15, padding: "14px 36px", borderRadius: 12, textDecoration: "none", letterSpacing: "-0.01em" }}>
           Spustit vlastní diagnostiku →
         </a>
-        <p style={{ fontSize: 12, color: "#bbb", marginTop: 9 }}>Zdarma · Bez registrace · Výsledky za 2 minuty</p>
+        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 10 }}>Zdarma · Bez registrace · Výsledky za 2 minuty</p>
       </div>
     </section>
   );
@@ -347,8 +353,8 @@ function StepLabel({ step, text }: { step: number; text: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
       <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#b7e94c", color: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>{step}</span>
-      <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{text}</span>
-      <span style={{ fontSize: 11, color: "#bbb", marginLeft: "auto" }}>{step} / {STAGES}</span>
+      <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{text}</span>
+      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>{step} / {STAGES}</span>
     </div>
   );
 }
