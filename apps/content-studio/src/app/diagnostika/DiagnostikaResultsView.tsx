@@ -747,23 +747,9 @@ function StrategistCard({ strategist }: { strategist: SuggestedStrategistItem })
       </div>
       {strategist.tagline && <p style={{ fontSize: 11, color: C.textMuted, margin: "0 0 8px 0" }}>{strategist.tagline}</p>}
       {strategist.reason && <p style={{ fontSize: 13, color: C.textMuted2, lineHeight: 1.5, marginBottom: 16 }}>{strategist.reason}</p>}
-      <a
-        href="/rezervace"
-        style={{
-          display: "block",
-          width: "100%",
-          padding: "10px 16px",
-          background: C.text,
-          color: C.surface,
-          fontWeight: 600,
-          fontSize: 13,
-          borderRadius: 10,
-          textAlign: "center",
-          textDecoration: "none",
-        }}
-      >
-        Spustit →
-      </a>
+      <p style={{ fontSize: 12, color: C.textMuted, fontStyle: "italic", margin: "0", lineHeight: 1.5, textAlign: "center" }}>
+        Plný potenciál Stratéga odhalíme během strategického hovoru.
+      </p>
     </div>
   );
 }
