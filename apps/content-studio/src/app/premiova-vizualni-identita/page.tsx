@@ -472,7 +472,7 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .hero-right{
           position:absolute;inset:0;width:100%;
-          background:var(--black);overflow:hidden;
+          background:var(--cream);overflow:hidden;
         }
         .pvi-page .hero-badge{
           display:inline-flex;align-items:center;gap:6px;
@@ -518,7 +518,7 @@ export default function PremiovaVizualniIdentita() {
           position:absolute;inset:0;pointer-events:none;
           background:
             linear-gradient(to right, var(--cream) 0%, var(--cream) 28%, rgba(245,244,239,0.85) 42%, rgba(245,244,239,0.2) 58%, transparent 72%),
-            linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 45%);
+            linear-gradient(to top, rgba(245,244,239,0.4) 0%, transparent 40%);
         }
 
         /* FLOATING CARDS */
