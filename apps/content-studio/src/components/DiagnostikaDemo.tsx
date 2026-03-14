@@ -143,30 +143,18 @@ export default function DiagnostikaDemo() {
                   studiolucifera.cz
                 </div>
               </div>
-              <div style={{ height: 170, background: "#0d0d1a", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", width: 260, height: 260, borderRadius: "50%", border: "70px solid rgba(90,40,140,.4)", top: "50%", left: "60%", transform: "translate(-50%,-50%)" }} />
-                <div style={{ position: "absolute", width: 160, height: 160, borderRadius: "50%", border: "40px solid rgba(120,50,180,.2)", top: "50%", left: "60%", transform: "translate(-50%,-50%)" }} />
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "8px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                    <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,1 11,3.5 11,8.5 6,11 1,8.5 1,3.5" fill="none" stroke={LIME} strokeWidth="1" /></svg>
-                    <span style={{ fontSize: 8, letterSpacing: ".15em", textTransform: "uppercase", color: "#fff" }}>LUCIFERA</span>
-                  </div>
-                </div>
-                <div style={{ position: "absolute", bottom: 18, left: 14, zIndex: 2 }}>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", lineHeight: 1.1, letterSpacing: "-.02em" }}>
-                    VAŠE TVÁŘ JE<br />VAŠE ZNAČKA.
-                  </div>
-                  <div style={{ fontSize: 7, color: "rgba(255,255,255,.5)", marginTop: 6, lineHeight: 1.4 }}>
-                    Nenechte ji zapadnout. Profesionální portréty.
-                  </div>
-                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                    <div style={{ padding: "4px 9px", background: LIME, borderRadius: 4, fontSize: 7, fontWeight: 700, color: "#111" }}>CHCI FOTKY</div>
-                    <div style={{ padding: "4px 9px", border: `1px solid rgba(183,233,76,.5)`, borderRadius: 4, fontSize: 7, color: LIME }}>Cenová nabídka</div>
-                  </div>
-                </div>
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(183,233,76,.06), transparent 70%)", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", left: 0, right: 0, height: 3, background: "linear-gradient(to bottom,transparent,rgba(183,233,76,.75),transparent)", top: `${scanPct}%`, transition: "top .12s linear", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "#333" }}>
+              <div style={{ height: 200, position: "relative", overflow: "hidden", background: "#000" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/placeholders/diagnostika-scan.jpg"
+                  alt="web scan"
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", pointerEvents: "none" }}
+                />
+                {/* scan line overlay */}
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(183,233,76,.04), transparent 70%)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", left: 0, right: 0, height: 3, background: "linear-gradient(to bottom,transparent,rgba(183,233,76,.85),transparent)", top: `${scanPct}%`, transition: "top .12s linear", pointerEvents: "none" }} />
+                {/* progress bar */}
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "rgba(0,0,0,0.4)" }}>
                   <div style={{ height: 3, background: LIME, width: `${scanPct}%`, transition: "width .12s linear" }} />
                 </div>
               </div>
