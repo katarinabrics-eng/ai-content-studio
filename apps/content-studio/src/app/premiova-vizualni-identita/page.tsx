@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Header } from "../components/Header";
+import ReferenceSekce from "@/components/ReferenceSekce";
 
 // ─────────────────────────────────────────────
 // VIZUÁLNÍ BOARD DEMO — contact-sheet overlay
@@ -1167,6 +1168,9 @@ export default function PremiovaVizualniIdentita() {
           <div className="scan-note reveal">Zdarma · Bez registrace · Výsledky okamžitě</div>
         </div>
       </section>
+
+      {/* REFERENCE */}
+      <ReferenceSekce />
 
       {/* TEAM */}
       <section className="team">
