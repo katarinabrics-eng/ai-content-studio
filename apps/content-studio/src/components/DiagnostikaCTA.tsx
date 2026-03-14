@@ -36,6 +36,7 @@ export default function DiagnostikaCTA() {
           padding: 4rem 2rem;
           margin: 3rem 0;
           text-align: center;
+          font-family: var(--font-dm-sans), 'Helvetica Neue', sans-serif;
         }
         .cta-inner {
           max-width: 620px;
@@ -49,17 +50,21 @@ export default function DiagnostikaCTA() {
           text-transform: uppercase;
           color: #b7e94c;
           margin-bottom: 1rem;
+          font-family: var(--font-dm-sans), sans-serif;
         }
         .cta-nadpis {
-          font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+          font-family: var(--font-playfair), Georgia, serif;
+          font-size: clamp(2rem, 3.8vw, 3rem);
           font-weight: 700;
           color: #fff;
-          line-height: 1.2;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
           margin: 0 0 2rem;
         }
         .cta-nadpis em {
           color: #b7e94c;
           font-style: italic;
+          font-weight: 400;
         }
         .cta-balicek {
           background: rgba(255,255,255,0.05);
@@ -89,6 +94,8 @@ export default function DiagnostikaCTA() {
           color: rgba(255,255,255,0.75);
           padding-left: 1.25rem;
           position: relative;
+          font-family: var(--font-dm-sans), sans-serif;
+          line-height: 1.6;
         }
         .cta-seznam li::before {
           content: '✓';
@@ -110,6 +117,8 @@ export default function DiagnostikaCTA() {
           text-decoration: none;
           transition: opacity 0.2s;
           box-sizing: border-box;
+          font-family: var(--font-dm-sans), sans-serif;
+          letter-spacing: -0.01em;
         }
         .cta-tlacitko:hover {
           opacity: 0.88;
