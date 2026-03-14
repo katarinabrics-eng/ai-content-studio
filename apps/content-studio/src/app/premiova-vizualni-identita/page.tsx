@@ -870,6 +870,62 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .reveal-d2{transition-delay:0.2s;}
         .pvi-page .reveal-d3{transition-delay:0.3s;}
         .pvi-page .reveal-d4{transition-delay:0.4s;}
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+          /* Hero */
+          .pvi-page .hero{ min-height:100svh; }
+          .pvi-page .hero-container{ padding:100px 24px 60px; }
+          .pvi-page .hero-left{ max-width:100%; }
+          .pvi-page h1{ font-size:clamp(34px,9vw,52px); }
+          .pvi-page .hero-sub{ font-size:15px; }
+          .pvi-page .hero-right{
+            position:absolute;inset:0;
+            background:linear-gradient(to bottom, rgba(245,244,239,0) 0%, var(--cream) 75%);
+            z-index:1;
+          }
+          .pvi-page .hero-container{ z-index:2; }
+          .pvi-page .carousel-overlay{
+            background:
+              linear-gradient(to bottom, rgba(245,244,239,0.1) 0%, var(--cream) 65%),
+              linear-gradient(to right, var(--cream) 0%, transparent 100%);
+          }
+          /* Skrýt levitující okýnka na mobilu */
+          .pvi-page .float-card{ display:none !important; }
+
+          /* Sekce */
+          .pvi-page section{ padding:56px 24px; }
+          .pvi-page .problem{ padding:56px 24px; }
+          .pvi-page .problem-grid{ grid-template-columns:1fr; gap:40px; }
+          .pvi-page .wow-inner{ grid-template-columns:1fr; gap:32px; }
+          .pvi-page .process-phases{ grid-template-columns:1fr; gap:20px; }
+          .pvi-page .deliverables-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+          .pvi-page .pricing-cards{ grid-template-columns:1fr !important; gap:16px; }
+          .pvi-page .team-grid{ grid-template-columns:1fr !important; gap:32px; }
+          .pvi-page .footer-cta{ padding:72px 24px; }
+          .pvi-page .footer-bottom{ padding:20px 24px; flex-direction:column; gap:10px; text-align:center; }
+
+          /* Typografie */
+          .pvi-page h2{ font-size:clamp(26px,7vw,38px); }
+          .pvi-page .footer-cta h2{ font-size:clamp(28px,8vw,48px); }
+          .pvi-page .btn-primary{ font-size:14px; padding:14px 24px; width:100%; justify-content:center; }
+
+          /* DiagnostikaDemo */
+          .pvi-page section.process > div > section {
+            margin-left: -24px !important;
+            margin-right: -24px !important;
+            border-radius: 0 !important;
+            padding: 40px 20px 36px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .pvi-page .hero-container{ padding:90px 20px 52px; }
+          .pvi-page h1{ font-size:clamp(30px,10vw,44px); }
+          .pvi-page .deliverables-grid{ grid-template-columns:1fr; }
+          .pvi-page section{ padding:48px 20px; }
+          .pvi-page .problem{ padding:48px 20px; }
+        }
       `}</style>
 
       {/* HERO */}
