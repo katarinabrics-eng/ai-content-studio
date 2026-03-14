@@ -462,7 +462,7 @@ export default function PremiovaVizualniIdentita() {
           display:flex;flex-direction:column;max-width:540px;
         }
         .pvi-page .hero-right{
-          position:absolute;right:0;top:0;bottom:0;width:50%;
+          position:absolute;inset:0;width:100%;
           background:var(--black);overflow:hidden;
         }
         .pvi-page .hero-badge{
@@ -507,8 +507,9 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .carousel-img.active{opacity:1;}
         .pvi-page .carousel-overlay{
           position:absolute;inset:0;pointer-events:none;
-          background:linear-gradient(to right,rgba(0,0,0,0.18) 0%,transparent 40%),
-                      linear-gradient(to top,rgba(0,0,0,0.35) 0%,transparent 50%);
+          background:
+            linear-gradient(to right, var(--cream) 0%, var(--cream) 28%, rgba(245,244,239,0.85) 42%, rgba(245,244,239,0.2) 58%, transparent 72%),
+            linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 45%);
         }
 
         /* FLOATING CARDS */
@@ -517,9 +518,9 @@ export default function PremiovaVizualniIdentita() {
           border-radius:16px;padding:18px 24px;box-shadow:0 16px 48px rgba(0,0,0,0.28),0 2px 8px rgba(0,0,0,0.1);
           min-width:160px;
         }
-        .pvi-page .fc-1{bottom:80px;left:32px;animation:float1 4s ease-in-out infinite;}
-        .pvi-page .fc-2{top:100px;right:32px;animation:float2 5s ease-in-out infinite;}
-        .pvi-page .fc-3{bottom:160px;right:28px;animation:float3 4.5s ease-in-out infinite;}
+        .pvi-page .fc-1{bottom:80px;left:50%;animation:float1 4s ease-in-out infinite;}
+        .pvi-page .fc-2{top:120px;right:80px;animation:float2 5s ease-in-out infinite;}
+        .pvi-page .fc-3{bottom:180px;right:72px;animation:float3 4.5s ease-in-out infinite;}
         @keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
         @keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
         @keyframes float3{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
