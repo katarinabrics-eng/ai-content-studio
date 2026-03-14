@@ -20,9 +20,7 @@ export default function DiagnostikaCTA() {
             <li>3 Canva šablony na míru s ukázkou v reálných příspěvcích</li>
           </ul>
           <a
-            href="https://calendly.com/lucifera/brand-konzultace"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/rezervace?from=premiova&step=calendar"
             className="cta-tlacitko"
           >
             Rezervovat vstupní hovor →
