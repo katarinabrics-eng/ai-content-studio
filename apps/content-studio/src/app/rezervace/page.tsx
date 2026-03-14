@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 // ─── CALENDLY (Brand – konzultace zdarma) ────────────────────────────────────
 const CALENDLY: Record<string, string> = {
   brand: "https://calendly.com/lucifera/brand-konzultace",
@@ -176,8 +177,21 @@ const SERVICES: Service[] = [
   },
 ];
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
-export default function RezervacePage() {
-  const [openId, setOpenId] = useState<string | null>(null);
+function RezervaceContent() {
+  const searchParams = useSearchParams();
+  const [openId, setOpenId] = useState<string | null>(() => {
+    return null;
+  });
+
+  useEffect(() => {
+    const open = searchParams.get("open");
+    if (open) {
+      setOpenId(open);
+      setTimeout(() => {
+        document.getElementById(`card-${open}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [searchParams]);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({});
   const [extrasState, setExtrasState] = useState<Record<string, Record<number, boolean>>>({});
   const [fieldValues, setFieldValues] = useState<Record<string, Record<string, string>>>({});
@@ -307,7 +321,7 @@ export default function RezervacePage() {
             const price = getPrice(service);
             const activeV = selectedVariants[service.id] ?? 0;
             return (
-              <div key={service.id} style={{
+              <div key={service.id} id={`card-${service.id}`} style={{
                 background: "#fff",
                 borderRadius: 20,
                 border: `2px solid ${isOpen ? LIME : "transparent"}`,
@@ -531,6 +545,14 @@ export default function RezervacePage() {
         <AskSection />
       </main>
     </>
+  );
+}
+
+export default function RezervacePage() {
+  return (
+    <Suspense fallback={null}>
+      <RezervaceContent />
+    </Suspense>
   );
 }
 // ─── ASK SECTION ─────────────────────────────────────────────────────────────

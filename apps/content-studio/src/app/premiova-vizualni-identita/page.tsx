@@ -1236,7 +1236,7 @@ export default function PremiovaVizualniIdentita() {
         <div className="label reveal">Jeden krok</div>
         <h2 className="reveal">Váš obsah nemůže čekat,<br /><em>až ho zákazník pochopí.</em></h2>
         <p className="section-sub reveal">Strategický hovor trvá 60 minut. Výsledek pracuje za vás měsíce dopředu.</p>
-        <button className="btn-primary reveal">Rezervovat hovor · 9 900 Kč →</button>
+        <a href="/rezervace?open=identita" className="btn-primary reveal" style={{textDecoration:"none"}}>Rezervovat hovor · 9 900 Kč →</a>
         <div className="footer-note reveal">nebo začněte bezplatnou analýzou značky — žádný závazek</div>
       </section>
 
