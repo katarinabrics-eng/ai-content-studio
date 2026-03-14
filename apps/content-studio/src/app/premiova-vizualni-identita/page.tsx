@@ -1139,7 +1139,7 @@ export default function PremiovaVizualniIdentita() {
                 <li>Vizuál board vašich budoucích fotografií</li>
                 <li>3 Canva šablony vycházející z vaší Brand DNA</li>
               </ul>
-              <button className="pc-btn">Rezervovat hovor →</button>
+              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Rezervovat hovor →</a>
             </div>
             <div className="price-card pc-full">
               <div className="pc-badge">Krok 1 + 2 · Komplet</div>
@@ -1156,7 +1156,7 @@ export default function PremiovaVizualniIdentita() {
                 <li>Za příplatek: promo video, Reels, grafika</li>
                 <li>Měsíc autopilota zdarma (vstup do naší aplikace)</li>
               </ul>
-              <button className="pc-btn">Chci kompletní spolupráci →</button>
+              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Chci kompletní spolupráci →</a>
             </div>
           </div>
           <div className="pricing-note">Autopilot — měsíční spolupráce — domlouváme individuálně. Žádné dlouhodobé závazky.</div>
