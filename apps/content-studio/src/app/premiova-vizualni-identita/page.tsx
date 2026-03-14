@@ -391,14 +391,9 @@ const WOW_PHOTOS = [
 ];
 
 const CAROUSEL_PHOTOS = [
-  "/placeholders/UKAZKY BRANDU/01.JPG",
-  "/placeholders/UKAZKY BRANDU/02.JPG",
-  "/placeholders/UKAZKY BRANDU/04.JPG",
-  "/placeholders/UKAZKY BRANDU/05.JPG",
-  "/placeholders/UKAZKY BRANDU/06.JPG",
-  "/placeholders/UKAZKY BRANDU/07.JPG",
-  "/placeholders/UKAZKY BRANDU/08.JPG",
-  "/placeholders/UKAZKY BRANDU/09.JPG",
+  "/placeholders/UKAZKY BRANDU/NEW/COVER_PREMIOVKA_01.jpg",
+  "/placeholders/UKAZKY BRANDU/NEW/COVER_PREMIOVKA_02.jpg",
+  "/placeholders/UKAZKY BRANDU/NEW/COVER_PREMIOVKA_03.jpg",
 ];
 
 export default function PremiovaVizualniIdentita() {
