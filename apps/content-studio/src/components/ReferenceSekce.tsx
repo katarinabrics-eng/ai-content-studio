@@ -85,7 +85,7 @@ Mám z nich radost a těším se na další focení. Věřím, že vyjde ještě
   },
 ]
 
-function ReferenceKartička({ ref: r, index }: { ref: typeof reference[0]; index: number }) {
+function ReferenceKartička({ item: r, index }: { item: typeof reference[0]; index: number }) {
   const [rozbaleno, setRozbaleno] = useState(false)
 
   return (
@@ -139,7 +139,7 @@ export default function ReferenceSekce() {
 
         <div className="reference-grid">
           {reference.map((r, i) => (
-            <ReferenceKartička key={r.id} ref={r} index={i} />
+            <ReferenceKartička key={r.id} item={r} index={i} />
           ))}
         </div>
       </div>
