@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ScanResult, PillarAnalysisItem, SuggestedStrategistItem } from "@/app/start/ScanResultScrollExperience";
+import DiagnostikaCTA from "@/components/DiagnostikaCTA";
 
 const C = {
   bg: "#f5f4ef",
@@ -591,33 +592,7 @@ export function DiagnostikaResultsView({
         {/* 9. CTA */}
         {!hideCta && (
           <section style={{ marginBottom: 40 }}>
-            <div className="diag-cta-dark">
-              <div style={{ position: "absolute", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(180,232,66,0.07) 0%, transparent 70%)", top: "50%", left: "50%", transform: "translate(-50%,-50%)", pointerEvents: "none" }} />
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase", color: C.lime, marginBottom: 14 }}>Další krok</div>
-              <h2 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 34, color: "#fff", lineHeight: 1.25, margin: "0 0 10px 0" }}>
-                Značka má potenciál.<br /><em style={{ color: C.lime, fontStyle: "italic" }}>Otázka je, zda ho chcete využít.</em>
-              </h2>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.3)", marginBottom: 32 }}>Vstupní hovor · 56 minut · Vizuální board + 3 Canva šablony</p>
-              <a
-                href="/premiova-vizualni-identita"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "16px 40px",
-                  background: C.lime,
-                  color: C.black,
-                  fontWeight: 700,
-                  fontSize: 15,
-                  borderRadius: 10,
-                  textDecoration: "none",
-                  boxShadow: "0 0 40px rgba(180,232,66,0.3)",
-                }}
-              >
-                Rezervovat vstupní hovor →
-              </a>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 16 }}>7 800 Kč · Bez závazku Fáze 1</div>
-            </div>
+            <DiagnostikaCTA />
           </section>
         )}
       </div>
