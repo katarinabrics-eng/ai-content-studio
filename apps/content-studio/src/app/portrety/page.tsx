@@ -4,6 +4,7 @@ import { Header } from "../components/Header";
 import { StandardCarousel } from "../components/StandardCarousel";
 import { OfferCarousel } from "../components/OfferCarousel";
 import BookingCalendar from "@/components/booking/BookingCalendar";
+import PostUkazky from "@/components/PostUkazky";
 
 export const metadata: Metadata = {
   title: "Portréty | Studio Lucifera",
@@ -253,6 +254,8 @@ export default function PortretyPage() {
       </section>
 
       {/* Výběr termínu – jednotný BookingCalendar (theme light, reserve flow) */}
+      <PostUkazky />
+
       <section id="kalendar" className="w-full bg-white py-12 md:py-24">
         <div className="mx-auto max-w-[1360px] px-4 sm:px-6 xl:px-10">
           <div className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-10 shadow-xl">

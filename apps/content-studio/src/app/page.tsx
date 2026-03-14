@@ -1,4 +1,5 @@
 import { Header } from "./components/Header";
+import PostUkazky from "@/components/PostUkazky";
 
 export default function HomePage() {
   return (
@@ -175,6 +176,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <PostUkazky />
 
       {/* BLOK 6: Závěrečné CTA */}
       <section id="zaver" className="w-full bg-[#111111] px-6 py-16 sm:px-8 lg:py-32">

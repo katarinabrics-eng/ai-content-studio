@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Header } from "../components/Header";
 import ReferenceSekce from "@/components/ReferenceSekce";
 import DiagnostikaDemo from "@/components/DiagnostikaDemo";
+import PostUkazky from "@/components/PostUkazky";
 
 // ─────────────────────────────────────────────
 // VIZUÁLNÍ BOARD DEMO — contact-sheet overlay
@@ -1131,6 +1132,7 @@ export default function PremiovaVizualniIdentita() {
       {/* DIAGNOSTIKA DEMO */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 40px" }}>
         <DiagnostikaDemo />
+        <PostUkazky />
       </div>
 
       {/* DELIVERABLES */}
