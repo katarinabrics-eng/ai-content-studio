@@ -1417,6 +1417,7 @@ export default function PipelineDashboardPage() {
                             {isExpanded ? "Sbalit" : "Detail"}
                           </button>
                           <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
+                          <Link href={`/admin/workspace/${client.id}`} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: "#fafafa", color: "#555", fontSize: 10, cursor: "pointer", textDecoration: "none" }}>🗂 Workspace</Link>
                         </div>
                       );
                     })}
