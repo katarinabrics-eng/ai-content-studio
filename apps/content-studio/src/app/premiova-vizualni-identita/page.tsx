@@ -934,12 +934,12 @@ export default function PremiovaVizualniIdentita() {
         <div className="hero-container">
           <div className="hero-left">
             <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
-            <h1>Jeden den.<br /><em>Obsah na měsíce dopředu.</em></h1>
+            <h1>Sladěná propagace vaší značky.<br /><em>Na měsíce dopředu.</em></h1>
             <p className="hero-sub">Přijdete do ateliéru. Odejdete s cca 150 pečlivě vybranými fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
             <div className="hero-actions">
-              <a href="/diagnostika" className="btn-primary" style={{textDecoration:"none"}}>Spustit bezplatnou analýzu značky →</a>
-              <a href="/rezervace" className="btn-secondary" style={{textDecoration:"none"}}>nebo Rezervovat strategický hovor ↓</a>
-              <div className="hero-note">Analýza webu · Zdarma · Výsledky za 2 minuty</div>
+              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
+              <a href="/diagnostika" className="btn-secondary" style={{textDecoration:"none"}}>nebo spustit bezplatnou analýzu značky ↓</a>
+              <div className="hero-note">Vizuální board · Strategie · 3 Canva šablony · Placeno předem</div>
             </div>
           </div>
         </div>
@@ -974,7 +974,7 @@ export default function PremiovaVizualniIdentita() {
         <div className="problem-grid">
           <div className="problem-left">
             <div className="label" style={{color:"rgba(180,232,66,0.6)"}}>Problém který znáte</div>
-            <h2>Vaše práce je skvělá.<br /><em>Ale nikdo to nevidí.</em></h2>
+            <h2>Máte výsledky.<br /><em>Obsah tomu nestačí.</em></h2>
             <div className="problem-quote">&ldquo;Tohle není problém tvorby. Je to problém obrazu.&rdquo;</div>
           </div>
           <div>
@@ -1203,7 +1203,7 @@ export default function PremiovaVizualniIdentita() {
                 <li>Vizuál board vašich budoucích fotografií</li>
                 <li>3 Canva šablony vycházející z vaší Brand DNA</li>
               </ul>
-              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Rezervovat hovor →</a>
+              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
             </div>
             <div className="price-card pc-full">
               <div className="pc-badge">Krok 1 + 2 · Komplet</div>
@@ -1447,10 +1447,10 @@ export default function PremiovaVizualniIdentita() {
       {/* FOOTER CTA */}
       <section className="footer-cta">
         <div className="label reveal">Jeden krok</div>
-        <h2 className="reveal">Váš obsah nemůže čekat,<br /><em>až ho zákazník pochopí.</em></h2>
+        <h2 className="reveal">Vaše značka si zaslouží<br /><em>obsah na její úrovni.</em></h2>
         <p className="section-sub reveal">Strategický hovor trvá 60 minut. Výsledek pracuje za vás měsíce dopředu.</p>
-        <a href="/rezervace?open=identita" className="btn-primary reveal" style={{textDecoration:"none"}}>Rezervovat hovor · 9 900 Kč →</a>
-        <div className="footer-note reveal">nebo začněte bezplatnou analýzou značky — žádný závazek</div>
+        <a href="/rezervace?open=identita" className="btn-primary reveal" style={{textDecoration:"none"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
+        <div className="footer-note reveal">Placeno předem · Výstup v ruce do 2 dní · Bez závazku focení</div>
       </section>
 
       <div className="footer-bottom">
