@@ -1306,15 +1306,17 @@ export default function PremiovaVizualniIdentita() {
             white-space: normal;
             max-width: 175px;
           }
-          .chip-1 { top: 2%;  left: -26%; animation-delay: 0s; }
-          .chip-2 { top: 32%; left: -30%; animation-delay: 0.7s; }
-          .chip-3 { top: 63%; left: -26%; animation-delay: 1.4s; }
-          .chip-4 { top: 2%;  right: -26%; animation-delay: 0.35s; }
-          .chip-5 { top: 32%; right: -30%; animation-delay: 1.05s; }
-          .chip-6 { top: 63%; right: -26%; animation-delay: 1.75s; }
+          .chip-1 { top: -2%;  left: -28%; animation-delay: 0s;    animation-duration: 4.2s; }
+          .chip-2 { top: 38%;  left: -32%; animation-delay: 1.1s;  animation-duration: 5.1s; }
+          .chip-3 { top: 70%;  left: -22%; animation-delay: 0.5s;  animation-duration: 3.8s; }
+          .chip-4 { top: 8%;   right: -24%; animation-delay: 0.8s; animation-duration: 4.7s; }
+          .chip-5 { top: 26%;  right: -31%; animation-delay: 1.9s; animation-duration: 5.4s; }
+          .chip-6 { top: 62%;  right: -27%; animation-delay: 0.3s; animation-duration: 4.0s; }
           @keyframes floatChip {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            0%   { transform: translateY(0px) rotate(0deg); }
+            30%  { transform: translateY(-9px) rotate(0.4deg); }
+            70%  { transform: translateY(-4px) rotate(-0.3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
           }
           @media (max-width: 1100px) {
             .mockup-chip { display: none; }
