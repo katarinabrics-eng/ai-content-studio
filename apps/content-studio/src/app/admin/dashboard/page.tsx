@@ -1255,23 +1255,41 @@ export default function PipelineDashboardPage() {
                 <ScoreRing score={client.score} />
                 <div style={{ display: "flex", gap: 6 }}>
                   {client.shortCode && client.accessToken && (
-                    <button
-                      onClick={() => {
-                        const url = `${window.location.origin}/client/${client.shortCode}?token=${client.accessToken}`;
-                        navigator.clipboard.writeText(url);
-                      }}
-                      title="Zkopírovat odkaz pro klienta"
-                      style={{
-                        display: "inline-flex", alignItems: "center", gap: 5,
-                        padding: "8px 12px", borderRadius: 8,
-                        background: C.bg2, color: C.muted,
-                        border: `1px solid ${C.border}`,
-                        fontWeight: 600, fontSize: 12, cursor: "pointer",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      🔗 Odkaz
-                    </button>
+                    <>
+                      <a
+                        href={`/client/${client.shortCode}?token=${client.accessToken}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Zobrazit pohled klienta"
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 5,
+                          padding: "8px 12px", borderRadius: 8,
+                          background: "#f0fce0", color: "#3d6b00",
+                          border: "1px solid #b7e94c",
+                          fontWeight: 600, fontSize: 12, cursor: "pointer",
+                          whiteSpace: "nowrap", textDecoration: "none",
+                        }}
+                      >
+                        👁 Pohled klienta
+                      </a>
+                      <button
+                        onClick={() => {
+                          const url = `${window.location.origin}/client/${client.shortCode}?token=${client.accessToken}`;
+                          navigator.clipboard.writeText(url);
+                        }}
+                        title="Zkopírovat odkaz pro klienta"
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 5,
+                          padding: "8px 10px", borderRadius: 8,
+                          background: C.bg2, color: C.muted,
+                          border: `1px solid ${C.border}`,
+                          fontWeight: 600, fontSize: 12, cursor: "pointer",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        🔗
+                      </button>
+                    </>
                   )}
                   <Link
                     href={`/admin/workspace/${client.id}`}
