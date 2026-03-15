@@ -33,6 +33,7 @@ type FolderStructure = Record<string, DriveFile[]>;
 
 type Project = {
   id: string;
+  name: string | null;
   client_project_name: string | null;
   email: string | null;
   workflow_status: string | null;
@@ -635,6 +636,9 @@ export default function WorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>("Přehled");
   const [syncing, setSyncing] = useState(false);
+  const [driveInput, setDriveInput] = useState("");
+  const [connectingDrive, setConnectingDrive] = useState(false);
+  const [driveError, setDriveError] = useState<string | null>(null);
 
   const fetchProject = useCallback(async () => {
     const res = await fetch(`/api/admin/workspace/${projectId}`);
@@ -662,6 +666,36 @@ export default function WorkspacePage() {
     fetchProject();
   };
 
+  function parseFolderId(input: string): string | null {
+    // Accept full URL or just folder ID
+    const match = input.match(/\/folders\/([a-zA-Z0-9_-]{10,})/);
+    if (match) return match[1];
+    if (/^[a-zA-Z0-9_-]{10,}$/.test(input.trim())) return input.trim();
+    return null;
+  }
+
+  const handleConnectDrive = async () => {
+    const folderId = parseFolderId(driveInput);
+    if (!folderId) { setDriveError("Zadejte platné ID složky nebo URL z Google Drive"); return; }
+    setConnectingDrive(true);
+    setDriveError(null);
+    try {
+      const res = await fetch("/api/admin/drive/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientProjectId: projectId, folderId }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? "Chyba");
+      await fetchProject();
+      setDriveInput("");
+    } catch (e) {
+      setDriveError(e instanceof Error ? e.message : "Chyba");
+    } finally {
+      setConnectingDrive(false);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -678,7 +712,7 @@ export default function WorkspacePage() {
     );
   }
 
-  const clientName = project.client_project_name ?? project.email ?? "Klient";
+  const clientName = project.name ?? project.client_project_name ?? project.email ?? "Klient";
   const syncTime = formatTime(project.drive_config?.last_synced_at ?? null);
 
   return (
@@ -733,6 +767,68 @@ export default function WorkspacePage() {
           </button>
         </div>
       </div>
+
+      {/* Drive connection banner */}
+      {!project.drive_config && (
+        <div style={{
+          background: "#fffbeb",
+          borderBottom: "1px solid #fcd34d",
+          padding: "20px 32px",
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          flexWrap: "wrap",
+        }}>
+          <div style={{ fontSize: 24 }}>📂</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#92400e", marginBottom: 3 }}>
+              Připojte Google Drive složku klienta
+            </div>
+            <div style={{ fontSize: 13, color: "#b45309" }}>
+              Vložte odkaz na složku nebo ID složky z Google Drive
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", flex: "0 0 auto", minWidth: 360 }}>
+            <input
+              value={driveInput}
+              onChange={(e) => setDriveInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleConnectDrive()}
+              placeholder="https://drive.google.com/drive/folders/... nebo ID složky"
+              style={{
+                flex: 1,
+                padding: "9px 13px",
+                borderRadius: 9,
+                border: "1.5px solid #fcd34d",
+                fontSize: 13,
+                color: "#111",
+                outline: "none",
+                minWidth: 260,
+                background: "#fff",
+              }}
+            />
+            <button
+              onClick={handleConnectDrive}
+              disabled={connectingDrive || !driveInput.trim()}
+              style={{
+                padding: "9px 20px",
+                borderRadius: 9,
+                border: "none",
+                background: "#111",
+                color: "#fff",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: connectingDrive ? "wait" : "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {connectingDrive ? "Připojuji…" : "Připojit →"}
+            </button>
+          </div>
+          {driveError && (
+            <div style={{ width: "100%", fontSize: 13, color: "#ef4444", fontWeight: 600 }}>⚠ {driveError}</div>
+          )}
+        </div>
+      )}
 
       {/* Tab content */}
       {activeTab === "Přehled" && <TabPrehled project={project} />}

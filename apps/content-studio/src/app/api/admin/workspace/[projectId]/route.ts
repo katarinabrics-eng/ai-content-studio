@@ -15,6 +15,7 @@ export async function GET(
       .from("client_projects")
       .select(`
         id,
+        name,
         client_project_name,
         email,
         web_url,
