@@ -724,18 +724,24 @@ function PillarCard({
       >
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: C.limeDark, marginBottom: 10 }}>↗ Co jsme zaznamenali</div>
-          <ul style={{ margin: 0, paddingLeft: 18, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
             {observed.map((item, i) => (
-              <li key={i} style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: C.limeDark }}>↗</span> {item}</li>
+              <li key={i} style={{ padding: "4px 0", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <span style={{ color: C.limeDark, flexShrink: 0, marginTop: 1 }}>↗</span>
+                <span>{item}</span>
+              </li>
             ))}
             {observed.length === 0 && <li style={{ color: "#bbb" }}>—</li>}
           </ul>
         </div>
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#aaa", marginBottom: 10 }}>→ Co jsme nezaznamenali</div>
-          <ul style={{ margin: 0, paddingLeft: 18, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
             {notObserved.map((item, i) => (
-              <li key={i} style={{ padding: "4px 0", position: "relative" }}><span style={{ position: "absolute", left: 0, color: "#bbb" }}>→</span> {item}</li>
+              <li key={i} style={{ padding: "4px 0", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <span style={{ color: "#bbb", flexShrink: 0, marginTop: 1 }}>→</span>
+                <span>{item}</span>
+              </li>
             ))}
             {notObserved.length === 0 && <li style={{ color: "#bbb" }}>—</li>}
           </ul>
