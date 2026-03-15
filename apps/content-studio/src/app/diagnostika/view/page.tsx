@@ -206,18 +206,16 @@ function DiagnostikaViewContent() {
           </div>
         )}
       </div>
-      {!outputsActivated ? (
-        <div className="max-w-xl mx-auto px-4 py-16 text-center">
-          <p className="text-lg text-[#333] mb-2">Výstupy pro vás ještě nejsou připraveny.</p>
-          <p className="text-sm text-[#555]">
-            Kurátor je aktivuje po dokončení příprav. Zkuste stránku obnovit později.
-          </p>
-        </div>
-      ) : (
+      {outputsActivated ? (
         <ClientOutputsDashboard
           result={result as import("@/app/diagnostika/ClientOutputsDashboard").ExtendedScanResult}
           projectName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
           projectCreated={null}
+        />
+      ) : (
+        <DiagnostikaResultsView
+          result={result}
+          hideCta={true}
         />
       )}
     </main>

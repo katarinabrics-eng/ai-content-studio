@@ -545,8 +545,21 @@ export function DiagnostikaResultsView({
                   <div style={{ width: 32, height: 32, borderRadius: "50%", background: C.lime, color: C.black, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, flexShrink: 0 }}>✓</div>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Diagnostika uložena.</div>
-                    <div style={{ fontSize: 13, color: C.textMuted, marginBottom: 8, lineHeight: 1.5 }}>Odkaz pro návrat k výsledkům byl odeslán na váš e-mail. Platnost odkazu je 7 dní.</div>
-                    <div style={{ fontSize: 11, color: C.textMuted, fontFamily: "monospace", background: "#f0f0eb", padding: "6px 10px", borderRadius: 6, wordBreak: "break-all" }}>{accessUrl}</div>
+                    <div style={{ fontSize: 13, color: C.textMuted, marginBottom: 12, lineHeight: 1.5 }}>Odkaz pro návrat k výsledkům byl odeslán na váš e-mail. Platnost odkazu je 7 dní.</div>
+                    <button
+                      type="button"
+                      onClick={() => { navigator.clipboard.writeText(accessUrl); }}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 7,
+                        padding: "9px 18px", borderRadius: 9,
+                        background: C.lime, color: C.black,
+                        border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).textContent = "✓ Zkopírováno!"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).innerHTML = "📋 Zkopírovat odkaz"; }}
+                    >
+                      📋 Zkopírovat odkaz
+                    </button>
                   </div>
                 </div>
               ) : (
