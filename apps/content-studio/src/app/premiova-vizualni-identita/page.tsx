@@ -1299,15 +1299,12 @@ export default function PremiovaVizualniIdentita() {
             flex-shrink: 0;
           }
           .mockup-chip .chip-text {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: #111;
-            line-height: 1.3;
-          }
-          .mockup-chip .chip-sub {
-            font-size: 10px;
-            color: #888;
-            font-weight: 400;
+            line-height: 1.35;
+            white-space: normal;
+            max-width: 180px;
           }
           .chip-1 { top: 4%; left: -10%; animation-delay: 0s; }
           .chip-2 { top: 28%; left: -14%; animation-delay: 0.6s; }
@@ -1338,22 +1335,19 @@ export default function PremiovaVizualniIdentita() {
             <div className="mockup-chip chip-1">
               <div className="chip-icon">📄</div>
               <div>
-                <div className="chip-text">20 stran</div>
-                <div className="chip-sub">strategická prezentace</div>
+                <div className="chip-text">20 stran strategické prezentace</div>
               </div>
             </div>
             <div className="mockup-chip chip-2">
               <div className="chip-icon">🔍</div>
               <div>
-                <div className="chip-text">Analýza přítomnosti</div>
-                <div className="chip-sub">vaše online pozice</div>
+                <div className="chip-text">Analýza vaší online přítomnosti</div>
               </div>
             </div>
             <div className="mockup-chip chip-3">
               <div className="chip-icon">📸</div>
               <div>
-                <div className="chip-text">5 stylů focení</div>
-                <div className="chip-sub">cca 20 fotek každý</div>
+                <div className="chip-text">5 stylů · cca 20 fotek každý</div>
               </div>
             </div>
 
@@ -1361,22 +1355,19 @@ export default function PremiovaVizualniIdentita() {
             <div className="mockup-chip chip-4">
               <div className="chip-icon">🎨</div>
               <div>
-                <div className="chip-text">Grafika k použití</div>
-                <div className="chip-sub">připravená na export</div>
+                <div className="chip-text">Grafika připravená k použití</div>
               </div>
             </div>
             <div className="mockup-chip chip-5">
               <div className="chip-icon">🖼️</div>
               <div>
-                <div className="chip-text">Vizuál board</div>
-                <div className="chip-sub">budoucí fotografie</div>
+                <div className="chip-text">Vizuál board vašich budoucích fotografií</div>
               </div>
             </div>
             <div className="mockup-chip chip-6">
               <div className="chip-icon">✏️</div>
               <div>
-                <div className="chip-text">3 Canva šablony</div>
-                <div className="chip-sub">vycházející z Brand DNA</div>
+                <div className="chip-text">3 Canva šablony vycházející z vaší Brand DNA</div>
               </div>
             </div>
           </div>
