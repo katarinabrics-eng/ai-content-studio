@@ -1227,6 +1227,162 @@ export default function PremiovaVizualniIdentita() {
         </div>
       </section>
 
+      {/* MOCKUP DELIVERABLES */}
+      <section style={{ background: "#f7f6f1", padding: "80px 40px", overflow: "hidden" }}>
+        <style>{`
+          .mockup-wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .mockup-header {
+            text-align: center;
+            margin-bottom: 56px;
+          }
+          .mockup-header .label {
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #8ab830;
+            font-weight: 700;
+            margin-bottom: 12px;
+          }
+          .mockup-header h2 {
+            font-family: var(--font-playfair, Georgia, serif);
+            font-size: clamp(26px, 3.5vw, 42px);
+            font-weight: 700;
+            color: #111;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin: 0;
+          }
+          .mockup-header h2 em {
+            font-style: italic;
+            color: #8ab830;
+          }
+          .mockup-scene {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+          }
+          .mockup-img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.14);
+            display: block;
+          }
+          .mockup-chip {
+            position: absolute;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+            white-space: nowrap;
+            animation: floatChip 4s ease-in-out infinite;
+          }
+          .mockup-chip .chip-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f0fad0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+          }
+          .mockup-chip .chip-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: #111;
+            line-height: 1.3;
+          }
+          .mockup-chip .chip-sub {
+            font-size: 10px;
+            color: #888;
+            font-weight: 400;
+          }
+          .chip-1 { top: 4%; left: -10%; animation-delay: 0s; }
+          .chip-2 { top: 28%; left: -14%; animation-delay: 0.6s; }
+          .chip-3 { top: 54%; left: -12%; animation-delay: 1.2s; }
+          .chip-4 { top: 6%; right: -10%; animation-delay: 0.3s; }
+          .chip-5 { top: 32%; right: -14%; animation-delay: 0.9s; }
+          .chip-6 { top: 60%; right: -12%; animation-delay: 1.5s; }
+          @keyframes floatChip {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-7px); }
+          }
+          @media (max-width: 900px) {
+            .mockup-chip { display: none; }
+            .mockup-scene { max-width: 100%; }
+          }
+        `}</style>
+        <div className="mockup-wrap">
+          <div className="mockup-header">
+            <p className="label">Co dostanete</p>
+            <h2>Vše připravené.<br /><em>Hned k použití.</em></h2>
+          </div>
+
+          <div className="mockup-scene">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/placeholders/mocuppremium.jpg" alt="Prémiová vizuální identita mockup" className="mockup-img" />
+
+            {/* Left chips */}
+            <div className="mockup-chip chip-1">
+              <div className="chip-icon">📄</div>
+              <div>
+                <div className="chip-text">20 stran</div>
+                <div className="chip-sub">strategická prezentace</div>
+              </div>
+            </div>
+            <div className="mockup-chip chip-2">
+              <div className="chip-icon">🔍</div>
+              <div>
+                <div className="chip-text">Analýza přítomnosti</div>
+                <div className="chip-sub">vaše online pozice</div>
+              </div>
+            </div>
+            <div className="mockup-chip chip-3">
+              <div className="chip-icon">📸</div>
+              <div>
+                <div className="chip-text">5 stylů focení</div>
+                <div className="chip-sub">cca 20 fotek každý</div>
+              </div>
+            </div>
+
+            {/* Right chips */}
+            <div className="mockup-chip chip-4">
+              <div className="chip-icon">🎨</div>
+              <div>
+                <div className="chip-text">Grafika k použití</div>
+                <div className="chip-sub">připravená na export</div>
+              </div>
+            </div>
+            <div className="mockup-chip chip-5">
+              <div className="chip-icon">🖼️</div>
+              <div>
+                <div className="chip-text">Vizuál board</div>
+                <div className="chip-sub">budoucí fotografie</div>
+              </div>
+            </div>
+            <div className="mockup-chip chip-6">
+              <div className="chip-icon">✏️</div>
+              <div>
+                <div className="chip-text">3 Canva šablony</div>
+                <div className="chip-sub">vycházející z Brand DNA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* BRAND SCAN CTA */}
       <section className="scan-cta">
         <div className="scan-inner">
