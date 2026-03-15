@@ -876,6 +876,12 @@ export default function PipelineDashboardPage() {
   const [selectedStrategyIds, setSelectedStrategyIds] = useState<string[]>([]);
   const [expandedStrategyId, setExpandedStrategyId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string; hard: boolean } | null>(null);
+  const [newProjectModal, setNewProjectModal] = useState(false);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectEmail, setNewProjectEmail] = useState("");
+  const [newProjectUrl, setNewProjectUrl] = useState("");
+  const [newProjectLoading, setNewProjectLoading] = useState(false);
+  const [newProjectError, setNewProjectError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -1023,8 +1029,85 @@ export default function PipelineDashboardPage() {
     }
   };
 
+  const handleCreateProject = async () => {
+    if (!newProjectName.trim()) { setNewProjectError("Zadejte jméno projektu"); return; }
+    setNewProjectLoading(true);
+    setNewProjectError(null);
+    try {
+      const res = await fetch("/api/admin/create-project", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newProjectName, email: newProjectEmail, web_url: newProjectUrl }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? "Chyba");
+      setNewProjectModal(false);
+      setNewProjectName(""); setNewProjectEmail(""); setNewProjectUrl("");
+      await fetchData();
+      setActiveId(d.id);
+    } catch (e) {
+      setNewProjectError(e instanceof Error ? e.message : "Chyba");
+    } finally {
+      setNewProjectLoading(false);
+    }
+  };
+
   return (
     <div style={{ fontFamily: "'DM Sans', system-ui, sans-serif", background: C.bg0, minHeight: "100vh", color: C.text, display: "flex", flexDirection: "column" }}>
+      {newProjectModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1001 }}
+          onClick={() => setNewProjectModal(false)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 32, width: 420, boxShadow: "0 16px 60px rgba(0,0,0,0.2)" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.text, marginBottom: 6 }}>Nový klient</div>
+            <div style={{ fontSize: 13, color: C.faint, marginBottom: 24 }}>Vytvořte projekt manuálně — bez diagnostiky</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: C.muted, display: "block", marginBottom: 5 }}>Jméno klienta / projektu *</label>
+                <input
+                  autoFocus
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleCreateProject()}
+                  placeholder="např. Jana Nováková"
+                  style={{ width: "100%", padding: "10px 13px", borderRadius: 9, border: `1.5px solid ${C.border}`, fontSize: 14, color: C.text, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: C.muted, display: "block", marginBottom: 5 }}>Email</label>
+                <input
+                  value={newProjectEmail}
+                  onChange={(e) => setNewProjectEmail(e.target.value)}
+                  placeholder="jana@example.cz"
+                  type="email"
+                  style={{ width: "100%", padding: "10px 13px", borderRadius: 9, border: `1.5px solid ${C.border}`, fontSize: 14, color: C.text, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: C.muted, display: "block", marginBottom: 5 }}>Web / URL</label>
+                <input
+                  value={newProjectUrl}
+                  onChange={(e) => setNewProjectUrl(e.target.value)}
+                  placeholder="https://jananovakova.cz"
+                  type="url"
+                  style={{ width: "100%", padding: "10px 13px", borderRadius: 9, border: `1.5px solid ${C.border}`, fontSize: 14, color: C.text, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+              {newProjectError && <div style={{ fontSize: 12, color: C.pink }}>{newProjectError}</div>}
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+                <button type="button" onClick={() => setNewProjectModal(false)}
+                  style={{ padding: "9px 18px", borderRadius: 9, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 13, cursor: "pointer" }}>
+                  Zrušit
+                </button>
+                <button type="button" onClick={handleCreateProject} disabled={newProjectLoading}
+                  style={{ padding: "9px 22px", borderRadius: 9, border: "none", background: C.lime, color: "#222", fontSize: 14, fontWeight: 700, cursor: newProjectLoading ? "not-allowed" : "pointer" }}>
+                  {newProjectLoading ? "Vytvářím…" : "Vytvořit projekt →"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {deleteConfirm && (
         <div
           style={{
@@ -1086,6 +1169,13 @@ export default function PipelineDashboardPage() {
         <span style={{ fontSize: 10, color: C.faint, letterSpacing: "0.14em" }}>PIPELINE</span>
         <div style={{ flex: 1 }} />
         {error && <span style={{ fontSize: 11, color: C.pink }}>{error}</span>}
+        <button
+          type="button"
+          onClick={() => { setNewProjectModal(true); setNewProjectError(null); }}
+          style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: C.lime, color: "#222", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}
+        >
+          + Nový klient
+        </button>
       </div>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
