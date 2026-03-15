@@ -48,6 +48,7 @@ type ApiRow = {
   workflow_status: string | null;
   payment_status: string | null;
   short_code: string | null;
+  access_token: string | null;
   scan_result?: {
     brandScore?: { total?: number };
     brandDna?: {
@@ -100,6 +101,8 @@ type Client = {
   notesAiEnabled: boolean;
   workflow_status: string | null;
   dashboard_section: string | null;
+  shortCode: string | null;
+  accessToken: string | null;
 };
 
 const PILLAR_KEYS = [
@@ -195,6 +198,8 @@ function mapRowToClient(row: ApiRow): Client {
     notesAiEnabled: (scan as { notes_ai_enabled?: boolean }).notes_ai_enabled ?? false,
     workflow_status: row.workflow_status ?? null,
     dashboard_section: scan.dashboard_section ?? null,
+    shortCode: row.short_code ?? null,
+    accessToken: row.access_token ?? null,
   };
 }
 
@@ -1248,25 +1253,40 @@ export default function PipelineDashboardPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
                 <ScoreRing score={client.score} />
-                <Link
-                  href={`/admin/workspace/${client.id}`}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "8px 16px",
-                    borderRadius: 8,
-                    background: C.lime,
-                    color: "#222",
-                    fontWeight: 700,
-                    fontSize: 13,
-                    textDecoration: "none",
-                    whiteSpace: "nowrap",
-                    boxShadow: "0 2px 8px rgba(168,216,0,0.3)",
-                  }}
-                >
-                  🗂 Workspace
-                </Link>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {client.shortCode && client.accessToken && (
+                    <button
+                      onClick={() => {
+                        const url = `${window.location.origin}/client/${client.shortCode}?token=${client.accessToken}`;
+                        navigator.clipboard.writeText(url);
+                      }}
+                      title="Zkopírovat odkaz pro klienta"
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 5,
+                        padding: "8px 12px", borderRadius: 8,
+                        background: C.bg2, color: C.muted,
+                        border: `1px solid ${C.border}`,
+                        fontWeight: 600, fontSize: 12, cursor: "pointer",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      🔗 Odkaz
+                    </button>
+                  )}
+                  <Link
+                    href={`/admin/workspace/${client.id}`}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      padding: "8px 16px", borderRadius: 8,
+                      background: C.lime, color: "#222",
+                      fontWeight: 700, fontSize: 13,
+                      textDecoration: "none", whiteSpace: "nowrap",
+                      boxShadow: "0 2px 8px rgba(168,216,0,0.3)",
+                    }}
+                  >
+                    🗂 Workspace
+                  </Link>
+                </div>
               </div>
             </div>
             <PipelineSection client={client} onChangeStatus={(s) => updateStatus(client.id, s)} updating={statusUpdating === client.id} />
