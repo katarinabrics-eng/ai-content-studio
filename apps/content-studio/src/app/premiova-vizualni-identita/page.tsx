@@ -1306,17 +1306,17 @@ export default function PremiovaVizualniIdentita() {
             white-space: normal;
             max-width: 175px;
           }
-          .chip-1 { top: -2%;  left: -28%; animation-delay: 0s;    animation-duration: 4.2s; }
-          .chip-2 { top: 38%;  left: -32%; animation-delay: 1.1s;  animation-duration: 5.1s; }
-          .chip-3 { top: 70%;  left: -22%; animation-delay: 0.5s;  animation-duration: 3.8s; }
-          .chip-4 { top: 8%;   right: -24%; animation-delay: 0.8s; animation-duration: 4.7s; }
-          .chip-5 { top: 26%;  right: -31%; animation-delay: 1.9s; animation-duration: 5.4s; }
-          .chip-6 { top: 62%;  right: -27%; animation-delay: 0.3s; animation-duration: 4.0s; }
+          .chip-1 { top: -5%;  left: -30%; animation-delay: 0s;    animation-duration: 4.2s; transform: rotate(-2deg); }
+          .chip-2 { top: 43%;  left: -35%; animation-delay: 1.3s;  animation-duration: 5.7s; transform: rotate(1.5deg); }
+          .chip-3 { top: 82%;  left: -18%; animation-delay: 0.7s;  animation-duration: 3.9s; transform: rotate(-1deg); }
+          .chip-4 { top: 3%;   right: -26%; animation-delay: 0.4s; animation-duration: 4.9s; transform: rotate(2deg); }
+          .chip-5 { top: 34%;  right: -34%; animation-delay: 2.1s; animation-duration: 6.1s; transform: rotate(-1.5deg); }
+          .chip-6 { top: 68%;  right: -22%; animation-delay: 0.9s; animation-duration: 4.4s; transform: rotate(1deg); }
           @keyframes floatChip {
-            0%   { transform: translateY(0px) rotate(0deg); }
-            30%  { transform: translateY(-9px) rotate(0.4deg); }
-            70%  { transform: translateY(-4px) rotate(-0.3deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+            0%   { transform: translateY(0px) rotate(var(--base-rot, 0deg)); }
+            25%  { transform: translateY(-11px) rotate(calc(var(--base-rot, 0deg) + 0.6deg)); }
+            60%  { transform: translateY(-5px) rotate(calc(var(--base-rot, 0deg) - 0.4deg)); }
+            100% { transform: translateY(0px) rotate(var(--base-rot, 0deg)); }
           }
           @media (max-width: 1100px) {
             .mockup-chip { display: none; }

@@ -1,493 +1,378 @@
 "use client";
-
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  PROJECT_STATUS_LABELS,
-  PROJECT_STATUS_ORDER,
-  getStatusOrder,
-  getDisplayStatusForTimeline,
-  type ProjectStatus,
-} from "@/lib/project-status-engine";
+import { Suspense } from "react";
+import { ClientTokenGuard, type ClientInfo } from "../ClientTokenGuard";
+import { Sidebar } from "./components/Sidebar";
+import { WebPreviewCard } from "./components/WebPreviewCard";
+import { ScoreCard } from "./components/ScoreCard";
+import { PillarsCard } from "./components/PillarsCard";
+import { SpiderChart } from "./components/SpiderChart";
+import { StrategistsCard } from "./components/StrategistsCard";
+import { BrandVoiceCard } from "./components/BrandVoiceCard";
+import { BrandIdentityCard } from "./components/BrandIdentityCard";
+import { SymbolsCard } from "./components/SymbolsCard";
+import { PipelineCard } from "./components/PipelineCard";
+import { DocumentsList } from "./components/DocumentsList";
 
-type ProjectData = {
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+type PillarData = {
+  score?: number;
+  interpretation?: string;
+  strategicOpportunity?: string;
+};
+
+type ScanResult = {
+  brandScore?: { total?: number };
+  brandDna?: {
+    name?: string;
+    positioning?: string;
+    archetype?: string;
+    tone?: string;
+    colorPalette?: string[];
+    typography?: { primary?: string; secondary?: string };
+    keyMessages?: string[];
+    uniqueValue?: string;
+    contentPillars?: string[];
+  };
+  pillarAnalysis?: Record<string, PillarData>;
+  suggested_strategists?: Array<{
+    id: string;
+    label: string;
+    fit_score?: number;
+    reason?: string;
+  }>;
+  summary?: string;
+  client_name?: string;
+};
+
+type WorkspaceData = {
   id: string;
-  project_code: string;
-  plan_id: string;
-  status: ProjectStatus;
-  created_at: string;
-  updated_at: string;
-  brief?: {
-    brand_name?: string;
-    industry?: string;
-    communication_goal?: string;
-    platforms?: string[];
+  name: string | null;
+  email: string | null;
+  web_url: string | null;
+  scan_result: ScanResult;
+  drive_config?: {
+    folder_structure?: unknown[];
   } | null;
+  selected_photos?: string[] | null;
 };
 
-type ClientProposal = {
-  id: string;
-  format: string;
-  hook: string;
-  body: string;
-  cta: string;
-  hashtags: string[];
-  visual_brief: string;
-  created_at: string;
-};
+// ─── Inner dashboard (needs params + token) ──────────────────────────────────
 
-type ContentPost = {
-  id: string;
-  status: string;
-  hook: string | null;
-  body: string | null;
-  cta: string | null;
-  canva_preview_url: string | null;
-  platform: string | null;
-  scheduled_for: string | null;
-};
-
-const FORMAT_LABELS: Record<string, string> = {
-  facebook: "Facebook",
-  instagram: "Instagram",
-  linkedin: "LinkedIn",
-  letak: "Leták",
-  carousel: "Carousel",
-};
-
-const CLIENT_VISIBLE_STATUSES = PROJECT_STATUS_ORDER.filter(
-  (s) => s !== "WAITING_PAYMENT" && s !== "ERROR"
-);
-
-function TimelineSteps({ currentStatus }: { currentStatus: ProjectStatus }) {
-  const displayStatus = getDisplayStatusForTimeline(currentStatus);
-  const currentOrder = getStatusOrder(displayStatus as ProjectStatus);
-
-  return (
-    <div className="mt-4 flex flex-wrap gap-2">
-      {CLIENT_VISIBLE_STATUSES.map((status) => {
-        const order = getStatusOrder(status);
-        const done = order <= currentOrder;
-        const current = status === displayStatus;
-        return (
-          <span
-            key={status}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
-              current
-                ? "bg-lucifera-lime/25 text-lucifera-lime border border-lucifera-lime/30"
-                : done
-                  ? "bg-white/10 text-white/70"
-                  : "bg-white/5 text-white/40"
-            }`}
-          >
-            {PROJECT_STATUS_LABELS[status]}
-          </span>
-        );
-      })}
-    </div>
-  );
-}
-
-function getStatusMessage(status: ProjectStatus): string {
-  switch (status) {
-    case "WAITING_PAYMENT":
-      return "Čekáme na platbu.";
-    case "PAID":
-    case "WAITING_BRIEF":
-      return "Platba potvrzena. Vyplňte prosím dotazník s podklady pro váš projekt.";
-    case "WAITING_MANUAL_AI_COMMAND":
-      return "Dotazník je vyplněn. Čekáme na interní pokyn – brzy začneme generovat návrhy.";
-    case "AWAITING_INPUT":
-    case "PROCESSING_DATA":
-      return "Čekáme na vaše podklady. Jakmile je obdržíme, začneme pracovat.";
-    case "INPUT_RECEIVED":
-    case "READY_FOR_AI":
-      return "Podklady máme. Připravujeme návrhy příspěvků.";
-    case "AWAITING_MANUAL_PROMPT":
-      return "Čekáme na interní pokyn. Brzy začneme generovat.";
-    case "AI_IN_PROGRESS":
-    case "AI_PROCESSING":
-    case "IN_PRODUCTION":
-      return "AI a kurátor pracují na vašich příspěvcích. Bude to trvat jen chvíli.";
-    case "AWAITING_APPROVAL":
-    case "DRAFT_READY":
-      return "Návrhy jsou připraveny ke schválení!";
-    case "REVISION":
-      return "Zapracováváme vaše připomínky.";
-    case "APPROVED_SCHEDULED":
-    case "FINAL_READY":
-      return "Finální verze je připravena!";
-    case "DONE":
-    case "CLOSED":
-      return "Zakázka byla uzavřena. Děkujeme za spolupráci!";
-    case "ERROR":
-      return "Došlo k nečekané chybě. Obraťte se prosím na nás.";
-    default:
-      return "Váš projekt je v procesu.";
-  }
-}
-
-const COMING_SOON_CARDS = [
-  { id: "canva", label: "Canva šablony", icon: "🖼️" },
-  { id: "reels", label: "Video Reels", icon: "▶️" },
-  { id: "brand-video", label: "Brand video", icon: "🎬" },
-  { id: "maskot", label: "Maskot", icon: "🎭" },
-  { id: "avatar", label: "Avatar", icon: "👤" },
-  { id: "foto-set", label: "Foto set", icon: "📸" },
-  { id: "ilustrace", label: "Ilustrace", icon: "✏️" },
-];
-
-export default function ClientProjectPage() {
-  const params = useParams();
-  const projectCode = params.projectCode as string;
-  const [project, setProject] = useState<ProjectData | null>(null);
-  const [proposals, setProposals] = useState<ClientProposal[]>([]);
-  const [contentPosts, setContentPosts] = useState<ContentPost[]>([]);
+function WorkspaceDashboard({
+  projectCode,
+  client,
+  token,
+}: {
+  projectCode: string;
+  client: ClientInfo;
+  token: string;
+}) {
+  const [workspace, setWorkspace] = useState<WorkspaceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [contentPostActionId, setContentPostActionId] = useState<string | null>(null);
-  const [revisionNote, setRevisionNote] = useState("");
 
   useEffect(() => {
-    async function fetchProject() {
+    if (!projectCode) return;
+    async function load() {
       try {
-        const res = await fetch(`/api/client/project?code=${encodeURIComponent(projectCode)}`);
+        // Fetch project data (project_code from projects table)
+        const res = await fetch(
+          `/api/client/project?code=${encodeURIComponent(projectCode)}`
+        );
         const data = await res.json();
-        if (data.ok && data.project) {
-          setProject(data.project);
-        } else {
+        if (!res.ok || !data.ok) {
           setError(data.error ?? "Projekt nenalezen");
+        } else {
+          const proj = data.project;
+          setWorkspace({
+            id: proj.id,
+            name: proj.brief?.brand_name ?? null,
+            email: null,
+            web_url: null,
+            scan_result: proj.scan_result ?? {},
+            drive_config: proj.drive_config ?? null,
+            selected_photos: proj.selected_photos ?? null,
+          });
         }
-      } catch {
-        setError("Nepodařilo se načíst projekt");
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Nepodařilo se načíst data");
       } finally {
         setLoading(false);
       }
     }
-    fetchProject();
-  }, [projectCode]);
-
-  useEffect(() => {
-    if (!projectCode) return;
-    fetch(`/api/client/proposals?code=${encodeURIComponent(projectCode)}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.ok && Array.isArray(d.proposals)) setProposals(d.proposals);
-      })
-      .catch(() => {});
-  }, [projectCode]);
-
-  useEffect(() => {
-    if (!projectCode) return;
-    fetch(`/api/client/content-posts?code=${encodeURIComponent(projectCode)}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.ok && Array.isArray(d.posts)) setContentPosts(d.posts);
-      })
-      .catch(() => {});
+    load();
   }, [projectCode]);
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-lucifera-dark flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-lucifera-lime border-t-transparent rounded-full mx-auto" />
-          <p className="mt-4 text-white/70">Načítám projekt...</p>
-        </div>
-      </main>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          flexDirection: "column",
+          gap: 16,
+          color: "#aaa",
+          fontSize: 14,
+        }}
+      >
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            border: "3px solid #e8e4dc",
+            borderTopColor: "#b7e94c",
+            borderRadius: "50%",
+            animation: "spin 0.8s linear infinite",
+          }}
+        />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        Načítám dashboard…
+      </div>
     );
   }
 
-  if (error || !project) {
+  if (error && !workspace) {
     return (
-      <main className="min-h-screen bg-lucifera-dark flex items-center justify-center px-4">
-        <div className="glass-panel max-w-md p-8 text-center">
-          <h1 className="text-xl font-bold text-white">Projekt nenalezen</h1>
-          <p className="mt-4 text-white/70">{error ?? "Zkontrolujte kód projektu."}</p>
-          <a href="/" className="btn-lime-primary mt-6 inline-block">
-            Zpět na hlavní stránku
-          </a>
-        </div>
-      </main>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          flexDirection: "column",
+          gap: 12,
+          color: "#888",
+          fontSize: 14,
+          padding: 32,
+          textAlign: "center",
+        }}
+      >
+        <div style={{ fontSize: 36 }}>⚠️</div>
+        <div style={{ fontWeight: 600, color: "#333" }}>Projekt nenalezen</div>
+        <div>{error}</div>
+        <a
+          href="/"
+          style={{ color: "#b7e94c", fontSize: 13, marginTop: 8, textDecoration: "none" }}
+        >
+          ← Zpět na hlavní stránku
+        </a>
+      </div>
     );
   }
 
-  const status = project.status as ProjectStatus;
-  const brief = project.brief;
+  const scan = workspace?.scan_result ?? {};
+  const brandDna = scan.brandDna ?? {};
+  const pillarAnalysis = scan.pillarAnalysis ?? {};
+  const brandScore = scan.brandScore?.total ?? 50;
+  const suggestedStrategists = scan.suggested_strategists ?? [];
+
+  // Derive top/weak pillar from analysis
+  const pillarEntries = Object.entries(pillarAnalysis) as [string, PillarData][];
+  const pillarLabels: Record<string, string> = {
+    light: "Světlo",
+    energy: "Energie",
+    architecture: "Architektura",
+    identity: "Identita",
+    trust: "Důvěra",
+  };
+  let topPillar = "Energie";
+  let weakPillar = "Důvěra";
+  if (pillarEntries.length > 0) {
+    const sorted = [...pillarEntries].sort(
+      (a, b) => (b[1].score ?? 5) - (a[1].score ?? 5)
+    );
+    topPillar = pillarLabels[sorted[0]?.[0] ?? ""] ?? sorted[0]?.[0] ?? "Energie";
+    weakPillar =
+      pillarLabels[sorted[sorted.length - 1]?.[0] ?? ""] ??
+      sorted[sorted.length - 1]?.[0] ??
+      "Důvěra";
+  }
+
+  const spiderScores = {
+    light: pillarAnalysis.light?.score ?? 5,
+    energy: pillarAnalysis.energy?.score ?? 5,
+    architecture: pillarAnalysis.architecture?.score ?? 5,
+    identity: pillarAnalysis.identity?.score ?? 5,
+    trust: pillarAnalysis.trust?.score ?? 5,
+  };
+
+  const brandName = brandDna.name ?? workspace?.name ?? "Vaše značka";
+  const positioning = brandDna.positioning ?? brandDna.uniqueValue ?? "";
+  const archetype = brandDna.archetype ?? "Vizionář";
+  const tone = brandDna.tone ?? "";
+  const colorPalette = brandDna.colorPalette ?? [];
+  const typography = brandDna.typography;
+  const keyMessages = brandDna.keyMessages ?? [];
+  const webUrl = workspace?.web_url ?? "";
+
+  const driveConfig = workspace?.drive_config ?? null;
+  const folderStructure: Array<{
+    id: string;
+    name: string;
+    mimeType?: string;
+    webViewLink?: string;
+    subfolder?: string;
+    modifiedTime?: string;
+  }> = Array.isArray(driveConfig?.folder_structure)
+    ? (driveConfig!.folder_structure as Array<{
+        id: string;
+        name: string;
+        mimeType?: string;
+        webViewLink?: string;
+        subfolder?: string;
+        modifiedTime?: string;
+      }>)
+    : [];
+  const selectedPhotos = workspace?.selected_photos ?? [];
+
+  const clientName = client.name || client.email || brandName;
 
   return (
-    <main className="min-h-screen bg-lucifera-dark px-4 py-12">
-      <div className="mx-auto max-w-4xl">
-        <div className="text-center mb-10">
-          <h1 className="text-2xl font-bold text-white">
-            {brief?.brand_name && brief.brand_name !== "—"
-              ? brief.brand_name
-              : "Váš projekt"}
-          </h1>
-          <p className="mt-2 text-white/50 font-mono text-sm">{project.project_code}</p>
-        </div>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <Sidebar token={token} projectCode={projectCode} clientName={clientName} />
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* Aktivní karta: Stav zakázky */}
-          <div className="glass-panel p-6 sm:col-span-2">
-            <h2 className="font-semibold text-white flex items-center gap-2">
-              <span className="text-lucifera-lime">📋</span> Stav zakázky
-            </h2>
-            <p className="mt-2 text-lucifera-lime text-lg font-medium">
-              {PROJECT_STATUS_LABELS[status] ?? status}
-            </p>
-            <p className="mt-2 text-white/70 text-sm">{getStatusMessage(status)}</p>
-            <TimelineSteps currentStatus={status} />
-          </div>
-
-          {/* Příspěvky ke schválení (content pipeline) */}
-          {contentPosts.filter((p) => p.status === "client_review").length > 0 && (
-            <div className="glass-panel p-6 sm:col-span-2 border-lucifera-lime/20">
-              <h2 className="font-semibold text-white flex items-center gap-2">
-                <span className="text-lucifera-lime">🔔</span> Nový příspěvek připraven
-              </h2>
-              <p className="mt-2 text-white/70 text-sm">
-                Podívejte se na náhled a dejte nám vědět, zda vám vyhovuje.
-              </p>
-              <div className="mt-4 space-y-6">
-                {contentPosts
-                  .filter((p) => p.status === "client_review")
-                  .map((post) => (
-                    <div
-                      key={post.id}
-                      className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
-                    >
-                      {post.canva_preview_url && (
-                        <img
-                          src={post.canva_preview_url}
-                          alt="Náhled"
-                          className="mb-4 max-h-64 rounded-lg object-cover"
-                        />
-                      )}
-                      <p className="font-medium text-white">{post.hook ?? ""}</p>
-                      {post.body && <p className="mt-1 text-sm text-white/80">{post.body}</p>}
-                      {post.cta && <p className="mt-2 text-sm text-lucifera-lime">{post.cta}</p>}
-                      {post.scheduled_for && (
-                        <p className="mt-2 text-xs text-white/50">
-                          Plánované: {new Date(post.scheduled_for).toLocaleDateString("cs-CZ")} · {post.platform ?? "Instagram"}
-                        </p>
-                      )}
-                      {contentPostActionId === post.id ? (
-                        <div className="mt-4">
-                          <textarea
-                            value={revisionNote}
-                            onChange={(e) => setRevisionNote(e.target.value)}
-                            placeholder="Napište, co chcete upravit…"
-                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/40"
-                            rows={2}
-                          />
-                          <div className="mt-2 flex gap-2">
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                const res = await fetch(`/api/client/content-posts/${post.id}`, {
-                                  method: "PATCH",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({
-                                    code: projectCode,
-                                    action: "revision",
-                                    client_note: revisionNote,
-                                  }),
-                                });
-                                const d = await res.json();
-                                if (d.ok) {
-                                  setContentPosts((prev) => prev.filter((p) => p.id !== post.id));
-                                  setContentPostActionId(null);
-                                  setRevisionNote("");
-                                }
-                              }}
-                              className="rounded-lg bg-amber-500/20 px-4 py-2 text-sm font-medium text-amber-200 hover:bg-amber-500/30"
-                            >
-                              Odeslat připomínku
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setContentPostActionId(null);
-                                setRevisionNote("");
-                              }}
-                              className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/20"
-                            >
-                              Zrušit
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const res = await fetch(`/api/client/content-posts/${post.id}`, {
-                                method: "PATCH",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ code: projectCode, action: "approve" }),
-                              });
-                              const d = await res.json();
-                              if (d.ok) setContentPosts((prev) => prev.filter((p) => p.id !== post.id));
-                            }}
-                            className="rounded-lg bg-lucifera-lime px-4 py-2 text-sm font-medium text-black hover:bg-lucifera-lime/90"
-                          >
-                            ✅ Líbí se
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setContentPostActionId(post.id)}
-                            className="rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
-                          >
-                            💬 Mám komentář
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* CTA: Vyplnit dotazník - pouze když PAID nebo WAITING_BRIEF */}
-          {(status === "PAID" || status === "WAITING_BRIEF") && (
-            <div className="glass-panel p-6 sm:col-span-2 border-lucifera-lime/30 bg-lucifera-lime/5">
-              <h2 className="font-semibold text-white flex items-center gap-2">
-                <span className="text-lucifera-lime">📝</span> Vyplňte dotazník
-              </h2>
-              <p className="mt-2 text-white/70 text-sm">
-                Pro pokračování projektu prosím vyplňte údaje o vaší značce.
-              </p>
-              <a
-                href={`/client/${encodeURIComponent(projectCode)}/brief`}
-                className="btn-lime-primary mt-4 inline-block"
-              >
-                Vyplnit dotazník
-              </a>
-            </div>
-          )}
-
-          {/* Výběr návrhů – zobrazí se klientovi */}
-          {proposals.length > 0 && (
-            <div className="glass-panel p-6 sm:col-span-2 border-lucifera-lime/20">
-              <h2 className="font-semibold text-white flex items-center gap-2">
-                <span className="text-lucifera-lime">✨</span> Výběr návrhů pro vás
-              </h2>
-              <p className="mt-2 text-white/70 text-sm">
-                Níže jsou návrhy příspěvků vybrané pro váš projekt. Můžete je dále upravit s naším týmem.
-              </p>
-              <div className="mt-4 space-y-4">
-                {proposals.map((p, i) => (
-                  <div
-                    key={p.id}
-                    className="rounded-xl border border-white/10 bg-white/5 p-4 text-left"
-                  >
-                    <span className="text-xs font-medium text-lucifera-lime/90 uppercase">
-                      {FORMAT_LABELS[p.format] ?? p.format} · Návrh {i + 1}
-                    </span>
-                    <p className="mt-2 font-medium text-white">{p.hook}</p>
-                    <p className="mt-1 text-sm text-white/80">{p.body}</p>
-                    <p className="mt-2 text-sm text-lucifera-lime">{p.cta}</p>
-                    {p.visual_brief && (
-                      <p className="mt-2 text-sm text-white/60">
-                        <span className="text-white/50">Návrh vizuálu:</span> {p.visual_brief}
-                      </p>
-                    )}
-                    {p.hashtags?.length > 0 && (
-                      <p className="mt-2 text-xs text-white/50">{p.hashtags.join(" ")}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Aktivní karta: Nahraná data */}
-          <div className="glass-panel p-6">
-            <h2 className="font-semibold text-white flex items-center gap-2">
-              <span className="text-lucifera-lime">📁</span> Nahraná data
-            </h2>
-            {brief && (brief.brand_name !== "—" || brief.industry !== "—") ? (
-              <dl className="mt-4 space-y-2 text-sm">
-                {brief.brand_name && brief.brand_name !== "—" && (
-                  <>
-                    <dt className="text-white/50">Značka</dt>
-                    <dd className="text-white">{brief.brand_name}</dd>
-                  </>
-                )}
-                {brief.industry && brief.industry !== "—" && (
-                  <>
-                    <dt className="text-white/50">Obor</dt>
-                    <dd className="text-white">{brief.industry}</dd>
-                  </>
-                )}
-                {brief.communication_goal && brief.communication_goal !== "—" && (
-                  <>
-                    <dt className="text-white/50">Cíl</dt>
-                    <dd className="text-white">{brief.communication_goal}</dd>
-                  </>
-                )}
-                {brief.platforms?.length && (
-                  <>
-                    <dt className="text-white/50">Platformy</dt>
-                    <dd className="text-white">{brief.platforms.join(", ")}</dd>
-                  </>
-                )}
-              </dl>
-            ) : (
-              <p className="mt-4 text-white/50 text-sm">
-                Zatím žádná data. Vyplňte dotazník v dalším kroku.
-              </p>
-            )}
-          </div>
-
-          {/* Přidat podklady (fotky, nápady) */}
-          <div className="glass-panel p-6 sm:col-span-2">
-            <h2 className="font-semibold text-white flex items-center gap-2">
-              <span className="text-lucifera-lime">📎</span> Přidat podklady
-            </h2>
-            <p className="mt-2 text-white/70 text-sm">
-              Vlastní fotky nebo nápady k příspěvkům (nepovinné). Brzy zde bude upload.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-4">
-              <div className="min-h-[80px] min-w-[160px] rounded-xl border border-dashed border-white/20 flex items-center justify-center">
-                <span className="text-sm text-white/50">+ Nahrát vlastní fotku</span>
-              </div>
-              <div className="min-h-[80px] min-w-[160px] rounded-xl border border-dashed border-white/20 flex items-center justify-center">
-                <span className="text-sm text-white/50">+ Napsat nápad nebo přání</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Neaktivní karty – Brzy dostupné */}
-          {COMING_SOON_CARDS.map((card) => (
-            <div
-              key={card.id}
-              className="glass-panel p-6 opacity-60 pointer-events-none"
+      {/* Main content */}
+      <div style={{ flex: 1, overflow: "auto" }}>
+        {/* Header */}
+        <div
+          style={{
+            background: "#fff",
+            borderBottom: "1px solid #e8e4dc",
+            padding: "18px 32px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                fontSize: 20,
+                fontWeight: 700,
+                color: "#111",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{card.icon}</span>
-                <div>
-                  <h2 className="font-semibold text-white/90">{card.label}</h2>
-                  <p className="mt-1 text-xs text-lucifera-lime/80">Brzy dostupné</p>
-                </div>
-              </div>
+              {brandName}
+            </h1>
+            <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>
+              {projectCode.toUpperCase()} · Klientský dashboard
             </div>
-          ))}
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <span
+              style={{
+                background: "#f0fce0",
+                color: "#3d6b00",
+                fontSize: 11,
+                padding: "5px 14px",
+                borderRadius: 20,
+                fontWeight: 600,
+                border: "1px solid #d4f0a0",
+              }}
+            >
+              Aktivní projekt
+            </span>
+          </div>
         </div>
 
-        <p className="mt-8 text-center text-xs text-white/40">
-          Vytvořeno: {new Date(project.created_at).toLocaleDateString("cs-CZ")}
-          {" · "}
-          Aktualizováno: {new Date(project.updated_at).toLocaleDateString("cs-CZ")}
-        </p>
+        {/* Dashboard grid */}
+        <div
+          style={{
+            padding: "24px 32px",
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 16,
+          }}
+        >
+          {/* Row 1: Score + Web preview + Pipeline */}
+          <ScoreCard
+            score={brandScore}
+            persona={archetype}
+            topPillar={topPillar}
+            weakPillar={weakPillar}
+          />
+          <WebPreviewCard
+            webUrl={webUrl}
+            brandName={brandName}
+            positioning={positioning}
+          />
+          <PipelineCard
+            diagnostics={pillarEntries.length > 0 ? scan : null}
+            driveConfig={driveConfig}
+            selectedPhotos={selectedPhotos}
+          />
 
-        <div className="mt-6 text-center">
-          <a href="/" className="text-sm text-white/50 hover:text-white/70">
-            ← Zpět na hlavní stránku
-          </a>
+          {/* Row 2: Pillars + Spider */}
+          <PillarsCard pillarAnalysis={pillarAnalysis} />
+          <SpiderChart scores={spiderScores} />
+          <BrandIdentityCard
+            colorPalette={colorPalette}
+            typography={typography}
+            tone={tone}
+          />
+
+          {/* Row 3: Strategists (2col) + BrandVoice */}
+          <div style={{ gridColumn: "span 2" }}>
+            <StrategistsCard strategistIds={suggestedStrategists} />
+          </div>
+          <BrandVoiceCard keyMessages={keyMessages} />
+
+          {/* Row 4: Symbols (2col) + Documents */}
+          <div style={{ gridColumn: "span 2" }}>
+            <SymbolsCard archetype={archetype} />
+          </div>
+          <DocumentsList folderStructure={folderStructure} />
         </div>
       </div>
-    </main>
+    </div>
+  );
+}
+
+// ─── Page wrapper with ClientTokenGuard ──────────────────────────────────────
+
+function ProjectPageInner() {
+  const params = useParams();
+  const projectCode = params.projectCode as string;
+
+  return (
+    <ClientTokenGuard>
+      {(client: ClientInfo, token: string) => (
+        <WorkspaceDashboard
+          projectCode={projectCode}
+          client={client}
+          token={token}
+        />
+      )}
+    </ClientTokenGuard>
+  );
+}
+
+export default function ProjectPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+            color: "#aaa",
+            fontSize: 14,
+          }}
+        >
+          Načítám…
+        </div>
+      }
+    >
+      <ProjectPageInner />
+    </Suspense>
   );
 }

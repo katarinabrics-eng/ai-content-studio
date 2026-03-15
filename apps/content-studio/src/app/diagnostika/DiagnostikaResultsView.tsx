@@ -727,7 +727,7 @@ function PillarCard({
           <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 13, color: "#666", lineHeight: 1.6 }}>
             {observed.map((item, i) => (
               <li key={i} style={{ padding: "4px 0", display: "flex", alignItems: "flex-start", gap: 8 }}>
-                <span style={{ color: C.limeDark, flexShrink: 0, marginTop: 1 }}>↗</span>
+                <span style={{ color: C.limeDark, flexShrink: 0, marginTop: 1, width: 16, display: "inline-block" }}>↗</span>
                 <span>{item}</span>
               </li>
             ))}

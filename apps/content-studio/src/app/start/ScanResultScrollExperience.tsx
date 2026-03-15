@@ -667,8 +667,13 @@ export function ScanResultScrollExperience({
               </p>
               {accessUrl && (
                 <p className="text-xs text-[#555] mt-2">
-                  Odkaz pro návrat k výsledkům (7 dní):{" "}
-                  <a href={accessUrl} className="text-[#b7e94c] underline break-all" target="_blank" rel="noreferrer">{accessUrl}</a>
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(accessUrl)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#b7e94c] text-[#111] text-xs font-semibold hover:bg-[#a0d42e] transition-colors"
+                  >
+                    📋 Zkopírovat odkaz k výsledkům
+                  </button>
                 </p>
               )}
             </div>

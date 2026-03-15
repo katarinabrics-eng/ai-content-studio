@@ -206,18 +206,10 @@ function DiagnostikaViewContent() {
           </div>
         )}
       </div>
-      {outputsActivated ? (
-        <ClientOutputsDashboard
-          result={result as import("@/app/diagnostika/ClientOutputsDashboard").ExtendedScanResult}
-          projectName={(result as { client_name?: string }).client_name ?? project.name ?? ""}
-          projectCreated={null}
-        />
-      ) : (
-        <DiagnostikaResultsView
-          result={result}
-          hideCta={true}
-        />
-      )}
+      <DiagnostikaResultsView
+        result={result}
+        hideCta={true}
+      />
     </main>
   );
 }

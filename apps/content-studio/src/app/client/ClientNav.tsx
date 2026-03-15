@@ -3,10 +3,10 @@
 import { useSearchParams } from "next/navigation";
 
 const links = [
-  { href: "/client/onboarding", label: "Onboarding" },
-  { href: "/client/status", label: "Stav" },
-  { href: "/client/approval", label: "Schválení" },
-  { href: "/client/assets", label: "Assety" },
+  { href: "/client/dashboard", label: "Dashboard" },
+  { href: "/client/status", label: "Výsledky Scanu" },
+  { href: "/client/approval", label: "Ke schválení" },
+  { href: "/client/assets", label: "Mé dokumenty" },
 ];
 
 export function ClientNav() {
