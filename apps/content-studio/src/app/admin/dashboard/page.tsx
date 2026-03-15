@@ -20,8 +20,8 @@ const C = {
   bg3: "#e8e8e8",
   border: "rgba(0,0,0,0.07)",
   text: "#111111",
-  muted: "#555555",
-  faint: "#999999",
+  muted: "#444444",
+  faint: "#777777",
 };
 
 const PIPELINE: { id: PipelineStatus; label: string; short: string; color: string; bg: string; icon: string; step: number }[] = [
@@ -242,7 +242,7 @@ function Section({
         }}
       >
         <div style={{ width: 3, height: 14, borderRadius: 2, background: accent, flexShrink: 0 }} />
-        <span style={{ fontSize: 11, fontWeight: 700, color: C.muted, letterSpacing: "0.08em", flex: 1 }}>{title}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: C.text, letterSpacing: "0.06em", flex: 1 }}>{title}</span>
         {right}
       </div>
       <div style={{ padding: 16, background: C.bg0 }}>{children}</div>
@@ -463,10 +463,10 @@ function PipelineSection({
       <div style={{ display: "flex", gap: 8, alignItems: "flex-start", padding: "10px 12px", borderRadius: 8, background: C.purple + "0d", border: `1px solid ${C.purple}22` }}>
         <span style={{ color: C.purple, fontSize: 13, flexShrink: 0 }}>◈</span>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 9, color: C.purple, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 3 }}>
+          <div style={{ fontSize: 11, color: C.purple, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 4 }}>
             AI HODNOCENÍ {aiDiffers && <span style={{ color: C.yellow }}>· navrhuje: {getS(client.aiStatus).label}</span>}
           </div>
-          <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5 }}>{client.projectDescription}</div>
+          <div style={{ fontSize: 13, color: C.text, lineHeight: 1.6 }}>{client.projectDescription}</div>
           {aiDiffers && (
             <button
               onClick={() => onChangeStatus(client.aiStatus)}
@@ -530,13 +530,13 @@ function ClientCard({
           {client.avatar}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? "#fff" : C.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {client.name}
           </div>
-          <div style={{ fontSize: 9, color: C.faint }}>{client.sub}</div>
+          <div style={{ fontSize: 11, color: C.faint }}>{client.sub}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: status.color }}>{client.score}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: status.color }}>{client.score}</div>
           {onTrash && (
             <button
               type="button"
@@ -1148,15 +1148,36 @@ export default function PipelineDashboardPage() {
                 {client.avatar}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 5 }}>{client.name}</div>
-                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: C.text, marginBottom: 6 }}>{client.name}</div>
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center" }}>
                   {client.tags.map((t) => (
                     <Tag key={t} color={C.lilac}>#{t}</Tag>
                   ))}
                   <Tag color={C.faint}>{client.created}</Tag>
                 </div>
               </div>
-              <ScoreRing score={client.score} />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+                <ScoreRing score={client.score} />
+                <Link
+                  href={`/admin/workspace/${client.id}`}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    background: C.lime,
+                    color: "#222",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    textDecoration: "none",
+                    whiteSpace: "nowrap",
+                    boxShadow: "0 2px 8px rgba(168,216,0,0.3)",
+                  }}
+                >
+                  🗂 Workspace
+                </Link>
+              </div>
             </div>
             <PipelineSection client={client} onChangeStatus={(s) => updateStatus(client.id, s)} updating={statusUpdating === client.id} />
           </div>
@@ -1170,23 +1191,23 @@ export default function PipelineDashboardPage() {
                   onClick={() => setActiveTab(tab.id)}
                   style={{
                     flex: 1,
-                    padding: "6px 8px",
+                    padding: "8px 10px",
                     borderRadius: 7,
                     border: "none",
                     background: isActive ? C.bg2 : "transparent",
-                    color: isActive ? "#fff" : C.faint,
-                    fontSize: 10,
-                    fontWeight: isActive ? 700 : 400,
+                    color: isActive ? C.text : C.faint,
+                    fontSize: 13,
+                    fontWeight: isActive ? 700 : 500,
                     cursor: "pointer",
                     borderBottom: isActive ? `2px solid ${tab.accent}` : "2px solid transparent",
-                    letterSpacing: "0.05em",
+                    letterSpacing: "0.03em",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: 4,
+                    gap: 5,
                   }}
                 >
-                  <span style={{ color: isActive ? tab.accent : C.faint, fontSize: 11 }}>{tab.icon}</span>
+                  <span style={{ color: isActive ? tab.accent : C.faint, fontSize: 14 }}>{tab.icon}</span>
                   {tab.label}
                 </button>
               );
@@ -1221,15 +1242,15 @@ export default function PipelineDashboardPage() {
                   {client.pillars.map((p) => {
                     const col = scoreColor(p.score);
                     return (
-                      <div key={p.key} style={{ padding: "12px 8px", borderRadius: 10, background: C.bg2, border: `1px solid ${col}28`, textAlign: "center" }}>
-                        <div style={{ fontSize: 20, marginBottom: 5 }}>{p.icon}</div>
-                        <div style={{ fontSize: 9, color: C.muted, marginBottom: 6 }}>{p.label}</div>
-                        <div style={{ fontSize: 24, fontWeight: 800, color: col, lineHeight: 1, marginBottom: 5 }}>{p.score}</div>
-                        <div style={{ height: 3, borderRadius: 2, background: C.bg3, overflow: "hidden", marginBottom: 6 }}>
+                      <div key={p.key} style={{ padding: "14px 10px", borderRadius: 10, background: C.bg2, border: `1px solid ${col}28`, textAlign: "center" }}>
+                        <div style={{ fontSize: 22, marginBottom: 6 }}>{p.icon}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: C.text, marginBottom: 7 }}>{p.label}</div>
+                        <div style={{ fontSize: 28, fontWeight: 800, color: col, lineHeight: 1, marginBottom: 6 }}>{p.score}</div>
+                        <div style={{ height: 4, borderRadius: 2, background: C.bg3, overflow: "hidden", marginBottom: 7 }}>
                           <div style={{ height: "100%", width: `${p.score * 10}%`, background: col }} />
                         </div>
                         <Tag color={col}>{scoreLabel(p.score)}</Tag>
-                        <div style={{ fontSize: 9, color: C.faint, marginTop: 6, lineHeight: 1.4 }}>{p.note}</div>
+                        <div style={{ fontSize: 11, color: C.faint, marginTop: 7, lineHeight: 1.45 }}>{p.note}</div>
                       </div>
                     );
                   })}
@@ -1241,9 +1262,9 @@ export default function PipelineDashboardPage() {
                     const labels: Record<string, string> = { positioning: "Positioning", tone: "Tón komunikace", uniqueValue: "Jedinečná hodnota", targetAudience: "Cílová skupina" };
                     const accents: Record<string, string> = { positioning: C.purple, tone: C.pink, uniqueValue: C.lime, targetAudience: C.lilac };
                     return (
-                      <div key={key} style={{ padding: "10px 13px", borderRadius: 8, background: C.bg2, borderLeft: `3px solid ${accents[key] ?? C.border}`, border: `1px solid ${C.border}` }}>
-                        <div style={{ fontSize: 9, color: accents[key] ?? C.muted, letterSpacing: "0.1em", fontWeight: 700, marginBottom: 4 }}>{labels[key] ?? key}</div>
-                        <div style={{ fontSize: 11, color: "#ccc", lineHeight: 1.5 }}>{val}</div>
+                      <div key={key} style={{ padding: "12px 15px", borderRadius: 8, background: C.bg2, borderLeft: `3px solid ${accents[key] ?? C.border}`, border: `1px solid ${C.border}` }}>
+                        <div style={{ fontSize: 11, color: accents[key] ?? C.muted, letterSpacing: "0.08em", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>{labels[key] ?? key}</div>
+                        <div style={{ fontSize: 14, color: C.text, lineHeight: 1.6 }}>{val}</div>
                       </div>
                     );
                   })}
@@ -1290,25 +1311,25 @@ export default function PipelineDashboardPage() {
                             <span style={{ fontSize: 18, fontWeight: 800, color: col }}>{score}/10</span>
                             <Tag color={col}>{scoreLabel(score)}</Tag>
                           </div>
-                          {a?.interpretation?.trim() && <p style={{ fontSize: 11, color: C.text, lineHeight: 1.5, margin: "0 0 8px 0" }}>{a.interpretation}</p>}
+                          {a?.interpretation?.trim() && <p style={{ fontSize: 13, color: C.text, lineHeight: 1.6, margin: "0 0 8px 0" }}>{a.interpretation}</p>}
                           {Array.isArray(a?.observed) && a.observed.length > 0 && (
                             <div style={{ marginBottom: 6 }}>
-                              <span style={{ fontSize: 9, color: C.muted, letterSpacing: "0.06em" }}>CO JSME ZAZNAMENALI</span>
-                              <ul style={{ margin: "4px 0 0 0", paddingLeft: 16, fontSize: 11, color: C.text }}>
+                              <span style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em", fontWeight: 700 }}>CO JSME ZAZNAMENALI</span>
+                              <ul style={{ margin: "4px 0 0 0", paddingLeft: 16, fontSize: 13, color: C.text }}>
                                 {a.observed.map((x, i) => <li key={i}>{x}</li>)}
                               </ul>
                             </div>
                           )}
                           {Array.isArray(a?.notObserved) && a.notObserved.length > 0 && (
                             <div style={{ marginBottom: 6 }}>
-                              <span style={{ fontSize: 9, color: C.muted, letterSpacing: "0.06em" }}>CO CHYBÍ / CO ZLEPŠIT</span>
-                              <ul style={{ margin: "4px 0 0 0", paddingLeft: 16, fontSize: 11, color: C.faint }}>
+                              <span style={{ fontSize: 11, color: C.muted, letterSpacing: "0.06em", fontWeight: 700 }}>CO CHYBÍ / CO ZLEPŠIT</span>
+                              <ul style={{ margin: "4px 0 0 0", paddingLeft: 16, fontSize: 13, color: C.faint }}>
                                 {a.notObserved.map((x, i) => <li key={i}>{x}</li>)}
                               </ul>
                             </div>
                           )}
-                          {a?.reasoning?.trim() && <p style={{ fontSize: 10, color: C.muted, lineHeight: 1.5, margin: "6px 0 0 0" }}><strong>Proč to ovlivnilo skóre:</strong> {a.reasoning}</p>}
-                          {a?.strategicOpportunity?.trim() && <p style={{ fontSize: 11, color: C.lime, marginTop: 8, marginBottom: 0 }}>Doporučený směr: {a.strategicOpportunity}</p>}
+                          {a?.reasoning?.trim() && <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.55, margin: "6px 0 0 0" }}><strong>Proč to ovlivnilo skóre:</strong> {a.reasoning}</p>}
+                          {a?.strategicOpportunity?.trim() && <p style={{ fontSize: 13, color: C.lime, marginTop: 8, marginBottom: 0, fontWeight: 600 }}>Doporučený směr: {a.strategicOpportunity}</p>}
                         </div>
                       );
                     })}
@@ -1337,7 +1358,7 @@ export default function PipelineDashboardPage() {
           {activeTab === "strategie" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12 }}>
-                <div style={{ fontSize: 11, color: C.faint }}>{client.strategies.length} uložených strategií</div>
+                <div style={{ fontSize: 13, color: C.faint }}>{client.strategies.length} uložených strategií</div>
                 <button
                   type="button"
                   onClick={() => {
@@ -1352,14 +1373,14 @@ export default function PipelineDashboardPage() {
                     }
                     setExpandedStrategyId(null);
                   }}
-                  style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${C.purple}55`, background: compareMode ? C.purple + "22" : "transparent", color: C.purple, fontSize: 11, fontWeight: 700, cursor: "pointer" }}
+                  style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${C.purple}55`, background: compareMode ? C.purple + "22" : "transparent", color: C.purple, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
                 >
                   ⚖ Porovnat strategie
                 </button>
               </div>
               {compareMode ? (
                 <>
-                  <p style={{ fontSize: 11, color: C.muted, marginBottom: 8 }}>
+                  <p style={{ fontSize: 13, color: C.muted, marginBottom: 8 }}>
                     Vyber 2 strategie pomocí checkboxů — ostatní se upozadí. Aktuálně vybráno: {selectedStrategyIds.length}/2
                   </p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1416,8 +1437,8 @@ export default function PipelineDashboardPage() {
                           >
                             {isExpanded ? "Sbalit" : "Detail"}
                           </button>
-                          <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
-                          <Link href={`/admin/workspace/${client.id}`} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: "#fafafa", color: "#555", fontSize: 10, cursor: "pointer", textDecoration: "none" }}>🗂 Workspace</Link>
+                          <Link href={`/admin?id=${client.id}`} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
+                          <Link href={`/admin/workspace/${client.id}`} style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: C.lime, color: "#222", fontSize: 12, fontWeight: 700, cursor: "pointer", textDecoration: "none" }}>🗂 Workspace</Link>
                         </div>
                       );
                     })}
@@ -1437,8 +1458,8 @@ export default function PipelineDashboardPage() {
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                           <div style={{ padding: 16, borderRadius: 12, border: `2px solid ${leftColor}`, background: C.bg2 }}>
                             <div style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 4 }}>{stratA.label}</div>
-                            <div style={{ fontSize: 11, color: leftColor, marginBottom: 8 }}>Fit {(stratA.fit ?? 0)}%</div>
-                            <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginBottom: 10 }}>{stratA.summary ?? "—"}</p>
+                            <div style={{ fontSize: 13, color: leftColor, marginBottom: 8 }}>Fit {(stratA.fit ?? 0)}%</div>
+                            <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.55, marginBottom: 10 }}>{stratA.summary ?? "—"}</p>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
                               {(stratA.priorities ?? []).map((p, i) => (
                                 <span key={i} style={{ padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: C.lime + "22", color: C.lime }}>{p}</span>
@@ -1449,11 +1470,11 @@ export default function PipelineDashboardPage() {
                                 const val = stratA.scores?.[key as keyof typeof stratA.scores] ?? 0;
                                 return (
                                 <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ width: 90, fontSize: 10, color: C.faint }}>{label}</span>
+                                  <span style={{ width: 90, fontSize: 12, color: C.faint }}>{label}</span>
                                   <div style={{ flex: 1, height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
                                     <div style={{ width: `${(val / 10) * 100}%`, height: "100%", background: leftColor, borderRadius: 3 }} />
                                   </div>
-                                  <span style={{ fontSize: 10, fontWeight: 700, color: leftColor }}>{val}/10</span>
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: leftColor }}>{val}/10</span>
                                 </div>
                                 );
                               })}
@@ -1474,7 +1495,7 @@ export default function PipelineDashboardPage() {
                                 const val = stratB.scores?.[key as keyof typeof stratB.scores] ?? 0;
                                 return (
                                 <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                  <span style={{ width: 90, fontSize: 10, color: C.faint }}>{label}</span>
+                                  <span style={{ width: 90, fontSize: 12, color: C.faint }}>{label}</span>
                                   <div style={{ flex: 1, height: 6, background: C.bg3, borderRadius: 3, overflow: "hidden" }}>
                                     <div style={{ width: `${(val / 10) * 100}%`, height: "100%", background: rightColor, borderRadius: 3 }} />
                                   </div>
@@ -1531,18 +1552,18 @@ export default function PipelineDashboardPage() {
                       <div key={s.id} style={{ padding: "12px 15px", borderRadius: 9, border: `1px solid ${s.active ? C.lime + "50" : C.border}`, background: s.active ? C.lime + "07" : C.bg2, display: "flex", alignItems: "center", gap: 10 }}>
                         {s.active && <div style={{ width: 3, height: 28, borderRadius: 2, background: C.lime, flexShrink: 0 }} />}
                         <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{s.label}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
+                            <span style={{ fontSize: 15, fontWeight: 700, color: C.text }}>{s.label}</span>
                             {s.active && <Tag color={C.lime}>✓ Aktivní</Tag>}
                           </div>
-                          <div style={{ fontSize: 10, color: C.faint }}>Uloženo {s.date}</div>
+                          <div style={{ fontSize: 12, color: C.faint }}>Uloženo {s.date}</div>
                         </div>
-                        <Link href={`/admin?id=${client.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 10, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
+                        <Link href={`/admin?id=${client.id}`} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.muted, fontSize: 12, cursor: "pointer", textDecoration: "none" }}>Zobrazit</Link>
                       </div>
                     ))}
                   </div>
-                  <div style={{ padding: "14px 16px", borderRadius: 10, border: `1px solid ${C.purple}33`, background: C.bg2, borderLeft: `4px solid ${C.purple}` }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", marginBottom: 12 }}>SPUSTIT NOVÉHO STRATÉGA</div>
+                  <div style={{ padding: "16px 18px", borderRadius: 10, border: `1px solid ${C.purple}33`, background: C.bg2, borderLeft: `4px solid ${C.purple}` }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", marginBottom: 12 }}>SPUSTIT NOVÉHO STRATÉGA</div>
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                       <select
                         value={strategistId}
