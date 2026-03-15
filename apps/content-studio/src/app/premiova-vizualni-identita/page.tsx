@@ -1228,10 +1228,10 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* MOCKUP DELIVERABLES */}
-      <section style={{ background: "#f7f6f1", padding: "80px 40px", overflow: "hidden" }}>
+      <section style={{ background: "#ffffff", padding: "100px 20px", overflow: "hidden" }}>
         <style>{`
           .mockup-wrap {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             position: relative;
             display: flex;
@@ -1240,7 +1240,7 @@ export default function PremiovaVizualniIdentita() {
           }
           .mockup-header {
             text-align: center;
-            margin-bottom: 56px;
+            margin-bottom: 64px;
           }
           .mockup-header .label {
             font-size: 10px;
@@ -1252,7 +1252,7 @@ export default function PremiovaVizualniIdentita() {
           }
           .mockup-header h2 {
             font-family: var(--font-playfair, Georgia, serif);
-            font-size: clamp(26px, 3.5vw, 42px);
+            font-size: clamp(28px, 3.5vw, 46px);
             font-weight: 700;
             color: #111;
             line-height: 1.15;
@@ -1266,57 +1266,57 @@ export default function PremiovaVizualniIdentita() {
           .mockup-scene {
             position: relative;
             width: 100%;
-            max-width: 700px;
+            max-width: 860px;
           }
           .mockup-img {
             width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.14);
             display: block;
+            border-radius: 0;
+            box-shadow: none;
           }
           .mockup-chip {
             position: absolute;
             background: #fff;
             border-radius: 14px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
-            padding: 12px 16px;
+            box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 12px 18px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 200px;
-            white-space: nowrap;
+            gap: 11px;
+            min-width: 210px;
             animation: floatChip 4s ease-in-out infinite;
           }
           .mockup-chip .chip-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
             background: #f0fad0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 17px;
             flex-shrink: 0;
           }
           .mockup-chip .chip-text {
             font-size: 13px;
             font-weight: 600;
             color: #111;
-            line-height: 1.35;
+            line-height: 1.4;
             white-space: normal;
-            max-width: 180px;
+            max-width: 175px;
           }
-          .chip-1 { top: 4%; left: -10%; animation-delay: 0s; }
-          .chip-2 { top: 28%; left: -14%; animation-delay: 0.6s; }
-          .chip-3 { top: 54%; left: -12%; animation-delay: 1.2s; }
-          .chip-4 { top: 6%; right: -10%; animation-delay: 0.3s; }
-          .chip-5 { top: 32%; right: -14%; animation-delay: 0.9s; }
-          .chip-6 { top: 60%; right: -12%; animation-delay: 1.5s; }
+          .chip-1 { top: 2%;  left: -26%; animation-delay: 0s; }
+          .chip-2 { top: 32%; left: -30%; animation-delay: 0.7s; }
+          .chip-3 { top: 63%; left: -26%; animation-delay: 1.4s; }
+          .chip-4 { top: 2%;  right: -26%; animation-delay: 0.35s; }
+          .chip-5 { top: 32%; right: -30%; animation-delay: 1.05s; }
+          .chip-6 { top: 63%; right: -26%; animation-delay: 1.75s; }
           @keyframes floatChip {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-7px); }
+            50% { transform: translateY(-8px); }
           }
-          @media (max-width: 900px) {
+          @media (max-width: 1100px) {
             .mockup-chip { display: none; }
             .mockup-scene { max-width: 100%; }
           }
