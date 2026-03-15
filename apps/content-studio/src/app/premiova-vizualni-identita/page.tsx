@@ -969,21 +969,135 @@ export default function PremiovaVizualniIdentita() {
         </div>
       </section>
 
-      {/* PROBLEM */}
-      <section className="problem">
-        <div className="problem-grid">
-          <div className="problem-left">
-            <div className="label" style={{color:"rgba(180,232,66,0.6)"}}>Problém který znáte</div>
-            <h2>Máte výsledky.<br /><em>Obsah tomu nestačí.</em></h2>
-            <div className="problem-quote">&ldquo;Tohle není problém tvorby. Je to problém obrazu.&rdquo;</div>
+      {/* TEAM */}
+      <section className="team">
+        <div className="team-inner">
+          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Kdo je duší a srdcem Studia Lucifera</div>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:560,margin:"0 auto 10px",fontWeight:700,fontSize:"17px",color:"rgba(255,255,255,0.7)"}}>AI je náš nástroj. Výsledek tvoříme my.</p>
+          <h2>52 let zkušeností.<br /><em>Nejsme agentura. Jsme studio.</em></h2>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:620,margin:"0 auto 16px"}}>Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI.<br />Jedno místo, kde se to celé skládá dohromady.</p>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:560,margin:"0 auto 56px",fontStyle:"italic",color:"rgba(255,255,255,0.35)"}}>Lucifera je nositelkou světla. Přinášíme ho tam, kde má vaše práce začít zářit.</p>
+          <div className="team-grid">
+            <div className="team-card reveal reveal-d1">
+              <div className="team-avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/KDOJSEM_02.png" alt="Katarína" />
+              </div>
+              <div className="team-name">Katarína</div>
+              <div className="team-role">Obraz · Strategie · AI</div>
+              <div className="team-desc">26 let práce s fotografií a vizuální tvorbou. Projekce pro divadla, festivaly a konference. Dnes propojuje vizuální tvorbu s AI technologiemi a vytváří procesy, které klientům šetří čas a zjednodušují práci s obsahem.</div>
+            </div>
+            <div className="team-card reveal reveal-d2">
+              <div className="team-avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/KDOJSEM_06.png" alt="Luboš" />
+              </div>
+              <div className="team-name">Luboš</div>
+              <div className="team-role">Světlo · Kompozice · Technologie</div>
+              <div className="team-desc">26 let ve fotografii, filmu a postprodukci. Technický fotograf, který řeší světlo, kompozici a kvalitu obrazu – aby každý výstup fungoval profesionálně v každém médiu.</div>
+            </div>
           </div>
-          <div>
-            <ul className="problem-list">
-              <li><div className="pl-icon">📱</div>Web říká jedno, Instagram druhé, LinkedIn třetí. Zákazník neví jestli jste to vy — a odejde.</li>
-              <li><div className="pl-icon">⏰</div>Tvoříte obsah místo toho abyste dělali svou práci. Každý týden znovu od nuly.</li>
-              <li><div className="pl-icon">🤖</div>20 aplikací na generování, texty, plánování. Místo tvorby řešíte systémy.</li>
-              <li><div className="pl-icon">📷</div>Fotky z loňska. Styl který vás nepředstavuje. Vizuál který neodpovídá vaší ceně.</li>
-            </ul>
+        </div>
+      </section>
+
+      {/* DELIVERABLES */}
+      <section className="deliverables">
+        <div className="del-inner">
+          <div className="reveal">
+            <div className="label">Co konkrétně dostanete</div>
+            <h2>Čísla. Ne přísliby.</h2>
+          </div>
+          <div className="del-grid">
+            <div className="del-card reveal reveal-d1">
+              <div className="del-icon">📷</div>
+              <div className="del-num">~150</div>
+              <div className="del-unit">fotek pečlivě vybraných</div>
+              <div className="del-title">5 stylů · cca 20 fotek každý</div>
+              <div className="del-desc">Portréty, pracovní momenty, detail záběry, faceless — vše pečlivě vybrané dle vizuálního boardu.</div>
+            </div>
+            <div className="del-card reveal reveal-d2">
+              <div className="del-icon">🎬</div>
+              <div className="del-num">1 min</div>
+              <div className="del-unit">b-roll video záběrů</div>
+              <div className="del-title">Reels, LinkedIn, stories</div>
+              <div className="del-desc">Autentické klipy pro Reels a video obsah. Teplý grading dle vaší palety.</div>
+            </div>
+            <div className="del-card reveal reveal-d3">
+              <div className="del-icon">🎨</div>
+              <div className="del-num">3</div>
+              <div className="del-unit">Canva šablony na míru</div>
+              <div className="del-title">Grafika připravená k použití</div>
+              <div className="del-desc">Ukázka jak fotky žijí v reálných příspěvcích — fonty, barvy, styl.</div>
+            </div>
+            <div className="del-card reveal reveal-d4">
+              <div className="del-icon">📋</div>
+              <div className="del-num">20</div>
+              <div className="del-unit">stran strategické prezentace</div>
+              <div className="del-title">Rozvoj značky + kampaně</div>
+              <div className="del-desc">Positioning, cílová skupina, obsahový plán, todolist — vše konkrétní.</div>
+            </div>
+          </div>
+          <div className="extras reveal" style={{marginTop:"20px"}}>
+            <div className="extras-label">Za příplatek</div>
+            <div className="extras-row">
+              <div className="extra-tag">Promo video <span>+</span></div>
+              <div className="extra-tag">Reels produkce <span>+</span></div>
+              <div className="extra-tag">Grafika kampaní <span>+</span></div>
+              <div className="extra-tag">Měsíční autopilot <span>+</span></div>
+              <div className="extra-tag">AI avatar <span>+</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROCESS */}
+      <section className="process">
+        <div className="process-inner">
+          <div className="reveal">
+            <div className="label">Jak to funguje</div>
+            <h2>Tři kroky.<br /><em>Jeden výsledek.</em></h2>
+          </div>
+          <div className="process-phases">
+            <div className="phase-card ph-0 reveal reveal-d1">
+              <div className="ph-badge pb-light">Před focením</div>
+              <div className="ph-when">Krok 1 · Strategický hovor</div>
+              <div className="ph-title">Pochopíme vaši značku.</div>
+              <div className="ph-price">9 900 Kč · Bez závazku focení</div>
+              <ul className="ph-items">
+                <li><strong>Analýza vaší online přítomnosti</strong> — web, Instagram, LinkedIn</li>
+                <li><strong>Strategický hovor 60 minut</strong> — co chcete říkat a komu</li>
+                <li><strong>20stránková prezentace</strong> rozvoje značky a kampaní</li>
+                <li><strong>Vizuální board s vaší podobou</strong> — náhledovky jak budete vypadat</li>
+                <li><strong>3 Canva šablony na míru</strong> s ukázkou v reálných příspěvcích</li>
+              </ul>
+            </div>
+            <div className="phase-card ph-1 reveal reveal-d2">
+              <div className="ph-badge pb-dark">Den focení · Praha Kampa</div>
+              <div className="ph-when">Krok 2 · Reálný obsah</div>
+              <div className="ph-title" style={{color:"#fff"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
+              <div className="ph-price">Cena dle rozsahu</div>
+              <ul className="ph-items">
+                <li><strong>5 stylů focení</strong> — každý cca 20 fotografií</li>
+                <li><strong>10 faceless fotek</strong> pro grafiku a kampaně</li>
+                <li><strong>1 minuta b-rollu</strong> pro Reels a LinkedIn video</li>
+                <li>Focení přesně dle vizuálního boardu</li>
+                <li>Prostor pro improvizaci a nápady</li>
+                <li>Za příplatek: promo video, Reels, grafika</li>
+              </ul>
+            </div>
+            <div className="phase-card ph-2 reveal reveal-d3">
+              <div className="ph-badge pb-violet">Po focení · Autopilot</div>
+              <div className="ph-when">Krok 3 · Systém za vás</div>
+              <div className="ph-title" style={{color:"#fff"}}>Značka pracuje.<br />Vy žijete.</div>
+              <div className="ph-price">Měsíční spolupráce</div>
+              <ul className="ph-items">
+                <li>Aplikace která <strong>zná vaši značku</strong></li>
+                <li>Hotové příspěvky, vizuály, Reels — každý týden</li>
+                <li>Vy schválíte. Systém publikuje.</li>
+                <li>Kurátor hlídá strategii a náladu</li>
+                <li>Obsah který vypadá jako vy — protože je to vy</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -1074,156 +1188,6 @@ export default function PremiovaVizualniIdentita() {
               <button className="btn-primary" onClick={openDashboard}>Chci vidět ukázku →</button>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* PROCESS */}
-      <section className="process">
-        <div className="process-inner">
-          <div className="reveal">
-            <div className="label">Jak to funguje</div>
-            <h2>Tři kroky.<br /><em>Jeden výsledek.</em></h2>
-          </div>
-          <div className="process-phases">
-            <div className="phase-card ph-0 reveal reveal-d1">
-              <div className="ph-badge pb-light">Před focením</div>
-              <div className="ph-when">Krok 1 · Strategický hovor</div>
-              <div className="ph-title">Pochopíme vaši značku.</div>
-              <div className="ph-price">9 900 Kč · Bez závazku focení</div>
-              <ul className="ph-items">
-                <li><strong>Analýza vaší online přítomnosti</strong> — web, Instagram, LinkedIn</li>
-                <li><strong>Strategický hovor 60 minut</strong> — co chcete říkat a komu</li>
-                <li><strong>20stránková prezentace</strong> rozvoje značky a kampaní</li>
-                <li><strong>Vizuální board s vaší podobou</strong> — náhledovky jak budete vypadat</li>
-                <li><strong>3 Canva šablony na míru</strong> s ukázkou v reálných příspěvcích</li>
-              </ul>
-            </div>
-            <div className="phase-card ph-1 reveal reveal-d2">
-              <div className="ph-badge pb-dark">Den focení · Praha Kampa</div>
-              <div className="ph-when">Krok 2 · Reálný obsah</div>
-              <div className="ph-title" style={{color:"#fff"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
-              <div className="ph-price">Cena dle rozsahu</div>
-              <ul className="ph-items">
-                <li><strong>5 stylů focení</strong> — každý cca 20 fotografií</li>
-                <li><strong>10 faceless fotek</strong> pro grafiku a kampaně</li>
-                <li><strong>1 minuta b-rollu</strong> pro Reels a LinkedIn video</li>
-                <li>Focení přesně dle vizuálního boardu</li>
-                <li>Prostor pro improvizaci a nápady</li>
-                <li>Za příplatek: promo video, Reels, grafika</li>
-              </ul>
-            </div>
-            <div className="phase-card ph-2 reveal reveal-d3">
-              <div className="ph-badge pb-violet">Po focení · Autopilot</div>
-              <div className="ph-when">Krok 3 · Systém za vás</div>
-              <div className="ph-title" style={{color:"#fff"}}>Značka pracuje.<br />Vy žijete.</div>
-              <div className="ph-price">Měsíční spolupráce</div>
-              <ul className="ph-items">
-                <li>Aplikace která <strong>zná vaši značku</strong></li>
-                <li>Hotové příspěvky, vizuály, Reels — každý týden</li>
-                <li>Vy schválíte. Systém publikuje.</li>
-                <li>Kurátor hlídá strategii a náladu</li>
-                <li>Obsah který vypadá jako vy — protože je to vy</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* DIAGNOSTIKA DEMO */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 40px" }}>
-        <DiagnostikaDemo />
-        <PostUkazky />
-      </div>
-
-      {/* DELIVERABLES */}
-      <section className="deliverables">
-        <div className="del-inner">
-          <div className="reveal">
-            <div className="label">Co konkrétně dostanete</div>
-            <h2>Čísla. Ne přísliby.</h2>
-          </div>
-          <div className="del-grid">
-            <div className="del-card reveal reveal-d1">
-              <div className="del-icon">📷</div>
-              <div className="del-num">~150</div>
-              <div className="del-unit">fotek pečlivě vybraných</div>
-              <div className="del-title">5 stylů · cca 20 fotek každý</div>
-              <div className="del-desc">Portréty, pracovní momenty, detail záběry, faceless — vše pečlivě vybrané dle vizuálního boardu.</div>
-            </div>
-            <div className="del-card reveal reveal-d2">
-              <div className="del-icon">🎬</div>
-              <div className="del-num">1 min</div>
-              <div className="del-unit">b-roll video záběrů</div>
-              <div className="del-title">Reels, LinkedIn, stories</div>
-              <div className="del-desc">Autentické klipy pro Reels a video obsah. Teplý grading dle vaší palety.</div>
-            </div>
-            <div className="del-card reveal reveal-d3">
-              <div className="del-icon">🎨</div>
-              <div className="del-num">3</div>
-              <div className="del-unit">Canva šablony na míru</div>
-              <div className="del-title">Grafika připravená k použití</div>
-              <div className="del-desc">Ukázka jak fotky žijí v reálných příspěvcích — fonty, barvy, styl.</div>
-            </div>
-            <div className="del-card reveal reveal-d4">
-              <div className="del-icon">📋</div>
-              <div className="del-num">20</div>
-              <div className="del-unit">stran strategické prezentace</div>
-              <div className="del-title">Rozvoj značky + kampaně</div>
-              <div className="del-desc">Positioning, cílová skupina, obsahový plán, todolist — vše konkrétní.</div>
-            </div>
-          </div>
-          <div className="extras reveal" style={{marginTop:"20px"}}>
-            <div className="extras-label">Za příplatek</div>
-            <div className="extras-row">
-              <div className="extra-tag">Promo video <span>+</span></div>
-              <div className="extra-tag">Reels produkce <span>+</span></div>
-              <div className="extra-tag">Grafika kampaní <span>+</span></div>
-              <div className="extra-tag">Měsíční autopilot <span>+</span></div>
-              <div className="extra-tag">AI avatar <span>+</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PRICING */}
-      <section className="pricing">
-        <div className="pricing-inner">
-          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Investice</div>
-          <h2>Jasná cena.<br /><em>Bez překvapení.</em></h2>
-          <p className="section-sub">Začněte strategickým hovorem. Focení a autopilot jsou váš další krok — pokud budete chtít.</p>
-          <div className="price-cards">
-            <div className="price-card pc-entry">
-              <div className="pc-badge">Krok 1 · Vstup</div>
-              <div className="pc-price">9 900</div>
-              <div className="pc-period">Kč · Strategický hovor + Vizuální board</div>
-              <ul className="pc-items">
-                <li>Analýza vaší online přítomnosti</li>
-                <li>Strategický hovor 60 minut</li>
-                <li>20stránková prezentace – Marketingový plán a strategie</li>
-                <li>Vizuál board vašich budoucích fotografií</li>
-                <li>3 Canva šablony vycházející z vaší Brand DNA</li>
-              </ul>
-              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
-            </div>
-            <div className="price-card pc-full">
-              <div className="pc-badge">Krok 1 + 2 · Komplet</div>
-              <div className="pc-price">39 900</div>
-              <div className="pc-period">Kč · Hovor + Focení + Výstupy</div>
-              <ul className="pc-items">
-                <li>Vše ze Kroku 1</li>
-                <li>Den focení v ateliéru Praha Kampa</li>
-                <li>5 stylů focení — každý cca 20 fotografií</li>
-                <li>10 faceless fotek pro grafiku a kampaně</li>
-                <li>1 minuta b-rollu pro Reels a video</li>
-                <li>Focení přesně dle vizuálního boardu!</li>
-                <li>Prostor pro improvizaci a nápady</li>
-                <li>Za příplatek: promo video, Reels, grafika</li>
-                <li>Měsíc autopilota zdarma (vstup do naší aplikace)</li>
-              </ul>
-              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Chci kompletní spolupráci →</a>
-            </div>
-          </div>
-          <div className="pricing-note">Autopilot — měsíční spolupráce — domlouváme individuálně. Žádné dlouhodobé závazky.</div>
         </div>
       </section>
 
@@ -1376,6 +1340,76 @@ export default function PremiovaVizualniIdentita() {
         </div>
       </section>
 
+      {/* PROBLEM */}
+      <section className="problem">
+        <div className="problem-grid">
+          <div className="problem-left">
+            <div className="label" style={{color:"rgba(180,232,66,0.6)"}}>Pro koho to je</div>
+            <h2>Máte výsledky.<br /><em>Obsah tomu nestačí.</em></h2>
+            <div className="problem-quote">&ldquo;Tohle není problém tvorby. Je to problém obrazu.&rdquo;</div>
+          </div>
+          <div>
+            <ul className="problem-list">
+              <li><div className="pl-icon">🎙️</div>Jste kouč, mentor, podcastér nebo kreátor. Obsah tvoříte sami — a to trvá.</li>
+              <li><div className="pl-icon">📷</div>Chcete prémiový vizuál který odpovídá vaší úrovni. Ne stock fotky. Ne generický obsah.</li>
+              <li><div className="pl-icon">⏰</div>Každý týden od nuly. Přitom vaše energie patří vaší práci — ne správě Instagramu.</li>
+              <li><div className="pl-icon">🤖</div>Chcete systém který pracuje za vás. Vy schválíte. Zbytek se postará sám.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section className="pricing">
+        <div className="pricing-inner">
+          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Investice</div>
+          <h2>Jasná cena.<br /><em>Bez překvapení.</em></h2>
+          <p className="section-sub">Začněte strategickým hovorem. Focení a autopilot jsou váš další krok — pokud budete chtít.</p>
+          <div className="price-cards">
+            <div className="price-card pc-entry">
+              <div className="pc-badge">Krok 1 · Vstup</div>
+              <div className="pc-price">9 900</div>
+              <div className="pc-period">Kč · Strategický hovor + Vizuální board</div>
+              <ul className="pc-items">
+                <li>Analýza vaší online přítomnosti</li>
+                <li>Strategický hovor 60 minut</li>
+                <li>20stránková prezentace – Marketingový plán a strategie</li>
+                <li>Vizuál board vašich budoucích fotografií</li>
+                <li>3 Canva šablony vycházející z vaší Brand DNA</li>
+              </ul>
+              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
+            </div>
+            <div className="price-card pc-full">
+              <div className="pc-badge">Krok 1 + 2 · Komplet</div>
+              <div className="pc-price">39 900</div>
+              <div className="pc-period">Kč · Hovor + Focení + Výstupy</div>
+              <ul className="pc-items">
+                <li>Vše ze Kroku 1</li>
+                <li>Den focení v ateliéru Praha Kampa</li>
+                <li>5 stylů focení — každý cca 20 fotografií</li>
+                <li>10 faceless fotek pro grafiku a kampaně</li>
+                <li>1 minuta b-rollu pro Reels a video</li>
+                <li>Focení přesně dle vizuálního boardu!</li>
+                <li>Prostor pro improvizaci a nápady</li>
+                <li>Za příplatek: promo video, Reels, grafika</li>
+                <li>Měsíc autopilota zdarma (vstup do naší aplikace)</li>
+              </ul>
+              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Chci kompletní spolupráci →</a>
+            </div>
+          </div>
+          <div className="pricing-note">Autopilot — měsíční spolupráce — domlouváme individuálně. Žádné dlouhodobé závazky.</div>
+        </div>
+      </section>
+
+      {/* REFERENCE */}
+      <ReferenceSekce />
+
+      {/* DIAGNOSTIKA DEMO */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 40px" }}>
+        <DiagnostikaDemo />
+        <PostUkazky />
+      </div>
+
       {/* BRAND SCAN CTA */}
       <section className="scan-cta">
         <div className="scan-inner">
@@ -1408,39 +1442,6 @@ export default function PremiovaVizualniIdentita() {
             </button>
           </div>
           <div className="scan-note reveal">Zdarma · Bez registrace · Výsledky okamžitě</div>
-        </div>
-      </section>
-
-      {/* REFERENCE */}
-      <ReferenceSekce />
-
-      {/* TEAM */}
-      <section className="team">
-        <div className="team-inner">
-          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Kdo je duší a srdcem Studia Lucifera</div>
-          <h2>52 let zkušeností.<br /><em>Nejsme agentura. Jsme studio.</em></h2>
-          <p className="section-sub" style={{textAlign:"center",maxWidth:620,margin:"0 auto 16px"}}>Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI.<br />Jedno místo, kde se to celé skládá dohromady.</p>
-          <p className="section-sub" style={{textAlign:"center",maxWidth:560,margin:"0 auto 56px",fontStyle:"italic",color:"rgba(255,255,255,0.35)"}}>Lucifera je nositelkou světla. Přinášíme ho tam, kde má vaše práce začít zářit.</p>
-          <div className="team-grid">
-            <div className="team-card reveal reveal-d1">
-              <div className="team-avatar">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_04.png" alt="Katarína" />
-              </div>
-              <div className="team-name">Katarína</div>
-              <div className="team-role">Obraz · Strategie · AI</div>
-              <div className="team-desc">26 let práce s fotografií a vizuální tvorbou. Projekce pro divadla, festivaly a konference. Dnes propojuje vizuální tvorbu s AI technologiemi a vytváří procesy, které klientům šetří čas a zjednodušují práci s obsahem.</div>
-            </div>
-            <div className="team-card reveal reveal-d2">
-              <div className="team-avatar">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_05.png" alt="Luboš" />
-              </div>
-              <div className="team-name">Luboš</div>
-              <div className="team-role">Světlo · Kompozice · Technologie</div>
-              <div className="team-desc">26 let ve fotografii, filmu a postprodukci. Technický fotograf, který řeší světlo, kompozici a kvalitu obrazu – aby každý výstup fungoval profesionálně v každém médiu.</div>
-            </div>
-          </div>
         </div>
       </section>
 
