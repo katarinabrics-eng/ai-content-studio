@@ -320,7 +320,7 @@ export default function DiagnostikaDemo() {
       {/* Progress dots */}
       <div style={{ display: "flex", justifyContent: "center", gap: 7, marginTop: 32 }}>
         {Array.from({ length: STAGES }).map((_, i) => (
-          <div key={i} style={{ height: 7, borderRadius: 4, width: i === stage ? 22 : 7, background: i === stage ? LIME : "rgba(255,255,255,0.15)", transition: "width .3s, background .3s" }} />
+          <div key={i} style={{ height: 7, borderRadius: 4, width: i === stage ? 22 : 7, background: i === stage ? LIME : "rgba(0,0,0,0.12)", transition: "width .3s, background .3s" }} />
         ))}
       </div>
 
@@ -329,7 +329,7 @@ export default function DiagnostikaDemo() {
         <a href="/diagnostika" style={{ display: "inline-block", background: LIME, color: "#111", fontWeight: 800, fontSize: 15, padding: "14px 36px", borderRadius: 12, textDecoration: "none", letterSpacing: "-0.01em" }}>
           Spustit vlastní diagnostiku →
         </a>
-        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 10 }}>Zdarma · Bez registrace · Výsledky za 2 minuty</p>
+        <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginTop: 10 }}>Zdarma · Bez registrace · Výsledky za 2 minuty</p>
       </div>
     </section>
   );
@@ -339,8 +339,8 @@ function StepLabel({ step, text }: { step: number; text: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
       <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#b7e94c", color: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>{step}</span>
-      <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{text}</span>
-      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginLeft: "auto" }}>{step} / {STAGES}</span>
+      <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>{text}</span>
+      <span style={{ fontSize: 11, color: "rgba(0,0,0,0.3)", marginLeft: "auto" }}>{step} / {STAGES}</span>
     </div>
   );
 }
