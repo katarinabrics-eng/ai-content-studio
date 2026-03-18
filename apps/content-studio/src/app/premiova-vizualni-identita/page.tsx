@@ -728,6 +728,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .ph-1 .ph-items li,.pvi-page .ph-2 .ph-items li{color:rgba(255,255,255,0.45);}
         .pvi-page .ph-0 .ph-items li::before{content:'·';color:var(--lime-dark);font-size:16px;line-height:1;flex-shrink:0;}
         .pvi-page .ph-1 .ph-items li::before,.pvi-page .ph-2 .ph-items li::before{content:'·';color:var(--lime);font-size:16px;line-height:1;flex-shrink:0;}
+        .pvi-page .ph-lime .ph-items li::before{content:'·';color:rgba(0,0,0,0.4);font-size:16px;line-height:1;flex-shrink:0;}
         .pvi-page .ph-items li strong{font-weight:600;}
         .pvi-page .ph-0 .ph-items li strong{color:var(--black);}
         .pvi-page .ph-1 .ph-items li strong,.pvi-page .ph-2 .ph-items li strong{color:#fff;}
@@ -1161,16 +1162,25 @@ export default function PremiovaVizualniIdentita() {
                 <li>typy záběrů</li>
               </ul>
             </div>
-            <div className="phase-card ph-1 reveal reveal-d2">
-              <div className="ph-badge pb-dark">Den focení · Praha Kampa</div>
-              <div className="ph-when">Krok 2 · Reálný obsah</div>
-              <div className="ph-title" style={{color:"#fff"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
-              <div className="ph-price">Content Day</div>
+            <div className="phase-card ph-lime reveal reveal-d2" style={{
+              background:"#b7e94c",padding:36,borderRadius:20,
+              boxShadow:"0 8px 48px rgba(183,233,76,0.30)",
+              transform:"translateY(-10px)",
+            }}>
+              <div style={{
+                display:"inline-flex",alignItems:"center",gap:6,
+                padding:"4px 12px",borderRadius:10,fontSize:10,fontWeight:700,
+                letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:20,
+                background:"rgba(0,0,0,0.10)",color:"#111",
+              }}>Den focení · Praha Kampa</div>
+              <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6,color:"rgba(0,0,0,0.35)"}}>Krok 2 · Reálný obsah</div>
+              <div style={{fontFamily:"var(--font-playfair),serif",fontSize:24,fontWeight:700,lineHeight:1.2,marginBottom:6,color:"#111"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
+              <div style={{fontSize:13,fontWeight:600,marginBottom:20,paddingBottom:20,borderBottom:"1px solid rgba(0,0,0,0.12)",color:"#333"}}>Content Day</div>
               <ul className="ph-items">
-                <li>portréty</li>
-                <li>pracovní momenty</li>
-                <li>lifestyle</li>
-                <li>obsah pro sítě</li>
+                <li style={{color:"rgba(0,0,0,0.6)"}}>portréty</li>
+                <li style={{color:"rgba(0,0,0,0.6)"}}>pracovní momenty</li>
+                <li style={{color:"rgba(0,0,0,0.6)"}}>lifestyle</li>
+                <li style={{color:"rgba(0,0,0,0.6)"}}>obsah pro sítě</li>
               </ul>
             </div>
             <div className="phase-card ph-2 reveal reveal-d3">
