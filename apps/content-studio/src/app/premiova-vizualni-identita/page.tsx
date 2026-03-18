@@ -1278,8 +1278,8 @@ export default function PremiovaVizualniIdentita() {
               background:"rgba(180,232,66,0.06)",border:"1px solid rgba(180,232,66,0.15)",
               borderRadius:16,padding:"28px 32px",textAlign:"center",minWidth:180,flexShrink:0,
             }}>
-              <div style={{fontFamily:"var(--font-playfair),serif",fontSize:52,fontWeight:700,color:"var(--lime)",lineHeight:1}}>39 900</div>
-              <div style={{fontSize:12,color:"rgba(255,255,255,0.3)",marginTop:6}}>Kč · Content Day</div>
+              <div style={{fontFamily:"var(--font-playfair),serif",fontSize:52,fontWeight:700,color:"var(--lime)",lineHeight:1,display:"flex",alignItems:"baseline",gap:6,justifyContent:"center"}}>39 900 <span style={{fontSize:22,fontWeight:500}}>Kč</span></div>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.3)",marginTop:6}}>Content Day</div>
             </div>
           </div>
 
@@ -1291,8 +1291,7 @@ export default function PremiovaVizualniIdentita() {
               {/* Content Starter */}
               <div style={{background:"#fff",border:"1px solid var(--gray-light)",borderRadius:18,padding:"28px 32px"}}>
                 <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:12}}>Content Starter</div>
-                <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:4}}>4 900</div>
-                <div style={{fontSize:12,color:"#aaa",marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)"}}>Kč</div>
+                <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)",display:"flex",alignItems:"baseline",gap:5}}>4 900 <span style={{fontSize:16,fontWeight:400,color:"#aaa"}}>Kč</span></div>
                 <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:24}}>
                   {["návrh vizuálního stylu","ilustrační vizuály","5 krátkých video záběrů","návrhy příspěvků + texty"].map(i=>(
                     <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#555"}}>
@@ -1312,8 +1311,7 @@ export default function PremiovaVizualniIdentita() {
               {/* Content Concept */}
               <div style={{background:"#fff",border:"1px solid var(--gray-light)",borderRadius:18,padding:"28px 32px"}}>
                 <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:12}}>Content Concept</div>
-                <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:4}}>9 900</div>
-                <div style={{fontSize:12,color:"#aaa",marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)"}}>Kč</div>
+                <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)",display:"flex",alignItems:"baseline",gap:5}}>9 900 <span style={{fontSize:16,fontWeight:400,color:"#aaa"}}>Kč</span></div>
                 <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:24}}>
                   {["kompletní návrh focení","vizuální náhledy","obsahový plán","Canva šablony"].map(i=>(
                     <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#555"}}>
