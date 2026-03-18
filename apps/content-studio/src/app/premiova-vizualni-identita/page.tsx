@@ -1221,7 +1221,7 @@ export default function PremiovaVizualniIdentita() {
             </div>
             <div className="del-card reveal reveal-d3">
               <div className="del-icon">🎨</div>
-              <div className="del-num">3</div>
+              <div className="del-num">10</div>
               <div className="del-unit">Canva šablony na míru</div>
               <div className="del-title">Grafika připravená k použití</div>
               <div className="del-desc">Fonty, barvy, styl — vše nastavené. Otevřete a upravíte za minutu.</div>
