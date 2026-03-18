@@ -1012,140 +1012,8 @@ export default function PremiovaVizualniIdentita() {
         </div>
       </section>
 
-      {/* SEKCE 4 — UKÁZKY (černá) */}
-      <section style={{background:"#0e0e0e",padding:"100px 20px",overflow:"hidden"}}>
-        <style>{`
-          .mockup-wrap {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-          .mockup-header {
-            text-align: center;
-            margin-bottom: 64px;
-          }
-          .mockup-header .label {
-            font-size: 10px;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: #8ab830;
-            font-weight: 700;
-            margin-bottom: 12px;
-          }
-          .mockup-header h2 {
-            font-family: var(--font-playfair, Georgia, serif);
-            font-size: clamp(28px, 3.5vw, 46px);
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.15;
-            letter-spacing: -0.02em;
-            margin: 0;
-          }
-          .mockup-header h2 em {
-            font-style: italic;
-            color: #8ab830;
-          }
-          .mockup-scene {
-            position: relative;
-            width: 100%;
-            max-width: 860px;
-          }
-          .mockup-img {
-            width: 100%;
-            display: block;
-            border-radius: 0;
-            box-shadow: none;
-          }
-          .mockup-chip {
-            position: absolute;
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 6px 28px rgba(0,0,0,0.10);
-            border: 1px solid rgba(0,0,0,0.06);
-            padding: 12px 18px;
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            min-width: 210px;
-            animation: floatChip 4s ease-in-out infinite;
-          }
-          .mockup-chip .chip-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            background: #f0fad0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-            flex-shrink: 0;
-          }
-          .mockup-chip .chip-text {
-            font-size: 13px;
-            font-weight: 600;
-            color: #111;
-            line-height: 1.4;
-            white-space: normal;
-            max-width: 175px;
-          }
-          .chip-1 { top: -5%;  left: -30%; animation-delay: 0s;    animation-duration: 4.2s; transform: rotate(-2deg); }
-          .chip-2 { top: 43%;  left: -35%; animation-delay: 1.3s;  animation-duration: 5.7s; transform: rotate(1.5deg); }
-          .chip-3 { top: 82%;  left: -18%; animation-delay: 0.7s;  animation-duration: 3.9s; transform: rotate(-1deg); }
-          .chip-4 { top: 3%;   right: -26%; animation-delay: 0.4s; animation-duration: 4.9s; transform: rotate(2deg); }
-          .chip-5 { top: 34%;  right: -34%; animation-delay: 2.1s; animation-duration: 6.1s; transform: rotate(-1.5deg); }
-          .chip-6 { top: 68%;  right: -22%; animation-delay: 0.9s; animation-duration: 4.4s; transform: rotate(1deg); }
-          @keyframes floatChip {
-            0%   { transform: translateY(0px) rotate(var(--base-rot, 0deg)); }
-            25%  { transform: translateY(-11px) rotate(calc(var(--base-rot, 0deg) + 0.6deg)); }
-            60%  { transform: translateY(-5px) rotate(calc(var(--base-rot, 0deg) - 0.4deg)); }
-            100% { transform: translateY(0px) rotate(var(--base-rot, 0deg)); }
-          }
-          @media (max-width: 1100px) {
-            .mockup-chip { display: none; }
-            .mockup-scene { max-width: 100%; }
-          }
-        `}</style>
-        <div className="mockup-wrap">
-          <div className="mockup-header">
-            <p className="label">Ukázky výstupů</p>
-            <h2>Takhle vypadá výsledek.</h2>
-          </div>
-          <div className="mockup-scene">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/placeholders/mocuppremium.jpg" alt="Prémiová vizuální identita mockup" className="mockup-img" />
-            <div className="mockup-chip chip-1">
-              <div className="chip-icon">📷</div>
-              <div><div className="chip-text">100–150 fotografií připravených k použití</div></div>
-            </div>
-            <div className="mockup-chip chip-2">
-              <div className="chip-icon">🎬</div>
-              <div><div className="chip-text">Krátké video záběry pro Reels</div></div>
-            </div>
-            <div className="mockup-chip chip-3">
-              <div className="chip-icon">📸</div>
-              <div><div className="chip-text">5 typů záběrů · každý jiný styl</div></div>
-            </div>
-            <div className="mockup-chip chip-4">
-              <div className="chip-icon">🎨</div>
-              <div><div className="chip-text">3 Canva šablony na míru</div></div>
-            </div>
-            <div className="mockup-chip chip-5">
-              <div className="chip-icon">🖼️</div>
-              <div><div className="chip-text">Vizuální návrh focení dopředu</div></div>
-            </div>
-            <div className="mockup-chip chip-6">
-              <div className="chip-icon">✅</div>
-              <div><div className="chip-text">Návrh obsahu a jak fotky použít</div></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SEKCE 5 — VIZUÁLNÍ BOARD (bílá) */}
-      <section className="wow" style={{background:"#ffffff"}}>
+      {/* SEKCE 4 — VIZUÁLNÍ BOARD (krémová) */}
+      <section className="wow" style={{background:"var(--cream)"}}>
         <div className="wow-inner">
           <div className="label reveal">Vizuální board</div>
           <h2 className="reveal">Dopředu víte, co jdete fotit.<br /><em>Váš obličej. Váš styl.</em></h2>
@@ -1315,6 +1183,7 @@ export default function PremiovaVizualniIdentita() {
               <div className="extra-tag">AI avatar <span>+</span></div>
             </div>
           </div>
+          <PostUkazky />
         </div>
       </section>
 
@@ -1435,7 +1304,37 @@ export default function PremiovaVizualniIdentita() {
         <ReferenceSekce />
       </div>
 
-      {/* SEKCE 10 — DIAGNOSTIKA (krémová) */}
+      {/* SEKCE 10 — O NÁS (černá) */}
+      <section className="team">
+        <div className="team-inner">
+          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Kdo jsme</div>
+          <h2 style={{color:"#fff",textAlign:"center",marginBottom:8}}>52 let zkušeností.<br /><em style={{color:"var(--lime)"}}>Nejsme agentura. Jsme studio.</em></h2>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:620,margin:"0 auto 16px"}}>Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI.<br />Jedno místo, kde se to celé skládá dohromady.</p>
+          <p className="section-sub" style={{textAlign:"center",maxWidth:560,margin:"0 auto 56px",fontStyle:"italic",color:"rgba(255,255,255,0.35)"}}>Lucifera je nositelkou světla. Přinášíme ho tam, kde má vaše práce začít zářit.</p>
+          <div className="team-grid">
+            <div className="team-card reveal reveal-d1">
+              <div className="team-avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/KDOJSEM_04.png" alt="Katarína" />
+              </div>
+              <div className="team-name">Katarína</div>
+              <div className="team-role">Obraz · Strategie · AI</div>
+              <div className="team-desc">26 let práce s fotografií a vizuální tvorbou. Projekce pro divadla, festivaly a konference. Dnes propojuje vizuální tvorbu s AI technologiemi a vytváří procesy, které klientům šetří čas a zjednodušují práci s obsahem.</div>
+            </div>
+            <div className="team-card reveal reveal-d2">
+              <div className="team-avatar">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/KDOJSEM_05.png" alt="Luboš" />
+              </div>
+              <div className="team-name">Luboš</div>
+              <div className="team-role">Světlo · Kompozice · Technologie</div>
+              <div className="team-desc">26 let ve fotografii, filmu a postprodukci. Technický fotograf, který řeší světlo, kompozici a kvalitu obrazu – aby každý výstup fungoval profesionálně v každém médiu.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEKCE 11 — DIAGNOSTIKA (krémová) */}
       <section className="scan-cta" style={{background:"var(--cream)"}}>
         <div className="scan-inner">
           <div className="label reveal">Zkontrolovat moji značku</div>
@@ -1471,38 +1370,7 @@ export default function PremiovaVizualniIdentita() {
       </section>
       <div style={{background:"var(--cream)",maxWidth:1200,margin:"0 auto",padding:"0 40px"}}>
         <DiagnostikaDemo />
-        <PostUkazky />
       </div>
-
-      {/* SEKCE 11 — O NÁS (černá) */}
-      <section className="team">
-        <div className="team-inner">
-          <div className="label" style={{color:"var(--lime)",textAlign:"center"}}>Kdo jsme</div>
-          <h2 style={{color:"#fff",textAlign:"center",marginBottom:8}}>52 let zkušeností.<br /><em style={{color:"var(--lime)"}}>Nejsme agentura. Jsme studio.</em></h2>
-          <p className="section-sub" style={{textAlign:"center",maxWidth:620,margin:"0 auto 16px"}}>Fyzický svět fotoateliéru na Kampě. Digitální ekosystém AI.<br />Jedno místo, kde se to celé skládá dohromady.</p>
-          <p className="section-sub" style={{textAlign:"center",maxWidth:560,margin:"0 auto 56px",fontStyle:"italic",color:"rgba(255,255,255,0.35)"}}>Lucifera je nositelkou světla. Přinášíme ho tam, kde má vaše práce začít zářit.</p>
-          <div className="team-grid">
-            <div className="team-card reveal reveal-d1">
-              <div className="team-avatar">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_04.png" alt="Katarína" />
-              </div>
-              <div className="team-name">Katarína</div>
-              <div className="team-role">Obraz · Strategie · AI</div>
-              <div className="team-desc">26 let práce s fotografií a vizuální tvorbou. Projekce pro divadla, festivaly a konference. Dnes propojuje vizuální tvorbu s AI technologiemi a vytváří procesy, které klientům šetří čas a zjednodušují práci s obsahem.</div>
-            </div>
-            <div className="team-card reveal reveal-d2">
-              <div className="team-avatar">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/KDOJSEM_05.png" alt="Luboš" />
-              </div>
-              <div className="team-name">Luboš</div>
-              <div className="team-role">Světlo · Kompozice · Technologie</div>
-              <div className="team-desc">26 let ve fotografii, filmu a postprodukci. Technický fotograf, který řeší světlo, kompozici a kvalitu obrazu – aby každý výstup fungoval profesionálně v každém médiu.</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* SEKCE 12 — FINÁLNÍ CTA (černá) */}
       <section className="footer-cta" style={{background:"var(--black)"}}>
