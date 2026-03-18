@@ -1137,52 +1137,134 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 7 — CO DOSTANETE (bílá) */}
-      <section className="deliverables" style={{background:"#ffffff"}}>
-        <div className="del-inner">
-          <div className="reveal">
-            <div className="label">Co reálně dostanete</div>
-            <h2>Vše připravené k použití.</h2>
+      <section className="deliverables" style={{background:"#ffffff",padding:"96px 80px"}}>
+        <style>{`
+          .del-mockup-scene {
+            position: relative;
+            width: 100%;
+          }
+          .del-mockup-scene img {
+            width: 100%;
+            display: block;
+          }
+          .del-chip {
+            position: absolute;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            white-space: nowrap;
+            animation: floatChip 4s ease-in-out infinite;
+          }
+          .del-chip .dc-icon {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: #f0fad0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+          }
+          .del-chip .dc-text {
+            font-size: 11px; font-weight: 600; color: #111; line-height: 1.3;
+          }
+          .dc-1 { top: 2%;   left: -8%;  animation-delay: 0s;   animation-duration: 4.2s; }
+          .dc-2 { top: 38%;  left: -10%; animation-delay: 1.3s; animation-duration: 5.7s; }
+          .dc-3 { top: 76%;  left: -4%;  animation-delay: 0.7s; animation-duration: 3.9s; }
+          .dc-4 { top: 5%;   right: -8%; animation-delay: 0.4s; animation-duration: 4.9s; }
+          .dc-5 { top: 38%;  right: -10%; animation-delay: 2.1s; animation-duration: 6.1s; }
+          .dc-6 { top: 72%;  right: -6%; animation-delay: 0.9s; animation-duration: 4.4s; }
+          @media (max-width: 1100px) {
+            .del-chip { display: none; }
+          }
+        `}</style>
+        <div style={{maxWidth:1360,margin:"0 auto"}}>
+          {/* 2-col: karty vlevo, mockup vpravo */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:72,alignItems:"start"}}>
+
+            {/* Levý sloupec — karty */}
+            <div>
+              <div className="reveal">
+                <div className="label">Co reálně dostanete</div>
+                <h2>Vše připravené<br /><em>k použití.</em></h2>
+              </div>
+              <div className="del-grid" style={{gridTemplateColumns:"1fr 1fr"}}>
+                <div className="del-card reveal reveal-d1">
+                  <div className="del-icon">📷</div>
+                  <div className="del-num">~150</div>
+                  <div className="del-unit">fotografií</div>
+                  <div className="del-title">5 typů záběrů</div>
+                  <div className="del-desc">Portréty, pracovní momenty, lifestyle, detail — každý jiný styl, každý použitelný.</div>
+                </div>
+                <div className="del-card reveal reveal-d2">
+                  <div className="del-icon">🎬</div>
+                  <div className="del-num">Reels</div>
+                  <div className="del-unit">krátké video záběry</div>
+                  <div className="del-title">LinkedIn · stories · sítě</div>
+                  <div className="del-desc">Autentické klipy připravené k publikaci. Teplý grading dle vašeho stylu.</div>
+                </div>
+                <div className="del-card reveal reveal-d3">
+                  <div className="del-icon">🎨</div>
+                  <div className="del-num">3</div>
+                  <div className="del-unit">Canva šablony na míru</div>
+                  <div className="del-title">Grafika připravená k použití</div>
+                  <div className="del-desc">Fonty, barvy, styl — vše nastavené. Otevřete a upravíte za minutu.</div>
+                </div>
+                <div className="del-card reveal reveal-d4">
+                  <div className="del-icon">📋</div>
+                  <div className="del-num">Návrh</div>
+                  <div className="del-unit">obsahu a použití fotek</div>
+                  <div className="del-title">Konkrétní typy příspěvků</div>
+                  <div className="del-desc">Víte přesně co publikovat, kde a jak. Nemusíte vymýšlet — jen vybíráte.</div>
+                </div>
+              </div>
+              <div className="extras reveal" style={{marginTop:"20px"}}>
+                <div className="extras-label">Za příplatek</div>
+                <div className="extras-row">
+                  <div className="extra-tag">Promo video <span>+</span></div>
+                  <div className="extra-tag">Reels produkce <span>+</span></div>
+                  <div className="extra-tag">Grafika kampaní <span>+</span></div>
+                  <div className="extra-tag">Měsíční obsah <span>+</span></div>
+                  <div className="extra-tag">AI avatar <span>+</span></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pravý sloupec — mockup s čipy */}
+            <div style={{position:"relative",paddingTop:24}}>
+              <div className="del-mockup-scene reveal reveal-d2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/mocuppremium.jpg" alt="Ukázka výstupů" />
+                <div className="del-chip dc-1">
+                  <div className="dc-icon">📷</div>
+                  <div className="dc-text">100–150 fotografií</div>
+                </div>
+                <div className="del-chip dc-2">
+                  <div className="dc-icon">🔍</div>
+                  <div className="dc-text">Návrh obsahu a použití</div>
+                </div>
+                <div className="del-chip dc-3">
+                  <div className="dc-icon">📸</div>
+                  <div className="dc-text">5 typů záběrů</div>
+                </div>
+                <div className="del-chip dc-4">
+                  <div className="dc-icon">🎨</div>
+                  <div className="dc-text">3 Canva šablony</div>
+                </div>
+                <div className="del-chip dc-5">
+                  <div className="dc-icon">🖼️</div>
+                  <div className="dc-text">Vizuální návrh focení</div>
+                </div>
+                <div className="del-chip dc-6">
+                  <div className="dc-icon">🎬</div>
+                  <div className="dc-text">Video záběry pro Reels</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="del-grid">
-            <div className="del-card reveal reveal-d1">
-              <div className="del-icon">📷</div>
-              <div className="del-num">~150</div>
-              <div className="del-unit">fotografií</div>
-              <div className="del-title">5 typů záběrů</div>
-              <div className="del-desc">Portréty, pracovní momenty, lifestyle, detail — každý jiný styl, každý použitelný.</div>
-            </div>
-            <div className="del-card reveal reveal-d2">
-              <div className="del-icon">🎬</div>
-              <div className="del-num">Reels</div>
-              <div className="del-unit">krátké video záběry</div>
-              <div className="del-title">LinkedIn · stories · sítě</div>
-              <div className="del-desc">Autentické klipy připravené k publikaci. Teplý grading dle vašeho stylu.</div>
-            </div>
-            <div className="del-card reveal reveal-d3">
-              <div className="del-icon">🎨</div>
-              <div className="del-num">3</div>
-              <div className="del-unit">Canva šablony na míru</div>
-              <div className="del-title">Grafika připravená k použití</div>
-              <div className="del-desc">Fonty, barvy, styl — vše nastavené. Otevřete a upravíte za minutu.</div>
-            </div>
-            <div className="del-card reveal reveal-d4">
-              <div className="del-icon">📋</div>
-              <div className="del-num">Návrh</div>
-              <div className="del-unit">obsahu a použití fotek</div>
-              <div className="del-title">Konkrétní typy příspěvků</div>
-              <div className="del-desc">Víte přesně co publikovat, kde a jak. Nemusíte vymýšlet — jen vybíráte.</div>
-            </div>
-          </div>
-          <div className="extras reveal" style={{marginTop:"20px"}}>
-            <div className="extras-label">Za příplatek</div>
-            <div className="extras-row">
-              <div className="extra-tag">Promo video <span>+</span></div>
-              <div className="extra-tag">Reels produkce <span>+</span></div>
-              <div className="extra-tag">Grafika kampaní <span>+</span></div>
-              <div className="extra-tag">Měsíční obsah <span>+</span></div>
-              <div className="extra-tag">AI avatar <span>+</span></div>
-            </div>
-          </div>
+
+          {/* PostUkazky pod oběma sloupci */}
           <PostUkazky />
         </div>
       </section>
