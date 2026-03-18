@@ -90,10 +90,8 @@ export default function DiagnostikaDemo() {
 
   return (
     <section style={{
-      background: "#111",
-      borderRadius: 20,
-      padding: "64px 48px 56px",
-      margin: "64px -80px 0",
+      background: "transparent",
+      padding: "0",
       overflow: "hidden",
     }}>
       <style>{`
@@ -101,10 +99,10 @@ export default function DiagnostikaDemo() {
         @keyframes diagPulse  { 0%,100%{opacity:.6} 50%{opacity:1} }
         @keyframes hexSpin    { to{transform:rotate(360deg)} }
       `}</style>
-      <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: LIME, textAlign: "center", margin: "0 0 10px" }}>
+      <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8fb82e", textAlign: "center", margin: "0 0 10px" }}>
         Jak diagnostika funguje
       </p>
-      <h3 style={{ fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 800, color: "#fff", textAlign: "center", margin: "0 0 40px", lineHeight: 1.2 }}>
+      <h3 style={{ fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 800, color: "#111", textAlign: "center", margin: "0 0 40px", lineHeight: 1.2 }}>
         Za 2 minuty víte, kde vaše značka stojí.
       </h3>
 

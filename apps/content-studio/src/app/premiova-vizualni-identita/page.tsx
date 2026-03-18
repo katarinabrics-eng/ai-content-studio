@@ -1335,42 +1335,11 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 11 — DIAGNOSTIKA (krémová) */}
-      <section className="scan-cta" style={{background:"var(--cream)"}}>
-        <div className="scan-inner">
-          <div className="label reveal">Zkontrolovat moji značku</div>
-          <h2 className="reveal">Za 2 minuty víte,<br /><em>kde vaše značka stojí.</em></h2>
-          <p className="section-sub reveal">Zadejte adresu webu. Výsledek okamžitě — bez registrace, zdarma.</p>
-          <div className="scan-input-wrap reveal">
-            <input
-              id="scan-url-input"
-              className="scan-input"
-              type="url"
-              placeholder="vasweb.cz"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const val = (document.getElementById("scan-url-input") as HTMLInputElement)?.value?.trim();
-                  if (val) window.location.href = `/diagnostika?url=${encodeURIComponent(val)}`;
-                  else window.location.href = "/diagnostika";
-                }
-              }}
-            />
-            <button
-              className="scan-btn"
-              onClick={() => {
-                const val = (document.getElementById("scan-url-input") as HTMLInputElement)?.value?.trim();
-                if (val) window.location.href = `/diagnostika?url=${encodeURIComponent(val)}`;
-                else window.location.href = "/diagnostika";
-              }}
-            >
-              Zkontrolovat moji značku →
-            </button>
-          </div>
-          <div className="scan-note reveal">Zdarma · Bez registrace · Výsledky okamžitě</div>
+      <section style={{background:"var(--cream)",padding:"96px 80px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <DiagnostikaDemo />
         </div>
       </section>
-      <div style={{background:"var(--cream)",maxWidth:1200,margin:"0 auto",padding:"0 40px"}}>
-        <DiagnostikaDemo />
-      </div>
 
       {/* SEKCE 12 — FINÁLNÍ CTA (černá) */}
       <section className="footer-cta" style={{background:"var(--black)"}}>
