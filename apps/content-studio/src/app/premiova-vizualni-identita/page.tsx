@@ -1254,13 +1254,18 @@ export default function PremiovaVizualniIdentita() {
               <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--lime)",marginBottom:8}}>Content Day · od 39 900 Kč</div>
               <div style={{fontFamily:"var(--font-playfair),serif",fontSize:"clamp(26px,3vw,36px)",fontWeight:700,color:"#fff",lineHeight:1.2,marginBottom:12}}>Obsah na měsíce dopředu</div>
               <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.7,marginBottom:20,maxWidth:480}}>Přijdete jednou. Odejdete s obsahem na 3–6 měsíců.</p>
-              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
-                {["100–150 fotografií","5 stylů focení","video záběry","sjednocený vizuální styl"].map(i=>(
-                  <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"rgba(255,255,255,0.55)"}}>
-                    <span style={{color:"var(--lime)",fontWeight:700}}>✓</span>{i}
-                  </li>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px 32px",marginBottom:28}}>
+                {[
+                  "100–150 fotografií",       "kompletní návrh focení",
+                  "5 stylů focení",           "vizuální náhledy",
+                  "video záběry",             "obsahový plán",
+                  "sjednocený vizuální styl", "Canva šablony",
+                ].map(i=>(
+                  <div key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"rgba(255,255,255,0.55)"}}>
+                    <span style={{color:"var(--lime)",fontWeight:700,flexShrink:0}}>✓</span>{i}
+                  </div>
                 ))}
-              </ul>
+              </div>
               <a href="/rezervace?open=identita" style={{
                 display:"inline-flex",alignItems:"center",gap:8,
                 background:"#b7e94c",color:"#111",
