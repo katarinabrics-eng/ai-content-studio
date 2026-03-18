@@ -933,14 +933,15 @@ export default function PremiovaVizualniIdentita() {
       <section className="hero" style={{padding:0}}>
         <div className="hero-container">
           <div className="hero-left">
-            <div className="hero-badge">Prémiová vizuální identita · Praha, Kampa</div>
+            <div className="hero-badge">Content Day · Praha, Kampa</div>
             <h1>Jeden den focení.<br /><em>Obsah na 3–6 měsíců dopředu.</em></h1>
-            <p className="hero-sub">Přijdete do ateliéru. Odejdete s cca 150 pečlivě vybranými fotografiemi, jasnou strategií a systémem který tvoří obsah každý týden za vás.</p>
+            <p className="hero-sub">Přijdete do ateliéru. Odejdete s fotografiemi, které odpovídají vaší značce — a konkrétním plánem, jak je používat v příspěvcích, na webu i v kampaních.</p>
             <div className="hero-actions">
-              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
-              <a href="/diagnostika" className="btn-secondary" style={{textDecoration:"none"}}>nebo spustit bezplatnou analýzu značky ↓</a>
-              <div className="hero-note">Vizuální board · Strategie · 3 Canva šablony · Placeno předem</div>
+              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Chci obsah na měsíce →</a>
+              <a href="/diagnostika" className="btn-secondary" style={{textDecoration:"none"}}>Zkontrolovat moji značku →</a>
+              <div className="hero-note">Zdarma · bez registrace · výsledek za 2 minuty</div>
             </div>
+            <div style={{marginTop:20,fontSize:12,color:"#aaa",letterSpacing:"0.05em"}}>~150 fotografií · příspěvky · reels · vizuály</div>
           </div>
         </div>
         <div className="hero-right">
@@ -979,10 +980,10 @@ export default function PremiovaVizualniIdentita() {
           </div>
           <div>
             <ul className="problem-list">
-              <li><div className="pl-icon">📱</div>Vaše komunikace není sjednocená napříč kanály</li>
-              <li><div className="pl-icon">⏰</div>Obsah vzniká pokaždé znovu — místo aby byl připravený dopředu</li>
-              <li><div className="pl-icon">📷</div>Vizuál není konzistentní — každý výstup působí jinak</li>
-              <li><div className="pl-icon">🎯</div>Vaše značka nepůsobí tak silně, jak by mohla</li>
+              <li><div className="pl-icon">📱</div>komunikace není sjednocená napříč kanály</li>
+              <li><div className="pl-icon">⏰</div>obsah vzniká pokaždé znovu</li>
+              <li><div className="pl-icon">📷</div>vizuál není konzistentní</li>
+              <li><div className="pl-icon">🎯</div>značka nepůsobí tak silně, jak by mohla</li>
             </ul>
             <p style={{marginTop:32,fontSize:15,fontWeight:700,color:"#fff",lineHeight:1.6}}>Nejde o kvalitu vaší práce.<br />Jde o to, jak je vidět.</p>
           </div>
@@ -998,7 +999,7 @@ export default function PremiovaVizualniIdentita() {
             {[
               "100–150 použitelných fotografií",
               "sjednocený vizuální styl",
-              "konkrétní typy příspěvků (co publikovat)",
+              "konkrétní typy příspěvků",
               "obsah pro web, sítě i kampaně",
             ].map((item) => (
               <li key={item} style={{display:"flex",gap:14,alignItems:"flex-start",fontSize:17,color:"#222",lineHeight:1.6}}>
@@ -1007,7 +1008,7 @@ export default function PremiovaVizualniIdentita() {
               </li>
             ))}
           </ul>
-          <p style={{marginTop:44,fontFamily:"var(--font-playfair),serif",fontStyle:"italic",fontSize:19,color:"var(--lime-dark)"}}>Neřešíte „co přidat". Jen vybíráte.</p>
+          <p style={{marginTop:44,fontFamily:"var(--font-playfair),serif",fontStyle:"italic",fontSize:19,color:"var(--lime-dark)"}}>Neřešíte co přidat. Jen vybíráte.</p>
         </div>
       </section>
 
@@ -1116,28 +1117,28 @@ export default function PremiovaVizualniIdentita() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/placeholders/mocuppremium.jpg" alt="Prémiová vizuální identita mockup" className="mockup-img" />
             <div className="mockup-chip chip-1">
-              <div className="chip-icon">📄</div>
-              <div><div className="chip-text">20 stran strategické prezentace</div></div>
+              <div className="chip-icon">📷</div>
+              <div><div className="chip-text">100–150 fotografií připravených k použití</div></div>
             </div>
             <div className="mockup-chip chip-2">
-              <div className="chip-icon">🔍</div>
-              <div><div className="chip-text">Analýza vaší online přítomnosti</div></div>
+              <div className="chip-icon">🎬</div>
+              <div><div className="chip-text">Krátké video záběry pro Reels</div></div>
             </div>
             <div className="mockup-chip chip-3">
               <div className="chip-icon">📸</div>
-              <div><div className="chip-text">5 stylů · cca 20 fotek každý</div></div>
+              <div><div className="chip-text">5 typů záběrů · každý jiný styl</div></div>
             </div>
             <div className="mockup-chip chip-4">
               <div className="chip-icon">🎨</div>
-              <div><div className="chip-text">Grafika připravená k použití</div></div>
+              <div><div className="chip-text">3 Canva šablony na míru</div></div>
             </div>
             <div className="mockup-chip chip-5">
               <div className="chip-icon">🖼️</div>
-              <div><div className="chip-text">Vizuál board vašich budoucích fotografií</div></div>
+              <div><div className="chip-text">Vizuální návrh focení dopředu</div></div>
             </div>
             <div className="mockup-chip chip-6">
-              <div className="chip-icon">✏️</div>
-              <div><div className="chip-text">3 Canva šablony vycházející z vaší Brand DNA</div></div>
+              <div className="chip-icon">✅</div>
+              <div><div className="chip-text">Návrh obsahu a jak fotky použít</div></div>
             </div>
           </div>
         </div>
@@ -1203,15 +1204,18 @@ export default function PremiovaVizualniIdentita() {
             </div>
             <div className="wow-text reveal reveal-d2">
               <div className="label">Vizuální board s vaší podobou</div>
-              <h2>AI náhledovky.<br /><em>Váš obličej. Váš styl.</em></h2>
-              <p className="section-sub" style={{marginBottom:"28px"}}>Ještě před focením uvidíte jaké oblečení zvolit, v jakém prostředí budete, jaký styl budeme tvořit. Na focení jdete připravená. Ne improvizovat.</p>
-              <div className="wow-steps">
-                <div className="ws"><div className="ws-num">1</div><div className="ws-text"><strong>Pošlete fotografie.</strong> Stačí několik běžných fotek.</div></div>
-                <div className="ws"><div className="ws-num">2</div><div className="ws-text"><strong>AI vás zasadí do scén.</strong> Různé outfity, prostory, rekvizity — přesně podle strategie vaší značky.</div></div>
-                <div className="ws"><div className="ws-num">3</div><div className="ws-text"><strong>Vyberete co se vám líbí.</strong> A přesně tak pak focení proběhne.</div></div>
-                <div className="ws"><div className="ws-num">4</div><div className="ws-text"><strong>Výsledek je garantovaný.</strong> Žádné překvapení. Žádné fotky které pak nechcete použít.</div></div>
-              </div>
-              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Chci vidět ukázku →</a>
+              <h2>Dopředu víte,<br /><em>co jdete fotit.</em></h2>
+              <p className="section-sub" style={{marginBottom:"20px"}}>Ještě před focením uvidíte:</p>
+              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:10,marginBottom:28}}>
+                {["jaké oblečení zvolit","v jakém prostředí budete","jaký styl budeme tvořit"].map(t=>(
+                  <li key={t} style={{display:"flex",gap:10,alignItems:"flex-start",fontSize:14,color:"#555",lineHeight:1.6}}>
+                    <span style={{color:"var(--lime-dark)",fontWeight:700,fontSize:18,lineHeight:1.1,flexShrink:0}}>·</span>{t}
+                  </li>
+                ))}
+              </ul>
+              <p className="section-sub" style={{marginBottom:"28px",fontWeight:600,color:"var(--black)"}}>Na focení jdete připravená. Ne improvizovat.</p>
+              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Chci vidět svůj styl →</a>
+              <div style={{fontSize:12,color:"#bbb",marginTop:8}}>Návrh připravíme před focením</div>
             </div>
           </div>
         </div>
@@ -1227,42 +1231,37 @@ export default function PremiovaVizualniIdentita() {
           <div className="process-phases">
             <div className="phase-card ph-1 reveal reveal-d1" style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)"}}>
               <div className="ph-badge pb-dark">Před focením</div>
-              <div className="ph-when">Krok 1 · Strategický hovor</div>
-              <div className="ph-title" style={{color:"#fff"}}>Pochopíme vaši značku.</div>
-              <div className="ph-price">9 900 Kč · Bez závazku focení</div>
+              <div className="ph-when">Krok 1 · 45–60 min online</div>
+              <div className="ph-title" style={{color:"#fff"}}>Návrh focení.</div>
+              <div className="ph-price" style={{borderColor:"rgba(255,255,255,0.08)"}}>Připravíme vše dopředu</div>
               <ul className="ph-items">
-                <li><strong>Analýza vaší online přítomnosti</strong> — web, Instagram, LinkedIn</li>
-                <li><strong>Strategický hovor 60 minut</strong> — co chcete říkat a komu</li>
-                <li><strong>20stránková prezentace</strong> rozvoje značky a kampaní</li>
-                <li><strong>Vizuální board s vaší podobou</strong> — náhledovky jak budete vypadat</li>
-                <li><strong>3 Canva šablony na míru</strong> s ukázkou v reálných příspěvcích</li>
+                <li>styl</li>
+                <li>outfit</li>
+                <li>prostředí</li>
+                <li>typy záběrů</li>
               </ul>
             </div>
             <div className="phase-card ph-1 reveal reveal-d2">
               <div className="ph-badge pb-dark">Den focení · Praha Kampa</div>
               <div className="ph-when">Krok 2 · Reálný obsah</div>
               <div className="ph-title" style={{color:"#fff"}}>Přijdete jednou.<br />Obsah na měsíce.</div>
-              <div className="ph-price">Cena dle rozsahu</div>
+              <div className="ph-price">Content Day</div>
               <ul className="ph-items">
-                <li><strong>5 stylů focení</strong> — každý cca 20 fotografií</li>
-                <li><strong>10 faceless fotek</strong> pro grafiku a kampaně</li>
-                <li><strong>1 minuta b-rollu</strong> pro Reels a LinkedIn video</li>
-                <li>Focení přesně dle vizuálního boardu</li>
-                <li>Prostor pro improvizaci a nápady</li>
-                <li>Za příplatek: promo video, Reels, grafika</li>
+                <li>portréty</li>
+                <li>pracovní momenty</li>
+                <li>lifestyle</li>
+                <li>obsah pro sítě</li>
               </ul>
             </div>
             <div className="phase-card ph-2 reveal reveal-d3">
-              <div className="ph-badge pb-violet">Po focení · Autopilot</div>
-              <div className="ph-when">Krok 3 · Systém za vás</div>
-              <div className="ph-title" style={{color:"#fff"}}>Značka pracuje.<br />Vy žijete.</div>
-              <div className="ph-price">Měsíční spolupráce</div>
+              <div className="ph-badge pb-violet">Po focení</div>
+              <div className="ph-when">Krok 3 · Výstupy</div>
+              <div className="ph-title" style={{color:"#fff"}}>Vše připravené<br />k použití.</div>
+              <div className="ph-price">Do 2 dnů v ruce</div>
               <ul className="ph-items">
-                <li>Aplikace která <strong>zná vaši značku</strong></li>
-                <li>Hotové příspěvky, vizuály, Reels — každý týden</li>
-                <li>Vy schválíte. Systém publikuje.</li>
-                <li>Kurátor hlídá strategii a náladu</li>
-                <li>Obsah který vypadá jako vy — protože je to vy</li>
+                <li>fotografie</li>
+                <li>video záběry</li>
+                <li>šablony a doporučení</li>
               </ul>
             </div>
           </div>
@@ -1273,37 +1272,37 @@ export default function PremiovaVizualniIdentita() {
       <section className="deliverables" style={{background:"#ffffff"}}>
         <div className="del-inner">
           <div className="reveal">
-            <div className="label">Co konkrétně dostanete</div>
-            <h2>Čísla. Ne přísliby.</h2>
+            <div className="label">Co reálně dostanete</div>
+            <h2>Vše připravené k použití.</h2>
           </div>
           <div className="del-grid">
             <div className="del-card reveal reveal-d1">
               <div className="del-icon">📷</div>
               <div className="del-num">~150</div>
-              <div className="del-unit">fotek pečlivě vybraných</div>
-              <div className="del-title">5 stylů · cca 20 fotek každý</div>
-              <div className="del-desc">Portréty, pracovní momenty, detail záběry, faceless — vše pečlivě vybrané dle vizuálního boardu.</div>
+              <div className="del-unit">fotografií</div>
+              <div className="del-title">5 typů záběrů</div>
+              <div className="del-desc">Portréty, pracovní momenty, lifestyle, detail — každý jiný styl, každý použitelný.</div>
             </div>
             <div className="del-card reveal reveal-d2">
               <div className="del-icon">🎬</div>
-              <div className="del-num">1 min</div>
-              <div className="del-unit">b-roll video záběrů</div>
-              <div className="del-title">Reels, LinkedIn, stories</div>
-              <div className="del-desc">Autentické klipy pro Reels a video obsah. Teplý grading dle vaší palety.</div>
+              <div className="del-num">Reels</div>
+              <div className="del-unit">krátké video záběry</div>
+              <div className="del-title">LinkedIn · stories · sítě</div>
+              <div className="del-desc">Autentické klipy připravené k publikaci. Teplý grading dle vašeho stylu.</div>
             </div>
             <div className="del-card reveal reveal-d3">
               <div className="del-icon">🎨</div>
               <div className="del-num">3</div>
               <div className="del-unit">Canva šablony na míru</div>
               <div className="del-title">Grafika připravená k použití</div>
-              <div className="del-desc">Ukázka jak fotky žijí v reálných příspěvcích — fonty, barvy, styl.</div>
+              <div className="del-desc">Fonty, barvy, styl — vše nastavené. Otevřete a upravíte za minutu.</div>
             </div>
             <div className="del-card reveal reveal-d4">
               <div className="del-icon">📋</div>
-              <div className="del-num">20</div>
-              <div className="del-unit">stran strategické prezentace</div>
-              <div className="del-title">Rozvoj značky + kampaně</div>
-              <div className="del-desc">Positioning, cílová skupina, obsahový plán, todolist — vše konkrétní.</div>
+              <div className="del-num">Návrh</div>
+              <div className="del-unit">obsahu a použití fotek</div>
+              <div className="del-title">Konkrétní typy příspěvků</div>
+              <div className="del-desc">Víte přesně co publikovat, kde a jak. Nemusíte vymýšlet — jen vybíráte.</div>
             </div>
           </div>
           <div className="extras reveal" style={{marginTop:"20px"}}>
@@ -1312,7 +1311,7 @@ export default function PremiovaVizualniIdentita() {
               <div className="extra-tag">Promo video <span>+</span></div>
               <div className="extra-tag">Reels produkce <span>+</span></div>
               <div className="extra-tag">Grafika kampaní <span>+</span></div>
-              <div className="extra-tag">Měsíční autopilot <span>+</span></div>
+              <div className="extra-tag">Měsíční obsah <span>+</span></div>
               <div className="extra-tag">AI avatar <span>+</span></div>
             </div>
           </div>
@@ -1320,44 +1319,114 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 8 — CENA (krémová) */}
-      <section className="pricing" style={{background:"var(--cream)"}}>
-        <div className="pricing-inner">
-          <div className="label" style={{color:"var(--lime-dark)",textAlign:"center"}}>Investice</div>
-          <h2 style={{color:"var(--black)"}}>Začněte návrhem vašeho focení.<br /><em style={{color:"var(--black)"}}>Jasná cena. Bez překvapení.</em></h2>
-          <p className="section-sub" style={{color:"#666"}}>Začněte strategickým hovorem. Focení a autopilot jsou váš další krok — pokud budete chtít.</p>
-          <div className="price-cards">
-            <div className="price-card" style={{background:"#fff",border:"1px solid var(--gray-light)"}}>
-              <div className="pc-badge" style={{color:"#888"}}>Krok 1 · Vstup</div>
-              <div className="pc-price" style={{color:"var(--black)"}}>9 900</div>
-              <div className="pc-period" style={{color:"#888",borderColor:"var(--gray-light)"}}>Kč · Strategický hovor + Vizuální board</div>
-              <ul className="pc-items">
-                <li style={{color:"#555"}}>Analýza vaší online přítomnosti</li>
-                <li style={{color:"#555"}}>Strategický hovor 60 minut</li>
-                <li style={{color:"#555"}}>20stránková prezentace – Marketingový plán a strategie</li>
-                <li style={{color:"#555"}}>Vizuál board vašich budoucích fotografií</li>
-                <li style={{color:"#555"}}>3 Canva šablony vycházející z vaší Brand DNA</li>
+      <section className="pricing" style={{background:"var(--cream)",padding:"96px 80px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
+          <div className="label" style={{color:"var(--lime-dark)",textAlign:"center"}}>Jak spolupráce probíhá</div>
+          <h2 style={{color:"var(--black)",textAlign:"center"}}>Vyberte si,<br /><em style={{color:"var(--black)"}}>kde chcete začít.</em></h2>
+
+          {/* BLOCK 1 — hlavní nabídka */}
+          <div style={{
+            background:"var(--black)",borderRadius:20,padding:"40px 48px",
+            marginBottom:24,display:"grid",gridTemplateColumns:"1fr auto",gap:48,alignItems:"center",
+          }}>
+            <div>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--lime)",marginBottom:8}}>Content Day · od 39 900 Kč</div>
+              <div style={{fontFamily:"var(--font-playfair),serif",fontSize:"clamp(26px,3vw,36px)",fontWeight:700,color:"#fff",lineHeight:1.2,marginBottom:12}}>Obsah na měsíce dopředu</div>
+              <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.7,marginBottom:20,maxWidth:480}}>Přijdete jednou. Odejdete s obsahem na 3–6 měsíců.</p>
+              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+                {["100–150 fotografií","5 stylů focení","video záběry","sjednocený vizuální styl"].map(i=>(
+                  <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"rgba(255,255,255,0.55)"}}>
+                    <span style={{color:"var(--lime)",fontWeight:700}}>✓</span>{i}
+                  </li>
+                ))}
               </ul>
-              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center",background:"var(--black)",color:"#fff",border:"none"}}>Objednat Vizuální strategii · 9 900 Kč →</a>
+              <a href="/rezervace?open=identita" style={{
+                display:"inline-flex",alignItems:"center",gap:8,
+                background:"#b7e94c",color:"#111",
+                padding:"14px 28px",borderRadius:10,
+                fontSize:14,fontWeight:700,textDecoration:"none",
+              }}>Chci obsah na měsíce →</a>
+              <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:10}}>Nejčastější volba klientek</div>
             </div>
-            <div className="price-card pc-full">
-              <div className="pc-badge">Krok 1 + 2 · Komplet</div>
-              <div className="pc-price">39 900</div>
-              <div className="pc-period">Kč · Hovor + Focení + Výstupy</div>
-              <ul className="pc-items">
-                <li>Vše ze Kroku 1</li>
-                <li>Den focení v ateliéru Praha Kampa</li>
-                <li>5 stylů focení — každý cca 20 fotografií</li>
-                <li>10 faceless fotek pro grafiku a kampaně</li>
-                <li>1 minuta b-rollu pro Reels a video</li>
-                <li>Focení přesně dle vizuálního boardu!</li>
-                <li>Prostor pro improvizaci a nápady</li>
-                <li>Za příplatek: promo video, Reels, grafika</li>
-                <li>Měsíc autopilota zdarma (vstup do naší aplikace)</li>
-              </ul>
-              <a href="/rezervace?open=identita" className="pc-btn" style={{textDecoration:"none",display:"block",textAlign:"center"}}>Chci kompletní spolupráci →</a>
+            <div style={{
+              background:"rgba(180,232,66,0.06)",border:"1px solid rgba(180,232,66,0.15)",
+              borderRadius:16,padding:"28px 32px",textAlign:"center",minWidth:180,flexShrink:0,
+            }}>
+              <div style={{fontFamily:"var(--font-playfair),serif",fontSize:52,fontWeight:700,color:"var(--lime)",lineHeight:1}}>39 900</div>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.3)",marginTop:6}}>Kč · Content Day</div>
             </div>
           </div>
-          <div className="pricing-note" style={{color:"#999"}}>Autopilot — měsíční spolupráce — domlouváme individuálně. Žádné dlouhodobé závazky.</div>
+
+          {/* BLOCK 2 — menší vstupní balíčky */}
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:13,fontWeight:600,color:"#888",textAlign:"center",marginBottom:16}}>Nejste si jistá? Začněte tady.</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+
+              {/* Content Starter */}
+              <div style={{background:"#fff",border:"1px solid var(--gray-light)",borderRadius:18,padding:"28px 32px"}}>
+                <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:12}}>Content Starter</div>
+                <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:4}}>4 900</div>
+                <div style={{fontSize:12,color:"#aaa",marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)"}}>Kč</div>
+                <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:24}}>
+                  {["návrh vizuálního stylu","ilustrační vizuály","5 krátkých video záběrů","návrhy příspěvků + texty"].map(i=>(
+                    <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#555"}}>
+                      <span style={{color:"var(--lime-dark)",fontWeight:700}}>✓</span>{i}
+                    </li>
+                  ))}
+                </ul>
+                <a href="/rezervace?open=identita" style={{
+                  display:"block",textAlign:"center",
+                  background:"var(--black)",color:"#fff",
+                  padding:"12px",borderRadius:10,
+                  fontSize:13,fontWeight:600,textDecoration:"none",
+                }}>Chci začít →</a>
+                <div style={{fontSize:11,color:"#bbb",textAlign:"center",marginTop:8}}>Výstup do 2 dnů · bez závazku</div>
+              </div>
+
+              {/* Content Concept */}
+              <div style={{background:"#fff",border:"1px solid var(--gray-light)",borderRadius:18,padding:"28px 32px"}}>
+                <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:12}}>Content Concept</div>
+                <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:4}}>9 900</div>
+                <div style={{fontSize:12,color:"#aaa",marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)"}}>Kč</div>
+                <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:24}}>
+                  {["kompletní návrh focení","vizuální náhledy","obsahový plán","Canva šablony"].map(i=>(
+                    <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#555"}}>
+                      <span style={{color:"var(--lime-dark)",fontWeight:700}}>✓</span>{i}
+                    </li>
+                  ))}
+                </ul>
+                <a href="/rezervace?open=identita" style={{
+                  display:"block",textAlign:"center",
+                  background:"var(--black)",color:"#fff",
+                  padding:"12px",borderRadius:10,
+                  fontSize:13,fontWeight:600,textDecoration:"none",
+                }}>Chci návrh focení →</a>
+                <div style={{fontSize:11,color:"#bbb",textAlign:"center",marginTop:8}}>Připraveno pro focení</div>
+              </div>
+            </div>
+          </div>
+
+          {/* BLOCK 3 — upsell */}
+          <div style={{
+            background:"var(--sand)",border:"1px solid var(--gray-light)",
+            borderRadius:16,padding:"24px 32px",
+            display:"flex",alignItems:"center",justifyContent:"space-between",gap:24,flexWrap:"wrap",
+          }}>
+            <div>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:6}}>Chcete to bez starostí?</div>
+              <div style={{fontSize:18,fontWeight:700,color:"var(--black)",marginBottom:4}}>Content Autopilot</div>
+              <div style={{fontSize:13,color:"#888"}}>Pravidelný obsah · publikace · správa</div>
+            </div>
+            <a href="/rezervace?open=identita" style={{
+              display:"inline-flex",alignItems:"center",gap:8,
+              background:"var(--black)",color:"#fff",
+              padding:"13px 24px",borderRadius:10,
+              fontSize:13,fontWeight:600,textDecoration:"none",
+              whiteSpace:"nowrap",flexShrink:0,
+            }}>Chci spolupráci →</a>
+          </div>
+
+          <div style={{fontSize:12,color:"#bbb",textAlign:"center",marginTop:24}}>Žádné dlouhodobé závazky · domlouváme individuálně</div>
         </div>
       </section>
 
@@ -1369,9 +1438,9 @@ export default function PremiovaVizualniIdentita() {
       {/* SEKCE 10 — DIAGNOSTIKA (krémová) */}
       <section className="scan-cta" style={{background:"var(--cream)"}}>
         <div className="scan-inner">
-          <div className="label reveal">Brand diagnostika</div>
+          <div className="label reveal">Zkontrolovat moji značku</div>
           <h2 className="reveal">Za 2 minuty víte,<br /><em>kde vaše značka stojí.</em></h2>
-          <p className="section-sub reveal">Zadejte adresu webu. Za dvě minuty víte přesně na čem pracovat — a zda má smysl se potkat.</p>
+          <p className="section-sub reveal">Zadejte adresu webu. Výsledek okamžitě — bez registrace, zdarma.</p>
           <div className="scan-input-wrap reveal">
             <input
               id="scan-url-input"
@@ -1394,7 +1463,7 @@ export default function PremiovaVizualniIdentita() {
                 else window.location.href = "/diagnostika";
               }}
             >
-              Spustit analýzu →
+              Zkontrolovat moji značku →
             </button>
           </div>
           <div className="scan-note reveal">Zdarma · Bez registrace · Výsledky okamžitě</div>
@@ -1441,33 +1510,37 @@ export default function PremiovaVizualniIdentita() {
         <h2 className="reveal" style={{color:"#fff"}}>Přijdete jednou.<br /><em style={{color:"var(--lime)"}}>Obsah máte na měsíce.</em></h2>
         <p className="section-sub reveal" style={{color:"rgba(255,255,255,0.35)"}}>Jeden den focení. Měsíce obsahu připraveného dopředu.</p>
         <div className="reveal" style={{display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap",marginTop:8}}>
-          <a
-            href="/rezervace?open=identita"
-            style={{
-              display:"inline-flex",alignItems:"center",gap:10,
-              background:"#b7e94c",color:"#111",
-              padding:"16px 32px",borderRadius:10,
-              fontSize:15,fontWeight:600,textDecoration:"none",
-              transition:"all 0.2s",
-            }}
-          >
-            Rezervovat termín →
-          </a>
-          <a
-            href="/rezervace?open=identita"
-            style={{
-              display:"inline-flex",alignItems:"center",gap:10,
-              background:"transparent",color:"rgba(255,255,255,0.6)",
-              padding:"16px 32px",borderRadius:10,
-              fontSize:15,fontWeight:500,textDecoration:"none",
-              border:"1px solid rgba(255,255,255,0.15)",
-              transition:"all 0.2s",
-            }}
-          >
-            nebo začít návrhem
-          </a>
+          <div style={{textAlign:"center"}}>
+            <a
+              href="/rezervace?open=identita"
+              style={{
+                display:"inline-flex",alignItems:"center",gap:10,
+                background:"#b7e94c",color:"#111",
+                padding:"16px 32px",borderRadius:10,
+                fontSize:15,fontWeight:700,textDecoration:"none",
+              }}
+            >
+              Chci termín focení →
+            </a>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.2)",marginTop:8}}>Ozveme se do 24 hodin · nezávazně</div>
+          </div>
+          <div style={{textAlign:"center"}}>
+            <a
+              href="/diagnostika"
+              style={{
+                display:"inline-flex",alignItems:"center",gap:10,
+                background:"transparent",color:"rgba(255,255,255,0.6)",
+                padding:"16px 32px",borderRadius:10,
+                fontSize:15,fontWeight:500,textDecoration:"none",
+                border:"1px solid rgba(255,255,255,0.15)",
+              }}
+            >
+              Zkontrolovat moji značku →
+            </a>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.2)",marginTop:8}}>Zdarma · bez registrace · výsledek za 2 minuty</div>
+          </div>
         </div>
-        <div className="footer-note reveal" style={{color:"rgba(255,255,255,0.2)"}}>Placeno předem · Výstup v ruce do 2 dní · Bez závazku focení</div>
+        <div className="footer-note reveal" style={{color:"rgba(255,255,255,0.15)",marginTop:32}}>Placeno předem · Výstup v ruce do 2 dní · Bez závazku focení</div>
       </section>
 
       <div className="footer-bottom">
