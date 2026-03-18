@@ -1187,8 +1187,7 @@ export default function PremiovaVizualniIdentita() {
               <div className="ph-badge pb-violet">Po focení</div>
               <div className="ph-when">Krok 3 · Výstupy</div>
               <div className="ph-title" style={{color:"#fff"}}>Vše připravené<br />k použití.</div>
-              <div className="ph-price">Do 2 dnů v ruce</div>
-              <ul className="ph-items">
+              <ul className="ph-items" style={{marginTop:28}}>
                 <li>fotografie</li>
                 <li>video záběry</li>
                 <li>šablony a doporučení</li>
