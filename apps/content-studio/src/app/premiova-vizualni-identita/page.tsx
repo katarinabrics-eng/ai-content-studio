@@ -1135,7 +1135,7 @@ export default function PremiovaVizualniIdentita() {
                 ))}
               </ul>
               <p className="section-sub" style={{marginBottom:"28px",fontWeight:600,color:"var(--black)"}}>Na focení jdete připravená. Ne improvizovat.</p>
-              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Chci vidět svůj styl →</a>
+              <a href="https://ai-content-studio-dfh2nckr7-katarinas-projects-65ccf8b6.vercel.app/premiova-vizualni-identita" className="btn-primary" style={{textDecoration:"none"}} target="_blank" rel="noopener noreferrer">Chci vidět svůj styl →</a>
               <div style={{fontSize:12,color:"#bbb",marginTop:8}}>Návrh připravíme před focením</div>
             </div>
           </div>
