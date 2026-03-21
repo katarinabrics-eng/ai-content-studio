@@ -7,6 +7,7 @@ const navItems = [
   { href: "/#sluzby", label: "Služby" },
   { href: "/portrety", label: "Portréty" },
   { href: "/premiova-vizualni-identita", label: "Prémiová identita" },
+  { href: "/ready-to-go", label: "Ready to Go" },
   { href: "/premiova-vizualni-identita#faq", label: "FAQ" },
   { href: "/kontakt", label: "Kontakt" },
 ];
