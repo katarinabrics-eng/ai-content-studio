@@ -3,10 +3,10 @@
   "configurations": [
     {
       "name": "content-studio",
-      "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["-c", "cd '/Users/katarina/Documents/AI Content Studio/apps/content-studio' && npx next dev"],
-      "port": 3001,
-      "autoPort": true
+      "runtimeExecutable": "/tmp/lucifera-dev.sh",
+      "runtimeArgs": [],
+      "port": 3002,
+      "autoPort": false
     }
   ]
 }
