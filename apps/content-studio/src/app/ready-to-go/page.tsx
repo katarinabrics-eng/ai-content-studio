@@ -239,29 +239,35 @@ export default function ReadyToGoPage() {
         #rtg-root .btn-dark:hover { background: #222; }
 
         /* ─── REALITA ─── */
-        #rtg-realita { border-top: 1px solid rgba(255,255,255,0.07); }
+        #rtg-realita {
+          background: #F7F5EF;
+          border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        #rtg-realita .rtg-label { color: var(--lime-bright); }
+        #rtg-realita h2 { color: var(--black); }
         #rtg-root .pain-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 1px;
           margin-top: 3rem;
-          border: 1px solid rgba(255,255,255,0.08);
+          border: 1px solid rgba(0,0,0,0.1);
         }
         #rtg-root .pain-item {
           padding: 28px 32px;
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #F7F5EF;
+          border: 1px solid rgba(0,0,0,0.08);
           transition: background 0.2s;
         }
-        #rtg-root .pain-item:hover { background: rgba(208,236,120,0.04); }
-        #rtg-root .pain-arrow { color: var(--lime); margin-right: 10px; font-style: normal; }
-        #rtg-root .pain-item p { color: rgba(255,255,255,0.78); font-size: 1rem; }
+        #rtg-root .pain-item:hover { background: rgba(208,236,120,0.18); }
+        #rtg-root .pain-arrow { color: var(--black); margin-right: 10px; font-style: normal; font-weight: 700; }
+        #rtg-root .pain-item p { color: var(--black); font-size: 1rem; }
         #rtg-root .pain-conclusion {
           text-align: center;
           margin-top: 3rem;
           font-family: var(--font-playfair, 'Playfair Display', serif);
           font-size: 1.5rem;
           font-style: italic;
-          color: rgba(255,255,255,0.45);
+          color: rgba(17,17,17,0.5);
         }
 
         /* ─── CO KDYBY ─── */
@@ -300,6 +306,12 @@ export default function ReadyToGoPage() {
         }
 
         /* ─── CO DOSTANEŠ ─── */
+        #rtg-codostanes {
+          background: #F7F5EF;
+          border-top: 1px solid rgba(0,0,0,0.06);
+        }
+        #rtg-codostanes .rtg-label { color: var(--lime-bright); }
+        #rtg-codostanes h2 { color: var(--black); }
         #rtg-root .delivers-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -307,15 +319,15 @@ export default function ReadyToGoPage() {
           margin-top: 3rem;
         }
         #rtg-root .deliver-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.09);
+          background: #ffffff;
+          border: 1px solid rgba(0,0,0,0.1);
           border-radius: 3px;
           padding: 32px;
           transition: border-color 0.2s, background 0.2s;
         }
         #rtg-root .deliver-card:hover {
-          border-color: rgba(208,236,120,0.3);
-          background: rgba(208,236,120,0.03);
+          border-color: rgba(183,233,76,0.5);
+          background: rgba(208,236,120,0.06);
         }
         #rtg-root .deliver-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
         #rtg-root .deliver-card h3 {
@@ -324,13 +336,13 @@ export default function ReadyToGoPage() {
           font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
           font-weight: 500;
           margin-bottom: 0.5rem;
-          color: var(--white);
+          color: var(--black);
         }
-        #rtg-root .deliver-card p { font-size: 0.9rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+        #rtg-root .deliver-card p { font-size: 0.9rem; color: rgba(17,17,17,0.7); line-height: 1.6; }
         #rtg-root .delivers-closing {
           text-align: center;
           margin-top: 2.5rem;
-          color: rgba(255,255,255,0.45);
+          color: rgba(17,17,17,0.5);
           font-style: italic;
           font-family: var(--font-playfair, 'Playfair Display', serif);
           font-size: 1.2rem;
