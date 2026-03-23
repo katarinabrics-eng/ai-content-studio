@@ -1,121 +1,164 @@
 "use client";
 
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, Suspense } from "react";
-import {
-  groupPostsToPairs,
-  type ContentBatchRow,
-  type ContentPostRow,
-  type ContentPostPair,
-} from "@/lib/types/rtg-database";
 
-// ─── Post Card ────────────────────────────────────────────────────────────────
+// ─── Typy ─────────────────────────────────────────────────────────────────────
+
+type PostStatus = "pending" | "approved" | "rejected";
+type PostVariant = "A" | "B";
+type PostType = "VIDEO" | "GRAFIKA" | string;
+
+interface Post {
+  id: string;
+  batch_id: string;
+  project_id: string;
+  pair_index: number;
+  variant: PostVariant;
+  type: PostType | null;
+  hook: string | null;
+  body: string | null;
+  thumbnail_url: string | null;
+  output_url: string | null;
+  status: PostStatus;
+  client_approved_at: string | null;
+  client_note: string | null;
+}
+
+interface Batch {
+  id: string;
+  project_id: string;
+  week_label: string;
+  week_start: string;
+  status: string;
+  items_total: number;
+  items_approved: number;
+}
+
+interface ProjectInfo {
+  plan: string | null;
+  interval_days: number | null;
+  client_name: string | null;
+  onboarding_completed: boolean;
+}
+
+interface PostPair {
+  pairIndex: number;
+  variantA: Post | null;
+  variantB: Post | null;
+}
+
+function groupToPairs(posts: Post[]): PostPair[] {
+  const map = new Map<number, PostPair>();
+  for (const post of posts) {
+    if (!map.has(post.pair_index)) {
+      map.set(post.pair_index, { pairIndex: post.pair_index, variantA: null, variantB: null });
+    }
+    const pair = map.get(post.pair_index)!;
+    if (post.variant === "A") pair.variantA = post;
+    else if (post.variant === "B") pair.variantB = post;
+  }
+  return Array.from(map.values()).sort((a, b) => a.pairIndex - b.pairIndex);
+}
+
+// ─── PostCard ─────────────────────────────────────────────────────────────────
 
 function PostCard({
   post,
   selected,
   onSelect,
 }: {
-  post: ContentPostRow;
+  post: Post;
   selected: boolean;
   onSelect: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [hook, setHook] = useState(post.hook ?? "");
   const [body, setBody] = useState(post.body ?? "");
-
   const isApproved = post.status === "approved";
+
+  const typeColor =
+    post.type === "VIDEO"
+      ? "bg-blue-50 text-blue-700"
+      : post.type === "GRAFIKA"
+      ? "bg-green-50 text-green-700"
+      : "bg-gray-100 text-gray-600";
 
   return (
     <div
       onClick={() => !isApproved && onSelect()}
       className={[
-        "flex flex-col rounded-xl border-2 overflow-hidden cursor-pointer transition-all duration-150",
+        "flex flex-col rounded-xl border overflow-hidden cursor-pointer transition-all duration-150",
         selected
-          ? "border-[#d0ec78] shadow-[0_0_0_3px_rgba(208,236,120,0.25)]"
-          : "border-[#e8e8e4] hover:border-[#c8c8c0]",
-        isApproved ? "opacity-70 cursor-default" : "",
+          ? "border-2 border-[#d0ec78] bg-[#fafff0] shadow-sm"
+          : "border border-[#e8e8e4] bg-white hover:border-[#c8c8c0]",
+        isApproved ? "opacity-60 cursor-default" : "",
       ].join(" ")}
     >
       {/* Thumbnail */}
-      <div className="relative w-full aspect-[4/3] bg-[#f0efea] flex items-center justify-center">
-        {post.thumbnail_url ? (
+      <div className="relative w-full aspect-video bg-[#f5f5f0] flex items-center justify-center overflow-hidden">
+        {post.output_url || post.thumbnail_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={post.thumbnail_url}
+            src={(post.output_url ?? post.thumbnail_url)!}
             alt=""
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="flex flex-col items-center gap-2 text-[#b0aea8]">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
-            <span className="text-xs">Náhled brzy</span>
-          </div>
+          <span className="text-sm text-gray-400">Náhled se generuje…</span>
         )}
-        {/* Type badge */}
-        <div className="absolute top-2 left-2">
-          <span className="text-[10px] font-semibold tracking-widest uppercase bg-[#1a1a1a]/80 text-white px-2 py-1 rounded-full">
-            {post.type ?? "OBSAH"}
-          </span>
-        </div>
-        {/* Variant badge */}
-        <div className="absolute top-2 right-2">
-          <span
-            className={[
-              "text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-full",
-              selected ? "bg-[#d0ec78] text-[#1a1a1a]" : "bg-white/80 text-[#1a1a1a]",
-            ].join(" ")}
-          >
-            Varianta {post.variant}
-          </span>
-        </div>
-        {/* Approved overlay */}
         {isApproved && (
           <div className="absolute inset-0 bg-[#d0ec78]/20 flex items-center justify-center">
-            <span className="bg-[#d0ec78] text-[#1a1a1a] text-xs font-semibold px-3 py-1 rounded-full">
+            <span className="bg-[#d0ec78] text-[#111] text-xs font-semibold px-3 py-1 rounded-full">
               ✓ Schváleno
             </span>
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col gap-2 p-4 bg-white flex-1">
+      {/* Badges */}
+      <div className="flex items-center gap-2 px-4 pt-3">
+        {post.type && (
+          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${typeColor}`}>
+            {post.type}
+          </span>
+        )}
+        <span className="text-xs text-gray-400">Varianta {post.variant}</span>
+      </div>
+
+      {/* Obsah */}
+      <div className="flex flex-col gap-1.5 px-4 pt-2 pb-4 flex-1">
         {editing ? (
           <>
             <textarea
               value={hook}
               onChange={(e) => setHook(e.target.value)}
               onClick={(e) => e.stopPropagation()}
-              className="w-full text-sm font-semibold text-[#1a1a1a] border border-[#e8e8e4] rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#d0ec78]"
-              rows={2}
+              rows={1}
               placeholder="Hook…"
+              className="w-full text-sm font-semibold text-[#1a1a1a] border border-[#e8e8e4] rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#d0ec78]"
             />
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               onClick={(e) => e.stopPropagation()}
-              className="w-full text-xs text-[#555] border border-[#e8e8e4] rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#d0ec78]"
               rows={3}
               placeholder="Text příspěvku…"
+              className="w-full text-xs text-[#555] border border-[#e8e8e4] rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#d0ec78]"
             />
             <button
               onClick={(e) => { e.stopPropagation(); setEditing(false); }}
-              className="text-xs text-[#555] underline self-start mt-1"
+              className="text-xs text-[#888] underline self-start"
             >
-              Hotovo
+              Uložit
             </button>
           </>
         ) : (
           <>
             <p className="text-sm font-semibold text-[#1a1a1a] leading-snug line-clamp-2">
-              {hook || <span className="text-[#b0aea8] italic">Bez hooku</span>}
+              {hook || <span className="italic text-[#b0aea8]">Bez hooku</span>}
             </p>
-            <p className="text-xs text-[#666] leading-relaxed line-clamp-2">
+            <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
               {body || <span className="italic">Bez textu</span>}
             </p>
             {!isApproved && (
@@ -133,57 +176,57 @@ function PostCard({
   );
 }
 
-// ─── Pair Row ─────────────────────────────────────────────────────────────────
+// ─── PairRow ──────────────────────────────────────────────────────────────────
 
 function PairRow({
   pair,
+  code,
   token,
   onApproved,
 }: {
-  pair: ContentPostPair;
+  pair: PostPair;
+  code: string;
   token: string;
   onApproved: (postId: string) => void;
 }) {
-  const [selectedVariant, setSelectedVariant] = useState<"A" | "B" | null>(null);
+  const [selected, setSelected] = useState<PostVariant | null>(null);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Pre-select if one is already approved
-  useEffect(() => {
-    if (pair.variantA?.status === "approved") setSelectedVariant("A");
-    else if (pair.variantB?.status === "approved") setSelectedVariant("B");
-  }, [pair]);
-
   const alreadyApproved =
     pair.variantA?.status === "approved" || pair.variantB?.status === "approved";
 
+  useEffect(() => {
+    if (pair.variantA?.status === "approved") setSelected("A");
+    else if (pair.variantB?.status === "approved") setSelected("B");
+  }, [pair]);
+
   async function handleApprove() {
-    if (!selectedVariant) {
-      setError("Nejdříve vyber variantu (A nebo B).");
-      return;
-    }
-    const selectedPost = selectedVariant === "A" ? pair.variantA : pair.variantB;
-    if (!selectedPost) return;
+    if (!selected) return;
+    const post = selected === "A" ? pair.variantA : pair.variantB;
+    if (!post) return;
 
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/client/rtg/approve?token=${encodeURIComponent(token)}`, {
+      const res = await fetch("/api/client/rtg/approve", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          post_id: selectedPost.id,
-          selected_variant: selectedVariant,
+          post_id: post.id,
+          selected_variant: selected,
           client_note: note || undefined,
+          code,
+          token,
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { ok: boolean; error?: string; batch_fully_approved?: boolean };
       if (!data.ok) {
         setError(data.error ?? "Nepodařilo se schválit.");
         return;
       }
-      onApproved(selectedPost.id);
+      onApproved(post.id);
     } catch {
       setError("Chyba připojení.");
     } finally {
@@ -193,36 +236,37 @@ function PairRow({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Label */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold tracking-widest uppercase text-[#b0aea8]">
           Pár {pair.pairIndex + 1}
         </span>
         {alreadyApproved && (
-          <span className="text-xs bg-[#d0ec78] text-[#1a1a1a] font-semibold px-2 py-0.5 rounded-full">
+          <span className="text-xs bg-[#d0ec78] text-[#111] font-semibold px-2 py-0.5 rounded-full">
             ✓ Schváleno
           </span>
         )}
       </div>
 
-      {/* Cards side by side */}
+      {/* Karty A / B */}
       <div className="grid grid-cols-2 gap-4">
         {pair.variantA && (
           <PostCard
             post={pair.variantA}
-            selected={selectedVariant === "A"}
-            onSelect={() => !alreadyApproved && setSelectedVariant("A")}
+            selected={selected === "A"}
+            onSelect={() => !alreadyApproved && setSelected("A")}
           />
         )}
         {pair.variantB && (
           <PostCard
             post={pair.variantB}
-            selected={selectedVariant === "B"}
-            onSelect={() => !alreadyApproved && setSelectedVariant("B")}
+            selected={selected === "B"}
+            onSelect={() => !alreadyApproved && setSelected("B")}
           />
         )}
       </div>
 
-      {/* Approve controls */}
+      {/* Schválení */}
       {!alreadyApproved && (
         <div className="flex items-center gap-3 flex-wrap">
           <input
@@ -234,10 +278,10 @@ function PairRow({
           />
           <button
             onClick={handleApprove}
-            disabled={loading || !selectedVariant}
-            className="shrink-0 px-5 py-2 rounded-lg bg-[#1a1a1a] text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#333] transition-colors"
+            disabled={loading || !selected}
+            className="shrink-0 px-6 py-2 rounded-lg bg-[#111] text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#333] transition-colors"
           >
-            {loading ? "Ukládám…" : "Schválit →"}
+            {loading ? "Ukládám…" : "Schválit vybranou →"}
           </button>
         </div>
       )}
@@ -246,58 +290,95 @@ function PairRow({
   );
 }
 
-// ─── Main dashboard ───────────────────────────────────────────────────────────
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 
 function RtgDashboardInner() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const projectCode = params.projectCode as string;
+  const router = useRouter();
+  const code = params.projectCode as string;
   const token = searchParams.get("token") ?? "";
 
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [batch, setBatch] = useState<ContentBatchRow | null>(null);
-  const [pairs, setPairs] = useState<ContentPostPair[]>([]);
+  const [batch, setBatch] = useState<Batch | null>(null);
+  const [pairs, setPairs] = useState<PostPair[]>([]);
+  const [batchFullyApproved, setBatchFullyApproved] = useState(false);
 
-  const loadBatch = useCallback(async () => {
-    if (!token) { setAuthError("Chybí přístupový odkaz."); setLoading(false); return; }
+  const load = useCallback(async () => {
+    if (!token) {
+      setAuthError("Chybí přístupový odkaz.");
+      setLoading(false);
+      return;
+    }
     try {
-      const res = await fetch(`/api/client/rtg/batch?token=${encodeURIComponent(token)}`);
-      const data = await res.json();
+      const res = await fetch(
+        `/api/client/rtg/batches?code=${encodeURIComponent(code)}&token=${encodeURIComponent(token)}`
+      );
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        batch?: Batch;
+        posts?: Post[];
+        project?: ProjectInfo;
+      };
+
       if (!data.ok) {
         setAuthError(data.error ?? "Přístup odepřen.");
         return;
       }
+
+      // Přesměruj na onboarding, pokud není dokončen
+      if (data.project && !data.project.onboarding_completed) {
+        router.replace(`/client/${code}/rtg/onboarding?token=${encodeURIComponent(token)}`);
+        return;
+      }
+
       setBatch(data.batch ?? null);
-      setPairs(groupPostsToPairs(data.posts ?? []));
+      const loadedPairs = groupToPairs(data.posts ?? []);
+      setPairs(loadedPairs);
+
+      if (data.batch && loadedPairs.length > 0) {
+        const approvedCount = loadedPairs.filter(
+          (p) => p.variantA?.status === "approved" || p.variantB?.status === "approved"
+        ).length;
+        setBatchFullyApproved(approvedCount === loadedPairs.length);
+      }
     } catch {
       setAuthError("Nepodařilo se načíst obsah.");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [code, token, router]);
 
-  useEffect(() => { loadBatch(); }, [loadBatch]);
+  useEffect(() => { load(); }, [load]);
 
   function handleApproved(postId: string) {
-    setPairs((prev) =>
-      prev.map((pair) => ({
+    setPairs((prev) => {
+      const updated = prev.map((pair) => ({
         ...pair,
         variantA:
           pair.variantA?.id === postId
-            ? { ...pair.variantA, status: "approved" as const }
+            ? { ...pair.variantA, status: "approved" as PostStatus }
             : pair.variantA,
         variantB:
           pair.variantB?.id === postId
-            ? { ...pair.variantB, status: "approved" as const }
+            ? { ...pair.variantB, status: "approved" as PostStatus }
             : pair.variantB,
-      }))
-    );
+      }));
+      const approvedCount = updated.filter(
+        (p) => p.variantA?.status === "approved" || p.variantB?.status === "approved"
+      ).length;
+      setBatchFullyApproved(approvedCount === updated.length && updated.length > 0);
+      return updated;
+    });
   }
 
   const approvedCount = pairs.filter(
     (p) => p.variantA?.status === "approved" || p.variantB?.status === "approved"
   ).length;
+
+  // ── Loading ──────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -310,9 +391,11 @@ function RtgDashboardInner() {
     );
   }
 
+  // ── Auth error ───────────────────────────────────────────────────────────
+
   if (authError) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60vh] px-6">
         <div className="text-center max-w-sm">
           <p className="text-[#1a1a1a] font-medium mb-2">Přístup odepřen</p>
           <p className="text-sm text-[#888]">{authError}</p>
@@ -321,61 +404,78 @@ function RtgDashboardInner() {
     );
   }
 
+  // ── Žádný batch ──────────────────────────────────────────────────────────
+
   if (!batch) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] px-6">
         <div className="text-center max-w-sm">
-          <div className="text-4xl mb-4">📦</div>
-          <p className="text-[#1a1a1a] font-semibold text-lg mb-2">Obsah se připravuje</p>
+          <div className="text-5xl mb-4">🎬</div>
+          <p className="text-[#1a1a1a] font-semibold text-xl mb-2">Obsah se připravuje</p>
           <p className="text-sm text-[#888] leading-relaxed">
-            Dostanete e-mail, jakmile bude váš týdenní obsah připraven ke schválení.
+            Dostanete email jakmile bude váš první obsah hotový.
           </p>
         </div>
       </div>
     );
   }
 
+  // ── Dashboard ─────────────────────────────────────────────────────────────
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
-      {/* Batch header */}
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
           <p className="text-xs font-semibold tracking-widest uppercase text-[#b0aea8] mb-1">
             Aktuální týden
           </p>
-          <h1 className="text-2xl font-semibold text-[#1a1a1a]">
-            {batch.week_label}
-          </h1>
+          <h2 className="text-2xl font-semibold text-[#1a1a1a]">{batch.week_label}</h2>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-32 bg-[#e8e8e4] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#d0ec78] rounded-full transition-all duration-500"
-              style={{ width: pairs.length ? `${(approvedCount / pairs.length) * 100}%` : "0%" }}
-            />
-          </div>
-          <span className="text-sm text-[#888] whitespace-nowrap">
+        <div className="flex flex-col items-end gap-1.5">
+          <span className="text-sm text-[#888]">
             {approvedCount} / {pairs.length} schváleno
           </span>
+          <div className="h-1 w-36 bg-[#e8e8e4] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#d0ec78] rounded-full transition-all duration-500"
+              style={{
+                width: pairs.length ? `${(approvedCount / pairs.length) * 100}%` : "0%",
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Pairs */}
+      {/* Páry */}
       <div className="flex flex-col gap-10">
         {pairs.map((pair) => (
-          <div key={pair.pairIndex} className="border-b border-[#e8e8e4] pb-10 last:border-0 last:pb-0">
-            <PairRow pair={pair} token={token} onApproved={handleApproved} />
+          <div
+            key={pair.pairIndex}
+            className="border-b border-[#e8e8e4] pb-10 last:border-0 last:pb-0"
+          >
+            <PairRow
+              pair={pair}
+              code={code}
+              token={token}
+              onApproved={handleApproved}
+            />
           </div>
         ))}
       </div>
 
-      {/* All approved message */}
-      {pairs.length > 0 && approvedCount === pairs.length && (
-        <div className="mt-10 rounded-xl bg-[#d0ec78]/20 border border-[#d0ec78] p-6 text-center">
-          <p className="text-[#1a1a1a] font-semibold text-lg mb-1">Vše schváleno ✓</p>
-          <p className="text-sm text-[#555]">
-            Skvělá práce! Obsah na tento týden je připraven ke zveřejnění.
+      {/* Vše schváleno banner */}
+      {batchFullyApproved && (
+        <div className="mt-10 rounded-xl bg-[#f3fbdc] border border-[#d0ec78] p-6 text-center">
+          <p className="text-[#111] font-semibold text-lg mb-1">
+            ✅ Všechno schváleno! Obsah je připraven ke stažení.
           </p>
+          <button
+            onClick={() => alert("Stahování bude brzy dostupné")}
+            className="mt-3 px-5 py-2 rounded-lg bg-[#111] text-white text-sm font-medium hover:bg-[#333] transition-colors"
+          >
+            Stáhnout obsah
+          </button>
         </div>
       )}
     </div>

@@ -1,47 +1,63 @@
 import { NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
-import { getClientProjectByAccessToken } from "@/lib/supabase-client-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** PATCH ?token=... — dokončí onboarding RTG klienta. */
-export async function PATCH(request: Request) {
+/**
+ * POST /api/client/rtg/onboarding/complete
+ * Body: { code, token, web_url, interval_days, topics }
+ */
+export async function POST(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const token = searchParams.get("token");
-    if (!token?.trim()) {
-      return NextResponse.json({ ok: false, error: "Chybí token" }, { status: 401 });
-    }
+    const body = await request.json().catch(() => ({})) as {
+      code?: string;
+      token?: string;
+      web_url?: string;
+      interval_days?: 7 | 14 | 21 | 30;
+      topics?: string[];
+    };
 
-    const clientProject = await getClientProjectByAccessToken(token.trim());
-    if (!clientProject) {
+    const { code, token, web_url, interval_days, topics } = body;
+
+    if (!code?.trim() || !token?.trim()) {
       return NextResponse.json(
-        { ok: false, error: "Neplatný nebo expirovaný odkaz." },
+        { ok: false, error: "Chybí code nebo token" },
         { status: 401 }
       );
     }
 
-    const body = await request.json().catch(() => ({}));
-    const { web_url, interval, topics } = body as {
-      web_url?: string;
-      interval?: string;
-      topics?: string[];
-    };
-
     const supabase = getSupabaseClient();
+
+    // Ověř přístup
+    const { data: projectData } = await supabase
+      .from("client_projects")
+      .select("id")
+      .eq("short_code", code.trim())
+      .eq("access_token", token.trim())
+      .single();
+
+    if (!projectData) {
+      return NextResponse.json(
+        { ok: false, error: "Neplatný přístup" },
+        { status: 401 }
+      );
+    }
+
+    const project = projectData as { id: string };
     const now = new Date().toISOString();
 
     const { error } = await supabase
       .from("client_projects")
       .update({
-        onboarding_completed: true,
         web_url: web_url ?? null,
-        interval: interval ?? null,
+        interval_days: interval_days ?? null,
         topics: topics ?? [],
+        onboarding_completed: true,
+        rtg_activated_at: now,
         updated_at: now,
       })
-      .eq("id", clientProject.id);
+      .eq("id", project.id);
 
     if (error) {
       return NextResponse.json(
