@@ -72,6 +72,7 @@ export async function GET(request: Request) {
         .from("content_posts")
         .select("*")
         .eq("batch_id", (batch as { id: string }).id)
+        .in("status", ["client_review", "pending"])
         .order("pair_index", { ascending: true });
 
       if (postsError) {
