@@ -5,9 +5,10 @@ import { useCallback, useEffect, useState, Suspense } from "react";
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
 
-type PostStatus = "pending" | "approved" | "rejected";
+type PostStatus = "pending" | "client_review" | "approved" | "rejected";
 type PostVariant = "A" | "B";
-type PostType = "VIDEO" | "GRAFIKA" | string;
+type PostType = "VIDEO" | "GRAFIKA" | "CAROUSEL" | string;
+type AspectRatio = "9:16" | "16:9" | "1:1" | "4:5" | null;
 
 interface Post {
   id: string;
@@ -16,6 +17,8 @@ interface Post {
   pair_index: number;
   variant: PostVariant;
   type: PostType | null;
+  aspect_ratio: AspectRatio;
+  slides_count: number | null;
   hook: string | null;
   body: string | null;
   thumbnail_url: string | null;
@@ -76,13 +79,31 @@ function PostCard({
   const [hook, setHook] = useState(post.hook ?? "");
   const [body, setBody] = useState(post.body ?? "");
   const isApproved = post.status === "approved";
+  const isCarousel = post.type === "CAROUSEL";
+  const isVideo = post.type === "VIDEO";
+  const isPortrait = isVideo && post.aspect_ratio === "9:16";
 
   const typeColor =
-    post.type === "VIDEO"
+    isVideo
       ? "bg-blue-50 text-blue-700"
       : post.type === "GRAFIKA"
       ? "bg-green-50 text-green-700"
+      : isCarousel
+      ? "bg-orange-50 text-orange-700"
       : "bg-gray-100 text-gray-600";
+
+  // Aspect ratio badge pro video
+  const aspectBadge =
+    isVideo && post.aspect_ratio === "9:16"
+      ? { label: "Reels", cls: "bg-purple-50 text-purple-700" }
+      : isVideo && post.aspect_ratio === "16:9"
+      ? { label: "Landscape", cls: "bg-gray-100 text-gray-500" }
+      : null;
+
+  // Thumbnail oblast: 9:16 portrait pro Reels, jinak 16:9
+  const thumbnailCls = isPortrait
+    ? "relative w-full bg-[#f5f5f0] flex items-center justify-center overflow-hidden aspect-[9/16] max-h-48"
+    : "relative w-full aspect-video bg-[#f5f5f0] flex items-center justify-center overflow-hidden";
 
   return (
     <div
@@ -95,9 +116,20 @@ function PostCard({
         isApproved ? "opacity-60 cursor-default" : "",
       ].join(" ")}
     >
-      {/* Thumbnail */}
-      <div className="relative w-full aspect-video bg-[#f5f5f0] flex items-center justify-center overflow-hidden">
-        {post.output_url || post.thumbnail_url ? (
+      {/* Thumbnail / placeholder */}
+      <div className={thumbnailCls}>
+        {isCarousel ? (
+          // Carousel placeholder — zobraz počet slajdů
+          <div className="flex flex-col items-center gap-1.5 text-gray-400">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <rect x="2" y="5" width="14" height="14" rx="2" />
+              <path d="M18 7h1a2 2 0 012 2v8a2 2 0 01-2 2H9" />
+            </svg>
+            <span className="text-sm font-medium">
+              {post.slides_count ? `${post.slides_count} slajdů` : "Carousel"}
+            </span>
+          </div>
+        ) : post.output_url || post.thumbnail_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={(post.output_url ?? post.thumbnail_url)!}
@@ -117,10 +149,15 @@ function PostCard({
       </div>
 
       {/* Badges */}
-      <div className="flex items-center gap-2 px-4 pt-3">
+      <div className="flex items-center flex-wrap gap-1.5 px-4 pt-3">
         {post.type && (
           <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${typeColor}`}>
             {post.type}
+          </span>
+        )}
+        {aspectBadge && (
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${aspectBadge.cls}`}>
+            {aspectBadge.label}
           </span>
         )}
         <span className="text-xs text-gray-400">Varianta {post.variant}</span>
