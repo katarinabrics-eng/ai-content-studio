@@ -59,8 +59,10 @@ export async function POST(request: Request) {
     : null;
 
   try {
+    console.log('[send-access] Odesílám email na:', p.email);
+    console.log('[send-access] RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
     const resend = getResend();
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: "Lucifera <info@studiolucifera.cz>",
       to: p.email!,
       subject: "Váš obsah je připraven ke schválení — Ready to Go",
@@ -91,9 +93,10 @@ export async function POST(request: Request) {
         </div>
       `,
     });
-    console.log(`[send-access] email odeslán → ${p.email}`);
+    console.log('[send-access] Email odeslán, response:', JSON.stringify(data));
+    if (error) console.error('[send-access] Resend error:', JSON.stringify(error));
   } catch (e) {
-    console.error(`[send-access] email selhal pro ${p.email}:`, e);
+    console.error('[send-access] Resend error:', JSON.stringify(e));
   }
 
   return NextResponse.json({ ok: true, access_url: accessUrl, sent_to: p.email });
