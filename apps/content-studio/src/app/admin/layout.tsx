@@ -40,6 +40,12 @@ export default function AdminLayout({
           <span style={{ marginLeft: 6, color: "#a8d800" }}>·</span>
           <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 600, color: "#555" }}>Admin</span>
         </Link>
+        <Link
+          href="/admin/rtg"
+          style={{ fontSize: 12, fontWeight: 600, color: "#555", textDecoration: "none", padding: "5px 12px", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 6, marginLeft: 8 }}
+        >
+          RTG Dashboard
+        </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <a href="/diagnostika" style={{ fontSize: 11, color: "#555", textDecoration: "none", padding: "5px 12px", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 6 }}>+ Nová diagnostika</a>
           <button
