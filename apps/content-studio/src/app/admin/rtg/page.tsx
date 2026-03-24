@@ -76,6 +76,7 @@ export default function AdminRtgPage() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [generating, setGenerating] = useState<string | null>(null);
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
 
@@ -123,6 +124,7 @@ export default function AdminRtgPage() {
   }
 
   async function handleGenerate(clientId: string) {
+    setGenerating(clientId);
     setActionLoading(`gen-${clientId}`);
     try {
       const res = await fetch("/api/admin/rtg/generate", {
@@ -131,9 +133,10 @@ export default function AdminRtgPage() {
         body: JSON.stringify({ project_id: clientId }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
-      showToast(data.ok ? "Spuštěno" : data.error ?? "Chyba");
+      showToast(data.ok ? "Generování dokončeno ✓" : data.error ?? "Chyba");
       if (data.ok) loadData();
     } finally {
+      setGenerating(null);
       setActionLoading(null);
     }
   }
@@ -297,11 +300,16 @@ export default function AdminRtgPage() {
                           </button>
                           <button
                             onClick={() => handleGenerate(client.id)}
-                            disabled={actionLoading === `gen-${client.id}` || !client.onboarding_completed}
-                            className="text-xs px-3 py-1.5 rounded-lg bg-[#111] text-white hover:bg-[#333] disabled:opacity-40 transition-colors"
+                            disabled={!!generating || !client.onboarding_completed}
+                            className="text-xs px-3 py-1.5 rounded-lg bg-[#111] text-white hover:bg-[#333] disabled:opacity-40 transition-colors flex items-center gap-1.5"
                             title={!client.onboarding_completed ? "Klient nemá dokončený onboarding" : undefined}
                           >
-                            {actionLoading === `gen-${client.id}` ? "…" : "Generovat"}
+                            {generating === client.id ? (
+                              <>
+                                <span className="inline-block w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                                Generuji…
+                              </>
+                            ) : "Generovat"}
                           </button>
                         </div>
                       </td>
@@ -309,6 +317,16 @@ export default function AdminRtgPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Banner — generování probíhá */}
+          {generating && (
+            <div className="mt-4 flex items-center gap-3 bg-[#f3fbdc] border border-[#d0ec78] rounded-xl px-5 py-3 text-sm text-[#444]">
+              <span className="inline-block w-4 h-4 border-2 border-[#b5d45c] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+              <span>
+                Generování obsahu probíhá — může trvat až 2 minuty. Nezavírejte stránku.
+              </span>
             </div>
           )}
         </div>
