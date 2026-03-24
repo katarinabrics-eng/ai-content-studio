@@ -48,6 +48,7 @@ function RtgLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)" }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <RtgNav projectCode={projectCode} token={token} />
       <main>{children}</main>
     </div>

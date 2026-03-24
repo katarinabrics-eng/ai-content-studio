@@ -137,7 +137,15 @@ function PostCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-sm text-gray-400">Náhled se generuje…</span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+            <div style={{
+              width: "24px", height: "24px", borderRadius: "50%",
+              border: "2px solid #e8e8e4",
+              borderTopColor: "#d0ec78",
+              animation: "spin 1s linear infinite",
+            }} />
+            <span style={{ fontSize: "12px", color: "#9a9a9a" }}>Obsah se generuje…</span>
+          </div>
         )}
         {isApproved && (
           <div className="absolute inset-0 bg-[#d0ec78]/20 flex items-center justify-center">

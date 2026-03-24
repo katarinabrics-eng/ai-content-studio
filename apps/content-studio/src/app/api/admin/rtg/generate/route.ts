@@ -190,8 +190,39 @@ Pouze JSON, žádný text kolem.`,
           n: 1,
         });
 
-        dalleUrl = imageRes.data?.[0]?.url ?? null;
-        console.log(`[generate] DALL-E pár ${i + 1}: ${dalleUrl ? "OK" : "null"}`);
+        const tempUrl = imageRes.data?.[0]?.url ?? null;
+        console.log(`[generate] DALL-E pár ${i + 1}: ${tempUrl ? "OK" : "null"}`);
+
+        if (tempUrl) {
+          // Stáhni a ulož do Supabase Storage
+          try {
+            const imageResponse = await fetch(tempUrl);
+            const imageBuffer = await imageResponse.arrayBuffer();
+            const fileName = `rtg/${project_id}/${batch_id}/pair-${i}-A.png`;
+            const { data: uploadData, error: uploadError } = await supabase
+              .storage
+              .from("rtg-content")
+              .upload(fileName, imageBuffer, {
+                contentType: "image/png",
+                upsert: true,
+              });
+
+            if (!uploadError && uploadData) {
+              const { data: { publicUrl } } = supabase
+                .storage
+                .from("rtg-content")
+                .getPublicUrl(fileName);
+              dalleUrl = publicUrl;
+              console.log(`[generate] Uloženo do Storage: ${fileName}`);
+            } else {
+              console.error(`[generate] Storage upload chyba pár ${i + 1}:`, uploadError);
+              dalleUrl = tempUrl; // fallback na dočasnou URL
+            }
+          } catch (uploadErr) {
+            console.error(`[generate] Storage fetch chyba pár ${i + 1}:`, uploadErr);
+            dalleUrl = tempUrl; // fallback
+          }
+        }
       } catch (imgErr) {
         console.error(`[generate] DALL-E chyba pro pár ${i + 1}:`, imgErr);
       }
