@@ -1,807 +1,663 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function ReadyToGoPage() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  /* ── Three.js hero ── */
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("visible");
+    let animId: number;
+    async function init() {
+      const THREE = await import("three");
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 0, 6);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+      const limeLight = new THREE.PointLight(0xd0ec78, 2, 20);
+      limeLight.position.set(2, 2, 3);
+      scene.add(limeLight);
+      const blueLight = new THREE.PointLight(0x4080ff, 1, 20);
+      blueLight.position.set(-3, -1, 2);
+      scene.add(blueLight);
+
+      // Particles
+      const particles: THREE.Mesh[] = [];
+      const pGeo = new THREE.SphereGeometry(0.04, 8, 8);
+      for (let i = 0; i < 60; i++) {
+        const mat = new THREE.MeshStandardMaterial({
+          color: Math.random() > 0.5 ? 0xd0ec78 : 0xffffff,
+          emissive: Math.random() > 0.5 ? 0xd0ec78 : 0x333333,
+          emissiveIntensity: 0.3,
+          transparent: true,
+          opacity: Math.random() * 0.5 + 0.2,
         });
-      },
-      { threshold: 0.12 }
-    );
-    document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
-    document.querySelectorAll("#rtg-hero .fade-up").forEach((el) =>
-      el.classList.add("visible")
-    );
-    return () => observer.disconnect();
+        const mesh = new THREE.Mesh(pGeo, mat);
+        mesh.position.set((Math.random() - 0.5) * 14, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 6 - 2);
+        mesh.userData.speed = Math.random() * 0.003 + 0.001;
+        mesh.userData.offset = Math.random() * Math.PI * 2;
+        scene.add(mesh);
+        particles.push(mesh);
+      }
+
+      // Torus knot
+      const torusGeo = new THREE.TorusKnotGeometry(1.2, 0.3, 128, 16, 2, 3);
+      const torus = new THREE.Mesh(torusGeo, new THREE.MeshStandardMaterial({
+        color: 0xd0ec78, emissive: 0x4a6b0a, emissiveIntensity: 0.2,
+        roughness: 0.3, metalness: 0.8, transparent: true, opacity: 0.15,
+      }));
+      torus.position.set(3.5, 0, -1);
+      scene.add(torus);
+      const wire = new THREE.Mesh(torusGeo, new THREE.MeshBasicMaterial({ color: 0xd0ec78, wireframe: true, transparent: true, opacity: 0.08 }));
+      wire.position.copy(torus.position);
+      scene.add(wire);
+
+      // Icosahedron
+      const icoGeo = new THREE.IcosahedronGeometry(0.9, 1);
+      const ico = new THREE.Mesh(icoGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.12 }));
+      ico.position.set(-3.5, 1, -1);
+      scene.add(ico);
+      const icoWire = new THREE.Mesh(icoGeo, new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.06 }));
+      icoWire.position.copy(ico.position);
+      scene.add(icoWire);
+
+      let mouseX = 0, mouseY = 0;
+      const onMouse = (e: MouseEvent) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
+      };
+      document.addEventListener("mousemove", onMouse);
+
+      const onResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener("resize", onResize);
+
+      const clock = new THREE.Clock();
+      function animate() {
+        animId = requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        torus.rotation.x = t * 0.15; torus.rotation.y = t * 0.2;
+        wire.rotation.copy(torus.rotation);
+        ico.rotation.x = t * 0.1; ico.rotation.y = -t * 0.15;
+        icoWire.rotation.copy(ico.rotation);
+        camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.04;
+        camera.position.y += (mouseY * 0.2 - camera.position.y) * 0.04;
+        camera.lookAt(scene.position);
+        particles.forEach(p => {
+          p.position.y += Math.sin(t * p.userData.speed * 10 + p.userData.offset) * 0.003;
+          p.position.x += Math.cos(t * p.userData.speed * 8 + p.userData.offset) * 0.002;
+        });
+        limeLight.position.x = Math.sin(t * 0.5) * 3;
+        limeLight.position.y = Math.cos(t * 0.3) * 2;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      return () => {
+        cancelAnimationFrame(animId);
+        document.removeEventListener("mousemove", onMouse);
+        window.removeEventListener("resize", onResize);
+        renderer.dispose();
+      };
+    }
+    const cleanup = init();
+    return () => { cleanup.then(fn => fn?.()); };
+  }, []);
+
+  /* ── Scroll animations ── */
+  useEffect(() => {
+    // Fade up
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("rtg-visible"); obs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll(".rtg-fade").forEach(el => obs.observe(el));
+
+    // Pipeline stagger
+    const pipeObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll(".rtg-step").forEach((s, i) => {
+            setTimeout(() => s.classList.add("rtg-visible"), i * 200);
+          });
+          pipeObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll(".rtg-pipeline").forEach(el => pipeObs.observe(el));
+
+    // Parallax
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      const inner = document.querySelector<HTMLElement>(".rtg-hero-inner");
+      if (inner) inner.style.transform = `translateY(${scrollY * 0.2}px)`;
+      const glow = document.querySelector<HTMLElement>(".rtg-hero-glow");
+      if (glow) glow.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.1}px))`;
+    };
+    window.addEventListener("scroll", onScroll);
+
+    // Dashboard card interaction
+    document.querySelectorAll(".rtg-dp-card").forEach(card => {
+      card.addEventListener("click", function (this: Element) {
+        const pair = this.closest(".rtg-dp-pair");
+        pair?.querySelectorAll(".rtg-dp-card").forEach(c => c.classList.remove("rtg-selected"));
+        this.classList.add("rtg-selected");
+      });
+    });
+
+    return () => {
+      obs.disconnect();
+      pipeObs.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   return (
     <>
       <style>{`
-        /* ─── RESET & BASE ─── */
-        #rtg-root *, #rtg-root *::before, #rtg-root *::after {
-          box-sizing: border-box; margin: 0; padding: 0;
-        }
-        #rtg-root {
-          --lime: #d0ec78;
-          --lime-bright: #b7e94c;
-          --black: #111111;
-          --white: #ffffff;
-          --cream: #f7f5ef;
-          font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
-          background: var(--black);
-          color: var(--white);
-          font-size: 17px;
-          line-height: 1.6;
-          overflow-x: hidden;
-        }
+        /* ── RESET ── */
+        #rtg-root *, #rtg-root *::before, #rtg-root *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        #rtg-root { font-family: 'DM Sans', sans-serif; overflow-x: hidden; background: #0a0a0a; }
+        html { scroll-behavior: smooth; }
 
-        /* ─── TYPOGRAPHY ─── */
-        #rtg-root h1 {
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: clamp(2.6rem, 6vw, 5rem);
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-          font-weight: 700;
-        }
-        #rtg-root h2 {
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: clamp(1.8rem, 4vw, 3rem);
-          line-height: 1.2;
-          font-weight: 700;
-        }
-        #rtg-root .rtg-label {
-          font-size: 0.75rem;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: var(--lime);
-          font-weight: 500;
-          display: block;
-          margin-bottom: 1rem;
-        }
+        /* ── ANIMATIONS ── */
+        .rtg-fade { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .rtg-fade.rtg-visible { opacity: 1; transform: translateY(0); }
+        .rtg-step { opacity: 0; transform: translateX(-20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .rtg-step.rtg-visible { opacity: 1; transform: translateX(0); }
+        @keyframes rtg-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
 
-        /* ─── LAYOUT ─── */
-        #rtg-root .container {
-          max-width: 1020px;
-          margin: 0 auto;
-          padding: 0 28px;
-        }
-        #rtg-root .container--narrow {
-          max-width: 680px;
-          margin: 0 auto;
-          padding: 0 28px;
-        }
-        #rtg-root section { padding: 100px 0; }
-        #rtg-root section.light {
-          background: var(--cream);
-          color: var(--black);
-        }
-        #rtg-root section.lime-bg {
-          background: var(--lime);
-          color: var(--black);
-        }
-
-        /* ─── NAV ─── */
+        /* ── NAV ── */
         #rtg-nav {
-          position: fixed;
-          top: 0; left: 0; right: 0;
-          z-index: 200;
-          padding: 20px 28px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: rgba(17,17,17,0.92);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+          height: 60px; display: flex; align-items: center; justify-content: space-between;
+          padding: 0 40px; background: rgba(10,10,10,0.7); backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
         }
-        #rtg-nav .nav-logo {
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 1.1rem;
-          color: var(--white);
-          text-decoration: none;
-          letter-spacing: 0.04em;
+        .rtg-nav-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; font-weight: 700; color: #fff; }
+        .rtg-nav-logo em { font-style: italic; color: #d0ec78; }
+        .rtg-nav-links { display: flex; align-items: center; gap: 32px; }
+        .rtg-nav-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+        .rtg-nav-links a:hover { color: #fff; }
+        .rtg-nav-cta {
+          background: #d0ec78 !important; color: #000 !important;
+          padding: 9px 22px; border-radius: 6px; font-size: 13px; font-weight: 700;
+          text-decoration: none; transition: all 0.2s; letter-spacing: 0.01em;
+          box-shadow: 0 0 0 2px rgba(208,236,120,0.4), 0 4px 16px rgba(208,236,120,0.25);
         }
-        #rtg-nav .nav-logo span { color: var(--lime); }
-        #rtg-nav .nav-cta {
-          font-size: 0.85rem;
-          background: var(--lime);
-          color: var(--black);
-          border: none;
-          padding: 10px 22px;
-          border-radius: 2px;
-          cursor: pointer;
-          font-weight: 500;
-          text-decoration: none;
-          transition: background 0.2s;
-          display: inline-block;
-        }
-        #rtg-nav .nav-cta:hover { background: var(--lime-bright); }
+        .rtg-nav-cta:hover { background: #e8ff8a !important; transform: translateY(-1px); }
 
-        /* ─── HERO ─── */
+        /* ── HERO ── */
         #rtg-hero {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          padding-top: 80px;
-          position: relative;
-          overflow: hidden;
+          min-height: 100vh; position: relative; display: flex; flex-direction: column;
+          align-items: center; justify-content: center; text-align: center;
+          padding: 100px 40px 80px; background: #0a0a0a; overflow: hidden;
         }
-        #rtg-root .hero-inner {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 60px;
-          align-items: center;
+        #rtg-canvas {
+          position: absolute; inset: 0; width: 100%; height: 100%;
+          pointer-events: none; z-index: 0; opacity: 0.7;
         }
-        #rtg-root .hero-title em {
-          font-style: italic;
-          color: var(--lime);
+        .rtg-hero-glow {
+          position: absolute; width: 600px; height: 600px;
+          background: radial-gradient(ellipse, rgba(208,236,120,0.12) 0%, transparent 70%);
+          top: 50%; left: 50%; transform: translate(-50%, -50%);
+          pointer-events: none; z-index: 0;
         }
-        #rtg-root .hero-sub {
-          font-size: 1.15rem;
-          color: rgba(255,255,255,0.72);
-          max-width: 460px;
-          line-height: 1.7;
-          margin-bottom: 2.4rem;
-          margin-top: 1.4rem;
+        .rtg-hero-inner { position: relative; z-index: 1; max-width: 860px; }
+        .rtg-badge {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: rgba(208,236,120,0.1); border: 1px solid rgba(208,236,120,0.2);
+          padding: 6px 16px; border-radius: 100px; font-size: 12px;
+          color: #d0ec78; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+          margin-bottom: 36px;
         }
-        #rtg-root .hero-tags {
-          display: flex;
-          gap: 12px;
-          margin-bottom: 2.8rem;
-          flex-wrap: wrap;
+        .rtg-badge::before {
+          content: ''; width: 6px; height: 6px; background: #d0ec78;
+          border-radius: 50%; animation: rtg-pulse 2s infinite;
         }
-        #rtg-root .tag {
-          font-size: 0.82rem;
-          padding: 6px 14px;
-          border: 1px solid rgba(208,236,120,0.35);
-          border-radius: 100px;
-          color: var(--lime);
-          letter-spacing: 0.04em;
+        #rtg-hero h1 {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(48px, 7vw, 92px); font-weight: 800;
+          line-height: 1.02; letter-spacing: -0.025em; color: #fff; margin-bottom: 28px;
         }
-        #rtg-root .hero-visual {
-          background: rgba(208,236,120,0.07);
-          border: 1px solid rgba(208,236,120,0.18);
-          border-radius: 4px;
-          aspect-ratio: 4/3;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          overflow: hidden;
+        #rtg-hero h1 em { font-style: italic; color: #d0ec78; }
+        .rtg-hero-sub {
+          font-size: clamp(16px, 2vw, 19px); color: rgba(255,255,255,0.5);
+          max-width: 540px; margin: 0 auto 44px; line-height: 1.7; font-weight: 300;
         }
-        #rtg-root .hero-visual::before {
-          content: '';
-          position: absolute;
-          top: -40%; left: -40%;
-          width: 180%; height: 180%;
-          background: radial-gradient(circle at 60% 40%, rgba(183,233,76,0.13) 0%, transparent 65%);
+        .rtg-hero-actions { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 72px; }
+        .rtg-btn-lime {
+          display: inline-block; background: #d0ec78; color: #0a0a0a;
+          padding: 15px 36px; border-radius: 8px; font-size: 15px;
+          font-weight: 500; text-decoration: none; transition: all 0.2s;
         }
-        #rtg-root .hero-visual-inner {
-          text-align: center;
-          position: relative;
-          z-index: 1;
+        .rtg-btn-lime:hover { background: #b5d45c; transform: translateY(-1px); }
+        .rtg-btn-ghost {
+          display: inline-block; color: rgba(255,255,255,0.5); font-size: 14px;
+          text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15);
+          padding-bottom: 1px; transition: all 0.2s;
         }
-        #rtg-root .hero-visual-icon {
-          font-size: 3.5rem;
-          margin-bottom: 1rem;
-          display: block;
+        .rtg-btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+        .rtg-hero-stats { display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; }
+        .rtg-stat { text-align: center; }
+        .rtg-stat-num { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
+        .rtg-stat-num span { color: #d0ec78; }
+        .rtg-stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; letter-spacing: 0.05em; }
+        .rtg-stat-div { width: 1px; height: 40px; background: rgba(255,255,255,0.08); }
+
+        /* ── TRANSITION ── */
+        .rtg-transition { height: 120px; background: linear-gradient(to bottom, #0a0a0a, #fafaf7); }
+
+        /* ── LIGHT SECTIONS ── */
+        .rtg-section { background: #fafaf7; padding: 100px 40px; }
+        .rtg-section.rtg-alt { background: #fff; }
+        .rtg-container { max-width: 1000px; margin: 0 auto; }
+        .rtg-eyebrow {
+          font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+          text-transform: uppercase; color: #6b6b6b;
+          display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
         }
-        #rtg-root .hero-visual-label {
-          font-size: 0.8rem;
-          color: rgba(255,255,255,0.4);
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          margin-top: 20px;
+        .rtg-eyebrow::before { content: ''; width: 24px; height: 2px; background: #b5d45c; border-radius: 2px; }
+        .rtg-section h2, .rtg-section.rtg-alt h2 {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(30px, 4.5vw, 50px); font-weight: 800; line-height: 1.1;
+          letter-spacing: -0.02em; color: #111; margin-bottom: 52px;
         }
-        #rtg-root .mockup-bars {
-          display: flex; gap: 8px; justify-content: center; margin-top: 1.5rem;
+        .rtg-section h2 em { font-style: italic; }
+
+        /* ── PAIN ── */
+        .rtg-pain-list { max-width: 680px; }
+        .rtg-pain-item {
+          display: flex; align-items: flex-start; gap: 20px;
+          padding: 22px 0; border-bottom: 1px solid #e8e8e4;
         }
-        #rtg-root .mockup-bars + .mockup-bars { margin-top: 8px; }
-        #rtg-root .bar {
-          border-radius: 2px;
-          background: rgba(208,236,120,0.25);
-          height: 8px;
+        .rtg-pain-item:first-child { border-top: 1px solid #e8e8e4; }
+        .rtg-pain-icon {
+          width: 40px; height: 40px; background: #f3fbdc; border: 1px solid #dff09a;
+          border-radius: 10px; display: flex; align-items: center; justify-content: center;
+          font-size: 17px; flex-shrink: 0;
         }
-        #rtg-root .hero-bg-line {
-          position: absolute;
-          top: 0; bottom: 0; right: 42%;
-          width: 1px;
-          background: linear-gradient(to bottom, transparent, rgba(208,236,120,0.12) 30%, rgba(208,236,120,0.12) 70%, transparent);
+        .rtg-pain-text { font-size: 17px; color: #111; line-height: 1.5; padding-top: 8px; }
+        .rtg-pain-closer { margin-top: 36px; font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic; color: #6b6b6b; }
+
+        /* ── PIPELINE ── */
+        .rtg-pipeline { display: flex; flex-direction: column; gap: 0; max-width: 720px; position: relative; }
+        .rtg-pipeline::before {
+          content: ''; position: absolute; left: 28px; top: 56px; bottom: 56px; width: 2px;
+          background: linear-gradient(to bottom, #b5d45c, rgba(181,212,92,0.2));
+        }
+        .rtg-step { display: flex; align-items: flex-start; gap: 28px; padding: 32px 0; position: relative; }
+        .rtg-step-num {
+          width: 56px; height: 56px; background: #111; color: #d0ec78;
+          border-radius: 50%; display: flex; align-items: center; justify-content: center;
+          font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 800;
+          flex-shrink: 0; position: relative; z-index: 1; box-shadow: 0 0 0 6px #fff;
+        }
+        .rtg-step-content h3 { font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em; color: #111; }
+        .rtg-step-content p { font-size: 15px; color: #6b6b6b; line-height: 1.6; }
+        .rtg-step-tag {
+          display: inline-block; background: #f3fbdc; border: 1px solid #dff09a;
+          padding: 3px 12px; border-radius: 100px; font-size: 12px; color: #3a6b0e;
+          font-weight: 500; margin-top: 10px;
+        }
+
+        /* ── DASHBOARD PREVIEW ── */
+        .rtg-dp-wrap {
+          background: #1a1a1a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06);
+          overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+          transform: perspective(1200px) rotateX(3deg); transition: transform 0.5s ease;
+        }
+        .rtg-dp-wrap:hover { transform: perspective(1200px) rotateX(0deg); }
+        .rtg-dp-topbar {
+          background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
+          padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+        }
+        .rtg-dp-dots { display: flex; gap: 6px; }
+        .rtg-dp-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .rtg-dp-dot:nth-child(1) { background: #ff5f57; }
+        .rtg-dp-dot:nth-child(2) { background: #ffbd2e; }
+        .rtg-dp-dot:nth-child(3) { background: #28c840; }
+        .rtg-dp-title { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.05em; }
+        .rtg-dp-body { padding: 24px; }
+        .rtg-dp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .rtg-dp-week { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; }
+        .rtg-dp-prog { font-size: 12px; color: rgba(255,255,255,0.4); }
+        .rtg-dp-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 24px; }
+        .rtg-dp-bar-fill { height: 3px; background: #d0ec78; border-radius: 2px; width: 50%; }
+        .rtg-dp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .rtg-dp-card {
+          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 10px; padding: 14px; cursor: pointer; transition: border-color 0.2s;
+        }
+        .rtg-dp-card.rtg-selected { border-color: #d0ec78; background: rgba(208,236,120,0.06); }
+        .rtg-dp-type {
+          display: inline-block; font-size: 9px; font-weight: 600;
+          padding: 2px 8px; border-radius: 100px; letter-spacing: 0.06em; margin-bottom: 10px;
+        }
+        .rtg-dp-type.video { background: rgba(59,130,246,0.15); color: #93c5fd; }
+        .rtg-dp-type.graphic { background: rgba(34,197,94,0.15); color: #86efac; }
+        .rtg-dp-thumb {
+          width: 100%; aspect-ratio: 16/9; border-radius: 6px;
+          background: rgba(255,255,255,0.05); margin-bottom: 10px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 11px; color: rgba(255,255,255,0.2);
+        }
+        .rtg-dp-hook { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 4px; }
+        .rtg-dp-sub { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+        .rtg-dp-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+        .rtg-dp-btn {
+          padding: 8px 20px; border-radius: 6px; font-size: 12px;
+          font-weight: 500; cursor: pointer; border: none;
+        }
+        .rtg-dp-btn.approve { background: #d0ec78; color: #111; }
+        .rtg-dp-btn.edit { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+        /* ── DELIVERABLES ── */
+        .rtg-deliver-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .rtg-deliver-item {
+          background: #fff; border: 1px solid #e8e8e4;
+          border-radius: 12px; padding: 28px 24px; transition: border-color 0.2s, background 0.2s;
+        }
+        .rtg-deliver-item:hover { border-color: #b5d45c; background: #f3fbdc; }
+        .rtg-d-check {
+          width: 28px; height: 28px; background: #d0ec78;
+          border-radius: 50%; display: flex; align-items: center; justify-content: center;
+          font-size: 12px; margin-bottom: 14px; font-weight: 700;
+        }
+        .rtg-deliver-item h3 { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; color: #111; }
+        .rtg-deliver-item p { font-size: 14px; color: #6b6b6b; line-height: 1.6; }
+
+        /* ── PRICING ── */
+        .rtg-pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+        .rtg-plan { background: #fff; border: 1px solid #e8e8e4; border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+        .rtg-plan.rtg-featured { border-color: #111; }
+        .rtg-plan-head { padding: 28px 24px 20px; border-bottom: 1px solid #e8e8e4; }
+        .rtg-plan-badge { display: inline-block; background: #d0ec78; color: #111; font-size: 10px; font-weight: 600; padding: 3px 12px; border-radius: 100px; letter-spacing: 0.06em; margin-bottom: 14px; }
+        .rtg-plan-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 800; margin-bottom: 6px; color: #111; }
+        .rtg-plan-tag { font-size: 14px; color: #6b6b6b; font-style: italic; }
+        .rtg-plan-counts { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 24px; border-bottom: 1px solid #e8e8e4; }
+        .rtg-count-pill { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 100px; }
+        .rtg-count-pill.v { background: #dbeafe; color: #1d4ed8; }
+        .rtg-count-pill.g { background: #dcfce7; color: #15803d; }
+        .rtg-plan-features { padding: 20px 24px; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .rtg-plan-features li { font-size: 13px; color: #111; display: flex; gap: 10px; line-height: 1.5; }
+        .rtg-ck { color: #b5d45c; flex-shrink: 0; font-weight: 600; }
+        .rtg-pl { color: #6b6b6b; flex-shrink: 0; }
+
+        /* ── CTA DARK ── */
+        #rtg-cta {
+          background: #111; padding: 120px 40px; text-align: center;
+          position: relative; overflow: hidden;
+        }
+        #rtg-cta::before {
+          content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+          width: 700px; height: 500px;
+          background: radial-gradient(ellipse, rgba(208,236,120,0.12), transparent 70%);
           pointer-events: none;
         }
+        #rtg-cta h2 { color: #fff !important; margin-bottom: 16px !important; }
+        #rtg-cta h2 em { color: #d0ec78; }
+        #rtg-cta p { color: rgba(255,255,255,0.5); font-size: 18px; font-weight: 300; max-width: 440px; margin: 0 auto 44px; }
+        .rtg-cta-actions { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
 
-        /* ─── BUTTONS ─── */
-        #rtg-root .btn {
-          display: inline-block;
-          padding: 16px 32px;
-          font-size: 0.95rem;
-          font-weight: 500;
-          border-radius: 2px;
-          cursor: pointer;
-          text-decoration: none;
-          transition: all 0.2s;
-          border: none;
-        }
-        #rtg-root .btn-primary { background: var(--lime); color: var(--black); }
-        #rtg-root .btn-primary:hover { background: var(--lime-bright); transform: translateY(-1px); }
-        #rtg-root .btn-outline {
-          background: transparent;
-          color: var(--white);
-          border: 1px solid rgba(255,255,255,0.25);
-          margin-left: 14px;
-        }
-        #rtg-root .btn-outline:hover { border-color: var(--lime); color: var(--lime); }
-        #rtg-root .btn-dark { background: var(--black); color: var(--white); }
-        #rtg-root .btn-dark:hover { background: #222; }
-
-        /* ─── REALITA ─── */
-        #rtg-realita {
-          background: #F7F5EF;
-          border-top: 1px solid rgba(0,0,0,0.06);
-        }
-        #rtg-realita .rtg-label { color: var(--lime-bright); }
-        #rtg-realita h2 { color: var(--black); }
-        #rtg-root .pain-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1px;
-          margin-top: 3rem;
-          border: 1px solid rgba(0,0,0,0.1);
-        }
-        #rtg-root .pain-item {
-          padding: 28px 32px;
-          background: #F7F5EF;
-          border: 1px solid rgba(0,0,0,0.08);
-          transition: background 0.2s;
-        }
-        #rtg-root .pain-item:hover { background: rgba(208,236,120,0.18); }
-        #rtg-root .pain-arrow { color: var(--black); margin-right: 10px; font-style: normal; font-weight: 700; }
-        #rtg-root .pain-item p { color: var(--black); font-size: 1rem; }
-        #rtg-root .pain-conclusion {
-          text-align: center;
-          margin-top: 3rem;
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 1.5rem;
-          font-style: italic;
-          color: rgba(17,17,17,0.5);
-        }
-
-        /* ─── CO KDYBY ─── */
-        #rtg-cokdyby { background: #161616; }
-        #rtg-root .imagine-list {
-          list-style: none;
-          margin-top: 3rem;
-          display: flex;
-          flex-direction: column;
-        }
-        #rtg-root .imagine-list li {
-          padding: 24px 0;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-          display: grid;
-          grid-template-columns: 40px 1fr;
-          gap: 16px;
-          align-items: start;
-          font-size: 1.1rem;
-          color: rgba(255,255,255,0.85);
-          transition: color 0.2s;
-        }
-        #rtg-root .imagine-list li:hover { color: var(--white); }
-        #rtg-root .imagine-list li:first-child { border-top: 1px solid rgba(255,255,255,0.07); }
-        #rtg-root .imagine-num {
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 1.3rem;
-          color: var(--lime);
-          font-style: italic;
-          padding-top: 2px;
-        }
-        #rtg-root .imagine-end {
-          margin-top: 2.5rem;
-          font-size: 1rem;
-          color: rgba(255,255,255,0.42);
-          font-style: italic;
-        }
-
-        /* ─── CO DOSTANEŠ ─── */
-        #rtg-codostanes {
-          background: #F7F5EF;
-          border-top: 1px solid rgba(0,0,0,0.06);
-        }
-        #rtg-codostanes .rtg-label { color: var(--lime-bright); }
-        #rtg-codostanes h2 { color: var(--black); }
-        #rtg-root .delivers-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 24px;
-          margin-top: 3rem;
-        }
-        #rtg-root .deliver-card {
-          background: #ffffff;
-          border: 1px solid rgba(0,0,0,0.1);
-          border-radius: 3px;
-          padding: 32px;
-          transition: border-color 0.2s, background 0.2s;
-        }
-        #rtg-root .deliver-card:hover {
-          border-color: rgba(183,233,76,0.5);
-          background: rgba(208,236,120,0.06);
-        }
-        #rtg-root .deliver-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
-        #rtg-root .deliver-card h3 {
-          font-size: 1.05rem;
-          font-style: normal;
-          font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-          color: var(--black);
-        }
-        #rtg-root .deliver-card p { font-size: 0.9rem; color: rgba(17,17,17,0.7); line-height: 1.6; }
-        #rtg-root .delivers-closing {
-          text-align: center;
-          margin-top: 2.5rem;
-          color: rgba(17,17,17,0.5);
-          font-style: italic;
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 1.2rem;
-        }
-
-        /* ─── JAK TO FUNGUJE ─── */
-        #rtg-jak { background: #161616; }
-        #rtg-root .steps-row {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1px;
-          margin-top: 3.5rem;
-          background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.08);
-        }
-        #rtg-root .step {
-          background: var(--black);
-          padding: 40px 32px;
-          text-align: center;
-        }
-        #rtg-root .step-num {
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 3rem;
-          color: var(--lime);
-          font-style: italic;
-          display: block;
-          line-height: 1;
-          margin-bottom: 1.2rem;
-          opacity: 0.7;
-        }
-        #rtg-root .step h3 {
-          font-style: normal;
-          font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
-          font-weight: 500;
-          font-size: 1rem;
-          color: var(--white);
-          margin-bottom: 0.6rem;
-        }
-        #rtg-root .step p { font-size: 0.88rem; color: rgba(255,255,255,0.5); }
-        #rtg-root .step-done {
-          margin-top: 3rem;
-          text-align: center;
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 2rem;
-          font-style: italic;
-          color: var(--lime);
-        }
-
-        /* ─── PRO KOHO ─── */
-        #rtg-root .who-list {
-          list-style: none;
-          margin-top: 3rem;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        #rtg-root .who-list li {
-          display: flex;
-          align-items: flex-start;
-          gap: 16px;
-          font-size: 1.05rem;
-          color: rgba(17,17,17,0.8);
-          padding: 22px 28px;
-          background: white;
-          border-left: 3px solid var(--lime-bright);
-          border-radius: 1px;
-        }
-        #rtg-root .who-dot {
-          width: 8px; height: 8px;
-          background: var(--black);
-          border-radius: 50%;
-          margin-top: 8px;
-          flex-shrink: 0;
-        }
-
-        /* ─── VARIANTY ─── */
-        #rtg-root .plans-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-          margin-top: 3.5rem;
-        }
-        #rtg-root .plan {
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 3px;
-          padding: 36px 28px;
-          position: relative;
-          transition: border-color 0.25s;
-        }
-        #rtg-root .plan:hover { border-color: rgba(208,236,120,0.4); }
-        #rtg-root .plan.featured {
-          border-color: var(--lime);
-          background: rgba(208,236,120,0.04);
-        }
-        #rtg-root .plan-badge {
-          position: absolute;
-          top: -13px; left: 28px;
-          background: var(--lime);
-          color: var(--black);
-          font-size: 0.72rem;
-          padding: 4px 12px;
-          border-radius: 100px;
-          font-weight: 500;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-        }
-        #rtg-root .plan-name {
-          font-family: var(--font-playfair, 'Playfair Display', serif);
-          font-size: 1.5rem;
-          margin-bottom: 0.4rem;
-        }
-        #rtg-root .plan-tagline {
-          font-size: 0.88rem;
-          color: rgba(255,255,255,0.5);
-          margin-bottom: 1.8rem;
-          font-style: italic;
-        }
-        #rtg-root .plan-price {
-          font-size: 1.6rem;
-          font-weight: 500;
-          margin-bottom: 1.8rem;
-          color: var(--lime);
-        }
-        #rtg-root .plan-price span {
-          font-size: 0.88rem;
-          font-weight: 300;
-          color: rgba(255,255,255,0.4);
-        }
-        #rtg-root .plan-features {
-          list-style: none;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-bottom: 2rem;
-        }
-        #rtg-root .plan-features li {
-          font-size: 0.9rem;
-          color: rgba(255,255,255,0.7);
-          display: flex;
-          gap: 10px;
-          align-items: flex-start;
-          line-height: 1.5;
-        }
-        #rtg-root .plan-features li::before {
-          content: '✓';
-          color: var(--lime);
-          font-size: 0.85rem;
-          margin-top: 1px;
-          flex-shrink: 0;
-        }
-        #rtg-root .plan-btn {
-          display: block;
-          width: 100%;
-          padding: 13px;
-          text-align: center;
-          border: 1px solid rgba(255,255,255,0.2);
-          border-radius: 2px;
-          font-size: 0.9rem;
-          color: var(--white);
-          text-decoration: none;
-          cursor: pointer;
-          background: transparent;
-          transition: all 0.2s;
-        }
-        #rtg-root .plan-btn:hover { border-color: var(--lime); color: var(--lime); }
-        #rtg-root .plan.featured .plan-btn {
-          background: var(--lime);
-          color: var(--black);
-          border-color: var(--lime);
-        }
-        #rtg-root .plan.featured .plan-btn:hover { background: var(--lime-bright); }
-        #rtg-root .plans-note {
-          text-align: center;
-          margin-top: 2rem;
-          font-size: 0.85rem;
-          color: rgba(255,255,255,0.3);
-        }
-
-        /* ─── CTA FINAL ─── */
-        #rtg-cta-final {
-          background: var(--lime);
-          padding: 120px 0;
-          text-align: center;
-        }
-        #rtg-cta-final h2 { color: var(--black); margin-bottom: 1rem; }
-        #rtg-cta-final p {
-          font-size: 1.1rem;
-          color: rgba(17,17,17,0.65);
-          max-width: 480px;
-          margin: 0 auto 2.5rem;
-        }
-
-        /* ─── FOOTER ─── */
+        /* ── FOOTER ── */
         #rtg-footer {
-          background: var(--black);
-          border-top: 1px solid rgba(255,255,255,0.07);
-          padding: 40px 0;
-          text-align: center;
+          background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.05);
+          padding: 36px 40px; display: flex; align-items: center;
+          justify-content: space-between; flex-wrap: wrap; gap: 12px;
         }
-        #rtg-footer p { font-size: 0.82rem; color: rgba(255,255,255,0.28); letter-spacing: 0.06em; }
-        #rtg-footer a { color: rgba(255,255,255,0.35); text-decoration: none; }
-        #rtg-footer a:hover { color: var(--lime); }
+        .rtg-f-logo { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #fff; }
+        .rtg-f-logo em { font-style: italic; color: #d0ec78; }
+        #rtg-footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
 
-        /* ─── ANIMATIONS ─── */
-        #rtg-root .fade-up {
-          opacity: 0;
-          transform: translateY(28px);
-          transition: opacity 0.65s ease, transform 0.65s ease;
-        }
-        #rtg-root .fade-up.visible { opacity: 1; transform: translateY(0); }
-        #rtg-root .fade-up.delay-1 { transition-delay: 0.1s; }
-        #rtg-root .fade-up.delay-2 { transition-delay: 0.22s; }
-        #rtg-root .fade-up.delay-3 { transition-delay: 0.34s; }
-        #rtg-root .fade-up.delay-4 { transition-delay: 0.46s; }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 800px) {
-          #rtg-root .hero-inner { grid-template-columns: 1fr; gap: 40px; }
-          #rtg-root .hero-right { display: none; }
-          #rtg-root .pain-grid { grid-template-columns: 1fr; }
-          #rtg-root .delivers-grid { grid-template-columns: 1fr; }
-          #rtg-root .steps-row { grid-template-columns: 1fr; }
-          #rtg-root .plans-grid { grid-template-columns: 1fr; }
-          #rtg-root .hero-bg-line { display: none; }
-          #rtg-root section { padding: 70px 0; }
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+          #rtg-nav { padding: 0 20px; }
+          .rtg-nav-links { display: none; }
+          #rtg-hero { padding: 80px 20px 60px; }
+          .rtg-section { padding: 64px 20px; }
+          .rtg-pipeline::before { display: none; }
+          .rtg-deliver-grid, .rtg-pricing-grid { grid-template-columns: 1fr; }
+          .rtg-dp-pair { grid-template-columns: 1fr; }
+          .rtg-stat-div { display: none; }
+          #rtg-footer { padding: 28px 20px; }
         }
       `}</style>
 
-      {/* NAV */}
-      <nav id="rtg-nav">
-        <a href="#" className="nav-logo">
-          Lucifera <span>Ready</span>
-        </a>
-        <a href="#rtg-varianty" className="nav-cta">Chci to vyzkoušet</a>
-      </nav>
-
       <div id="rtg-root">
+        {/* NAV */}
+        <nav id="rtg-nav">
+          <div className="rtg-nav-logo">Ready <em>to Go</em></div>
+          <div className="rtg-nav-links">
+            <a href="#how">Jak to funguje</a>
+            <a href="#plans">Plány</a>
+            <a href="#rtg-cta" className="rtg-nav-cta">Vyzkoušet →</a>
+          </div>
+        </nav>
+
         {/* HERO */}
         <section id="rtg-hero">
-          <div className="hero-bg-line" />
-          <div className="container">
-            <div className="hero-inner">
-              <div className="hero-left">
-                <span className="rtg-label">Lucifera Ready</span>
-                <h1 className="hero-title">
-                  Obsah na sítě<br />
-                  <em>bez hodin</em><br />
-                  práce.
-                </h1>
-                <p className="hero-sub">
-                  Videa, záběry a nápady, které jen vezmeš a použiješ — nebo z nich během pár minut vytvoříš vlastní obsah.
-                </p>
-                <div className="hero-tags">
-                  <span className="tag">bez chaosu</span>
-                  <span className="tag">bez složitého tvoření</span>
-                  <span className="tag">bez začínání od nuly</span>
-                </div>
-                <a href="#rtg-varianty" className="btn btn-primary">Chci to vyzkoušet</a>
-                <a href="#rtg-codostanes" className="btn btn-outline">Co dostanu?</a>
+          <canvas id="rtg-canvas" ref={canvasRef} />
+          <div className="rtg-hero-glow" />
+          <div className="rtg-hero-inner">
+            <div className="rtg-badge">obsah na sítě · bez hodin práce</div>
+            <h1>Obsah bez<br /><em>chaosu.</em></h1>
+            <p className="rtg-hero-sub">Videa, záběry a nápady připravené každý týden. Ty jen vybereš a schválíš — systém udělá zbytek.</p>
+            <div className="rtg-hero-actions">
+              <a href="#rtg-cta" className="rtg-btn-lime">Chci to vyzkoušet</a>
+              <a href="#how" className="rtg-btn-ghost">Jak to funguje →</a>
+            </div>
+            <div className="rtg-hero-stats">
+              <div className="rtg-stat">
+                <div className="rtg-stat-num">2<span>×</span></div>
+                <div className="rtg-stat-label">varianty každého příspěvku</div>
               </div>
-              <div className="hero-right">
-                <div className="hero-visual">
-                  <div className="hero-visual-inner">
-                    <span className="hero-visual-icon">🎬</span>
-                    <div className="mockup-bars">
-                      <div className="bar" style={{ width: 60 }} />
-                      <div className="bar" style={{ width: 90, background: "rgba(208,236,120,0.45)" }} />
-                      <div className="bar" style={{ width: 45 }} />
-                    </div>
-                    <div className="mockup-bars">
-                      <div className="bar" style={{ width: 50 }} />
-                      <div className="bar" style={{ width: 80, background: "rgba(208,236,120,0.3)" }} />
-                      <div className="bar" style={{ width: 60 }} />
-                    </div>
-                    <p className="hero-visual-label">Knihovna záběrů čeká</p>
+              <div className="rtg-stat-div" />
+              <div className="rtg-stat">
+                <div className="rtg-stat-num"><span>1</span>×</div>
+                <div className="rtg-stat-label">zadáš info — nikdy víckrát</div>
+              </div>
+              <div className="rtg-stat-div" />
+              <div className="rtg-stat">
+                <div className="rtg-stat-num">0</div>
+                <div className="rtg-stat-label">hodin nad tvorbou</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="rtg-transition" />
+
+        {/* PAIN */}
+        <section className="rtg-section" id="pain">
+          <div className="rtg-container">
+            <div className="rtg-eyebrow rtg-fade">01 · možná to znáš</div>
+            <h2 className="rtg-fade">Máš nápady.<br /><em>Ale zůstanou v hlavě.</em></h2>
+            <div className="rtg-pain-list">
+              <div className="rtg-pain-item rtg-fade"><div className="rtg-pain-icon">💡</div><span className="rtg-pain-text">Máš nápady, ale nedotáhneš je do konce.</span></div>
+              <div className="rtg-pain-item rtg-fade"><div className="rtg-pain-icon">🎬</div><span className="rtg-pain-text">Video zabere víc času než samotný příspěvek.</span></div>
+              <div className="rtg-pain-item rtg-fade"><div className="rtg-pain-icon">📱</div><span className="rtg-pain-text">Máš plný telefon materiálu, ale nic z toho nevznikne.</span></div>
+              <div className="rtg-pain-item rtg-fade"><div className="rtg-pain-icon">🛠️</div><span className="rtg-pain-text">Nechceš se učit další nástroje.</span></div>
+            </div>
+            <p className="rtg-pain-closer rtg-fade">A tak to odkládáš.</p>
+          </div>
+        </section>
+
+        {/* PIPELINE */}
+        <section className="rtg-section rtg-alt" id="how">
+          <div className="rtg-container">
+            <div className="rtg-eyebrow rtg-fade">02 · jak to funguje</div>
+            <h2 className="rtg-fade">Zadáš jednou.<br /><em>Schvaluješ navždy.</em></h2>
+            <div className="rtg-pipeline">
+              <div className="rtg-step">
+                <div className="rtg-step-num">1</div>
+                <div className="rtg-step-content">
+                  <h3>Zadáš web nebo Instagram</h3>
+                  <p>Systém si přečte tvou značku — styl, tón, témata, barvy. Jednou. Nikdy víckrát.</p>
+                  <span className="rtg-step-tag">⚡ Hotovo za 2 minuty</span>
+                </div>
+              </div>
+              <div className="rtg-step">
+                <div className="rtg-step-num">2</div>
+                <div className="rtg-step-content">
+                  <h3>AI připraví obsah každý týden</h3>
+                  <p>Videa, grafiky, texty — vždy ve dvou variantách. Systém ví co tvoří a nikdy neopakuje.</p>
+                  <span className="rtg-step-tag">🤖 Automaticky dle intervalu</span>
+                </div>
+              </div>
+              <div className="rtg-step">
+                <div className="rtg-step-num">3</div>
+                <div className="rtg-step-content">
+                  <h3>Ty jen vybereš a schválíš</h3>
+                  <p>Varianta A nebo B. Klikneš schválit. Stáhneš nebo naplánuješ. Hotovo.</p>
+                  <span className="rtg-step-tag">✓ Bez komunikace, bez briefů</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* DASHBOARD PREVIEW */}
+        <section className="rtg-section" style={{ paddingTop: 0, paddingBottom: 100 }}>
+          <div className="rtg-container">
+            <div className="rtg-eyebrow rtg-fade" style={{ marginBottom: 24 }}>03 · co vidíš v dashboardu</div>
+            <h2 className="rtg-fade" style={{ marginBottom: 40 }}>Vybereš variantu.<br /><em>Schválíš. Jdeš dál.</em></h2>
+            <div className="rtg-dp-wrap rtg-fade">
+              <div className="rtg-dp-topbar">
+                <div className="rtg-dp-dots">
+                  <div className="rtg-dp-dot" /><div className="rtg-dp-dot" /><div className="rtg-dp-dot" />
+                </div>
+                <div className="rtg-dp-title">Ready to Go · Klientský portál</div>
+              </div>
+              <div className="rtg-dp-body">
+                <div className="rtg-dp-header">
+                  <div className="rtg-dp-week">Týden 24.–28. 3.</div>
+                  <div className="rtg-dp-prog">1 / 2 schváleno</div>
+                </div>
+                <div className="rtg-dp-bar"><div className="rtg-dp-bar-fill" /></div>
+                <div className="rtg-dp-pair">
+                  <div className="rtg-dp-card rtg-selected">
+                    <span className="rtg-dp-type video">VIDEO · Reels</span>
+                    <div className="rtg-dp-thumb">▶ záběr · 15s</div>
+                    <div className="rtg-dp-hook">&ldquo;Tohle mi trvalo 2 hodiny. Teď to zvládnu za 5 minut.&rdquo;</div>
+                    <div className="rtg-dp-sub">Hook přímý · tón osobní · Varianta A</div>
+                  </div>
+                  <div className="rtg-dp-card">
+                    <span className="rtg-dp-type video">VIDEO · Reels</span>
+                    <div className="rtg-dp-thumb">▶ záběr · 12s</div>
+                    <div className="rtg-dp-hook">&ldquo;Co kdybys měla obsah na celý týden hotový za odpoledne?&rdquo;</div>
+                    <div className="rtg-dp-sub">Hook otázka · tón zvídavý · Varianta B</div>
                   </div>
                 </div>
+                <div className="rtg-dp-pair">
+                  <div className="rtg-dp-card">
+                    <span className="rtg-dp-type graphic">GRAFIKA</span>
+                    <div className="rtg-dp-thumb" style={{ aspectRatio: "1/1", maxHeight: 80 }}>◻ světlý styl</div>
+                    <div className="rtg-dp-hook">&ldquo;3 věci které mi ušetří hodiny každý týden.&rdquo;</div>
+                    <div className="rtg-dp-sub">Varianta A · seznam</div>
+                  </div>
+                  <div className="rtg-dp-card">
+                    <span className="rtg-dp-type graphic">GRAFIKA</span>
+                    <div className="rtg-dp-thumb" style={{ aspectRatio: "1/1", maxHeight: 80, background: "rgba(208,236,120,0.06)" }}>◻ tmavý styl</div>
+                    <div className="rtg-dp-hook">&ldquo;Přestala jsem řešit obsah. Začala jsem ho tvořit.&rdquo;</div>
+                    <div className="rtg-dp-sub">Varianta B · příběh</div>
+                  </div>
+                </div>
+                <div className="rtg-dp-actions">
+                  <button className="rtg-dp-btn edit">Upravit text</button>
+                  <button className="rtg-dp-btn approve">Schválit vybranou →</button>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* REALITA */}
-        <section id="rtg-realita">
-          <div className="container--narrow">
-            <span className="rtg-label fade-up">Možná to znáš…</span>
-            <h2 className="fade-up">Nápady jsou.<br />Čas na tvorbu ne.</h2>
-            <div className="pain-grid fade-up delay-1">
-              <div className="pain-item">
-                <p><em className="pain-arrow">→</em>Máš nápady, ale nedotáhneš je do konce</p>
-              </div>
-              <div className="pain-item">
-                <p><em className="pain-arrow">→</em>Video zabere víc času než samotný příspěvek</p>
-              </div>
-              <div className="pain-item">
-                <p><em className="pain-arrow">→</em>Máš plný telefon materiálu, ale nic z toho nevznikne</p>
-              </div>
-              <div className="pain-item">
-                <p><em className="pain-arrow">→</em>Nechceš se učit další nástroj navíc</p>
-              </div>
+        {/* DELIVERABLES */}
+        <section className="rtg-section rtg-alt">
+          <div className="rtg-container">
+            <div className="rtg-eyebrow rtg-fade">04 · co dostaneš</div>
+            <h2 className="rtg-fade">Vše připravené<br /><em>k použití.</em></h2>
+            <div className="rtg-deliver-grid">
+              <div className="rtg-deliver-item rtg-fade"><div className="rtg-d-check">✔</div><h3>Videa + Reels</h3><p>AI zpracuje tvoje záběry nebo vybere z knihovny. Hook overlay, střih, 2 varianty.</p></div>
+              <div className="rtg-deliver-item rtg-fade"><div className="rtg-d-check">✔</div><h3>Grafické příspěvky</h3><p>Canva šablony na míru tvého brandu. Vlastní fotka nebo AI generovaný vizuál.</p></div>
+              <div className="rtg-deliver-item rtg-fade"><div className="rtg-d-check">✔</div><h3>Texty a hooky</h3><p>Psané v tvém tónu. Systém ví co jsi už použila — nikdy neopakuje.</p></div>
+              <div className="rtg-deliver-item rtg-fade"><div className="rtg-d-check">✔</div><h3>Archiv na Google Drive</h3><p>Každý výstup automaticky uložený ve tvé složce. Stahuj kdykoli.</p></div>
             </div>
-            <p className="pain-conclusion fade-up delay-2">A tak to odkládáš.</p>
           </div>
         </section>
 
-        {/* CO KDYBY */}
-        <section id="rtg-cokdyby">
-          <div className="container--narrow">
-            <span className="rtg-label fade-up">Co kdyby to šlo jinak</span>
-            <h2 className="fade-up">Představ si, že<br />máš vše připravené.</h2>
-            <ul className="imagine-list">
-              <li className="fade-up delay-1">
-                <span className="imagine-num">1</span>
-                <span>Záběry, které můžeš rovnou použít — žádné hledání, žádný chaos</span>
-              </li>
-              <li className="fade-up delay-2">
-                <span className="imagine-num">2</span>
-                <span>Nemusíš začínat od nuly. Vždy je odkud pokračovat.</span>
-              </li>
-              <li className="fade-up delay-3">
-                <span className="imagine-num">3</span>
-                <span>Když něco natočíš, jen to nahraješ… a máš hotovo.</span>
-              </li>
-            </ul>
-            <p className="imagine-end fade-up delay-4">Bez složitého procesu. Bez hodin práce.</p>
-          </div>
-        </section>
-
-        {/* CO DOSTANEŠ */}
-        <section id="rtg-codostanes">
-          <div className="container">
-            <span className="rtg-label fade-up">Co dostaneš</span>
-            <h2 className="fade-up">Všechno, co potřebuješ<br />k tvorbě obsahu.</h2>
-            <div className="delivers-grid">
-              <div className="deliver-card fade-up delay-1">
-                <span className="deliver-icon">🎥</span>
-                <h3>Knihovna záběrů</h3>
-                <p>Různé styly, nálady, témata. Vybereš, co pasuje — a použiješ hned.</p>
-              </div>
-              <div className="deliver-card fade-up delay-2">
-                <span className="deliver-icon">🎨</span>
-                <h3>Vizuály, které ladí</h3>
-                <p>Žádný chaos ve feedu. Vizuální konzistence bez designérských znalostí.</p>
-              </div>
-              <div className="deliver-card fade-up delay-3">
-                <span className="deliver-icon">✍️</span>
-                <h3>Nápady + začátky textů</h3>
-                <p>Připravené formulace, které si upravíš podle sebe. Prázdná stránka zmizí.</p>
-              </div>
-              <div className="deliver-card fade-up delay-4">
-                <span className="deliver-icon">📲</span>
-                <h3>Z vlastního videa hotový výstup</h3>
-                <p>Nahraješ záznam — dostaneš výstup. Bez střihu, bez programů.</p>
-              </div>
-            </div>
-            <p className="delivers-closing fade-up">Ty tvoříš. Ale bez té nejtěžší části.</p>
-          </div>
-        </section>
-
-        {/* JAK TO FUNGUJE */}
-        <section id="rtg-jak">
-          <div className="container">
-            <span className="rtg-label fade-up">Jak to funguje</span>
-            <h2 className="fade-up">Tři kroky.<br />Hotovo.</h2>
-            <div className="steps-row">
-              <div className="step fade-up delay-1">
-                <span className="step-num">1</span>
-                <h3>Vybereš</h3>
-                <p>Z knihovny si vybereš záběry, nápady nebo šablony, které se hodí.</p>
-              </div>
-              <div className="step fade-up delay-2">
-                <span className="step-num">2</span>
-                <h3>Upravíš</h3>
-                <p>Přizpůsobíš si to podle sebe — nebo necháš upravit za sebe.</p>
-              </div>
-              <div className="step fade-up delay-3">
-                <span className="step-num">3</span>
-                <h3>Publikuješ</h3>
-                <p>Dáš to na sítě. Tak jednoduché to je.</p>
-              </div>
-            </div>
-            <p className="step-done fade-up">— hotovo.</p>
-          </div>
-        </section>
-
-        {/* PRO KOHO */}
-        <section id="rtg-prokoho" className="light">
-          <div className="container--narrow">
-            <span className="rtg-label fade-up" style={{ color: "#333" }}>Pro koho to je</span>
-            <h2 className="fade-up" style={{ color: "#111" }}>Pro ty, kdo chtějí<br />tvořit — ale efektivně.</h2>
-            <ul className="who-list">
-              <li className="fade-up delay-1"><span className="who-dot" />Tvoříš obsah sám/sama a nechceš u toho trávit hodiny</li>
-              <li className="fade-up delay-2"><span className="who-dot" />Máš nápady, ale chybí ti čas nebo energie je dotáhnout</li>
-              <li className="fade-up delay-3"><span className="who-dot" />Video tě brzdí — chceš výsledek, ne učit se nástroje</li>
-              <li className="fade-up delay-4"><span className="who-dot" />Chceš konzistentní obsah bez toho, aby to pohltilo tvůj čas</li>
-            </ul>
-          </div>
-        </section>
-
-        {/* VARIANTY */}
-        <section id="rtg-varianty">
-          <div className="container">
-            <span className="rtg-label fade-up">Varianty</span>
-            <h2 className="fade-up">Vyber si, co teď<br />potřebuješ nejvíc.</h2>
-            <div className="plans-grid">
-              <div className="plan fade-up delay-1">
-                <div className="plan-name">Start</div>
-                <div className="plan-tagline">Vezmi a použij</div>
-                <div className="plan-price">— Kč <span>/ měsíc</span></div>
-                <ul className="plan-features">
-                  <li>Knihovna záběrů a videí</li>
-                  <li>Nápady + začátky textů</li>
-                  <li>Vizuály připravené k použití</li>
+        {/* PRICING */}
+        <section className="rtg-section" id="plans">
+          <div className="rtg-container">
+            <div className="rtg-eyebrow rtg-fade">05 · plány</div>
+            <h2 className="rtg-fade">Vyber si,<br /><em>kde začneš.</em></h2>
+            <div className="rtg-pricing-grid">
+              <div className="rtg-plan rtg-fade">
+                <div className="rtg-plan-head"><div className="rtg-plan-name">Start</div><div className="rtg-plan-tag">Vezmi a použij.</div></div>
+                <div className="rtg-plan-counts"><span className="rtg-count-pill v">▶ 2 videa / týden</span><span className="rtg-count-pill g">◻ 2 grafiky / týden</span></div>
+                <ul className="rtg-plan-features">
+                  <li><span className="rtg-ck">✔</span>AI zpracování videa</li>
+                  <li><span className="rtg-ck">✔</span>Hook + grafika overlay</li>
+                  <li><span className="rtg-ck">✔</span>Canva grafiky na míru</li>
+                  <li><span className="rtg-ck">✔</span>Google Drive archiv</li>
+                  <li><span className="rtg-ck">✔</span>2 varianty každého výstupu</li>
                 </ul>
-                <a href="#" className="plan-btn">Začít se Startem</a>
               </div>
-              <div className="plan featured fade-up delay-2">
-                <div className="plan-badge">Nejoblíbenější</div>
-                <div className="plan-name">Plus</div>
-                <div className="plan-tagline">Víc než jen obsah</div>
-                <div className="plan-price">— Kč <span>/ měsíc</span></div>
-                <ul className="plan-features">
-                  <li>Vše ze Startu</li>
-                  <li>Nahraješ vlastní video → dostaneš výstup</li>
-                  <li>Bez střihu, bez programů</li>
+              <div className="rtg-plan rtg-featured rtg-fade">
+                <div className="rtg-plan-head"><div className="rtg-plan-badge">NEJOBLÍBENĚJŠÍ</div><div className="rtg-plan-name">Plus</div><div className="rtg-plan-tag">Nahraješ → dostaneš.</div></div>
+                <div className="rtg-plan-counts"><span className="rtg-count-pill v">▶ 4 videa / týden</span><span className="rtg-count-pill g">◻ 4 grafiky / týden</span></div>
+                <ul className="rtg-plan-features">
+                  <li><span className="rtg-ck">✔</span>Vše ze Start</li>
+                  <li><span className="rtg-pl">+</span>Prioritní zpracování</li>
+                  <li><span className="rtg-pl">+</span>Reels · Stories · Feed formáty</li>
+                  <li><span className="rtg-pl">+</span>Analytika výkonu</li>
+                  <li><span className="rtg-pl">+</span>Plánování přímo na sítě</li>
                 </ul>
-                <a href="#" className="plan-btn">Chci Plus</a>
               </div>
-              <div className="plan fade-up delay-3">
-                <div className="plan-name">Pro</div>
-                <div className="plan-tagline">Pro ty, kdo jedou naplno</div>
-                <div className="plan-price">— Kč <span>/ měsíc</span></div>
-                <ul className="plan-features">
-                  <li>Vše z Plusu</li>
-                  <li>Prioritní zpracování</li>
-                  <li>Pokročilé možnosti výstupu</li>
+              <div className="rtg-plan rtg-fade">
+                <div className="rtg-plan-head"><div className="rtg-plan-name">Pro</div><div className="rtg-plan-tag">Maximální výstup.</div></div>
+                <div className="rtg-plan-counts"><span className="rtg-count-pill v">▶ 8 videí / týden</span><span className="rtg-count-pill g">◻ 10 grafik / týden</span></div>
+                <ul className="rtg-plan-features">
+                  <li><span className="rtg-ck">✔</span>Vše z Plus</li>
+                  <li><span className="rtg-pl">+</span>Avatar výstupy</li>
+                  <li><span className="rtg-pl">+</span>Automatizace bez schvalování</li>
+                  <li><span className="rtg-pl">+</span>Dokoupení extra kusů</li>
+                  <li><span className="rtg-pl">+</span>Pokročilé šablony na míru</li>
                 </ul>
-                <a href="#" className="plan-btn">Chci Pro</a>
               </div>
             </div>
-            <p className="plans-note">Nevíš, co si vybrat? Napiš nám — poradíme.</p>
+            <p style={{ textAlign: "center", marginTop: 28, fontSize: 13, color: "#6b6b6b" }}>
+              Interval generování: každý týden / ob týden / ob 3 týdny / měsíčně — nastav si sám/sama.
+            </p>
           </div>
         </section>
 
-        {/* CTA FINAL */}
-        <section id="rtg-cta-final">
-          <div className="container--narrow">
-            <h2 className="fade-up">Začni tvořit.<br />Bez toho složitého.</h2>
-            <p className="fade-up delay-1">Vyber si variantu a vyzkoušej, jak vypadá tvorba obsahu bez zbytečné námahy.</p>
-            <a href="#rtg-varianty" className="btn btn-dark fade-up delay-2">Chci to vyzkoušet</a>
+        {/* CTA */}
+        <section id="rtg-cta">
+          <div className="rtg-container">
+            <h2 className="rtg-fade">Začni tvořit<br /><em>jednodušeji.</em></h2>
+            <p className="rtg-fade">Bez chaosu. Bez složitého procesu. Bez hodin práce.</p>
+            <div className="rtg-cta-actions rtg-fade">
+              <a href="#" className="rtg-btn-lime">Chci to vyzkoušet</a>
+              <a href="#" className="rtg-btn-ghost">Chci vidět ukázky →</a>
+            </div>
           </div>
         </section>
 
         {/* FOOTER */}
         <footer id="rtg-footer">
-          <p>
-            © 2025 <a href="#">Lucifera AI Content Studio</a> · Praha ·{" "}
-            <a href="#">Podmínky</a> · <a href="#">Kontakt</a>
-          </p>
+          <div className="rtg-f-logo">Ready <em>to Go</em></div>
+          <p>Lucifera AI Content Studio · Praha, Kampa</p>
         </footer>
       </div>
     </>
