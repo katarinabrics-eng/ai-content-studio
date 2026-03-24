@@ -111,8 +111,8 @@ export default function ReadyToGoPage() {
         renderer.dispose();
       };
     }
-    const cleanup = init() as (() => void) | undefined;
-    return () => { cleanup?.(); };
+    const cleanup = init();
+    return () => { if (typeof cleanup === 'function') cleanup(); };
   }, []);
 
   /* ── Scroll animations ── */
