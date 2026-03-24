@@ -77,6 +77,7 @@ export default function AdminRtgPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [generating, setGenerating] = useState<string | null>(null);
+  const [generateSuccess, setGenerateSuccess] = useState<number | null>(null);
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
 
@@ -132,9 +133,16 @@ export default function AdminRtgPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ project_id: clientId }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
-      showToast(data.ok ? "Generování dokončeno ✓" : data.error ?? "Chyba");
-      if (data.ok) loadData();
+      const data = (await res.json()) as { ok?: boolean; error?: string; posts_created?: number };
+      if (data.ok) {
+        setGenerateSuccess(data.posts_created ?? 0);
+        setTimeout(() => {
+          setGenerateSuccess(null);
+          loadData();
+        }, 5000);
+      } else {
+        showToast(data.error ?? "Chyba generování");
+      }
     } finally {
       setGenerating(null);
       setActionLoading(null);
@@ -327,6 +335,29 @@ export default function AdminRtgPage() {
               <span>
                 Generování obsahu probíhá — může trvat až 2 minuty. Nezavírejte stránku.
               </span>
+            </div>
+          )}
+
+          {/* Banner — generování dokončeno */}
+          {generateSuccess !== null && (
+            <div style={{
+              background: "#d0ec78", border: "1px solid #b5d45c",
+              borderRadius: "8px", padding: "14px 18px",
+              marginTop: "16px", fontSize: "13px", color: "#1a1a1a",
+              display: "flex", alignItems: "center",
+              justifyContent: "space-between",
+            }}>
+              <span>✅ Obsah vygenerován! {generateSuccess} příspěvků čeká na schválení.</span>
+              <a
+                href={`/admin/rtg`}
+                onClick={() => loadData()}
+                style={{
+                  background: "#111", color: "#fff", padding: "6px 14px",
+                  borderRadius: "6px", textDecoration: "none", fontSize: "12px",
+                }}
+              >
+                Obnovit seznam →
+              </a>
             </div>
           )}
         </div>
