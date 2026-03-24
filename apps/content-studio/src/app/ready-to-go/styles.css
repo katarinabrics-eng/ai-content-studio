@@ -1,3 +1,15 @@
+/* ── CENTERING ── */
+#rtg-root .rtg-container,
+#rtg-root .rtg-pain-list,
+#rtg-root .rtg-pipeline,
+#rtg-root .rtg-deliver-grid,
+#rtg-root .rtg-pricing-grid {
+  max-width: 1000px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100%;
+}
+
 /* ── RESET ── */
 #rtg-root *, #rtg-root *::before, #rtg-root *::after { box-sizing: border-box; margin: 0; padding: 0; }
 #rtg-root { font-family: 'DM Sans', sans-serif; overflow-x: hidden; background: #0a0a0a; }
