@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 export default function ReadyToGoPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -8,8 +9,7 @@ export default function ReadyToGoPage() {
   /* ── Three.js hero ── */
   useEffect(() => {
     let animId: number;
-    async function init() {
-      const THREE = await import("three");
+    function init() {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
@@ -111,8 +111,8 @@ export default function ReadyToGoPage() {
         renderer.dispose();
       };
     }
-    const cleanup = init();
-    return () => { cleanup.then(fn => fn?.()); };
+    const cleanup = init() as (() => void) | undefined;
+    return () => { cleanup?.(); };
   }, []);
 
   /* ── Scroll animations ── */
