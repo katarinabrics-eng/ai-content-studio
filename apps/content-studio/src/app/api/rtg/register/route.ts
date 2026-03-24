@@ -35,6 +35,9 @@ export async function POST(request: Request) {
 
     const planLabel = PLAN_LABELS[plan] ?? plan;
 
+    console.log('[rtg/register] Ukládám do DB:', { email, plan, name });
+    console.log('[rtg/register] RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
+
     // 1. Ulož do analysis_leads
     const supabase = getSupabaseClient();
     const { error: dbError } = await supabase
@@ -48,13 +51,19 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error("[rtg/register] DB chyba:", dbError);
-      // Neblokuj — pokračuj s emaily
+      return NextResponse.json({ ok: false, error: "Nepodařilo se uložit registraci" }, { status: 500 });
     }
 
-    const resend = getResend();
+    // Emaily — každý samostatně, chyba neblokuje { ok: true }
+    let resend: Resend | null = null;
+    try {
+      resend = getResend();
+    } catch (keyErr) {
+      console.error("[rtg/register] Resend init selhal:", keyErr);
+    }
 
     // 2. Notifikace na studio
-    try {
+    if (resend) try {
       await resend.emails.send({
         from: "Lucifera <info@studiolucifera.cz>",
         to: "ahoj@studiolucifera.cz",
@@ -82,7 +91,7 @@ export async function POST(request: Request) {
     }
 
     // 3. Potvrzovací email klientovi
-    try {
+    if (resend) try {
       await resend.emails.send({
         from: "Lucifera <info@studiolucifera.cz>",
         to: email,
@@ -111,6 +120,7 @@ export async function POST(request: Request) {
       console.error("[rtg/register] Potvrzovací email selhal:", confirmErr);
     }
 
+    console.log('[rtg/register] Hotovo, registrace uložena');
     return NextResponse.json({ ok: true });
 
   } catch (err) {
