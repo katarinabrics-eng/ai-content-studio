@@ -871,7 +871,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .wf-photos{
           position:relative;
           width:100%;
-          aspect-ratio:16/10;
+          aspect-ratio:4/3;
           background:#111;
           overflow:hidden;
         }
