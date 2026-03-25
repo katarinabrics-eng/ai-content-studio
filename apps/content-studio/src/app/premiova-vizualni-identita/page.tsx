@@ -237,6 +237,17 @@ const CONTACT_SHOTS = [
 ];
 
 
+const FIXED_PALETTE = [
+  { name: "Linen",  hex: "#E8D0D0" },
+  { name: "Walnut", hex: "#7C5C3E" },
+  { name: "Ivory",  hex: "#FAF8EE" },
+  { name: "Sage",   hex: "#8B9E7A" },
+  { name: "Ink",    hex: "#2C2C2E" },
+];
+const FIXED_OUTFITS = ["Lněné oblečení", "Přírodní tóny", "Casual styl"];
+const FIXED_PROPS   = ["Zápisník", "Káva", "Přirozené světlo", "Rostliny"];
+const FIXED_MOOD    = ["Autentická", "Klidná", "Přirozená"];
+
 function VizualniDashboard({ onClose }: { onClose: () => void }) {
   const [activeShot, setActiveShot] = useState(0);
   const [animIn, setAnimIn] = useState(false);
@@ -458,7 +469,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
             <div className="vbd-side-section">
               <div className="vbd-side-lbl" style={{ marginTop: 12 }}>Barevná paleta</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "0 4px" }}>
-                {shot.palette.map((c) => (
+                {FIXED_PALETTE.map((c) => (
                   <div key={c.hex} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div className="vbd-palette-swatch" style={{ background: c.hex, width: 28, height: 28, flexShrink: 0 }}>
                       <div className="vbd-swatch-tip">{c.name} · {c.role}</div>
@@ -516,7 +527,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Paleta</div>
                 <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
-                  {shot.palette.map((c) => (
+                  {FIXED_PALETTE.map((c) => (
                     <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex, width: 22, height: 22, borderRadius: 6 }}>
                       <div className="vbd-swatch-tip">{c.name}</div>
                     </div>
@@ -530,7 +541,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Outfity</div>
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {shot.outfits.map((o) => (
+                  {FIXED_OUTFITS.map((o) => (
                     <span key={o} style={{
                       fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)",
                       background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)",
@@ -546,7 +557,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Rekvizity</div>
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {shot.props.map((r) => (
+                  {FIXED_PROPS.map((r) => (
                     <span key={r} style={{
                       fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)",
                       background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)",
@@ -562,7 +573,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Nálada</div>
                 <div style={{ display: "flex", gap: 5 }}>
-                  {shot.mood.map((n) => (
+                  {FIXED_MOOD.map((n) => (
                     <span key={n} style={{
                       fontSize: 10, fontWeight: 600, color: "rgba(180,232,66,0.7)",
                       background: "rgba(180,232,66,0.06)", border: "1px solid rgba(180,232,66,0.15)",
