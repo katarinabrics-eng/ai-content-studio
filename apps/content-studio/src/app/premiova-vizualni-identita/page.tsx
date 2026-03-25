@@ -1267,7 +1267,21 @@ export default function PremiovaVizualniIdentita() {
         <div style={{maxWidth:1360,margin:"0 auto"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
 
-            {/* Levý sloupec — text + bullets */}
+            {/* Levý sloupec — mockup s čipy */}
+            <div style={{position:"relative",paddingLeft:16}}>
+              <div className="del-mockup-scene reveal reveal-d2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/mocuppremium.jpg" alt="Ukázka výstupů" />
+                <div className="del-chip dc-1"><div className="dc-icon">📷</div><div className="dc-text">100–150 fotografií</div></div>
+                <div className="del-chip dc-2"><div className="dc-icon">🔍</div><div className="dc-text">Návrh obsahu a použití</div></div>
+                <div className="del-chip dc-3"><div className="dc-icon">📸</div><div className="dc-text">5 typů záběrů</div></div>
+                <div className="del-chip dc-4"><div className="dc-icon">🎨</div><div className="dc-text">3 Canva šablony</div></div>
+                <div className="del-chip dc-5"><div className="dc-icon">🖼️</div><div className="dc-text">Vizuální návrh focení</div></div>
+                <div className="del-chip dc-6"><div className="dc-icon">🎬</div><div className="dc-text">Video záběry pro Reels</div></div>
+              </div>
+            </div>
+
+            {/* Pravý sloupec — text + bullets */}
             <div>
               <div className="label">Výsledek</div>
               <h2>Po jednom dni máte jasno.</h2>
@@ -1287,20 +1301,6 @@ export default function PremiovaVizualniIdentita() {
               <p style={{marginTop:44,fontFamily:"var(--font-playfair),serif",fontStyle:"italic",fontSize:19,color:"var(--lime-dark)"}}>Neřešíte co přidat. Jen vybíráte.</p>
             </div>
 
-            {/* Pravý sloupec — mockup s čipy */}
-            <div style={{position:"relative",paddingLeft:16}}>
-              <div className="del-mockup-scene reveal reveal-d2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/mocuppremium.jpg" alt="Ukázka výstupů" />
-                <div className="del-chip dc-1"><div className="dc-icon">📷</div><div className="dc-text">100–150 fotografií</div></div>
-                <div className="del-chip dc-2"><div className="dc-icon">🔍</div><div className="dc-text">Návrh obsahu a použití</div></div>
-                <div className="del-chip dc-3"><div className="dc-icon">📸</div><div className="dc-text">5 typů záběrů</div></div>
-                <div className="del-chip dc-4"><div className="dc-icon">🎨</div><div className="dc-text">3 Canva šablony</div></div>
-                <div className="del-chip dc-5"><div className="dc-icon">🖼️</div><div className="dc-text">Vizuální návrh focení</div></div>
-                <div className="del-chip dc-6"><div className="dc-icon">🎬</div><div className="dc-text">Video záběry pro Reels</div></div>
-              </div>
-            </div>
-
           </div>
         </div>
       </section>
@@ -1311,7 +1311,22 @@ export default function PremiovaVizualniIdentita() {
           <div className="label reveal">Vizuální board</div>
           <h2 className="reveal">Dopředu víte, co jdete fotit.<br /><em>Váš obličej. Váš styl.</em></h2>
           <div className="wow-grid">
-            <div className="wow-frame-wrap reveal">
+            <div className="wow-text reveal">
+              <div className="label">Vizuální board s vaší podobou</div>
+              <h2>Dopředu víte,<br /><em>co jdete fotit.</em></h2>
+              <p className="section-sub" style={{marginBottom:"20px"}}>Ještě před focením uvidíte:</p>
+              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:10,marginBottom:28}}>
+                {["jaké oblečení zvolit","v jakém prostředí budete","jaký styl budeme tvořit"].map(t=>(
+                  <li key={t} style={{display:"flex",gap:10,alignItems:"flex-start",fontSize:14,color:"#555",lineHeight:1.6}}>
+                    <span style={{color:"var(--lime-dark)",fontWeight:700,fontSize:18,lineHeight:1.1,flexShrink:0}}>·</span>{t}
+                  </li>
+                ))}
+              </ul>
+              <p className="section-sub" style={{marginBottom:"28px",fontWeight:600,color:"var(--black)"}}>Na focení jdete připravená. Ne improvizovat.</p>
+              <button className="btn-primary" style={{textDecoration:"none",border:"none",cursor:"pointer"}} onClick={openDashboard}>Chci vidět ukázku →</button>
+              <div style={{fontSize:12,color:"#bbb",marginTop:8}}>Návrh připravíme před focením</div>
+            </div>
+            <div className="wow-frame-wrap reveal reveal-d2">
               {/* Before photo */}
               <div className="wow-pred-card wow-pred-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1347,21 +1362,6 @@ export default function PremiovaVizualniIdentita() {
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="wow-text reveal reveal-d2">
-              <div className="label">Vizuální board s vaší podobou</div>
-              <h2>Dopředu víte,<br /><em>co jdete fotit.</em></h2>
-              <p className="section-sub" style={{marginBottom:"20px"}}>Ještě před focením uvidíte:</p>
-              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:10,marginBottom:28}}>
-                {["jaké oblečení zvolit","v jakém prostředí budete","jaký styl budeme tvořit"].map(t=>(
-                  <li key={t} style={{display:"flex",gap:10,alignItems:"flex-start",fontSize:14,color:"#555",lineHeight:1.6}}>
-                    <span style={{color:"var(--lime-dark)",fontWeight:700,fontSize:18,lineHeight:1.1,flexShrink:0}}>·</span>{t}
-                  </li>
-                ))}
-              </ul>
-              <p className="section-sub" style={{marginBottom:"28px",fontWeight:600,color:"var(--black)"}}>Na focení jdete připravená. Ne improvizovat.</p>
-              <button className="btn-primary" style={{textDecoration:"none",border:"none",cursor:"pointer"}} onClick={openDashboard}>Chci vidět ukázku →</button>
-              <div style={{fontSize:12,color:"#bbb",marginTop:8}}>Návrh připravíme před focením</div>
             </div>
           </div>
         </div>
