@@ -792,12 +792,14 @@ export default function PremiovaVizualniIdentita() {
         /* ── WOW ── */
         .pvi-page .wow{background:var(--cream);padding:96px 80px;max-width:none;}
         .pvi-page .wow-inner{max-width:1200px;margin:0 auto;}
-        .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px;}
+        .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:center;margin-top:56px;}
 
         /* WOW FRAME WRAPPER — before photos + arrows */
         .pvi-page .wow-frame-wrap{
           position:relative;
-          padding-left:220px;
+          padding-left:180px;
+          width:100%;
+          min-width:500px;
         }
         .pvi-page .wow-pred-card{
           position:absolute;
@@ -836,9 +838,12 @@ export default function PremiovaVizualniIdentita() {
 
         /* WOW PHOTO FRAME — Mac-style */
         .pvi-page .wow-frame{
-          border-radius:16px;overflow:hidden;
+          width:100%;
+          min-width:460px;
+          border-radius:16px;
+          overflow:hidden;
           background:#1c1c1e;
-          box-shadow:0 40px 100px rgba(0,0,0,0.28),0 8px 32px rgba(0,0,0,0.14),0 0 0 1px rgba(255,255,255,0.06);
+          box-shadow:0 40px 100px rgba(0,0,0,0.28);
           position:relative;
         }
         .pvi-page .wf-titlebar{
@@ -852,7 +857,11 @@ export default function PremiovaVizualniIdentita() {
           color:rgba(255,255,255,0.25);margin-left:-28px;
         }
         .pvi-page .wf-photos{
-          position:relative;width:100%;aspect-ratio:3/2;background:#111;overflow:hidden;
+          position:relative;
+          width:100%;
+          aspect-ratio:16/10;
+          background:#111;
+          overflow:hidden;
         }
         .pvi-page .wf-photo{
           position:absolute;inset:0;width:100%;height:100%;
@@ -1318,10 +1327,6 @@ export default function PremiovaVizualniIdentita() {
                     <img key={src} src={src} alt="" className={`wf-photo${i === wowIdx ? " active" : ""}`} />
                   ))}
                   <div className="wf-overlay"/>
-                  <div className="wf-badge">
-                    <div className="wf-badge-num">87</div>
-                    <div className="wf-badge-lbl">Brand skóre</div>
-                  </div>
                   <div className="wf-caption">
                     <span className="wf-cap-label">Vizuální board · ukázka</span>
                     <div className="wf-dots">
