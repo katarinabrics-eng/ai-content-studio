@@ -175,6 +175,45 @@ const SERVICES: Service[] = [
     cta: "Rezervovat konzultaci zdarma",
     flow: "calendly",
   },
+  {
+    id: "content-starter",
+    emoji: "▸",
+    title: "Content Starter",
+    tagline: "Návrh vizuálního stylu a první obsah.",
+    priceFrom: 4900,
+    highlights: [
+      "Návrh vizuálního stylu",
+      "5 krátkých video záběrů",
+      "Návrhy příspěvků + texty",
+    ],
+    description: "Ideální vstupní bod — dostanete návrh vizuálního stylu, ilustrační vizuály, 5 krátkých video záběrů a návrhy příspěvků s texty. Výstup do 2 dnů, bez závazku focení.",
+    variants: [
+      {
+        label: "Content Starter",
+        sublabel: "Výstup do 2 dnů · bez závazku",
+        price: 4900,
+        stripeId: "price_content_starter",
+        bullets: [
+          "Návrh vizuálního stylu",
+          "Ilustrační vizuály",
+          "5 krátkých video záběrů",
+          "Návrhy příspěvků + texty",
+        ],
+      },
+    ],
+    extras: [],
+    fields: [
+      {
+        id: "url",
+        label: "URL vašeho webu",
+        type: "text",
+        placeholder: "např. vasefirma.cz",
+      },
+    ],
+    note: "Placeno předem · Výstup v ruce do 2 dní · Bez závazku focení",
+    cta: "Zaplatit a rezervovat termín",
+    flow: "stripe",
+  },
 ];
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 function RezervaceContent() {
