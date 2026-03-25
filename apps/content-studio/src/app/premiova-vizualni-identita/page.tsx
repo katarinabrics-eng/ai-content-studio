@@ -10,31 +10,232 @@ import PostUkazky from "@/components/PostUkazky";
 // VIZUÁLNÍ BOARD DEMO — contact-sheet overlay
 // ─────────────────────────────────────────────
 const CONTACT_SHOTS = [
-  { id: 1,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/01.jpg", label: "Portrét · Tmavé sako",    outfit: "Outfit A · Tmavě zelená", score: 87, main: true  },
-  { id: 2,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/02.jpg", label: "Detail · ruce + notes",   outfit: "Outfit A",               main: false },
-  { id: 3,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/03.jpg", label: "Faceless záběr",          quote: "Vaše vize.",              main: false },
-  { id: 4,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/04.jpg", label: "Exteriér · světlé tóny",  outfit: "Outfit B · Krémová",     score: 92, main: true  },
-  { id: 5,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg", label: "Portrét blízko",          main: false },
-  { id: 6,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg", label: "Pohybový záběr",          main: false },
-  { id: 7,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg", label: "Pracovní detail",         outfit: "Outfit C · Antracit",    main: false },
-  { id: 8,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/08.jpg", label: "Atmosferický záběr",      main: false },
-  { id: 9,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/09.jpg", label: "Portrét · přírodní světlo", main: false },
-  { id: 10, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/10.jpg", label: "Detail · emocí",          main: false },
-  { id: 11, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/11.jpg", label: "Interiér · tmavý tón",    outfit: "Outfit D",              main: false },
-  { id: 12, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/12.jpg", label: "Záběr z profilu",         main: false },
-  { id: 13, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/13.jpg", label: "Detail rukou",            main: false },
-  { id: 14, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/14.jpg", label: "Portrét · přímý pohled",  main: false },
-  { id: 15, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/15.jpg", label: "Výrazný výraz",           main: false },
-  { id: 16, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/16.jpg", label: "Celková kompozice",       main: false },
+  {
+    id: 1, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/01.jpg",
+    label: "Portrét · Tmavé sako", outfit: "Outfit A · Tmavě zelená", score: 87, main: true,
+    palette: [
+      { name: "Forest", hex: "#3B5240", role: "Hlavní" },
+      { name: "Sage", hex: "#8B9E7A", role: "Akcent" },
+      { name: "Cream", hex: "#F5EFE0", role: "Pozadí" },
+      { name: "Walnut", hex: "#7C5C3E", role: "Detail" },
+      { name: "Slate", hex: "#4A4A52", role: "Neutrál" },
+    ],
+    outfits: ["Tmavě zelené sako", "Béžová halenka", "Přírodní tóny"],
+    props: ["Přirozené světlo", "Minimalistické pozadí", "Křeslo"],
+    mood: ["Sebejistá", "Profesionální", "Elegantní"],
+  },
+  {
+    id: 2, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/02.jpg",
+    label: "Detail · ruce + notes", outfit: "Outfit A", main: false,
+    palette: [
+      { name: "Linen", hex: "#E8DDD0", role: "Hlavní" },
+      { name: "Walnut", hex: "#7C5C3E", role: "Detail" },
+      { name: "Ivory", hex: "#FAF6EE", role: "Pozadí" },
+      { name: "Sage", hex: "#8B9E7A", role: "Akcent" },
+      { name: "Ink", hex: "#2C2C2E", role: "Neutrál" },
+    ],
+    outfits: ["Tmavě zelené sako", "Jemný rukáv"],
+    props: ["Zápisník", "Pero", "Přirozené světlo", "Dřevěný stůl"],
+    mood: ["Soustředěná", "Kreativní", "Klidná"],
+  },
+  {
+    id: 3, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/03.jpg",
+    label: "Faceless záběr", quote: "Vaše vize.", main: false,
+    palette: [
+      { name: "Cream", hex: "#F5EFE0", role: "Hlavní" },
+      { name: "Sage", hex: "#8B9E7A", role: "Akcent" },
+      { name: "Blush", hex: "#D4B5A8", role: "Světlý" },
+      { name: "Linen", hex: "#E8DDD0", role: "Pozadí" },
+      { name: "Slate", hex: "#4A4A52", role: "Neutrál" },
+    ],
+    outfits: ["Světlá halenka", "Přírodní látky"],
+    props: ["Zápisník", "Rostliny", "Okno", "Difuzní světlo"],
+    mood: ["Tajemná", "Artistická", "Svobodná"],
+  },
+  {
+    id: 4, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/04.jpg",
+    label: "Exteriér · světlé tóny", outfit: "Outfit B · Krémová", score: 92, main: true,
+    palette: [
+      { name: "Cream", hex: "#F5EFE0", role: "Hlavní" },
+      { name: "Moss", hex: "#7A8C60", role: "Příroda" },
+      { name: "Sand", hex: "#C9B99A", role: "Akcent" },
+      { name: "Sky", hex: "#D6E4EE", role: "Pozadí" },
+      { name: "Bark", hex: "#6B4F3A", role: "Detail" },
+    ],
+    outfits: ["Krémové šaty", "Lněná blůza", "Béžová"],
+    props: ["Přirozené světlo", "Zeleň", "Vzduch", "Exteriér"],
+    mood: ["Svobodná", "Přirozená", "Svěží"],
+  },
+  {
+    id: 5, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg",
+    label: "Portrét blízko", main: false,
+    palette: [
+      { name: "Blush", hex: "#D4B5A8", role: "Hlavní" },
+      { name: "Ivory", hex: "#FAF6EE", role: "Pozadí" },
+      { name: "Terracotta", hex: "#B5705A", role: "Akcent" },
+      { name: "Linen", hex: "#E8DDD0", role: "Světlý" },
+      { name: "Espresso", hex: "#3C2A1E", role: "Neutrál" },
+    ],
+    outfits: ["Krémová blůza", "Přirozený look"],
+    props: ["Přirozené světlo", "Jemné pozadí"],
+    mood: ["Autentická", "Upřímná", "Blízká"],
+  },
+  {
+    id: 6, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg",
+    label: "Pohybový záběr", main: false,
+    palette: [
+      { name: "Cream", hex: "#F5EFE0", role: "Hlavní" },
+      { name: "Sage", hex: "#8B9E7A", role: "Akcent" },
+      { name: "Sand", hex: "#C9B99A", role: "Detail" },
+      { name: "Pearl", hex: "#F0EBE3", role: "Pozadí" },
+      { name: "Slate", hex: "#4A4A52", role: "Neutrál" },
+    ],
+    outfits: ["Vzdušný outfit", "Světlé tóny"],
+    props: ["Pohyb", "Vzduch", "Přirozené světlo"],
+    mood: ["Dynamická", "Energická", "Živá"],
+  },
+  {
+    id: 7, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg",
+    label: "Pracovní detail", outfit: "Outfit C · Antracit", main: false,
+    palette: [
+      { name: "Anthracite", hex: "#3A3A3C", role: "Hlavní" },
+      { name: "White", hex: "#FAFAFA", role: "Kontrast" },
+      { name: "Steel", hex: "#8A8A8E", role: "Akcent" },
+      { name: "Cream", hex: "#F5EFE0", role: "Světlý" },
+      { name: "Ink", hex: "#1C1C1E", role: "Neutrál" },
+    ],
+    outfits: ["Antracitový blazer", "Bílá košile", "Minimalistický look"],
+    props: ["Notebook", "Káva", "Pracovní stůl", "Pero"],
+    mood: ["Cílevědomá", "Efektivní", "Silná"],
+  },
+  {
+    id: 8, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/08.jpg",
+    label: "Atmosferický záběr", main: false,
+    palette: [
+      { name: "Burgundy", hex: "#7D0021", role: "Hlavní" },
+      { name: "Amber", hex: "#C8873A", role: "Teplý" },
+      { name: "Shadow", hex: "#2A1F1A", role: "Tmavý" },
+      { name: "Gold", hex: "#D4A857", role: "Světlo" },
+      { name: "Ash", hex: "#5A5050", role: "Neutrál" },
+    ],
+    outfits: ["Tmavý outfit", "Burgundy tóny"],
+    props: ["Svíčky", "Teplé světlo", "Textury", "Interiér"],
+    mood: ["Mystická", "Hluboká", "Poetická"],
+  },
+  {
+    id: 9, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/09.jpg",
+    label: "Portrét · přírodní světlo", main: false,
+    palette: [
+      { name: "Honey", hex: "#D4A857", role: "Světlo" },
+      { name: "Blush", hex: "#D4B5A8", role: "Hlavní" },
+      { name: "Cream", hex: "#F5EFE0", role: "Pozadí" },
+      { name: "Sand", hex: "#C9B99A", role: "Akcent" },
+      { name: "Espresso", hex: "#3C2A1E", role: "Neutrál" },
+    ],
+    outfits: ["Béžová halenka", "Přirozený look"],
+    props: ["Přirozené světlo", "Okno", "Čisté pozadí"],
+    mood: ["Přirozená", "Teplá", "Klidná"],
+  },
+  {
+    id: 10, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/10.jpg",
+    label: "Detail · emocí", main: false,
+    palette: [
+      { name: "Rose", hex: "#C4897A", role: "Hlavní" },
+      { name: "Ivory", hex: "#FAF6EE", role: "Pozadí" },
+      { name: "Blush", hex: "#D4B5A8", role: "Akcent" },
+      { name: "Linen", hex: "#E8DDD0", role: "Světlý" },
+      { name: "Bark", hex: "#6B4F3A", role: "Neutrál" },
+    ],
+    outfits: ["Jemná halenka", "Přirozené tóny"],
+    props: ["Přirozené světlo", "Jemné pozadí"],
+    mood: ["Emotivní", "Upřímná", "Hloubavá"],
+  },
+  {
+    id: 11, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/11.jpg",
+    label: "Interiér · tmavý tón", outfit: "Outfit D", main: false,
+    palette: [
+      { name: "Noir", hex: "#1A1A1E", role: "Hlavní" },
+      { name: "Burgundy", hex: "#7D0021", role: "Akcent" },
+      { name: "Gold", hex: "#C9A84C", role: "Detail" },
+      { name: "Ash", hex: "#5A5050", role: "Střední" },
+      { name: "Ivory", hex: "#FAF6EE", role: "Kontrast" },
+    ],
+    outfits: ["Tmavé sako", "Elegantní look", "Outfit D"],
+    props: ["Křeslo", "Teplé světlo", "Luxusní interiér", "Svíčky"],
+    mood: ["Luxusní", "Klidná", "Sebejistá"],
+  },
+  {
+    id: 12, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/12.jpg",
+    label: "Záběr z profilu", main: false,
+    palette: [
+      { name: "Pearl", hex: "#F0EBE3", role: "Pozadí" },
+      { name: "Blush", hex: "#D4B5A8", role: "Hlavní" },
+      { name: "Sage", hex: "#8B9E7A", role: "Akcent" },
+      { name: "Linen", hex: "#E8DDD0", role: "Světlý" },
+      { name: "Slate", hex: "#4A4A52", role: "Neutrál" },
+    ],
+    outfits: ["Světlý outfit", "Jemné barvy"],
+    props: ["Okno", "Boční světlo", "Čisté pozadí"],
+    mood: ["Kontemplativní", "Jemná", "Poetická"],
+  },
+  {
+    id: 13, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/13.jpg",
+    label: "Detail rukou", main: false,
+    palette: [
+      { name: "Linen", hex: "#E8DDD0", role: "Hlavní" },
+      { name: "Walnut", hex: "#7C5C3E", role: "Detail" },
+      { name: "Ivory", hex: "#FAF6EE", role: "Pozadí" },
+      { name: "Sand", hex: "#C9B99A", role: "Akcent" },
+      { name: "Ink", hex: "#2C2C2E", role: "Neutrál" },
+    ],
+    outfits: ["Jemný rukáv", "Přírodní tóny"],
+    props: ["Zápisník", "Pero", "Prsteny", "Dřevěná plocha"],
+    mood: ["Kreativní", "Detailní", "Jemná"],
+  },
+  {
+    id: 14, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/14.jpg",
+    label: "Portrét · přímý pohled", main: false,
+    palette: [
+      { name: "Cream", hex: "#F5EFE0", role: "Pozadí" },
+      { name: "Terracotta", hex: "#B5705A", role: "Hlavní" },
+      { name: "Blush", hex: "#D4B5A8", role: "Akcent" },
+      { name: "Linen", hex: "#E8DDD0", role: "Světlý" },
+      { name: "Espresso", hex: "#3C2A1E", role: "Neutrál" },
+    ],
+    outfits: ["Čistý look", "Přirozené tóny"],
+    props: ["Přirozené světlo", "Neutrální pozadí"],
+    mood: ["Odvážná", "Přímá", "Charismatická"],
+  },
+  {
+    id: 15, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/15.jpg",
+    label: "Výrazný výraz", main: false,
+    palette: [
+      { name: "Shadow", hex: "#2A1F1A", role: "Hlavní" },
+      { name: "Burgundy", hex: "#7D0021", role: "Akcent" },
+      { name: "Ash", hex: "#5A5050", role: "Střední" },
+      { name: "Blush", hex: "#D4B5A8", role: "Světlý" },
+      { name: "Ink", hex: "#1C1C1E", role: "Neutrál" },
+    ],
+    outfits: ["Tmavý outfit", "Dramatický look"],
+    props: ["Dramatické světlo", "Tmavé pozadí"],
+    mood: ["Výrazná", "Silná", "Dramatická"],
+  },
+  {
+    id: 16, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/16.jpg",
+    label: "Celková kompozice", main: false,
+    palette: [
+      { name: "Cream", hex: "#F5EFE0", role: "Hlavní" },
+      { name: "Sage", hex: "#8B9E7A", role: "Akcent" },
+      { name: "Sand", hex: "#C9B99A", role: "Detail" },
+      { name: "Linen", hex: "#E8DDD0", role: "Světlý" },
+      { name: "Slate", hex: "#4A4A52", role: "Neutrál" },
+    ],
+    outfits: ["Kompletní look", "Přírodní tóny"],
+    props: ["Celkový prostor", "Přirozené světlo", "Interiér"],
+    mood: ["Vyvážená", "Kompletní", "Harmonická"],
+  },
 ];
 
-const PALETTE = [
-  { name: "Burgundy", hex: "#7D0021", role: "Hlavní" },
-  { name: "Blush", hex: "#C799A1", role: "Světlý akcent" },
-  { name: "Lion", hex: "#B28F70", role: "Detail" },
-  { name: "Seasalt", hex: "#FAFAFA", role: "Pozadí" },
-  { name: "Eerie Black", hex: "#171717", role: "Neutrál" },
-];
 
 function VizualniDashboard({ onClose }: { onClose: () => void }) {
   const [activeShot, setActiveShot] = useState(0);
@@ -89,11 +290,12 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
         .vbd-thumb {
           border-radius: 10px; overflow: hidden; cursor: pointer;
           position: relative; aspect-ratio: 4/3;
-          border: 2px solid transparent; transition: border-color 0.15s, transform 0.15s;
+          border: none; transition: outline-color 0.15s, transform 0.15s;
+          outline: 2px solid transparent; outline-offset: 2px;
           background: #1a1a1a;
         }
         .vbd-thumb:hover { transform: scale(1.02); }
-        .vbd-thumb.active { border-color: rgba(180,232,66,0.7); }
+        .vbd-thumb.active { outline-color: rgba(180,232,66,0.7); }
         .vbd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .vbd-thumb-label {
           position: absolute; bottom: 0; left: 0; right: 0;
@@ -256,7 +458,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
             <div className="vbd-side-section">
               <div className="vbd-side-lbl" style={{ marginTop: 12 }}>Barevná paleta</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "0 4px" }}>
-                {PALETTE.map((c) => (
+                {shot.palette.map((c) => (
                   <div key={c.hex} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div className="vbd-palette-swatch" style={{ background: c.hex, width: 28, height: 28, flexShrink: 0 }}>
                       <div className="vbd-swatch-tip">{c.name} · {c.role}</div>
@@ -315,7 +517,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Paleta</div>
                 <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
-                  {PALETTE.map((c) => (
+                  {shot.palette.map((c) => (
                     <div key={c.hex} className="vbd-palette-swatch" style={{ background: c.hex, width: 22, height: 22, borderRadius: 6 }}>
                       <div className="vbd-swatch-tip">{c.name}</div>
                     </div>
@@ -329,7 +531,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Outfity</div>
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {["Burgundy šaty", "Blush halenka", "Tmavý kabát"].map((o) => (
+                  {shot.outfits.map((o) => (
                     <span key={o} style={{
                       fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)",
                       background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)",
@@ -345,7 +547,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Rekvizity</div>
                 <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {["Svíčky", "Staré knihy", "Keramický šálek", "Křeslo"].map((r) => (
+                  {shot.props.map((r) => (
                     <span key={r} style={{
                       fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.65)",
                       background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)",
@@ -361,7 +563,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               <div className="vbd-bottom-block">
                 <div className="vbd-bottomlabel">Nálada</div>
                 <div style={{ display: "flex", gap: 5 }}>
-                  {["Mystická", "Intimní", "Teplá"].map((n) => (
+                  {shot.mood.map((n) => (
                     <span key={n} style={{
                       fontSize: 10, fontWeight: 600, color: "rgba(180,232,66,0.7)",
                       background: "rgba(180,232,66,0.06)", border: "1px solid rgba(180,232,66,0.15)",
