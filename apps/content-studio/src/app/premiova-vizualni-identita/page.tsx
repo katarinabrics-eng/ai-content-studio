@@ -1486,14 +1486,14 @@ export default function PremiovaVizualniIdentita() {
         </div>
         <div style={{columns: 4, columnGap: '10px', padding: '0 10px'}}>
           {[
-            { src: '/placeholder/codostanete/vizualboard-vyber.jpg', pill: 'Vizuální board', title: 'Výběr vašeho stylu', sub: 'Ještě před focením víte přesně jak budete vypadat', tall: true },
-            { src: '/placeholder/codostanete/branddna.jpg', pill: 'Brand DNA', title: 'Archetyp · tón · strategie', sub: 'Průvodce pro obsah a komunikaci', tall: false },
-            { src: '/placeholder/codostanete/canva-sablony.jpg', pill: 'Canva šablony', title: '10 šablon na míru', sub: 'Vaše barvy · fonty · ikony', tall: false },
-            { src: '/placeholder/codostanete/vizualboard.jpg', pill: 'Vizuální board', title: 'Contact sheet s vaší podobou', sub: 'Outfit plán · nálada · prostředí', tall: true },
-            { src: '/placeholder/codostanete/prispevky.jpg', pill: 'Příspěvky na sítě', title: 'Obsah připravený k použití', sub: 'Instagram · LinkedIn · Facebook', tall: false },
-            { src: '/placeholder/codostanete/reels.jpg', pill: 'Reels · video', title: 'Video záběry s hookem', sub: 'Střihový brief · 15s formát', tall: false },
-            { src: '/placeholder/codostanete/strategie.jpg', pill: 'Strategie', title: 'Komunikační rámec', sub: 'Témata · plán obsahu · scénáře', tall: true },
-            { src: '/placeholder/codostanete/vizualni-banka.jpg', pill: 'Vizuální banka', title: 'Knihovna vašich fotek', sub: 'Tříděno dle scény a nálady', tall: false },
+            { src: '/placeholder/CODOSTANETE/vizualboard-vyber.jpg', pill: 'Vizuální board', title: 'Výběr vašeho stylu', sub: 'Ještě před focením víte přesně jak budete vypadat', tall: true },
+            { src: '/placeholder/CODOSTANETE/branddna.jpg', pill: 'Brand DNA', title: 'Archetyp · tón · strategie', sub: 'Průvodce pro obsah a komunikaci', tall: false },
+            { src: '/placeholder/CODOSTANETE/canva-sablony.jpg', pill: 'Canva šablony', title: '10 šablon na míru', sub: 'Vaše barvy · fonty · ikony', tall: false },
+            { src: '/placeholder/CODOSTANETE/vizualboard.jpg', pill: 'Vizuální board', title: 'Contact sheet s vaší podobou', sub: 'Outfit plán · nálada · prostředí', tall: true },
+            { src: '/placeholder/CODOSTANETE/prispevky.jpg', pill: 'Příspěvky na sítě', title: 'Obsah připravený k použití', sub: 'Instagram · LinkedIn · Facebook', tall: false },
+            { src: '/placeholder/CODOSTANETE/reels.jpg', pill: 'Reels · video', title: 'Video záběry s hookem', sub: 'Střihový brief · 15s formát', tall: false },
+            { src: '/placeholder/CODOSTANETE/strategie.jpg', pill: 'Strategie', title: 'Komunikační rámec', sub: 'Témata · plán obsahu · scénáře', tall: true },
+            { src: '/placeholder/CODOSTANETE/vizualni-banka.jpg', pill: 'Vizuální banka', title: 'Knihovna vašich fotek', sub: 'Tříděno dle scény a nálady', tall: false },
           ].map((item, i) => (
             <div key={i} style={{
               breakInside: 'avoid',
