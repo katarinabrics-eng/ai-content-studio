@@ -800,17 +800,17 @@ export default function PremiovaVizualniIdentita() {
         }
 
         /* ── WOW ── */
-        .pvi-page .wow{background:var(--cream);padding:60px 80px;max-width:none;}
+        .pvi-page .wow{background:var(--cream);padding:40px 80px;max-width:none;}
         .pvi-page .wow-inner{max-width:1200px;margin:0 auto;}
-        .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:center;margin-top:56px;}
+        .pvi-page .wow-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:48px;align-items:center;margin-top:40px;}
 
         /* WOW FRAME WRAPPER — before photos + arrows */
         .pvi-page .wow-frame-wrap{
           position:relative;
           padding-left:0;
-          padding-right:120px;
+          padding-right:80px;
           width:100%;
-          min-width:560px;
+          min-width:480px;
         }
         .pvi-page .wow-pred-card{
           position:absolute;
@@ -850,7 +850,8 @@ export default function PremiovaVizualniIdentita() {
         /* WOW PHOTO FRAME — Mac-style */
         .pvi-page .wow-frame{
           width:100%;
-          min-width:460px;
+          max-width:none;
+          min-width:400px;
           border-radius:16px;
           overflow:hidden;
           background:#1c1c1e;
