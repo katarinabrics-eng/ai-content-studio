@@ -10,13 +10,22 @@ import PostUkazky from "@/components/PostUkazky";
 // VIZUÁLNÍ BOARD DEMO — contact-sheet overlay
 // ─────────────────────────────────────────────
 const CONTACT_SHOTS = [
-  { id: 1, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/01.jpg", label: "Portrét · Tmavé sako", outfit: "Outfit A · Tmavě zelená", score: 87, main: true },
-  { id: 2, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/02.jpg", label: "Detail · ruce + notes", outfit: "Outfit A", main: false },
-  { id: 3, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/03.jpg", label: "Faceless záběr", quote: "Vaše vize.", main: false },
-  { id: 4, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/04.jpg", label: "Exteriér · Kampa", outfit: "Outfit B · Krémová", score: 92, main: true },
-  { id: 5, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg", label: "Portrét blízko", main: false },
-  { id: 6, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg", label: "Pohybový záběr", main: false },
-  { id: 7, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg", label: "Pracovní detail", outfit: "Outfit C · Antracit", main: false },
+  { id: 1,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/01.jpg", label: "Portrét · Tmavé sako",    outfit: "Outfit A · Tmavě zelená", score: 87, main: true  },
+  { id: 2,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/02.jpg", label: "Detail · ruce + notes",   outfit: "Outfit A",               main: false },
+  { id: 3,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/03.jpg", label: "Faceless záběr",          quote: "Vaše vize.",              main: false },
+  { id: 4,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/04.jpg", label: "Exteriér · světlé tóny",  outfit: "Outfit B · Krémová",     score: 92, main: true  },
+  { id: 5,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg", label: "Portrét blízko",          main: false },
+  { id: 6,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg", label: "Pohybový záběr",          main: false },
+  { id: 7,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg", label: "Pracovní detail",         outfit: "Outfit C · Antracit",    main: false },
+  { id: 8,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/08.jpg", label: "Atmosferický záběr",      main: false },
+  { id: 9,  src: "/placeholders/VIZUALBOARD-CONTACTSHEET/09.jpg", label: "Portrét · přírodní světlo", main: false },
+  { id: 10, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/10.jpg", label: "Detail · emocí",          main: false },
+  { id: 11, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/11.jpg", label: "Interiér · tmavý tón",    outfit: "Outfit D",              main: false },
+  { id: 12, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/12.jpg", label: "Záběr z profilu",         main: false },
+  { id: 13, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/13.jpg", label: "Detail rukou",            main: false },
+  { id: 14, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/14.jpg", label: "Portrét · přímý pohled",  main: false },
+  { id: 15, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/15.jpg", label: "Výrazný výraz",           main: false },
+  { id: 16, src: "/placeholders/VIZUALBOARD-CONTACTSHEET/16.jpg", label: "Celková kompozice",       main: false },
 ];
 
 const PALETTE = [
@@ -391,6 +400,15 @@ const WOW_PHOTOS = [
   "/placeholders/VIZUALBOARD-CONTACTSHEET/05.jpg",
   "/placeholders/VIZUALBOARD-CONTACTSHEET/06.jpg",
   "/placeholders/VIZUALBOARD-CONTACTSHEET/07.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/08.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/09.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/10.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/11.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/12.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/13.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/14.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/15.jpg",
+  "/placeholders/VIZUALBOARD-CONTACTSHEET/16.jpg",
 ];
 
 const CAROUSEL_PHOTOS = [
@@ -1072,27 +1090,16 @@ export default function PremiovaVizualniIdentita() {
           <h2 className="reveal">Dopředu víte, co jdete fotit.<br /><em>Váš obličej. Váš styl.</em></h2>
           <div className="wow-grid">
             <div className="wow-frame-wrap reveal">
-              {/* Before photo 1 */}
+              {/* Before photo */}
               <div className="wow-pred-card wow-pred-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/VIZUALBOARD-CONTACTSHEET/VERU PRED.jpg" alt="Veronika před focením" />
+                <img src="/placeholders/VIZUALBOARD-CONTACTSHEET/veru-pred.jpg" alt="Veronika před focením" />
                 <div className="wow-pred-label">Před</div>
               </div>
-              {/* Arrow 1 */}
+              {/* Arrow */}
               <svg className="wow-arrow wow-arrow-1" viewBox="0 0 80 56" fill="none">
                 <path d="M8,48 C20,48 38,14 72,10" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
                 <path d="M65,4 L74,11 L63,17" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-              {/* Before photo 2 */}
-              <div className="wow-pred-card wow-pred-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/placeholders/VIZUALBOARD-CONTACTSHEET/VERU PRED2.jpg" alt="Veronika před focením" />
-                <div className="wow-pred-label">Před</div>
-              </div>
-              {/* Arrow 2 */}
-              <svg className="wow-arrow wow-arrow-2" viewBox="0 0 72 52" fill="none">
-                <path d="M10,44 C22,44 40,14 66,10" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                <path d="M60,4 L68,11 L57,16" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
               {/* Mac window frame */}
               <div className="wow-frame">
