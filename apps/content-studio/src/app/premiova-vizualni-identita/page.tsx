@@ -603,11 +603,11 @@ export default function PremiovaVizualniIdentita() {
           padding:7px 7px 30px 7px;
           border-radius:4px;
           box-shadow:0 12px 36px rgba(0,0,0,0.22),0 3px 10px rgba(0,0,0,0.1);
-          width:200px;
+          width:160px;
           z-index:10;
         }
         .pvi-page .wow-pred-card img{
-          width:100%;height:185px;
+          width:100%;height:148px;
           object-fit:cover;object-position:center top;
           display:block;
         }
@@ -677,7 +677,7 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .wf-dot-nav.active{background:#fff;width:16px;border-radius:3px;}
         .pvi-page .wf-badge{
-          position:absolute;top:-16px;right:14px;
+          position:absolute;top:14px;right:14px;
           background:rgba(0,0,0,0.55);backdrop-filter:blur(12px);
           border:1px solid rgba(255,255,255,0.1);
           border-radius:8px;padding:7px 12px;text-align:center;
@@ -1143,7 +1143,7 @@ export default function PremiovaVizualniIdentita() {
                 ))}
               </ul>
               <p className="section-sub" style={{marginBottom:"28px",fontWeight:600,color:"var(--black)"}}>Na focení jdete připravená. Ne improvizovat.</p>
-              <a href="https://ai-content-studio-omega.vercel.app/premiova-vizualni-identita" className="btn-primary" style={{textDecoration:"none"}}>Chci vidět ukázku →</a>
+              <button className="btn-primary" style={{textDecoration:"none",border:"none",cursor:"pointer"}} onClick={openDashboard}>Chci vidět ukázku →</button>
               <div style={{fontSize:12,color:"#bbb",marginTop:8}}>Návrh připravíme před focením</div>
             </div>
           </div>
