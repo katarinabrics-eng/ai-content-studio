@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Header } from "../components/Header";
 import ReferenceSekce from "@/components/ReferenceSekce";
 import DiagnostikaDemo from "@/components/DiagnostikaDemo";
-import PostUkazky from "@/components/PostUkazky";
+// PostUkazky import removed — component kept in src/components/PostUkazky.tsx for use elsewhere
 
 // ─────────────────────────────────────────────
 // VIZUÁLNÍ BOARD DEMO — contact-sheet overlay
@@ -1234,88 +1234,76 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 3 — VÝSLEDEK (bílá) */}
-      <section className="pvi-section" style={{background: '#fafaf7', padding: '80px 0'}}>
+      <section style={{background:"#ffffff",padding:"96px 80px"}}>
         <style>{`
-          .codostanete-item:hover .codostanete-overlay { background: rgba(17,17,17,0.35) !important; }
-          .codostanete-item:hover .codostanete-overlay > div { color: #FAF7F2 !important; }
-          .codostanete-item:hover .codostanete-overlay > span { background: rgba(250,250,247,0.95) !important; }
+          .del-mockup-scene { position: relative; width: 100%; }
+          .del-mockup-scene img { width: 100%; display: block; }
+          .del-chip {
+            position: absolute;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            white-space: nowrap;
+            animation: floatChip 4s ease-in-out infinite;
+          }
+          .del-chip .dc-icon {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: #f0fad0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+          }
+          .del-chip .dc-text { font-size: 11px; font-weight: 600; color: #111; line-height: 1.3; }
+          .dc-1 { top: 2%;  left: -8%;  animation-delay: 0s;   animation-duration: 4.2s; }
+          .dc-2 { top: 38%; left: -10%; animation-delay: 1.3s; animation-duration: 5.7s; }
+          .dc-3 { top: 76%; left: -4%;  animation-delay: 0.7s; animation-duration: 3.9s; }
+          .dc-4 { top: 5%;  right: -8%; animation-delay: 0.4s; animation-duration: 4.9s; }
+          .dc-5 { top: 38%; right: -10%; animation-delay: 2.1s; animation-duration: 6.1s; }
+          .dc-6 { top: 72%; right: -6%; animation-delay: 0.9s; animation-duration: 4.4s; }
+          @media (max-width: 1100px) { .del-chip { display: none; } }
         `}</style>
-        <div style={{textAlign: 'center', marginBottom: '48px', padding: '0 48px'}}>
-          <div className="label" style={{marginBottom: '12px'}}>ukázky výstupů · prémiová identita</div>
-          <h2 style={{marginBottom: '12px'}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
-          <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
-        </div>
-        <div style={{columns: 4, columnGap: '10px', padding: '0 10px'}}>
-          {[
-            { src: '/placeholder/codostanete/vizualboard-vyber.jpg', pill: 'Vizuální board', title: 'Výběr vašeho stylu', sub: 'Ještě před focením víte přesně jak budete vypadat', tall: true },
-            { src: '/placeholder/codostanete/branddna.jpg', pill: 'Brand DNA', title: 'Archetyp · tón · strategie', sub: 'Průvodce pro obsah a komunikaci', tall: false },
-            { src: '/placeholder/codostanete/canva-sablony.jpg', pill: 'Canva šablony', title: '10 šablon na míru', sub: 'Vaše barvy · fonty · ikony', tall: false },
-            { src: '/placeholder/codostanete/vizualboard.jpg', pill: 'Vizuální board', title: 'Contact sheet s vaší podobou', sub: 'Outfit plán · nálada · prostředí', tall: true },
-            { src: '/placeholder/codostanete/prispevky.jpg', pill: 'Příspěvky na sítě', title: 'Obsah připravený k použití', sub: 'Instagram · LinkedIn · Facebook', tall: false },
-            { src: '/placeholder/codostanete/reels.jpg', pill: 'Reels · video', title: 'Video záběry s hookem', sub: 'Střihový brief · 15s formát', tall: false },
-            { src: '/placeholder/codostanete/strategie.jpg', pill: 'Strategie', title: 'Komunikační rámec', sub: 'Témata · plán obsahu · scénáře', tall: true },
-            { src: '/placeholder/codostanete/vizualni-banka.jpg', pill: 'Vizuální banka', title: 'Knihovna vašich fotek', sub: 'Tříděno dle scény a nálady', tall: false },
-          ].map((item, i) => (
-            <div key={i} style={{
-              breakInside: 'avoid',
-              marginBottom: '10px',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              position: 'relative',
-              cursor: 'pointer',
-            }}
-            className="codostanete-item"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.src}
-                alt={item.title}
-                style={{
-                  width: '100%',
-                  display: 'block',
-                  aspectRatio: item.tall ? '4/5' : '4/3',
-                  objectFit: 'cover',
-                }}
-              />
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'rgba(17,17,17,0)',
-                transition: 'background 0.25s',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '16px',
-              }}
-              className="codostanete-overlay"
-              >
-                <span style={{
-                  display: 'inline-block',
-                  fontSize: '9px',
-                  letterSpacing: '.1em',
-                  textTransform: 'uppercase',
-                  padding: '3px 10px',
-                  borderRadius: '100px',
-                  background: 'rgba(250,250,247,0.85)',
-                  color: 'rgba(17,17,17,0.55)',
-                  marginBottom: '6px',
-                  width: 'fit-content',
-                }}>{item.pill}</span>
-                <div style={{
-                  fontFamily: 'var(--font-display, Georgia, serif)',
-                  fontSize: '17px',
-                  fontWeight: 400,
-                  color: '#111',
-                  lineHeight: 1.25,
-                  marginBottom: '3px',
-                }}>{item.title}</div>
-                <div style={{
-                  fontSize: '11px',
-                  color: 'rgba(17,17,17,0.45)',
-                }}>{item.sub}</div>
+        <div style={{maxWidth:1360,margin:"0 auto"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
+
+            {/* Levý sloupec — mockup s čipy */}
+            <div style={{position:"relative",paddingLeft:16}}>
+              <div className="del-mockup-scene reveal reveal-d2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/placeholders/mocuppremium.jpg" alt="Ukázka výstupů" />
+                <div className="del-chip dc-1"><div className="dc-icon">📷</div><div className="dc-text">100–150 fotografií</div></div>
+                <div className="del-chip dc-2"><div className="dc-icon">🔍</div><div className="dc-text">Návrh obsahu a použití</div></div>
+                <div className="del-chip dc-3"><div className="dc-icon">📸</div><div className="dc-text">5 typů záběrů</div></div>
+                <div className="del-chip dc-4"><div className="dc-icon">🎨</div><div className="dc-text">3 Canva šablony</div></div>
+                <div className="del-chip dc-5"><div className="dc-icon">🖼️</div><div className="dc-text">Vizuální návrh focení</div></div>
+                <div className="del-chip dc-6"><div className="dc-icon">🎬</div><div className="dc-text">Video záběry pro Reels</div></div>
               </div>
             </div>
-          ))}
+
+            {/* Pravý sloupec — text + bullets */}
+            <div>
+              <div className="label">Výsledek</div>
+              <h2>Po jednom dni máte jasno.</h2>
+              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:18,marginTop:36}}>
+                {[
+                  "100–150 použitelných fotografií",
+                  "sjednocený vizuální styl",
+                  "konkrétní typy příspěvků",
+                  "obsah pro web, sítě i kampaně",
+                ].map((item) => (
+                  <li key={item} style={{display:"flex",gap:14,alignItems:"flex-start",fontSize:17,color:"#222",lineHeight:1.6}}>
+                    <span style={{color:"var(--lime-dark)",fontWeight:700,fontSize:22,lineHeight:1.1,flexShrink:0}}>·</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p style={{marginTop:44,fontFamily:"var(--font-playfair),serif",fontStyle:"italic",fontSize:19,color:"var(--lime-dark)"}}>Neřešíte co přidat. Jen vybíráte.</p>
+            </div>
+
+          </div>
         </div>
       </section>
 
@@ -1481,7 +1469,92 @@ export default function PremiovaVizualniIdentita() {
               <div className="extra-tag">AI avatar <span>+</span></div>
             </div>
           </div>
-          <PostUkazky />
+        </div>
+      </section>
+
+      {/* SEKCE — CO DOSTANETE (masonry galerie) */}
+      <section className="pvi-section" style={{background: '#fafaf7', padding: '80px 0'}}>
+        <style>{`
+          .codostanete-item:hover .codostanete-overlay { background: rgba(17,17,17,0.35) !important; }
+          .codostanete-item:hover .codostanete-overlay > div { color: #FAF7F2 !important; }
+          .codostanete-item:hover .codostanete-overlay > span { background: rgba(250,250,247,0.95) !important; }
+        `}</style>
+        <div style={{textAlign: 'center', marginBottom: '48px', padding: '0 48px'}}>
+          <div className="label" style={{marginBottom: '12px'}}>ukázky výstupů · prémiová identita</div>
+          <h2 style={{marginBottom: '12px'}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
+          <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
+        </div>
+        <div style={{columns: 4, columnGap: '10px', padding: '0 10px'}}>
+          {[
+            { src: '/placeholder/codostanete/vizualboard-vyber.jpg', pill: 'Vizuální board', title: 'Výběr vašeho stylu', sub: 'Ještě před focením víte přesně jak budete vypadat', tall: true },
+            { src: '/placeholder/codostanete/branddna.jpg', pill: 'Brand DNA', title: 'Archetyp · tón · strategie', sub: 'Průvodce pro obsah a komunikaci', tall: false },
+            { src: '/placeholder/codostanete/canva-sablony.jpg', pill: 'Canva šablony', title: '10 šablon na míru', sub: 'Vaše barvy · fonty · ikony', tall: false },
+            { src: '/placeholder/codostanete/vizualboard.jpg', pill: 'Vizuální board', title: 'Contact sheet s vaší podobou', sub: 'Outfit plán · nálada · prostředí', tall: true },
+            { src: '/placeholder/codostanete/prispevky.jpg', pill: 'Příspěvky na sítě', title: 'Obsah připravený k použití', sub: 'Instagram · LinkedIn · Facebook', tall: false },
+            { src: '/placeholder/codostanete/reels.jpg', pill: 'Reels · video', title: 'Video záběry s hookem', sub: 'Střihový brief · 15s formát', tall: false },
+            { src: '/placeholder/codostanete/strategie.jpg', pill: 'Strategie', title: 'Komunikační rámec', sub: 'Témata · plán obsahu · scénáře', tall: true },
+            { src: '/placeholder/codostanete/vizualni-banka.jpg', pill: 'Vizuální banka', title: 'Knihovna vašich fotek', sub: 'Tříděno dle scény a nálady', tall: false },
+          ].map((item, i) => (
+            <div key={i} style={{
+              breakInside: 'avoid',
+              marginBottom: '10px',
+              borderRadius: '10px',
+              overflow: 'hidden',
+              position: 'relative',
+              cursor: 'pointer',
+            }}
+            className="codostanete-item"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.src}
+                alt={item.title}
+                style={{
+                  width: '100%',
+                  display: 'block',
+                  aspectRatio: item.tall ? '4/5' : '4/3',
+                  objectFit: 'cover',
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(17,17,17,0)',
+                transition: 'background 0.25s',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                padding: '16px',
+              }}
+              className="codostanete-overlay"
+              >
+                <span style={{
+                  display: 'inline-block',
+                  fontSize: '9px',
+                  letterSpacing: '.1em',
+                  textTransform: 'uppercase',
+                  padding: '3px 10px',
+                  borderRadius: '100px',
+                  background: 'rgba(250,250,247,0.85)',
+                  color: 'rgba(17,17,17,0.55)',
+                  marginBottom: '6px',
+                  width: 'fit-content',
+                }}>{item.pill}</span>
+                <div style={{
+                  fontFamily: 'var(--font-display, Georgia, serif)',
+                  fontSize: '17px',
+                  fontWeight: 400,
+                  color: '#111',
+                  lineHeight: 1.25,
+                  marginBottom: '3px',
+                }}>{item.title}</div>
+                <div style={{
+                  fontSize: '11px',
+                  color: 'rgba(17,17,17,0.45)',
+                }}>{item.sub}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
