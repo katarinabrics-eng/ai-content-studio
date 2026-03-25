@@ -1245,7 +1245,7 @@ export default function PremiovaVizualniIdentita() {
           <h2 style={{marginBottom: '12px'}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
           <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
         </div>
-        <div style={{columns: 3, columnGap: '10px', padding: '0 10px'}}>
+        <div style={{columns: 4, columnGap: '10px', padding: '0 10px'}}>
           {[
             { src: '/placeholder/codostanete/vizualboard-vyber.jpg', pill: 'Vizuální board', title: 'Výběr vašeho stylu', sub: 'Ještě před focením víte přesně jak budete vypadat', tall: true },
             { src: '/placeholder/codostanete/branddna.jpg', pill: 'Brand DNA', title: 'Archetyp · tón · strategie', sub: 'Průvodce pro obsah a komunikaci', tall: false },
