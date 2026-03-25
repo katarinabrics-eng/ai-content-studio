@@ -1308,8 +1308,6 @@ export default function PremiovaVizualniIdentita() {
       {/* SEKCE 4 — VIZUÁLNÍ BOARD (krémová) */}
       <section className="wow" style={{background:"var(--cream)"}}>
         <div className="wow-inner">
-          <div className="label reveal">Vizuální board</div>
-          <h2 className="reveal">Dopředu víte, co jdete fotit.<br /><em>Váš obličej. Váš styl.</em></h2>
           <div className="wow-grid">
             <div className="wow-text reveal">
               <div className="label">Vizuální board s vaší podobou</div>
