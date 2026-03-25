@@ -503,7 +503,6 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
               {/* Bottom info */}
               <div className="vbd-preview-info">
                 <div>
-                  <div className="vbd-shot-label">#{String(shot.id).padStart(2, "0")} · {shot.label}</div>
                   {shot.quote && <div className="vbd-shot-quote">&ldquo;{shot.quote}&rdquo;</div>}
                 </div>
                 {shot.outfit && <div className="vbd-outfit-pill">{shot.outfit}</div>}
