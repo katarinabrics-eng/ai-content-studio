@@ -1422,135 +1422,75 @@ export default function PremiovaVizualniIdentita() {
         </div>
       </section>
 
-      {/* SEKCE 7 — CO DOSTANETE (bílá) */}
-      <section className="deliverables" style={{background:"#ffffff"}}>
-        <div className="del-inner">
-          <div className="reveal">
-            <div className="label">Co reálně dostanete</div>
-            <h2>Vše připravené<br /><em>k použití.</em></h2>
-          </div>
-          <div className="del-grid">
-            <div className="del-card reveal reveal-d1">
-              <div className="del-icon">📷</div>
-              <div className="del-num">~150</div>
-              <div className="del-unit">fotografií</div>
-              <div className="del-title">5 typů záběrů</div>
-              <div className="del-desc">Portréty, pracovní momenty, lifestyle, detail — každý jiný styl, každý použitelný.</div>
-            </div>
-            <div className="del-card reveal reveal-d2">
-              <div className="del-icon">🎬</div>
-              <div className="del-num">Reels</div>
-              <div className="del-unit">krátké video záběry</div>
-              <div className="del-title">LinkedIn · stories · sítě</div>
-              <div className="del-desc">Autentické klipy připravené k publikaci. Teplý grading dle vašeho stylu.</div>
-            </div>
-            <div className="del-card reveal reveal-d3">
-              <div className="del-icon">🎨</div>
-              <div className="del-num">10</div>
-              <div className="del-unit">Canva šablony na míru</div>
-              <div className="del-title">Grafika připravená k použití</div>
-              <div className="del-desc">Fonty, barvy, styl — vše nastavené. Otevřete a upravíte za minutu.</div>
-            </div>
-            <div className="del-card reveal reveal-d4">
-              <div className="del-icon">📋</div>
-              <div className="del-num">Návrh</div>
-              <div className="del-unit">obsahu a použití fotek</div>
-              <div className="del-title">Konkrétní typy příspěvků</div>
-              <div className="del-desc">Víte přesně co publikovat, kde a jak. Nemusíte vymýšlet — jen vybíráte.</div>
-            </div>
-          </div>
-          <div className="extras reveal" style={{marginTop:"20px"}}>
-            <div className="extras-label">Za příplatek</div>
-            <div className="extras-row">
-              <div className="extra-tag">Promo video <span>+</span></div>
-              <div className="extra-tag">Reels produkce <span>+</span></div>
-              <div className="extra-tag">Grafika kampaní <span>+</span></div>
-              <div className="extra-tag">Měsíční obsah <span>+</span></div>
-              <div className="extra-tag">AI avatar <span>+</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SEKCE — CO DOSTANETE (masonry galerie) */}
-      <section className="pvi-section" style={{background: '#fafaf7', padding: '80px 0'}}>
-        <style>{`
-          .codostanete-item:hover .codostanete-overlay { background: rgba(17,17,17,0.35) !important; }
-          .codostanete-item:hover .codostanete-overlay > div { color: #FAF7F2 !important; }
-          .codostanete-item:hover .codostanete-overlay > span { background: rgba(250,250,247,0.95) !important; }
-        `}</style>
-        <div style={{textAlign: 'center', marginBottom: '48px', padding: '0 48px'}}>
-          <div className="label" style={{marginBottom: '12px'}}>ukázky výstupů · prémiová identita</div>
-          <h2 style={{marginBottom: '12px'}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
+      {/* SEKCE 7 — CO DOSTANETE */}
+      <section className="deliverables" style={{background:"#fafaf7", padding:"80px 0"}}>
+        <div style={{textAlign:"center", marginBottom:"48px", padding:"0 48px"}}>
+          <div className="label">ukázky výstupů · prémiová identita</div>
+          <h2 style={{marginTop:"12px", marginBottom:"12px"}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
           <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
         </div>
-        <div style={{columns: 4, columnGap: '10px', padding: '0 10px'}}>
+        <div style={{columns:3, columnGap:"10px", padding:"0 10px"}}>
           {[
-            { src: '/placeholder/CODOSTANETE/vizualboard-vyber.jpg', pill: 'Vizuální board', title: 'Výběr vašeho stylu', sub: 'Ještě před focením víte přesně jak budete vypadat', tall: true },
-            { src: '/placeholder/CODOSTANETE/branddna.jpg', pill: 'Brand DNA', title: 'Archetyp · tón · strategie', sub: 'Průvodce pro obsah a komunikaci', tall: false },
-            { src: '/placeholder/CODOSTANETE/canva-sablony.jpg', pill: 'Canva šablony', title: '10 šablon na míru', sub: 'Vaše barvy · fonty · ikony', tall: false },
-            { src: '/placeholder/CODOSTANETE/vizualboard.jpg', pill: 'Vizuální board', title: 'Contact sheet s vaší podobou', sub: 'Outfit plán · nálada · prostředí', tall: true },
-            { src: '/placeholder/CODOSTANETE/prispevky.jpg', pill: 'Příspěvky na sítě', title: 'Obsah připravený k použití', sub: 'Instagram · LinkedIn · Facebook', tall: false },
-            { src: '/placeholder/CODOSTANETE/reels.jpg', pill: 'Reels · video', title: 'Video záběry s hookem', sub: 'Střihový brief · 15s formát', tall: false },
-            { src: '/placeholder/CODOSTANETE/strategie.jpg', pill: 'Strategie', title: 'Komunikační rámec', sub: 'Témata · plán obsahu · scénáře', tall: true },
-            { src: '/placeholder/CODOSTANETE/vizualni-banka.jpg', pill: 'Vizuální banka', title: 'Knihovna vašich fotek', sub: 'Tříděno dle scény a nálady', tall: false },
+            {src:"/placeholders/CO DOSTANETE/vizual board vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat", ratio:"4/5"},
+            {src:"/placeholders/CO DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci", ratio:"4/3"},
+            {src:"/placeholders/CO DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát", ratio:"4/3"},
+            {src:"/placeholders/CO DOSTANETE/vizual board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí", ratio:"4/5"},
+            {src:"/placeholders/CO DOSTANETE/Canva sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony", ratio:"4/3"},
+            {src:"/placeholders/CO DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře", ratio:"4/5"},
+            {src:"/placeholders/CO DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook", ratio:"4/3"},
+            {src:"/placeholders/CO DOSTANETE/vizualni banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady", ratio:"4/3"},
           ].map((item, i) => (
             <div key={i} style={{
-              breakInside: 'avoid',
-              marginBottom: '10px',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              position: 'relative',
-              cursor: 'pointer',
-            }}
-            className="codostanete-item"
-            >
+              breakInside:"avoid",
+              marginBottom:"10px",
+              borderRadius:"10px",
+              overflow:"hidden",
+              position:"relative",
+              cursor:"pointer",
+            }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.src}
                 alt={item.title}
                 style={{
-                  width: '100%',
-                  display: 'block',
-                  aspectRatio: item.tall ? '4/5' : '4/3',
-                  objectFit: 'cover',
+                  width:"100%",
+                  display:"block",
+                  aspectRatio:item.ratio,
+                  objectFit:"cover",
                 }}
               />
               <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'rgba(17,17,17,0)',
-                transition: 'background 0.25s',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '16px',
-              }}
-              className="codostanete-overlay"
-              >
+                position:"absolute",
+                inset:0,
+                display:"flex",
+                flexDirection:"column",
+                justifyContent:"flex-end",
+                padding:"16px",
+                background:"linear-gradient(to top, rgba(17,17,17,0.55) 0%, transparent 50%)",
+              }}>
                 <span style={{
-                  display: 'inline-block',
-                  fontSize: '9px',
-                  letterSpacing: '.1em',
-                  textTransform: 'uppercase',
-                  padding: '3px 10px',
-                  borderRadius: '100px',
-                  background: 'rgba(250,250,247,0.85)',
-                  color: 'rgba(17,17,17,0.55)',
-                  marginBottom: '6px',
-                  width: 'fit-content',
+                  display:"inline-block",
+                  fontSize:"9px",
+                  letterSpacing:".1em",
+                  textTransform:"uppercase",
+                  padding:"3px 10px",
+                  borderRadius:"100px",
+                  background:"rgba(250,250,247,0.85)",
+                  color:"rgba(17,17,17,0.55)",
+                  marginBottom:"6px",
+                  width:"fit-content",
                 }}>{item.pill}</span>
                 <div style={{
-                  fontFamily: 'var(--font-display, Georgia, serif)',
-                  fontSize: '17px',
-                  fontWeight: 400,
-                  color: '#111',
-                  lineHeight: 1.25,
-                  marginBottom: '3px',
+                  fontFamily:"var(--font-display, Georgia, serif)",
+                  fontSize:"17px",
+                  fontWeight:400,
+                  color:"#FAF7F2",
+                  lineHeight:1.25,
+                  marginBottom:"3px",
                 }}>{item.title}</div>
                 <div style={{
-                  fontSize: '11px',
-                  color: 'rgba(17,17,17,0.45)',
+                  fontSize:"11px",
+                  color:"rgba(250,247,242,0.6)",
                 }}>{item.sub}</div>
               </div>
             </div>
