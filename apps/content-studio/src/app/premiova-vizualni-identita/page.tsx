@@ -595,7 +595,7 @@ export default function PremiovaVizualniIdentita() {
         /* WOW FRAME WRAPPER — before photos + arrows */
         .pvi-page .wow-frame-wrap{
           position:relative;
-          padding-left:180px;
+          padding-left:220px;
         }
         .pvi-page .wow-pred-card{
           position:absolute;
@@ -603,11 +603,11 @@ export default function PremiovaVizualniIdentita() {
           padding:7px 7px 30px 7px;
           border-radius:4px;
           box-shadow:0 12px 36px rgba(0,0,0,0.22),0 3px 10px rgba(0,0,0,0.1);
-          width:160px;
+          width:200px;
           z-index:10;
         }
         .pvi-page .wow-pred-card img{
-          width:100%;height:148px;
+          width:100%;height:185px;
           object-fit:cover;object-position:center top;
           display:block;
         }
@@ -650,7 +650,7 @@ export default function PremiovaVizualniIdentita() {
           color:rgba(255,255,255,0.25);margin-left:-28px;
         }
         .pvi-page .wf-photos{
-          position:relative;width:100%;aspect-ratio:4/3;background:#111;overflow:hidden;
+          position:relative;width:100%;aspect-ratio:3/2;background:#111;overflow:hidden;
         }
         .pvi-page .wf-photo{
           position:absolute;inset:0;width:100%;height:100%;
@@ -677,10 +677,11 @@ export default function PremiovaVizualniIdentita() {
         }
         .pvi-page .wf-dot-nav.active{background:#fff;width:16px;border-radius:3px;}
         .pvi-page .wf-badge{
-          position:absolute;top:14px;right:14px;
+          position:absolute;top:-16px;right:14px;
           background:rgba(0,0,0,0.55);backdrop-filter:blur(12px);
           border:1px solid rgba(255,255,255,0.1);
           border-radius:8px;padding:7px 12px;text-align:center;
+          z-index:10;
         }
         .pvi-page .wf-badge-num{font-family:var(--font-playfair),serif;font-size:22px;font-weight:700;color:var(--lime);line-height:1;}
         .pvi-page .wf-badge-lbl{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:2px;}
@@ -1142,7 +1143,7 @@ export default function PremiovaVizualniIdentita() {
                 ))}
               </ul>
               <p className="section-sub" style={{marginBottom:"28px",fontWeight:600,color:"var(--black)"}}>Na focení jdete připravená. Ne improvizovat.</p>
-              <a href="https://ai-content-studio-dfh2nckr7-katarinas-projects-65ccf8b6.vercel.app/premiova-vizualni-identita" className="btn-primary" style={{textDecoration:"none"}} target="_blank" rel="noopener noreferrer">Chci vidět ukázku →</a>
+              <a href="https://ai-content-studio-omega.vercel.app/premiova-vizualni-identita" className="btn-primary" style={{textDecoration:"none"}}>Chci vidět ukázku →</a>
               <div style={{fontSize:12,color:"#bbb",marginTop:8}}>Návrh připravíme před focením</div>
             </div>
           </div>
