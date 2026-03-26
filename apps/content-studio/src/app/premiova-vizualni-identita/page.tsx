@@ -1170,8 +1170,8 @@ export default function PremiovaVizualniIdentita() {
           .pvi-page .wow-arrow{ display:none; }
           .pvi-page .wow-frame{ min-width:0; }
 
-          /* Masonry galerie — 2 sloupce na tabletu */
-          .pvi-page .codostanete-columns{ columns:2 !important; }
+          /* Galerie — 2 sloupce na tabletu */
+          .pvi-page .codostanete-columns{ grid-template-columns:repeat(2,1fr) !important; }
         }
 
         @media (max-width: 480px) {
@@ -1181,8 +1181,8 @@ export default function PremiovaVizualniIdentita() {
           .pvi-page section{ padding:48px 20px; }
           .pvi-page .problem{ padding:48px 20px; }
 
-          /* Masonry galerie — 1 sloupec na telefonu */
-          .pvi-page .codostanete-columns{ columns:1 !important; }
+          /* Galerie — 1 sloupec na telefonu */
+          .pvi-page .codostanete-columns{ grid-template-columns:1fr !important; }
         }
       `}</style>
 
@@ -1443,20 +1443,18 @@ export default function PremiovaVizualniIdentita() {
           <h2 style={{marginTop:"12px", marginBottom:"12px"}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
           <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
         </div>
-        <div className="codostanete-columns" style={{columns:4, columnGap:"10px", padding:"0 10px"}}>
+        <div className="codostanete-columns" style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"10px", padding:"0 10px"}}>
           {[
-            {src:"/placeholders/CO%20DOSTANETE/vizual%20board%20vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat", ratio:"4/5"},
-            {src:"/placeholders/CO%20DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci", ratio:"4/3"},
-            {src:"/placeholders/CO%20DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát", ratio:"4/3"},
-            {src:"/placeholders/CO%20DOSTANETE/vizual%20board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí", ratio:"4/5"},
-            {src:"/placeholders/CO%20DOSTANETE/Canva%20sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony", ratio:"4/3"},
-            {src:"/placeholders/CO%20DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře", ratio:"4/5"},
-            {src:"/placeholders/CO%20DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook", ratio:"4/3"},
-            {src:"/placeholders/CO%20DOSTANETE/vizualni%20banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady", ratio:"4/3"},
+            {src:"/placeholders/CO%20DOSTANETE/vizual%20board%20vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat"},
+            {src:"/placeholders/CO%20DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci"},
+            {src:"/placeholders/CO%20DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát"},
+            {src:"/placeholders/CO%20DOSTANETE/vizual%20board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí"},
+            {src:"/placeholders/CO%20DOSTANETE/Canva%20sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony"},
+            {src:"/placeholders/CO%20DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře"},
+            {src:"/placeholders/CO%20DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook"},
+            {src:"/placeholders/CO%20DOSTANETE/vizualni%20banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady"},
           ].map((item, i) => (
             <div key={i} style={{
-              breakInside:"avoid",
-              marginBottom:"10px",
               borderRadius:"10px",
               overflow:"hidden",
               position:"relative",
@@ -1469,7 +1467,7 @@ export default function PremiovaVizualniIdentita() {
                 style={{
                   width:"100%",
                   display:"block",
-                  aspectRatio:item.ratio,
+                  aspectRatio:"4/3",
                   objectFit:"cover",
                 }}
               />
