@@ -1161,6 +1161,17 @@ export default function PremiovaVizualniIdentita() {
             border-radius: 0 !important;
             padding: 40px 20px 36px !important;
           }
+
+          /* Wow sekce — vizuální board */
+          .pvi-page .wow{ padding:56px 24px; }
+          .pvi-page .wow-grid{ grid-template-columns:1fr; gap:32px; margin-top:24px; }
+          .pvi-page .wow-frame-wrap{ padding-right:0; min-width:0; }
+          .pvi-page .wow-pred-card{ display:none; }
+          .pvi-page .wow-arrow{ display:none; }
+          .pvi-page .wow-frame{ min-width:0; }
+
+          /* Masonry galerie — 2 sloupce na tabletu */
+          .pvi-page .codostanete-columns{ columns:2 !important; }
         }
 
         @media (max-width: 480px) {
@@ -1169,6 +1180,9 @@ export default function PremiovaVizualniIdentita() {
           .pvi-page .deliverables-grid{ grid-template-columns:1fr; }
           .pvi-page section{ padding:48px 20px; }
           .pvi-page .problem{ padding:48px 20px; }
+
+          /* Masonry galerie — 1 sloupec na telefonu */
+          .pvi-page .codostanete-columns{ columns:1 !important; }
         }
       `}</style>
 
@@ -1429,7 +1443,7 @@ export default function PremiovaVizualniIdentita() {
           <h2 style={{marginTop:"12px", marginBottom:"12px"}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
           <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
         </div>
-        <div style={{columns:4, columnGap:"10px", padding:"0 10px"}}>
+        <div className="codostanete-columns" style={{columns:4, columnGap:"10px", padding:"0 10px"}}>
           {[
             {src:"/placeholders/CO%20DOSTANETE/vizual%20board%20vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat", ratio:"4/5"},
             {src:"/placeholders/CO%20DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci", ratio:"4/3"},
