@@ -1204,8 +1204,15 @@ export default function PremiovaVizualniIdentita() {
           /* Wow sekce — vizuální board */
           .pvi-page .wow{ padding:56px 24px; }
           .pvi-page .wow-grid{ grid-template-columns:1fr; gap:32px; margin-top:24px; }
-          .pvi-page .wow-frame-wrap{ padding-right:0; min-width:0; }
-          .pvi-page .wow-pred-card{ display:none; }
+          .pvi-page .wow-frame-wrap{ padding-right:0; padding-left:0; min-width:0; display:flex; flex-direction:column; }
+          .pvi-page .wow-pred-card{
+            position:static;
+            width:90px;
+            transform:none;
+            animation:none;
+            margin:0 auto 12px auto;
+          }
+          .pvi-page .wow-pred-card img{ height:80px; }
           .pvi-page .wow-arrow{ display:none; }
           .pvi-page .wow-frame{ min-width:0; }
 
