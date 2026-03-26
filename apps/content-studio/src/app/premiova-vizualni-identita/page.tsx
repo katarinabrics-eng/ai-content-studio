@@ -776,7 +776,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--lime-dark);margin-bottom:10px;}
         .pvi-page h2{font-family:var(--font-playfair),serif;font-size:clamp(32px,3.5vw,48px);font-weight:700;line-height:1.15;margin-bottom:16px;}
         .pvi-page h2 em{font-style:italic;font-weight:300;}
-        .pvi-page .section-sub{font-size:15px;color:var(--gray);line-height:1.7;max-width:580px;}
+        .pvi-page .section-sub{font-size:15px;color:var(--gray);line-height:1.7;max-width:580px;margin-left:auto;margin-right:auto;}
 
         /* ── PROBLEM ── */
         .pvi-page .problem{background:var(--black);padding:96px 80px;}
