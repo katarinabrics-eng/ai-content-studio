@@ -267,7 +267,7 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
       position: "fixed", inset: 0, zIndex: 9999,
       background: "rgba(8,8,8,0.92)", backdropFilter: "blur(16px)",
       display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "24px",
+      padding: "clamp(0px, 3vw, 24px)",
       opacity: animIn ? 1 : 0, transition: "opacity 0.35s ease",
     }}>
       <style>{`
@@ -430,6 +430,40 @@ function VizualniDashboard({ onClose }: { onClose: () => void }) {
         .vbd-side-lbl {
           font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
           color: rgba(255,255,255,0.2); padding: 0 4px; margin-bottom: 6px;
+        }
+
+        @media (max-width: 700px) {
+          .vbd-window {
+            width: 100vw;
+            max-width: 100vw;
+            max-height: 100dvh;
+            border-radius: 0;
+          }
+          /* Sidebar schovat — thumbnails nahradit dots navigací */
+          .vbd-sidebar { display: none; }
+          .vbd-body { flex-direction: column; }
+          .vbd-main { min-height: 0; flex: 1; }
+
+          /* Bottom bar — scroll horizontálně */
+          .vbd-bottom {
+            padding: 12px 16px;
+            gap: 8px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+          }
+          .vbd-bottom-sep { display: none; }
+          .vbd-palette-swatch { width: 28px; height: 28px; }
+
+          /* Preview info — zjednodušit */
+          .vbd-preview-info { padding: 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+          .vbd-shot-quote { font-size: 16px; }
+          .vbd-outfit-pill { display: none; }
+          .vbd-score-badge { top: 12px; right: 12px; padding: 8px 12px; }
+          .vbd-score-num { font-size: 22px; }
+
+          /* Titlebar */
+          .vbd-title { font-size: 10px; }
         }
       `}</style>
 
