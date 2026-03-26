@@ -536,84 +536,224 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.2); }
   <div class="container">
     <div class="eyebrow fade-up" style="margin-bottom:24px">03 · co vidíš v dashboardu</div>
     <h2 class="fade-up" style="margin-bottom:40px">Vybereš variantu.<br><em>Schválíš. Jdeš dál.</em></h2>
-    <div style="background:#1a1a18;border-radius:14px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,0.3);max-width:900px;margin:0 auto" class="fade-up">
-      <div style="background:#2a2a26;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05)">
-        <div style="display:flex;gap:6px">
-          <div style="width:11px;height:11px;border-radius:50%;background:#ff5f57"></div>
-          <div style="width:11px;height:11px;border-radius:50%;background:#ffbd2e"></div>
-          <div style="width:11px;height:11px;border-radius:50%;background:#28c840"></div>
-        </div>
-        <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:6px;padding:5px 14px;font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:.02em">ready-to-go · klientský portál · týden 24.–28. 3.</div>
+    <div style="max-width:860px;margin:0 auto" class="fade-up">
+<div style="background:#1a1a18;border-radius:14px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,0.25)">
+
+  <div style="background:#2a2a26;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;gap:6px">
+        <div style="width:11px;height:11px;border-radius:50%;background:#ff5f57"></div>
+        <div style="width:11px;height:11px;border-radius:50%;background:#ffbd2e"></div>
+        <div style="width:11px;height:11px;border-radius:50%;background:#28c840"></div>
       </div>
-      <div style="background:#111;padding:20px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:#fff">Týden 24.–28. 3.</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:.06em">2 / 4 schváleno</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:.02em">ready-to-go · klientský portál</div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.3)">Veronika Novotná</div>
+  </div>
+
+  <div style="background:#161614;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;overflow-x:auto">
+    <div class="rtg-tab rtg-tab-on" onclick="rtgTab('obsah',this)" style="font-size:11px;padding:9px 16px;color:#fff;cursor:pointer;border-bottom:2px solid #d0ec78;white-space:nowrap">Ke schválení</div>
+    <div class="rtg-tab" onclick="rtgTab('kalendar',this)" style="font-size:11px;padding:9px 16px;color:rgba(255,255,255,0.4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">Plánování</div>
+    <div class="rtg-tab" onclick="rtgTab('knihovna',this)" style="font-size:11px;padding:9px 16px;color:rgba(255,255,255,0.4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">Vizuální knihovna</div>
+    <div class="rtg-tab" onclick="rtgTab('texty',this)" style="font-size:11px;padding:9px 16px;color:rgba(255,255,255,0.4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">Texty</div>
+    <div class="rtg-tab" onclick="rtgTab('archiv',this)" style="font-size:11px;padding:9px 16px;color:rgba(255,255,255,0.4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">Archiv</div>
+    <div class="rtg-tab" onclick="rtgTab('statistiky',this)" style="font-size:11px;padding:9px 16px;color:rgba(255,255,255,0.4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">Statistiky</div>
+  </div>
+
+  <div style="background:#111;padding:16px">
+
+    <div id="rtg-obsah" class="rtg-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:500;color:#fff">Ke schválení tento týden</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="height:3px;width:80px;background:rgba(255,255,255,0.08);border-radius:2px"><div style="height:3px;width:40px;background:#d0ec78;border-radius:2px"></div></div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35)">2 / 4</div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-          <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px">
-            <div style="height:3px;background:#d0ec78;border-radius:2px;width:50%"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div onclick="rtgCard(this)" style="background:rgba(255,255,255,0.04);border:1px solid #d0ec78;border-radius:10px;padding:12px;cursor:pointer;background:rgba(208,236,120,0.05)">
+          <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(59,130,246,0.15);color:#93c5fd;letter-spacing:.06em;margin-bottom:8px">▶ VIDEO · Reels</div>
+          <div style="width:100%;aspect-ratio:9/16;max-height:120px;border-radius:6px;background:linear-gradient(135deg,#1a2e1a,#2d4a1e);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;margin-bottom:8px">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(208,236,120,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(208,236,120,0.7)">▶</div>
+            <span style="font-size:9px;color:rgba(208,236,120,0.4);letter-spacing:.06em">15s · Reels</span>
           </div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.35)">50 %</div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:2px">"Tohle mi trvalo 2 hodiny. Teď 5 minut."</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">Hook přímý · Varianta A</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <div onclick="this.closest('[style*=grid]').querySelectorAll('div').forEach(c=>c.style.borderColor='rgba(255,255,255,0.07)');this.style.borderColor='#d0ec78'" style="background:rgba(255,255,255,0.04);border:1px solid #d0ec78;border-radius:10px;padding:12px;cursor:pointer">
-              <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(59,130,246,0.15);color:#93c5fd;letter-spacing:.06em;margin-bottom:8px">▶ VIDEO · Reels</div>
-              <div style="width:100%;aspect-ratio:9/16;max-height:120px;border-radius:6px;background:linear-gradient(135deg,#1a2e1a,#2d4a1e);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;margin-bottom:8px">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(208,236,120,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(208,236,120,0.7)">▶</div>
-                <span style="font-size:9px;color:rgba(208,236,120,0.4);letter-spacing:.06em">15s · Reels</span>
-              </div>
-              <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:3px">"Tohle mi trvalo 2 hodiny. Teď to zvládnu za 5 minut."</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.3)">Hook přímý · Varianta A</div>
-            </div>
-            <div onclick="this.closest('[style*=grid]').querySelectorAll('div').forEach(c=>c.style.borderColor='rgba(255,255,255,0.07)');this.style.borderColor='#d0ec78'" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer">
-              <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(59,130,246,0.15);color:#93c5fd;letter-spacing:.06em;margin-bottom:8px">▶ VIDEO · Reels</div>
-              <div style="width:100%;aspect-ratio:9/16;max-height:120px;border-radius:6px;background:linear-gradient(135deg,#1e2a2e,#1a3040);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;margin-bottom:8px">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(147,197,253,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(147,197,253,0.6)">▶</div>
-                <span style="font-size:9px;color:rgba(147,197,253,0.3);letter-spacing:.06em">12s · Reels</span>
-              </div>
-              <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:3px">"Co kdybys měla obsah na celý týden hotový za odpoledne?"</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.3)">Hook otázka · Varianta B</div>
-            </div>
+        <div onclick="rtgCard(this)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer">
+          <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(59,130,246,0.15);color:#93c5fd;letter-spacing:.06em;margin-bottom:8px">▶ VIDEO · Reels</div>
+          <div style="width:100%;aspect-ratio:9/16;max-height:120px;border-radius:6px;background:linear-gradient(135deg,#1e2a2e,#1a3040);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;margin-bottom:8px">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(147,197,253,0.15);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(147,197,253,0.6)">▶</div>
+            <span style="font-size:9px;color:rgba(147,197,253,0.3);letter-spacing:.06em">12s · Reels</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <div onclick="this.closest('[style*=grid]').querySelectorAll('div').forEach(c=>c.style.borderColor='rgba(255,255,255,0.07)');this.style.borderColor='#d0ec78'" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer">
-              <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(34,197,94,0.15);color:#86efac;letter-spacing:.06em;margin-bottom:8px">◻ GRAFIKA</div>
-              <div style="width:100%;aspect-ratio:1/1;max-height:90px;border-radius:6px;background:linear-gradient(135deg,#2a2e1e,#3a4228);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;margin-bottom:8px">
-                <div style="width:32px;height:4px;background:rgba(208,236,120,0.3);border-radius:2px"></div>
-                <div style="width:24px;height:4px;background:rgba(208,236,120,0.2);border-radius:2px;margin-top:3px"></div>
-                <div style="width:28px;height:4px;background:rgba(208,236,120,0.25);border-radius:2px;margin-top:3px"></div>
-                <span style="font-size:8px;color:rgba(208,236,120,0.35);margin-top:5px;letter-spacing:.06em">světlý styl</span>
-              </div>
-              <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:3px">"3 věci které mi ušetří hodiny každý týden."</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.3)">Varianta A · seznam</div>
-            </div>
-            <div onclick="this.closest('[style*=grid]').querySelectorAll('div').forEach(c=>c.style.borderColor='rgba(255,255,255,0.07)');this.style.borderColor='#d0ec78'" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer">
-              <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(34,197,94,0.15);color:#86efac;letter-spacing:.06em;margin-bottom:8px">◻ GRAFIKA</div>
-              <div style="width:100%;aspect-ratio:1/1;max-height:90px;border-radius:6px;background:linear-gradient(135deg,#1e1e1e,#2a2a2a);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;margin-bottom:8px">
-                <div style="width:32px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px"></div>
-                <div style="width:20px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:3px"></div>
-                <div style="width:26px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin-top:3px"></div>
-                <span style="font-size:8px;color:rgba(255,255,255,0.2);margin-top:5px;letter-spacing:.06em">tmavý styl</span>
-              </div>
-              <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:3px">"Přestala jsem řešit obsah. Začala jsem ho tvořit."</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.3)">Varianta B · příběh</div>
-            </div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:2px">"Obsah na celý týden za odpoledne?"</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">Hook otázka · Varianta B</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div onclick="rtgCard(this)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer">
+          <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(34,197,94,0.15);color:#86efac;letter-spacing:.06em;margin-bottom:8px">◻ GRAFIKA</div>
+          <div style="width:100%;aspect-ratio:1/1;max-height:90px;border-radius:6px;background:linear-gradient(135deg,#2a2e1e,#3a4228);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;margin-bottom:8px">
+            <div style="width:28px;height:3px;background:rgba(208,236,120,0.3);border-radius:2px"></div>
+            <div style="width:20px;height:3px;background:rgba(208,236,120,0.2);border-radius:2px;margin-top:3px"></div>
+            <div style="width:24px;height:3px;background:rgba(208,236,120,0.25);border-radius:2px;margin-top:3px"></div>
+            <span style="font-size:8px;color:rgba(208,236,120,0.35);margin-top:5px;letter-spacing:.06em">světlý styl</span>
           </div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:2px">"3 věci které mi ušetří hodiny."</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">Varianta A · seznam</div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">
-          <div style="font-size:11px;color:rgba(255,255,255,0.3)">Klikni na variantu → schval</div>
-          <button style="background:#d0ec78;color:#111;padding:8px 20px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer">Schválit vybranou →</button>
+        <div onclick="rtgCard(this)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;cursor:pointer">
+          <div style="display:inline-flex;font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:rgba(34,197,94,0.15);color:#86efac;letter-spacing:.06em;margin-bottom:8px">◻ GRAFIKA</div>
+          <div style="width:100%;aspect-ratio:1/1;max-height:90px;border-radius:6px;background:linear-gradient(135deg,#1e1e1e,#2a2a2a);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;margin-bottom:8px">
+            <div style="width:28px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px"></div>
+            <div style="width:18px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:3px"></div>
+            <div style="width:22px;height:3px;background:rgba(255,255,255,0.12);border-radius:2px;margin-top:3px"></div>
+            <span style="font-size:8px;color:rgba(255,255,255,0.2);margin-top:5px;letter-spacing:.06em">tmavý styl</span>
+          </div>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);line-height:1.4;margin-bottom:2px">"Přestala jsem řešit. Začala tvořit."</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">Varianta B · příběh</div>
         </div>
-        <div style="display:flex;gap:6px;margin-top:14px;justify-content:center">
-          <div style="width:6px;height:6px;border-radius:50%;background:#d0ec78"></div>
-          <div style="width:6px;height:6px;border-radius:50%;background:#d0ec78"></div>
-          <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15)"></div>
-          <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15)"></div>
-        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+        <div style="font-size:11px;color:rgba(255,255,255,0.3)">Klikni na variantu → schval</div>
+        <button style="background:#d0ec78;color:#111;padding:8px 18px;border-radius:6px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit">Schválit →</button>
+      </div>
+      <div style="display:flex;gap:5px;justify-content:center;margin-top:10px">
+        <div style="width:6px;height:6px;border-radius:50%;background:#d0ec78"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:#d0ec78"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15)"></div>
+        <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15)"></div>
       </div>
     </div>
+
+    <div id="rtg-kalendar" class="rtg-section" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button onclick="rtgPrevMonth()" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:12px">‹</button>
+          <div id="rtg-month-label" style="font-size:14px;font-weight:500;color:#fff">Březen 2026</div>
+          <button onclick="rtgNextMonth()" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:12px">›</button>
+        </div>
+        <button style="background:#d0ec78;color:#111;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit">+ Naplánovat</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+        <div onclick="this.style.borderColor=this.style.borderColor==='rgba(208,236,120,0.4)'?'rgba(255,255,255,0.1)':'rgba(208,236,120,0.4)'" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1px solid rgba(208,236,120,0.4);background:rgba(208,236,120,0.06);cursor:pointer">
+          <div style="width:7px;height:7px;border-radius:50%;background:#93c5fd"></div>
+          <span style="font-size:11px;color:rgba(255,255,255,0.6)">Instagram</span>
+        </div>
+        <div onclick="this.style.borderColor=this.style.borderColor==='rgba(208,236,120,0.4)'?'rgba(255,255,255,0.1)':'rgba(208,236,120,0.4)'" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1px solid rgba(208,236,120,0.4);background:rgba(208,236,120,0.06);cursor:pointer">
+          <div style="width:7px;height:7px;border-radius:50%;background:#86efac"></div>
+          <span style="font-size:11px;color:rgba(255,255,255,0.6)">Facebook</span>
+        </div>
+        <div onclick="this.style.borderColor=this.style.borderColor==='rgba(208,236,120,0.4)'?'rgba(255,255,255,0.1)':'rgba(208,236,120,0.4)'" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1px solid rgba(208,236,120,0.4);background:rgba(208,236,120,0.06);cursor:pointer">
+          <div style="width:7px;height:7px;border-radius:50%;background:#d0ec78"></div>
+          <span style="font-size:11px;color:rgba(255,255,255,0.6)">LinkedIn</span>
+        </div>
+        <div onclick="this.style.borderColor=this.style.borderColor==='rgba(208,236,120,0.4)'?'rgba(255,255,255,0.1)':'rgba(208,236,120,0.4)'" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);cursor:pointer">
+          <div style="width:7px;height:7px;border-radius:50%;background:#ED93B1"></div>
+          <span style="font-size:11px;color:rgba(255,255,255,0.6)">Newsletter</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">Po</div>
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">Út</div>
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">St</div>
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">Čt</div>
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">Pá</div>
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">So</div>
+        <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.3);padding:6px 0;letter-spacing:.04em">Ne</div>
+        <div style="opacity:.3;min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">24</div></div>
+        <div style="opacity:.3;min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">25</div></div>
+        <div style="min-height:56px;background:rgba(208,236,120,0.06);border-radius:6px;padding:4px;outline:1px solid rgba(208,236,120,0.2)"><div style="font-size:11px;color:#d0ec78;font-weight:600">26</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(212,83,126,0.2);color:#ED93B1;margin-top:2px">Stories</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">27</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">28</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(59,130,246,0.2);color:#93c5fd;margin-top:2px">▶ Reels</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">29</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">30</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">31</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(34,197,94,0.2);color:#86efac;margin-top:2px">Grafika</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">1</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(208,236,120,0.2);color:#d0ec78;margin-top:2px">Newsletter</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">2</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">3</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(59,130,246,0.2);color:#93c5fd;margin-top:2px">▶ Reels</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">4</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">5</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">6</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">7</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(34,197,94,0.2);color:#86efac;margin-top:2px">Carousel</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(212,83,126,0.2);color:#ED93B1;margin-top:1px">Stories</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">8</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">9</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">10</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(59,130,246,0.2);color:#93c5fd;margin-top:2px">▶ Reels</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">11</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">12</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">13</div></div>
+        <div style="min-height:56px;background:rgba(255,255,255,0.02);border-radius:6px;padding:4px"><div style="font-size:11px;color:rgba(255,255,255,0.4)">14</div><div style="font-size:8px;padding:1px 3px;border-radius:3px;background:rgba(208,236,120,0.2);color:#d0ec78;margin-top:2px">Newsletter</div></div>
+      </div>
+    </div>
+
+    <div id="rtg-knihovna" class="rtg-section" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:500;color:#fff">Vizuální knihovna</div>
+        <div style="display:flex;gap:5px">
+          <button style="font-size:10px;padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);cursor:pointer">Vše</button>
+          <button style="font-size:10px;padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.3);cursor:pointer">Fotky</button>
+          <button style="font-size:10px;padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.3);cursor:pointer">Videa</button>
+          <button style="font-size:10px;padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.3);cursor:pointer">B-roll</button>
+        </div>
+      </div>
+      <div style="columns:4;column-gap:6px">
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:4/5;background:#E8EDE3"></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1/1;background:#EDE6DC"></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:3/4;background:#C8D4C2"></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:16/9;background:#1e1e1a;display:flex;align-items:center;justify-content:center"><span style="font-size:12px;color:rgba(255,255,255,0.2)">▶</span></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:4/5;background:#8B9E7A"></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1/1;background:#D4DFCE"></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:3/4;background:#E5DDD4"></div>
+        <div onclick="this.style.outline=this.style.outline?'':'2px solid #d0ec78'" style="break-inside:avoid;margin-bottom:6px;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1/1;background:#C8B9A8"></div>
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px">
+        <button style="font-size:11px;padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;font-family:inherit">+ Nahrát vlastní</button>
+        <button style="background:#d0ec78;color:#111;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit">+ Do kolekce</button>
+      </div>
+    </div>
+
+    <div id="rtg-texty" class="rtg-section" style="display:none">
+      <div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:10px">Textová knihovna</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;cursor:pointer"><div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:2px">Hook · Reels</div><div style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.45">"Tohle mi trvalo 2 hodiny. Teď to zvládnu za 5 minut."</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;cursor:pointer"><div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:2px">Popisek · Instagram</div><div style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.45">"Každé ráno si dávám 10 minut pro sebe. Ne pro email, ne pro klienty — jen pro sebe."</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;cursor:pointer"><div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:2px">Mail · Newsletter</div><div style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.45">"Ahoj, v tomto týdnu jsem pro tebe připravila jednu věc, která mi pomohla dostat se z přetížení..."</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;cursor:pointer"><div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:2px">CTA · Stories</div><div style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.45">"Uložit na později? Tap na hvězdičku. Zítra se ti to bude hodit."</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;cursor:pointer"><div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:2px">Hook · Carousel</div><div style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.45">"5 věcí které mě nikdo nenaučil o energii. Slide →"</div></div>
+      </div>
+    </div>
+
+    <div id="rtg-archiv" class="rtg-section" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">12</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Kampaní celkem</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">847</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Celk. dosah</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">4.2%</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Engagement</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">3</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Top výstupy</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:7px;height:7px;border-radius:50%;background:#d0ec78;flex-shrink:0"></div><div><div style="font-size:11px;color:rgba(255,255,255,0.8)">Jarní kampaň · únor 2026</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px">4 videa · 12 grafik · dosah 1 240</div></div></div><div style="font-size:11px;color:#d0ec78;flex-shrink:0">5.1 %</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:7px;height:7px;border-radius:50%;background:#93c5fd;flex-shrink:0"></div><div><div style="font-size:11px;color:rgba(255,255,255,0.8)">Leden · téma odpočinek</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px">2 videa · 8 grafik · dosah 890</div></div></div><div style="font-size:11px;color:#d0ec78;flex-shrink:0">3.8 %</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:7px;height:7px;border-radius:50%;background:#86efac;flex-shrink:0"></div><div><div style="font-size:11px;color:rgba(255,255,255,0.8)">Prosinec · konec roku</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px">3 videa · 10 grafik · dosah 760</div></div></div><div style="font-size:11px;color:#d0ec78;flex-shrink:0">4.4 %</div></div>
+      </div>
+    </div>
+
+    <div id="rtg-statistiky" class="rtg-section" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">2 340</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Celkový dosah</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">4.2%</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Engagement</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">28</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Schválených výstupů</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px"><div style="font-size:20px;font-weight:500;color:#fff">3</div><div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px">Aktivní měsíce</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:7px;height:7px;border-radius:50%;background:#d0ec78;flex-shrink:0"></div><div><div style="font-size:11px;color:rgba(255,255,255,0.8)">"Tohle mi trvalo 2 hodiny..." · Reels</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px">Únor 2026 · video</div></div></div><div style="font-size:11px;color:#d0ec78;flex-shrink:0">6.8 %</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:7px;height:7px;border-radius:50%;background:#d0ec78;flex-shrink:0"></div><div><div style="font-size:11px;color:rgba(255,255,255,0.8)">Carousel · 5 věcí o energii</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px">Leden 2026</div></div></div><div style="font-size:11px;color:#d0ec78;flex-shrink:0">5.3 %</div></div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><div style="width:7px;height:7px;border-radius:50%;background:#86efac;flex-shrink:0"></div><div><div style="font-size:11px;color:rgba(255,255,255,0.8)">Stories · ranní rituál</div><div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px">Prosinec 2025</div></div></div><div style="font-size:11px;color:#d0ec78;flex-shrink:0">4.9 %</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
   </div>
 </section>
 <!-- TESTIMONIAL -->
@@ -908,6 +1048,31 @@ function setPricing(key,btn){
     }
   });
 }
+</script>
+<script>
+function rtgTab(id,btn){
+  document.querySelectorAll('.rtg-section').forEach(function(s){s.style.display='none'});
+  document.querySelectorAll('.rtg-tab').forEach(function(b){
+    b.style.color='rgba(255,255,255,0.4)';
+    b.style.borderBottomColor='transparent';
+  });
+  document.getElementById('rtg-'+id).style.display='block';
+  btn.style.color='#fff';
+  btn.style.borderBottomColor='#d0ec78';
+}
+function rtgCard(el){
+  var pair=el.parentElement;
+  pair.querySelectorAll('div[onclick]').forEach(function(c){
+    c.style.borderColor='rgba(255,255,255,0.07)';
+    c.style.background='rgba(255,255,255,0.04)';
+  });
+  el.style.borderColor='#d0ec78';
+  el.style.background='rgba(208,236,120,0.05)';
+}
+var rtgMonths=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+var rtgCurMonth=2;
+function rtgPrevMonth(){rtgCurMonth=(rtgCurMonth-1+12)%12;var el=document.getElementById('rtg-month-label');if(el)el.textContent=rtgMonths[rtgCurMonth]+' 2026';}
+function rtgNextMonth(){rtgCurMonth=(rtgCurMonth+1)%12;var el=document.getElementById('rtg-month-label');if(el)el.textContent=rtgMonths[rtgCurMonth]+' 2026';}
 </script>
 </body>
 </html>
