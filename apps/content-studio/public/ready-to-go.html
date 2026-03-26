@@ -303,30 +303,57 @@ h2 em { font-style: italic; }
 .deliver-item h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .deliver-item p { font-size: 14px; color: var(--text-muted-light); line-height: 1.6; }
 /* PRICING */
-.pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; align-items: start; }
 .plan {
   background: var(--white); border: 1px solid var(--border-light);
   border-radius: 16px; overflow: hidden;
   transition: border-color 0.2s, transform 0.2s;
+  display: flex; flex-direction: column;
 }
 .plan:hover { transform: translateY(-3px); }
 .plan.featured { border-color: var(--dark); border-width: 2px; }
-.plan-head { padding: 28px 24px 20px; border-bottom: 1px solid var(--border-light); }
+.plan-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--border-light); }
 .plan-badge {
   display: inline-block; background: var(--lime); color: var(--dark);
   font-size: 10px; font-weight: 700; padding: 3px 12px;
-  border-radius: 100px; letter-spacing: 0.06em; margin-bottom: 14px;
+  border-radius: 100px; letter-spacing: 0.06em; margin-bottom: 12px;
 }
-.plan-name { font-family: var(--font-display); font-size: 28px; font-weight: 800; margin-bottom: 6px; }
-.plan-tag { font-size: 14px; color: var(--text-muted-light); font-style: italic; }
-.plan-counts { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 24px; border-bottom: 1px solid var(--border-light); }
+.plan-name { font-family: var(--font-display); font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.plan-tag { font-size: 13px; color: var(--text-muted-light); font-style: italic; }
+.plan-price { padding: 16px 24px; border-bottom: 1px solid var(--border-light); }
+.plan-price .amount { font-family: var(--font-display); font-size: 38px; font-weight: 900; color: var(--dark); letter-spacing: -0.02em; line-height: 1; }
+.plan-price .per { font-size: 13px; color: var(--text-muted-light); margin-top: 4px; }
+.plan-counts { display: flex; gap: 6px; flex-wrap: wrap; padding: 14px 24px; border-bottom: 1px solid var(--border-light); }
 .count-pill { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 100px; }
 .count-pill.v { background: #dbeafe; color: #1d4ed8; }
 .count-pill.g { background: #dcfce7; color: #15803d; }
-.plan-features { padding: 20px 24px; list-style: none; display: flex; flex-direction: column; gap: 11px; }
-.plan-features li { font-size: 13px; color: var(--dark); display: flex; gap: 10px; line-height: 1.5; }
+.plan-features { padding: 18px 24px; list-style: none; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.plan-features li { font-size: 13px; color: var(--dark); display: flex; gap: 10px; line-height: 1.5; align-items: flex-start; }
+.plan-features li.feat-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted-light); margin-top: 8px; margin-bottom: -2px; }
 .ck { color: var(--lime-dark); flex-shrink: 0; font-weight: 700; }
-.pl { color: var(--text-muted-light); flex-shrink: 0; }
+.pl { color: #aaa; flex-shrink: 0; }
+.arr { color: var(--lime-dark); flex-shrink: 0; font-weight: 600; }
+.plan-cta { padding: 18px 24px; border-top: 1px solid var(--border-light); }
+.plan-cta a { display: block; text-align: center; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--dark); color: var(--dark); transition: all 0.18s; }
+.plan-cta a:hover { background: var(--dark); color: #fff; }
+.plan.featured .plan-cta a { background: var(--dark); color: #fff; }
+.plan.featured .plan-cta a:hover { opacity: 0.82; }
+.plan-cta .plan-note { text-align: center; font-size: 11px; color: var(--text-muted-light); margin-top: 8px; }
+/* Interval switcher */
+.interval-row { display: flex; justify-content: center; margin-bottom: 36px; }
+.interval-tabs { display: inline-flex; gap: 4px; background: #eeede8; border-radius: 12px; padding: 4px; }
+.int-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #888; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; line-height: 1.3; text-align: center; user-select: none; }
+.int-tab span { display: block; font-size: 11px; color: #bbb; font-weight: 400; }
+.int-tab.active { background: #fff; border-color: #e2e2da; color: var(--dark); box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+.save-badge { display: inline-block; background: var(--lime); color: #222; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 100px; margin-left: 4px; vertical-align: middle; }
+/* Plans footer */
+.plans-note { text-align: center; margin: 24px auto 0; font-size: 12px; color: var(--text-muted-light); max-width: 540px; line-height: 1.6; }
+.plans-note strong { color: var(--dark); font-weight: 600; }
+.priplatky-box { margin-top: 28px; border: 1px solid var(--border-light); border-radius: 14px; padding: 20px 24px; }
+.priplatky-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted-light); margin-bottom: 14px; }
+.priplatky-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pri-pill { font-size: 12px; padding: 6px 16px; border-radius: 100px; border: 1px solid var(--border-light); color: #555; background: #fafaf7; }
+.pri-pill strong { color: #b5d45c; font-weight: 600; }
 /* TESTIMONIAL STRIP */
 .testimonial-strip {
   background: var(--dark); padding: 64px 40px;
@@ -383,6 +410,8 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.2); }
   .bento { grid-template-columns: 1fr; }
   .bento-card.featured { grid-column: 1; grid-row: auto; }
   .deliver-grid, .pricing-grid { grid-template-columns: 1fr; }
+  .interval-tabs { flex-wrap: wrap; max-width: 280px; }
+  .priplatky-pills { gap: 6px; }
   .dp-pair { grid-template-columns: 1fr; }
   .hero-stat-divider { display: none; }
   .pain-grid { grid-template-columns: 1fr; }
@@ -638,58 +667,128 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.2); }
 <!-- PRICING -->
 <section class="section-light alt" id="plans">
   <div class="container">
-    <div class="eyebrow fade-up">06 · plány</div>
+    <div class="eyebrow fade-up">Ceník · Ready to Go</div>
     <h2 class="fade-up">Vyber si,<br><em>kde začneš.</em></h2>
-    <div class="pricing-grid">
-      <div class="plan fade-up">
-        <div class="plan-head"><div class="plan-name">Start</div><div class="plan-tag">Vezmi a použij.</div></div>
-        <div class="plan-counts"><span class="count-pill v">▶ 2 videa / měsíc</span><span class="count-pill g">◻ 8 grafik / měsíc</span></div>
-        <ul class="plan-features">
-          <li><span class="ck">✔</span>AI zpracování videa</li>
-          <li><span class="ck">✔</span>Hook + grafika overlay</li>
-          <li><span class="ck">✔</span>Canva grafiky na míru</li>
-          <li><span class="ck">✔</span>Google Drive archiv</li>
-          <li><span class="ck">✔</span>2 varianty každého výstupu</li>
-          <li><span class="pl">+</span>Dokoupení extra grafik nebo videí kdykoli</li>
-        </ul>
-      </div>
-      <div class="plan featured fade-up d2">
-        <div class="plan-head"><div class="plan-badge">NEJOBLÍBENĚJŠÍ</div><div class="plan-name">Plus</div><div class="plan-tag">Nahraješ → dostaneš.</div></div>
-        <div class="plan-counts"><span class="count-pill v">▶ 4 videa / měsíc</span><span class="count-pill g">◻ 16 grafik / měsíc</span><span class="count-pill g" style="background:#fef9c3;color:#854d0e">◻ 4 carousely / měsíc</span></div>
-        <ul class="plan-features">
-          <li><span class="ck">✔</span>Vše ze Start</li>
-          <li><span class="pl">+</span>Prioritní zpracování</li>
-          <li><span class="pl">+</span>Reels · Stories · Feed formáty</li>
-          <li><span class="pl">+</span>Analytika výkonu</li>
-          <li><span class="pl">+</span>Plánování přímo na sítě</li>
-          <li><span class="pl">+</span>Dokoupení extra kreativy kdykoli</li>
-        </ul>
-      </div>
-      <div class="plan fade-up d3">
-        <div class="plan-head"><div class="plan-name">Pro</div><div class="plan-tag">Maximální výstup.</div></div>
-        <div class="plan-counts"><span class="count-pill v">▶ 8 videí / měsíc</span><span class="count-pill g">◻ 30 grafik / měsíc</span><span class="count-pill g" style="background:#fef9c3;color:#854d0e">◻ 8 carouselů / měsíc</span></div>
-        <ul class="plan-features">
-          <li><span class="ck">✔</span>Vše z Plus</li>
-          <li><span class="pl">+</span>Avatar výstupy</li>
-          <li><span class="pl">+</span>Automatizace bez schvalování</li>
-          <li><span class="pl">+</span>Pokročilé šablony na míru</li>
-          <li style="font-size:11px;color:var(--text-muted-light);letter-spacing:.06em;text-transform:uppercase;margin:8px 0 4px;list-style:none">Dokoupení mimo kredit</li>
-          <li><span class="pl">+</span>Extra video +590 Kč</li>
-          <li><span class="pl">+</span>Extra grafika +290 Kč</li>
-          <li><span class="pl">+</span>Extra carousel +490 Kč</li>
-          <li><span class="pl">+</span>Střih Lucifera +490 Kč / video</li>
-          <li><span class="pl">+</span>Avatar video — brzy +990 Kč</li>
-          <li><span class="pl">+</span>UGC video — brzy +790 Kč</li>
-        </ul>
+    <p class="fade-up" style="text-align:center;color:var(--text-muted-light);font-size:15px;margin-top:-8px;margin-bottom:0;max-width:440px;margin-left:auto;margin-right:auto">Obsah každý týden. Bez briefů. Bez chaosu.</p>
+    <!-- Interval switcher -->
+    <div class="interval-row fade-up" style="margin-top:32px">
+      <div class="interval-tabs">
+        <div class="int-tab" data-int="1t">1 týden<span>týdně</span></div>
+        <div class="int-tab" data-int="14d">14 dní<span>ob týden</span></div>
+        <div class="int-tab active" data-int="m">Měsíčně<span>&nbsp;</span></div>
+        <div class="int-tab" data-int="r">Ročně <span class="save-badge">−20%</span><span>&nbsp;</span></div>
       </div>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:32px">
-      <div style="font-size:12px;padding:6px 16px;border-radius:100px;border:1px solid var(--border-light);color:#555;background:#fafaf7">Extra video <span style="color:#b5d45c;font-weight:600">+590 Kč</span></div>
-      <div style="font-size:12px;padding:6px 16px;border-radius:100px;border:1px solid var(--border-light);color:#555;background:#fafaf7">Extra grafika <span style="color:#b5d45c;font-weight:600">+290 Kč</span></div>
-      <div style="font-size:12px;padding:6px 16px;border-radius:100px;border:1px solid var(--border-light);color:#555;background:#fafaf7">Extra carousel <span style="color:#b5d45c;font-weight:600">+490 Kč</span></div>
-      <div style="font-size:12px;padding:6px 16px;border-radius:100px;border:1px solid var(--border-light);color:#555;background:#fafaf7">Střih Lucifera <span style="color:#b5d45c;font-weight:600">+490 Kč / video</span></div>
-      <div style="font-size:12px;padding:6px 16px;border-radius:100px;border:1px solid var(--border-light);color:#555;background:#fafaf7">Avatar video — brzy <span style="color:#b5d45c;font-weight:600">+990 Kč</span></div>
-      <div style="font-size:12px;padding:6px 16px;border-radius:100px;border:1px solid var(--border-light);color:#555;background:#fafaf7">UGC video — brzy <span style="color:#b5d45c;font-weight:600">+790 Kč</span></div>
+    <!-- Plans grid -->
+    <div class="pricing-grid">
+      <!-- START -->
+      <div class="plan fade-up">
+        <div class="plan-head">
+          <div class="plan-name">Start</div>
+          <div class="plan-tag">Vezmi a použij.</div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">2 900</div>
+          <div class="per">Kč / měsíc</div>
+        </div>
+        <div class="plan-counts">
+          <span class="count-pill v">▶ 2 videa</span>
+          <span class="count-pill g">◻ 2 grafiky</span>
+        </div>
+        <ul class="plan-features">
+          <li class="feat-label">Videa</li>
+          <li><span class="ck">✔</span>AI zpracování nahraného videa</li>
+          <li><span class="ck">✔</span>Hook + grafika overlay</li>
+          <li><span class="ck">✔</span>Střih na max 60s</li>
+          <li><span class="ck">✔</span>Vždy 2 varianty výstupu</li>
+          <li class="feat-label">Grafiky</li>
+          <li><span class="ck">✔</span>Fotka nebo AI obrázek + text</li>
+          <li><span class="ck">✔</span>Canva šablona na míru</li>
+          <li><span class="ck">✔</span>Vždy 2 varianty</li>
+          <li class="feat-label">Výstup</li>
+          <li><span class="ck">✔</span>Stažení nebo plánování</li>
+          <li><span class="ck">✔</span>Google Drive archiv</li>
+          <li><span class="arr">→</span>Střih: doporučení zdarma <small style="color:var(--text-muted-light)">(Lucifera zestrihá +příplatek)</small></li>
+        </ul>
+        <div class="plan-cta">
+          <a href="/ready-to-go/register">Začít se Start →</a>
+          <div class="plan-note">Bez závazku · zrušení kdykoli</div>
+        </div>
+      </div>
+      <!-- PLUS -->
+      <div class="plan featured fade-up d2">
+        <div class="plan-head">
+          <div class="plan-badge">NEJOBLÍBENĚJŠÍ</div>
+          <div class="plan-name">Plus</div>
+          <div class="plan-tag">Nahraješ → dostaneš.</div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">4 900</div>
+          <div class="per">Kč / měsíc</div>
+        </div>
+        <div class="plan-counts">
+          <span class="count-pill v">▶ 4 videa</span>
+          <span class="count-pill g">◻ 4 grafiky</span>
+        </div>
+        <ul class="plan-features">
+          <li class="feat-label">Vše ze Start, navíc</li>
+          <li><span class="ck">✔</span>4 videa + 4 grafiky</li>
+          <li><span class="ck">✔</span>Prioritní zpracování</li>
+          <li><span class="ck">✔</span>Reels · Stories · Feed formáty</li>
+          <li class="feat-label">Extra funkce</li>
+          <li><span class="ck">✔</span>Plánování na IG + FB + LI</li>
+          <li><span class="ck">✔</span>Analytika — co fungovalo</li>
+          <li><span class="arr">→</span>Střih: doporučení zdarma <small style="color:var(--text-muted-light)">(Lucifera zestrihá +příplatek)</small></li>
+        </ul>
+        <div class="plan-cta">
+          <a href="/ready-to-go/register">Začít s Plus →</a>
+          <div class="plan-note">Bez závazku · zrušení kdykoli</div>
+        </div>
+      </div>
+      <!-- PRO -->
+      <div class="plan fade-up d3">
+        <div class="plan-head">
+          <div class="plan-name">Pro</div>
+          <div class="plan-tag">Maximální výstup.</div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">7 900</div>
+          <div class="per">Kč / měsíc</div>
+        </div>
+        <div class="plan-counts">
+          <span class="count-pill v">▶ 8 videí</span>
+          <span class="count-pill g">◻ 10 grafik</span>
+        </div>
+        <ul class="plan-features">
+          <li class="feat-label">Vše z Plus, navíc</li>
+          <li><span class="ck">✔</span>8 videí + 10 grafik</li>
+          <li><span class="ck">✔</span>Avatar výstupy</li>
+          <li><span class="ck">✔</span>Automatizace bez schvalování</li>
+          <li><span class="ck">✔</span>Pokročilé šablony na míru</li>
+          <li class="feat-label">Dokoupení mimo kredit</li>
+          <li><span class="pl">+</span>Jednotlivá videa mimo plán</li>
+          <li><span class="pl">+</span>Grafiky mimo plán</li>
+          <li><span class="pl">+</span>Střih týmem Lucifera</li>
+        </ul>
+        <div class="plan-cta">
+          <a href="/ready-to-go/register">Začít s Pro →</a>
+          <div class="plan-note">Pouze měsíční nebo roční platba</div>
+        </div>
+      </div>
+    </div>
+    <!-- Note -->
+    <p class="plans-note">Pro plán dostupný pouze v měsíčním nebo ročním intervalu. <strong>Týdenní a 14denní interval pouze pro Start a Plus.</strong></p>
+    <!-- Příplatky -->
+    <div class="priplatky-box">
+      <div class="priplatky-label">Příplatky</div>
+      <div class="priplatky-pills">
+        <div class="pri-pill">Střih videa Lucifera <strong>+490 Kč</strong></div>
+        <div class="pri-pill">Extra video <strong>+590 Kč</strong></div>
+        <div class="pri-pill">Extra grafika <strong>+290 Kč</strong></div>
+        <div class="pri-pill">Extra carousel <strong>+490 Kč</strong></div>
+        <div class="pri-pill">Avatar video — brzy <strong>+990 Kč</strong></div>
+        <div class="pri-pill">UGC video — brzy <strong>+790 Kč</strong></div>
+      </div>
     </div>
   </div>
 </section>
@@ -778,6 +877,12 @@ document.querySelectorAll('.dp-card').forEach(card=>{
   card.addEventListener('click',function(){
     this.closest('.dp-pair').querySelectorAll('.dp-card').forEach(c=>c.classList.remove('selected'));
     this.classList.add('selected');
+  });
+});
+document.querySelectorAll('.int-tab').forEach(tab=>{
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.int-tab').forEach(t=>t.classList.remove('active'));
+    this.classList.add('active');
   });
 });
 </script>
