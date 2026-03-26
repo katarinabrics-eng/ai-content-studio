@@ -1280,22 +1280,18 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 2 — PROBLÉM (černá) */}
-      <section className="problem">
-        <div className="problem-grid">
-          <div className="problem-left">
-            <div className="label" style={{color:"rgba(180,232,66,0.6)"}}>Problém který znáte</div>
-            <h2>Vaše značka roste.<br /><em>Obsah ji nestíhá.</em></h2>
-            <div className="problem-quote">Máte klienty. Máte výsledky. Máte co říct. Ale:</div>
-          </div>
-          <div>
-            <ul className="problem-list">
-              <li><div className="pl-icon">📱</div>komunikace není sjednocená napříč kanály</li>
-              <li><div className="pl-icon">⏰</div>obsah vzniká pokaždé znovu</li>
-              <li><div className="pl-icon">📷</div>vizuál není konzistentní</li>
-              <li><div className="pl-icon">🎯</div>značka nepůsobí tak silně, jak by mohla</li>
-            </ul>
-            <p style={{marginTop:32,fontSize:15,fontWeight:700,color:"#fff",lineHeight:1.6}}>Nejde o kvalitu vaší práce.<br />Jde o to, jak je vidět.</p>
-          </div>
+      <section style={{background:"#111", padding:"48px 0"}}>
+        <div style={{maxWidth:"800px", margin:"0 auto", textAlign:"center", padding:"0 40px"}}>
+          <p style={{
+            fontFamily:"var(--font-display)",
+            fontSize:"clamp(22px, 3vw, 38px)",
+            fontWeight:400,
+            color:"#fafaf7",
+            lineHeight:1.3,
+            fontStyle:"italic",
+          }}>
+            "Vaše značka roste. Vizuál ji buď zrychlí, nebo brzdí."
+          </p>
         </div>
       </section>
 
