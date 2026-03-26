@@ -1162,6 +1162,10 @@ export default function PremiovaVizualniIdentita() {
             padding: 40px 20px 36px !important;
           }
 
+          /* Sekce 3 — Výsledek */
+          .pvi-page .result-section{ padding:56px 24px !important; }
+          .pvi-page .result-grid{ grid-template-columns:1fr !important; gap:40px !important; }
+
           /* Wow sekce — vizuální board */
           .pvi-page .wow{ padding:56px 24px; }
           .pvi-page .wow-grid{ grid-template-columns:1fr; gap:32px; margin-top:24px; }
@@ -1169,6 +1173,12 @@ export default function PremiovaVizualniIdentita() {
           .pvi-page .wow-pred-card{ display:none; }
           .pvi-page .wow-arrow{ display:none; }
           .pvi-page .wow-frame{ min-width:0; }
+
+          /* Sekce 8 — Jak spolupráce probíhá */
+          .pvi-page .pricing{ padding:56px 24px !important; }
+          .pvi-page .pricing-main-block{ grid-template-columns:1fr !important; gap:24px !important; padding:28px 24px !important; }
+          .pvi-page .pricing-bullets{ grid-template-columns:1fr !important; }
+          .pvi-page .pricing-cards-grid{ grid-template-columns:1fr !important; }
 
           /* Galerie — 2 sloupce na tabletu */
           .pvi-page .codostanete-columns{ grid-template-columns:repeat(2,1fr) !important; }
@@ -1248,7 +1258,7 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 3 — VÝSLEDEK (bílá) */}
-      <section style={{background:"#ffffff",padding:"96px 80px"}}>
+      <section className="result-section" style={{background:"#ffffff",padding:"96px 80px"}}>
         <style>{`
           .del-mockup-scene { position: relative; width: 100%; }
           .del-mockup-scene img { width: 100%; display: block; }
@@ -1281,7 +1291,7 @@ export default function PremiovaVizualniIdentita() {
           @media (max-width: 1100px) { .del-chip { display: none; } }
         `}</style>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
+          <div className="result-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
 
             {/* Levý sloupec — mockup s čipy */}
             <div style={{position:"relative",paddingLeft:16}}>
@@ -1517,7 +1527,7 @@ export default function PremiovaVizualniIdentita() {
           <h2 style={{color:"var(--black)",textAlign:"center"}}>Vyberte si,<br /><em style={{color:"var(--black)"}}>kde chcete začít.</em></h2>
 
           {/* BLOCK 1 — hlavní nabídka */}
-          <div style={{
+          <div className="pricing-main-block" style={{
             background:"var(--black)",borderRadius:20,padding:"40px 48px",
             marginBottom:24,display:"grid",gridTemplateColumns:"1fr auto",gap:48,alignItems:"center",
           }}>
@@ -1525,7 +1535,7 @@ export default function PremiovaVizualniIdentita() {
               <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--lime)",marginBottom:8}}>Content Day · od 39 900 Kč</div>
               <div style={{fontFamily:"var(--font-playfair),serif",fontSize:"clamp(26px,3vw,36px)",fontWeight:700,color:"#fff",lineHeight:1.2,marginBottom:12}}>Obsah na měsíce dopředu</div>
               <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.7,marginBottom:20,maxWidth:480}}>Přijdete jednou. Odejdete s obsahem na 3–6 měsíců.</p>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px 32px",marginBottom:28}}>
+              <div className="pricing-bullets" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px 32px",marginBottom:28}}>
                 {[
                   "100–150 fotografií",       "kompletní návrh focení",
                   "5 stylů focení",           "vizuální náhledy",
@@ -1557,7 +1567,7 @@ export default function PremiovaVizualniIdentita() {
           {/* BLOCK 2 — menší vstupní balíčky */}
           <div style={{marginBottom:12}}>
             <div style={{fontSize:13,fontWeight:600,color:"#888",textAlign:"center",marginBottom:16}}>Nejste si jistá? Začněte tady.</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <div className="pricing-cards-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
 
               {/* Content Starter */}
               <div style={{background:"#fff",border:"1px solid var(--gray-light)",borderRadius:18,padding:"28px 32px"}}>
