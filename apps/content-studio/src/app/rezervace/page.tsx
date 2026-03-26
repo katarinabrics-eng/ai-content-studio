@@ -281,6 +281,9 @@ function RezervaceContent() {
         }
         @media (max-width: 600px) {
           .rez-grid { padding: 0 12px; gap: 12px; }
+          .rez-inline-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .rez-header { padding: 0 12px !important; }
+          .rez-card-pad { padding: 0 16px 24px !important; }
         }
         .rez-input {
           width: 100%;
@@ -339,8 +342,8 @@ function RezervaceContent() {
           </p>
         </div>
         {/* ── INFO STRIP ── */}
-        <div style={{ maxWidth: 820, margin: "0 auto 52px", padding: "0 32px" }}>
-          <div style={{ border: "1px solid #e6e5df", borderRadius: 16, padding: "20px 28px", background: "#fff", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 40px" }}>
+        <div className="rez-header" style={{ maxWidth: 820, margin: "0 auto 52px", padding: "0 32px" }}>
+          <div className="rez-inline-grid" style={{ border: "1px solid #e6e5df", borderRadius: 16, padding: "20px 28px", background: "#fff", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 40px" }}>
             {[
               { label: "Co se zde odehrává", text: "Zvolte typ spolupráce, vyplňte základní údaje. Portrét, rodinné focení a prémiová identita se hradí online ihned. Brand focení začíná bezplatnou konzultací." },
               { label: "Co potřebujete k zahájení", text: "U prémiové identity a brand focení: URL vašeho webu. U ostatních stačí vyplnit krátký dotazník a zaplatit — termín zvolíte hned po platbě." },
@@ -425,7 +428,7 @@ function RezervaceContent() {
                 </button>
                 {/* ── EXPANDED BODY ── */}
                 {isOpen && (
-                  <div style={{ padding: "0 28px 32px" }}>
+                  <div className="rez-card-pad" style={{ padding: "0 28px 32px" }}>
                     <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: "0 0 24px" }}>
                       {service.description}
                     </p>
@@ -651,7 +654,7 @@ function AskSection() {
         ) : (
           <>
             {/* 2-col row: name + email */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+            <div className="rez-inline-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
               <div style={{ marginBottom: 16 }}>
                 <label style={labelStyle}>Jméno *</label>
                 <input className="rez-input" type="text" placeholder="Jana Nováková"

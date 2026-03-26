@@ -131,6 +131,15 @@ export default function BrandScanPage() {
         }
         @media (max-width: 640px) {
           .brand-scan-analyzer-card { padding: 24px 20px !important; border-radius: 16px !important; }
+          .bs-nav { padding: 0 16px !important; }
+          .bs-section { padding: 48px 20px !important; }
+          .bs-hero { padding: 90px 20px 52px !important; gap: 32px !important; }
+          .bs-h1 { font-size: clamp(28px, 9vw, 42px) !important; }
+          .bs-grid-5 { grid-template-columns: 1fr 1fr !important; }
+          .bs-grid-2 { grid-template-columns: 1fr !important; }
+          .bs-timeline { grid-template-columns: 1fr !important; gap: 16px !important; }
+          .bs-timeline-sep { display: none !important; }
+          .bs-cta-inner { padding: 32px 20px !important; }
         }
         .steps-section .steps-card-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.3s ease; }
         .steps-section.steps-inview .steps-card-reveal { opacity: 1; transform: translateY(0); }
@@ -149,7 +158,7 @@ export default function BrandScanPage() {
 
       {/* NAV */}
       <nav
-        className="fixed left-0 right-0 top-0 z-50 flex h-[60px] items-center"
+        className="bs-nav fixed left-0 right-0 top-0 z-50 flex h-[60px] items-center"
         style={{
           background: "rgba(255,255,255,0.95)",
           backdropFilter: "blur(20px)",
@@ -212,7 +221,7 @@ export default function BrandScanPage() {
 
       {/* HERO — centrovaný grid, vyvážené rozestupy */}
       <section
-        className="hero-section"
+        className="hero-section bs-hero"
         style={{
           padding: "110px 48px 80px",
           maxWidth: 1200,
@@ -228,6 +237,7 @@ export default function BrandScanPage() {
       >
         <div className="hero-left" style={{ display: "flex", flexDirection: "column" }}>
           <h1
+            className="bs-h1"
             style={{
               fontFamily: "var(--font-playfair), serif",
               fontSize: 52,
@@ -484,6 +494,7 @@ export default function BrandScanPage() {
       {/* FORMULÁŘ — Spustit analýzu */}
       <section
         id="analyzer"
+        className="bs-section"
         style={{
           background: BG1,
           borderTop: `1px solid ${BORDER}`,
@@ -508,6 +519,7 @@ export default function BrandScanPage() {
 
       {/* SEKCE PROBLÉM */}
       <section
+        className="bs-section"
         style={{
           background: BG1,
           borderTop: `1px solid ${BORDER}`,
@@ -554,7 +566,7 @@ export default function BrandScanPage() {
       </section>
 
       {/* SEKCE PILÍŘE */}
-      <section style={{ background: BG, padding: "80px 40px" }}>
+      <section className="bs-section" style={{ background: BG, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
             Co měříme
@@ -575,7 +587,7 @@ export default function BrandScanPage() {
           <p style={{ fontSize: 15, color: MUTED, marginTop: -28, marginBottom: 0, maxWidth: 560 }}>
             Každý pilíř říká něco konkrétního o tom proč zákazníci zůstávají — nebo odcházejí.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16, marginTop: 40 }}>
+          <div className="bs-grid-5" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16, marginTop: 40 }}>
             {PILLARS.map((item) => (
               <div
                 key={item.title}
@@ -601,7 +613,7 @@ export default function BrandScanPage() {
       <section
         ref={stepsSectionRef}
         id="jak-to-funguje"
-        className="steps-section"
+        className="steps-section bs-section"
         style={{
           background: BG1,
           borderTop: `1px solid ${BORDER}`,
@@ -677,7 +689,7 @@ export default function BrandScanPage() {
       </section>
 
       {/* SEKCE CO DOSTANEŠ */}
-      <section style={{ background: BG1, borderTop: `1px solid ${BORDER}`, padding: "80px 40px" }}>
+      <section className="bs-section" style={{ background: BG1, borderTop: `1px solid ${BORDER}`, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
             Co dostanete
@@ -696,7 +708,7 @@ export default function BrandScanPage() {
             Výsledky Brand Scan.
           </h2>
           <p style={{ fontSize: 15, color: MUTED, marginTop: -28 }}>Kompletní obraz vaší značky — zdarma, bez závazku.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 40 }}>
+          <div className="bs-grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginTop: 40 }}>
             {[
               { icon: "📊", title: "Celkové skóre značky (0–100)", desc: "Hodnocení pěti pilířů s komentářem — konkrétní čísla, ne obecné rady." },
               { icon: "🧬", title: "Brand DNA", desc: "Positioning, tón komunikace, unikátní hodnota — přesně jak vás vidí zákazník." },
@@ -780,7 +792,7 @@ export default function BrandScanPage() {
       </section>
 
       {/* ZÁVĚREČNÉ CTA */}
-      <section style={{ padding: "80px 40px", maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
+      <section className="bs-section bs-cta-inner" style={{ padding: "80px 40px", maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
         <h2
           style={{
             fontFamily: "var(--font-playfair), serif",
