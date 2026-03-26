@@ -1248,7 +1248,7 @@ export default function PremiovaVizualniIdentita() {
             <h1>Jeden den focení.<br /><em>Obsah na 3–6 měsíců dopředu.</em></h1>
             <p className="hero-sub">Přijdete do ateliéru. Odejdete s fotografiemi, které odpovídají vaší značce — a konkrétním plánem, jak je používat v příspěvcích, na webu i v kampaních.</p>
             <div className="hero-actions">
-              <a href="/rezervace?open=identita" className="btn-primary" style={{textDecoration:"none"}}>Chci obsah na měsíce →</a>
+              <a href="#jak-to-funguje" className="btn-primary" style={{textDecoration:"none"}}>Chci obsah na měsíce →</a>
               <a href="/diagnostika" className="btn-secondary" style={{textDecoration:"none"}}>Zkontrolovat moji značku →</a>
               <div className="hero-note">Zdarma · bez registrace · výsledek za 2 minuty</div>
             </div>
@@ -1432,7 +1432,7 @@ export default function PremiovaVizualniIdentita() {
       </section>
 
       {/* SEKCE 6 — JAK TO FUNGUJE (černá) */}
-      <section className="process" style={{background:"var(--black)"}}>
+      <section className="process" id="jak-to-funguje" style={{background:"var(--black)"}}>
         <div className="process-inner">
           <div className="reveal">
             <div className="label" style={{color:"var(--lime)"}}>Jak to funguje</div>
@@ -1631,7 +1631,7 @@ export default function PremiovaVizualniIdentita() {
                   </div>
                 ))}
               </div>
-              <a href="/rezervace?open=identita" style={{
+              <a href="/rezervace" style={{
                 display:"inline-flex",alignItems:"center",gap:8,
                 background:"#b7e94c",color:"#111",
                 padding:"14px 28px",borderRadius:10,
@@ -1664,7 +1664,7 @@ export default function PremiovaVizualniIdentita() {
                     </li>
                   ))}
                 </ul>
-                <a href="/rezervace?open=identita" style={{
+                <a href="/rezervace" style={{
                   display:"block",textAlign:"center",
                   background:"var(--black)",color:"#fff",
                   padding:"12px",borderRadius:10,
@@ -1684,7 +1684,7 @@ export default function PremiovaVizualniIdentita() {
                     </li>
                   ))}
                 </ul>
-                <a href="/rezervace?open=identita" style={{
+                <a href="/rezervace" style={{
                   display:"block",textAlign:"center",
                   background:"var(--black)",color:"#fff",
                   padding:"12px",borderRadius:10,
@@ -1706,7 +1706,7 @@ export default function PremiovaVizualniIdentita() {
               <div style={{fontSize:18,fontWeight:700,color:"var(--black)",marginBottom:4}}>Content Autopilot</div>
               <div style={{fontSize:13,color:"#888"}}>Pravidelný obsah · publikace · správa</div>
             </div>
-            <a href="/rezervace?open=identita" style={{
+            <a href="/ready-to-go" style={{
               display:"inline-flex",alignItems:"center",gap:8,
               background:"var(--black)",color:"#fff",
               padding:"13px 24px",borderRadius:10,
@@ -1769,7 +1769,7 @@ export default function PremiovaVizualniIdentita() {
         <div className="reveal" style={{display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap",marginTop:8}}>
           <div style={{textAlign:"center"}}>
             <a
-              href="/rezervace?open=identita"
+              href="/rezervace"
               style={{
                 display:"inline-flex",alignItems:"center",gap:10,
                 background:"#b7e94c",color:"#111",
