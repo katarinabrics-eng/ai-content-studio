@@ -28,7 +28,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); overflow-x: hidden; background: var(--black); }
-/* ── NAV ── */
+/* NAV */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   height: 60px; display: flex; align-items: center;
@@ -39,45 +39,41 @@ nav {
 .nav-logo { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--white); }
 .nav-logo em { font-style: italic; color: var(--lime); }
 .nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; font-weight: 400; }
+.nav-links a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
 .nav-links a:hover { color: var(--white); }
 .nav-cta {
-  background: var(--lime); color: #000000 !important;
+  background: var(--lime); color: #000 !important;
   padding: 9px 22px; border-radius: 6px;
   font-size: 13px; font-weight: 700; text-decoration: none;
-  transition: all 0.2s; letter-spacing: 0.01em;
   box-shadow: 0 0 0 2px rgba(208,236,120,0.4), 0 4px 16px rgba(208,236,120,0.25);
+  transition: all 0.2s;
 }
-.nav-cta:hover { background: #e8ff8a; color: #ffffff !important; transform: translateY(-1px); box-shadow: 0 0 0 2px rgba(208,236,120,0.6), 0 6px 20px rgba(208,236,120,0.35); }
-/* ── HERO ── */
+.nav-cta:hover { background: #e8ff8a; transform: translateY(-1px); }
+/* HERO */
 .hero {
   min-height: 100vh; position: relative;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  text-align: center; padding: 100px 40px 80px;
+  text-align: center; padding: 100px 40px 0;
   background: var(--black); overflow: hidden;
 }
 #hero-canvas {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-  opacity: 0.7;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; opacity: 0.7;
 }
 .hero-glow {
-  position: absolute;
-  width: 600px; height: 600px;
-  background: radial-gradient(ellipse, rgba(208,236,120,0.12) 0%, transparent 70%);
+  position: absolute; width: 700px; height: 700px;
+  background: radial-gradient(ellipse, rgba(208,236,120,0.1) 0%, transparent 70%);
   top: 50%; left: 50%; transform: translate(-50%, -50%);
   pointer-events: none; z-index: 0;
 }
-.hero-inner { position: relative; z-index: 1; max-width: 860px; }
+.hero-inner { position: relative; z-index: 1; max-width: 900px; }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(208,236,120,0.1); border: 1px solid rgba(208,236,120,0.2);
+  background: rgba(208,236,120,0.08); border: 1px solid rgba(208,236,120,0.2);
   padding: 6px 16px; border-radius: 100px;
   font-size: 12px; color: var(--lime); font-weight: 500;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 36px;
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 36px;
 }
 .hero-badge::before {
   content: ''; width: 6px; height: 6px;
@@ -87,218 +83,265 @@ nav {
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
 .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(48px, 7vw, 92px);
-  font-weight: 800; line-height: 1.02;
-  letter-spacing: -0.025em; color: var(--white);
-  margin-bottom: 28px;
+  font-size: clamp(52px, 8vw, 100px);
+  font-weight: 800; line-height: 1.0;
+  letter-spacing: -0.03em; color: var(--white); margin-bottom: 28px;
 }
-.hero h1 em {
-  font-style: italic; color: var(--lime);
-}
+.hero h1 em { font-style: italic; color: var(--lime); }
 .hero-sub {
-  font-size: clamp(16px, 2vw, 19px);
-  color: var(--text-muted-dark); max-width: 540px;
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-muted-dark); max-width: 560px;
   margin: 0 auto 44px; line-height: 1.7; font-weight: 300;
 }
-.hero-actions { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 72px; }
+.hero-actions { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 64px; }
 .btn-lime {
   display: inline-block; background: var(--lime); color: var(--black);
-  padding: 15px 36px; border-radius: 8px; font-size: 15px;
-  font-weight: 500; text-decoration: none; transition: all 0.2s;
+  padding: 16px 40px; border-radius: 8px; font-size: 15px;
+  font-weight: 600; text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 8px 32px rgba(208,236,120,0.3);
 }
-.btn-lime:hover { background: var(--lime-dark); transform: translateY(-1px); }
+.btn-lime:hover { background: var(--lime-dark); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(208,236,120,0.4); }
 .btn-ghost-dark {
   display: inline-block; color: var(--text-muted-dark); font-size: 14px;
   text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15);
   padding-bottom: 1px; transition: all 0.2s;
 }
 .btn-ghost-dark:hover { color: var(--white); border-color: rgba(255,255,255,0.4); }
-/* Hero stats */
+/* HERO STATS */
 .hero-stats {
   display: flex; align-items: center; justify-content: center;
-  gap: 48px; flex-wrap: wrap;
+  gap: 48px; flex-wrap: wrap; margin-bottom: 0;
 }
 .hero-stat { text-align: center; }
 .hero-stat-num {
-  font-family: var(--font-display); font-size: 32px;
+  font-family: var(--font-display); font-size: 36px;
   font-weight: 800; color: var(--white); line-height: 1;
 }
 .hero-stat-num span { color: var(--lime); }
 .hero-stat-label { font-size: 12px; color: var(--text-muted-dark); margin-top: 4px; letter-spacing: 0.05em; }
 .hero-stat-divider { width: 1px; height: 40px; background: var(--border-dark); }
-/* ── TRANSITION ── */
-.section-transition {
-  height: 120px;
-  background: linear-gradient(to bottom, var(--black), var(--cream));
+/* HERO → LIGHT TRANSITION — wavy SVG */
+.wave-transition {
+  display: block; width: 100%; margin-bottom: -2px;
+  background: var(--black);
 }
-/* ── LIGHT SECTIONS ── */
-.section-light { background: var(--cream); padding: 100px 40px; }
-.section-light.alt { background: var(--white); }
-.container { max-width: 1000px; margin: 0 auto; }
+.wave-transition svg { display: block; width: 100%; }
+/* SECTION EYEBROW */
 .eyebrow {
-  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--text-muted-light);
   display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
 }
 .eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--lime-dark); border-radius: 2px; }
 h2 {
   font-family: var(--font-display);
-  font-size: clamp(30px, 4.5vw, 50px);
-  font-weight: 800; line-height: 1.1;
-  letter-spacing: -0.02em; color: var(--dark);
-  margin-bottom: 52px;
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 800; line-height: 1.08;
+  letter-spacing: -0.025em; color: var(--dark); margin-bottom: 48px;
 }
 h2 em { font-style: italic; }
-/* ── PAIN ── */
-.pain-list { max-width: 680px; }
-.pain-item {
-  display: flex; align-items: flex-start; gap: 20px;
-  padding: 22px 0; border-bottom: 1px solid var(--border-light);
+.container { max-width: 1040px; margin: 0 auto; }
+/* PAIN — with numbered list style */
+.section-light { background: var(--cream); padding: 96px 40px; }
+.section-light.alt { background: var(--white); }
+.pain-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--border-light);
+  border: 1px solid var(--border-light); border-radius: 16px;
+  overflow: hidden; max-width: 780px;
 }
-.pain-item:first-child { border-top: 1px solid var(--border-light); }
-.pain-icon {
-  width: 40px; height: 40px; background: var(--lime-pale);
-  border: 1px solid #dff09a; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px; flex-shrink: 0;
+.pain-cell {
+  background: var(--cream); padding: 28px 32px;
+  display: flex; align-items: flex-start; gap: 16px;
+  transition: background 0.2s;
 }
-.pain-text { font-size: 17px; color: var(--dark); line-height: 1.5; padding-top: 8px; }
-.pain-closer {
-  margin-top: 36px; font-family: var(--font-display);
-  font-size: 20px; font-style: italic; color: var(--text-muted-light);
+.pain-cell:hover { background: var(--lime-pale); }
+.pain-num {
+  font-family: var(--font-display); font-size: 28px;
+  font-weight: 800; color: rgba(17,17,17,0.08); line-height: 1;
+  min-width: 36px; margin-top: 2px;
 }
-/* ── PIPELINE ── */
-.pipeline {
-  display: flex; flex-direction: column; gap: 0; max-width: 720px;
-  position: relative;
+.pain-text-wrap h4 { font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 4px; }
+.pain-text-wrap p { font-size: 13px; color: var(--text-muted-light); line-height: 1.55; }
+.pain-closer-block {
+  margin-top: 36px; padding: 24px 32px;
+  background: var(--dark); border-radius: 12px;
+  display: flex; align-items: center; gap: 16px;
 }
-.pipeline::before {
+.pain-closer-block p {
+  font-family: var(--font-display); font-size: 20px;
+  font-style: italic; color: rgba(255,255,255,0.7); line-height: 1.4;
+}
+.pain-closer-block span {
+  font-size: 28px; flex-shrink: 0;
+}
+/* PIPELINE — timeline with connectors */
+.pipeline-wrap { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; position: relative; }
+.pipeline-wrap::before {
   content: ''; position: absolute;
-  left: 28px; top: 56px; bottom: 56px; width: 2px;
-  background: linear-gradient(to bottom, var(--lime-dark), rgba(181,212,92,0.2));
+  top: 36px; left: calc(16.66% + 28px); right: calc(16.66% + 28px);
+  height: 2px;
+  background: linear-gradient(to right, var(--lime-dark), rgba(181,212,92,0.3));
 }
-.pipeline-step {
-  display: flex; align-items: flex-start; gap: 28px;
-  padding: 32px 0; position: relative;
-  opacity: 0; transform: translateX(-20px);
+.pipe-step {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 0 24px 0;
+  opacity: 0; transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-.pipeline-step.visible { opacity: 1; transform: translateX(0); }
-.step-num {
-  width: 56px; height: 56px; background: var(--dark); color: var(--lime);
+.pipe-step.visible { opacity: 1; transform: translateY(0); }
+.pipe-num {
+  width: 72px; height: 72px; background: var(--dark); color: var(--lime);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 18px; font-weight: 800;
-  flex-shrink: 0; position: relative; z-index: 1;
-  box-shadow: 0 0 0 6px var(--cream);
+  font-family: var(--font-display); font-size: 22px; font-weight: 800;
+  margin-bottom: 20px; position: relative; z-index: 1;
+  box-shadow: 0 0 0 8px var(--cream);
 }
-.step-content h3 {
-  font-family: var(--font-display); font-size: 21px; font-weight: 700;
-  margin-bottom: 6px; letter-spacing: -0.01em; color: var(--dark);
+.pipe-step h3 {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  margin-bottom: 8px; color: var(--dark);
 }
-.step-content p { font-size: 15px; color: var(--text-muted-light); line-height: 1.6; }
+.pipe-step p { font-size: 14px; color: var(--text-muted-light); line-height: 1.6; }
 .step-tag {
   display: inline-block; background: var(--lime-pale); border: 1px solid #dff09a;
-  padding: 3px 12px; border-radius: 100px; font-size: 12px;
-  color: #3a6b0e; font-weight: 500; margin-top: 10px;
+  padding: 4px 14px; border-radius: 100px; font-size: 12px;
+  color: #3a6b0e; font-weight: 500; margin-top: 12px;
 }
-/* ── DASHBOARD PREVIEW ── */
+/* FEATURE CARDS — bento grid */
+.bento { display: grid; grid-template-columns: 1.4fr 1fr 1fr; grid-template-rows: auto auto; gap: 12px; }
+.bento-card {
+  background: var(--white); border: 1px solid var(--border-light);
+  border-radius: 16px; padding: 28px; transition: border-color 0.2s, transform 0.2s;
+  overflow: hidden; position: relative;
+}
+.bento-card:hover { border-color: var(--lime-dark); transform: translateY(-2px); }
+.bento-card.featured {
+  background: var(--dark); border-color: transparent;
+  grid-column: 1; grid-row: 1/3;
+}
+.bento-card.featured:hover { transform: translateY(-2px); }
+.bento-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+.bento-card h3 {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  margin-bottom: 8px; color: var(--dark);
+}
+.bento-card.featured h3 { color: var(--white); }
+.bento-card p { font-size: 14px; color: var(--text-muted-light); line-height: 1.6; }
+.bento-card.featured p { color: rgba(255,255,255,0.5); }
+.bento-stat {
+  font-family: var(--font-display); font-size: 52px; font-weight: 800;
+  color: var(--lime); line-height: 1; margin-bottom: 8px;
+}
+.bento-deco {
+  position: absolute; bottom: -20px; right: -20px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(208,236,120,0.06);
+}
+/* DASHBOARD PREVIEW */
 .dashboard-preview {
-  background: var(--dark2); border-radius: 16px;
+  background: var(--dark2); border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.06);
-  overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.4);
-  transform: perspective(1200px) rotateX(3deg);
-  transition: transform 0.5s ease;
+  overflow: hidden; box-shadow: 0 48px 96px rgba(0,0,0,0.5);
+  transform: perspective(1400px) rotateX(4deg) scale(0.98);
+  transition: transform 0.6s ease;
 }
-.dashboard-preview:hover { transform: perspective(1200px) rotateX(0deg); }
+.dashboard-preview:hover { transform: perspective(1400px) rotateX(0deg) scale(1); }
 .dp-topbar {
   background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
-  padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+  padding: 14px 24px; display: flex; align-items: center; gap: 16px;
 }
-.dp-dots { display: flex; gap: 6px; }
-.dp-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dp-dots { display: flex; gap: 7px; }
+.dp-dot { width: 11px; height: 11px; border-radius: 50%; }
 .dp-dot:nth-child(1) { background: #ff5f57; }
 .dp-dot:nth-child(2) { background: #ffbd2e; }
 .dp-dot:nth-child(3) { background: #28c840; }
-.dp-title { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.05em; }
-.dp-body { padding: 24px; }
-.dp-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 20px;
-}
-.dp-week { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--white); }
-.dp-progress-label { font-size: 12px; color: rgba(255,255,255,0.4); }
-.dp-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; margin-bottom: 24px; }
-.dp-bar-fill { height: 3px; background: var(--lime); border-radius: 2px; width: 50%; }
+.dp-title { font-size: 12px; color: rgba(255,255,255,0.25); letter-spacing: 0.05em; }
+.dp-body { padding: 28px; }
+.dp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.dp-week { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--white); }
+.dp-progress-label { font-size: 12px; color: rgba(255,255,255,0.35); }
+.dp-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 28px; }
+.dp-bar-fill { height: 3px; background: var(--lime); border-radius: 2px; }
 .dp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 .dp-card {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 10px; padding: 14px; transition: border-color 0.2s;
+  border-radius: 12px; padding: 14px; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
 }
-.dp-card.selected { border-color: var(--lime); background: rgba(208,236,120,0.06); }
+.dp-card:hover { border-color: rgba(208,236,120,0.3); }
+.dp-card.selected { border-color: var(--lime); background: rgba(208,236,120,0.07); }
 .dp-card-type {
   display: inline-block; font-size: 9px; font-weight: 600;
-  padding: 2px 8px; border-radius: 100px; letter-spacing: 0.06em;
-  margin-bottom: 10px;
+  padding: 2px 9px; border-radius: 100px; letter-spacing: 0.06em; margin-bottom: 10px;
 }
 .dp-card-type.video { background: rgba(59,130,246,0.15); color: #93c5fd; }
 .dp-card-type.graphic { background: rgba(34,197,94,0.15); color: #86efac; }
 .dp-thumb {
-  width: 100%; aspect-ratio: 16/9; border-radius: 6px;
-  background: rgba(255,255,255,0.05); margin-bottom: 10px;
+  width: 100%; border-radius: 7px; margin-bottom: 10px;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; color: rgba(255,255,255,0.2);
 }
 .dp-hook { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 4px; }
-.dp-body-text { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4; }
-.dp-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
-.dp-btn {
-  padding: 8px 20px; border-radius: 6px; font-size: 12px;
-  font-weight: 500; cursor: pointer; border: none;
-}
+.dp-body-text { font-size: 11px; color: rgba(255,255,255,0.35); }
+.dp-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; }
+.dp-btn { padding: 9px 22px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; }
 .dp-btn.approve { background: var(--lime); color: var(--dark); }
-.dp-btn.edit { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-/* ── DELIVERABLES ── */
+.dp-btn.edit { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+/* DELIVERABLES */
 .deliver-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .deliver-item {
-  background: #F7F5EF; border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 12px; padding: 28px 24px;
-  transition: border-color 0.2s, background 0.2s;
+  background: var(--white); border: 1px solid var(--border-light);
+  border-radius: 14px; padding: 28px 24px;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
-.deliver-item:hover { border-color: var(--lime-dark); background: var(--lime-pale); }
+.deliver-item:hover { border-color: var(--lime-dark); background: var(--lime-pale); transform: translateY(-2px); }
 .d-check {
-  width: 28px; height: 28px; background: var(--lime);
+  width: 32px; height: 32px; background: var(--lime);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 12px; margin-bottom: 14px; font-weight: 700;
+  font-size: 13px; margin-bottom: 16px; font-weight: 700;
 }
-.deliver-item h3 {
-  font-family: var(--font-display); font-size: 17px;
-  font-weight: 700; margin-bottom: 6px; color: #111;
-}
-.deliver-item p { font-size: 14px; color: #444; line-height: 1.6; }
-/* ── PRICING ── */
+.deliver-item h3 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.deliver-item p { font-size: 14px; color: var(--text-muted-light); line-height: 1.6; }
+/* PRICING */
 .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
 .plan {
   background: var(--white); border: 1px solid var(--border-light);
-  border-radius: 14px; overflow: hidden; transition: border-color 0.2s;
+  border-radius: 16px; overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
 }
-.plan.featured { border-color: var(--dark); }
+.plan:hover { transform: translateY(-3px); }
+.plan.featured { border-color: var(--dark); border-width: 2px; }
 .plan-head { padding: 28px 24px 20px; border-bottom: 1px solid var(--border-light); }
 .plan-badge {
   display: inline-block; background: var(--lime); color: var(--dark);
-  font-size: 10px; font-weight: 600; padding: 3px 12px;
+  font-size: 10px; font-weight: 700; padding: 3px 12px;
   border-radius: 100px; letter-spacing: 0.06em; margin-bottom: 14px;
 }
-.plan-name { font-family: var(--font-display); font-size: 26px; font-weight: 800; margin-bottom: 6px; color: #111; }
+.plan-name { font-family: var(--font-display); font-size: 28px; font-weight: 800; margin-bottom: 6px; }
 .plan-tag { font-size: 14px; color: var(--text-muted-light); font-style: italic; }
 .plan-counts { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 24px; border-bottom: 1px solid var(--border-light); }
-.count-pill { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 100px; }
+.count-pill { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 100px; }
 .count-pill.v { background: #dbeafe; color: #1d4ed8; }
 .count-pill.g { background: #dcfce7; color: #15803d; }
-.plan-features { padding: 20px 24px; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.plan-features { padding: 20px 24px; list-style: none; display: flex; flex-direction: column; gap: 11px; }
 .plan-features li { font-size: 13px; color: var(--dark); display: flex; gap: 10px; line-height: 1.5; }
-.ck { color: var(--lime-dark); flex-shrink: 0; font-weight: 600; }
+.ck { color: var(--lime-dark); flex-shrink: 0; font-weight: 700; }
 .pl { color: var(--text-muted-light); flex-shrink: 0; }
-/* ── CTA DARK ── */
+/* TESTIMONIAL STRIP */
+.testimonial-strip {
+  background: var(--dark); padding: 64px 40px;
+  display: flex; align-items: center; gap: 48px;
+  overflow: hidden; position: relative;
+}
+.testimonial-strip::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(208,236,120,0.07), transparent 60%);
+  pointer-events: none;
+}
+.quote-mark { font-family: var(--font-display); font-size: 80px; color: var(--lime); opacity: 0.3; line-height: 1; flex-shrink: 0; margin-top: -20px; }
+.testimonial-text { font-family: var(--font-display); font-size: clamp(18px, 2.5vw, 26px); font-weight: 700; font-style: italic; color: var(--white); line-height: 1.4; }
+.testimonial-author { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 12px; }
+/* CTA */
 .cta-dark {
   background: var(--dark); padding: 120px 40px; text-align: center;
   position: relative; overflow: hidden;
@@ -306,15 +349,16 @@ h2 em { font-style: italic; }
 .cta-dark::before {
   content: ''; position: absolute;
   top: -200px; left: 50%; transform: translateX(-50%);
-  width: 700px; height: 500px;
-  background: radial-gradient(ellipse, rgba(208,236,120,0.12), transparent 70%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse, rgba(208,236,120,0.1), transparent 70%);
   pointer-events: none;
 }
 .cta-dark h2 { color: var(--white); margin-bottom: 16px; }
 .cta-dark h2 em { color: var(--lime); }
-.cta-dark p { color: var(--text-muted-dark); font-size: 18px; font-weight: 300; max-width: 440px; margin: 0 auto 44px; }
+.cta-dark p { color: var(--text-muted-dark); font-size: 18px; font-weight: 300; max-width: 480px; margin: 0 auto 48px; line-height: 1.7; }
 .cta-actions { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
-/* ── FOOTER ── */
+.cta-note { font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 20px; }
+/* FOOTER */
 footer {
   background: var(--black); border-top: 1px solid rgba(255,255,255,0.05);
   padding: 36px 40px; display: flex; align-items: center;
@@ -322,21 +366,28 @@ footer {
 }
 .f-logo { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--white); }
 .f-logo em { font-style: italic; color: var(--lime); }
-footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
-/* ── FADE UP ── */
-.fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+footer p { font-size: 13px; color: rgba(255,255,255,0.2); }
+/* FADE UP */
+.fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .fade-up.visible { opacity: 1; transform: translateY(0); }
-/* ── RESPONSIVE ── */
+.fade-up.d2 { transition-delay: 0.1s; }
+.fade-up.d3 { transition-delay: 0.2s; }
+/* RESPONSIVE */
 @media (max-width: 768px) {
   nav { padding: 0 20px; }
   .nav-links { display: none; }
-  .hero { padding: 80px 20px 60px; }
+  .hero { padding: 80px 20px 0; }
   .section-light { padding: 64px 20px; }
-  .pipeline::before { display: none; }
+  .pipeline-wrap { grid-template-columns: 1fr; }
+  .pipeline-wrap::before { display: none; }
+  .bento { grid-template-columns: 1fr; }
+  .bento-card.featured { grid-column: 1; grid-row: auto; }
   .deliver-grid, .pricing-grid { grid-template-columns: 1fr; }
   .dp-pair { grid-template-columns: 1fr; }
   .hero-stat-divider { display: none; }
+  .pain-grid { grid-template-columns: 1fr; }
   footer { padding: 28px 20px; }
+  .testimonial-strip { flex-direction: column; padding: 48px 20px; }
 }
 </style>
 </head>
@@ -380,19 +431,52 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
     </div>
   </div>
 </section>
-<div class="section-transition"></div>
+<!-- WAVE TRANSITION -->
+<div class="wave-transition">
+  <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,0 L0,60 Q180,120 360,80 Q540,40 720,80 Q900,120 1080,70 Q1260,20 1440,60 L1440,0 Z" fill="#0a0a0a"/>
+    <path d="M0,120 L0,80 Q200,30 400,70 Q600,110 800,60 Q1000,10 1200,60 Q1380,100 1440,80 L1440,120 Z" fill="#fafaf7"/>
+  </svg>
+</div>
 <!-- PAIN -->
 <section class="section-light" id="pain">
   <div class="container">
     <div class="eyebrow fade-up">01 · možná to znáš</div>
     <h2 class="fade-up">Máš nápady.<br><em>Ale zůstanou v hlavě.</em></h2>
-    <div class="pain-list">
-      <div class="pain-item fade-up"><div class="pain-icon">💡</div><span class="pain-text">Máš nápady, ale nedotáhneš je do konce.</span></div>
-      <div class="pain-item fade-up"><div class="pain-icon">🎬</div><span class="pain-text">Video zabere víc času než samotný příspěvek.</span></div>
-      <div class="pain-item fade-up"><div class="pain-icon">📱</div><span class="pain-text">Máš plný telefon materiálu, ale nic z toho nevznikne.</span></div>
-      <div class="pain-item fade-up"><div class="pain-icon">🛠️</div><span class="pain-text">Nechceš se učit další nástroje.</span></div>
+    <div class="pain-grid fade-up">
+      <div class="pain-cell">
+        <div class="pain-num">01</div>
+        <div class="pain-text-wrap">
+          <h4>Nápady bez výstupu</h4>
+          <p>Víš co chceš říct, ale nikdy to nedotáhneš do hotového příspěvku.</p>
+        </div>
+      </div>
+      <div class="pain-cell">
+        <div class="pain-num">02</div>
+        <div class="pain-text-wrap">
+          <h4>Video = hodiny práce</h4>
+          <p>Nafotíš, ale střih, titulky a export tě stojí víc času než focení.</p>
+        </div>
+      </div>
+      <div class="pain-cell">
+        <div class="pain-num">03</div>
+        <div class="pain-text-wrap">
+          <h4>Plný telefon, prázdný profil</h4>
+          <p>Materiálu máš dost. Jen nikdy nevíš kde začít a co z toho použít.</p>
+        </div>
+      </div>
+      <div class="pain-cell">
+        <div class="pain-num">04</div>
+        <div class="pain-text-wrap">
+          <h4>Nechceš se učit další nástroje</h4>
+          <p>Canva, CapCut, Notion, plánovač — každý týden nový workflow.</p>
+        </div>
+      </div>
     </div>
-    <p class="pain-closer fade-up">A tak to odkládáš.</p>
+    <div class="pain-closer-block fade-up" style="margin-top:24px;max-width:780px">
+      <span>→</span>
+      <p>A tak to odkládáš. Týden za týdnem.</p>
+    </div>
   </div>
 </section>
 <!-- PIPELINE -->
@@ -400,39 +484,33 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
   <div class="container">
     <div class="eyebrow fade-up">02 · jak to funguje</div>
     <h2 class="fade-up">Zadáš jednou.<br><em>Schvaluješ navždy.</em></h2>
-    <div class="pipeline">
-      <div class="pipeline-step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h3>Zadáš web nebo Instagram</h3>
-          <p>Systém si přečte tvou značku — styl, tón, témata, barvy. Jednou. Nikdy víckrát.</p>
-          <span class="step-tag">⚡ Hotovo za 2 minuty</span>
-        </div>
+    <div class="pipeline-wrap">
+      <div class="pipe-step">
+        <div class="pipe-num">1</div>
+        <h3>Zadáš web nebo Instagram</h3>
+        <p>Systém si přečte tvou značku — styl, tón, témata, barvy. Jednou. Nikdy víckrát.</p>
+        <span class="step-tag">⚡ Hotovo za 2 minuty</span>
       </div>
-      <div class="pipeline-step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>AI připraví obsah každý týden</h3>
-          <p>Videa, grafiky, texty — vždy ve dvou variantách. Systém ví co tvoří a nikdy neopakuje.</p>
-          <span class="step-tag">🤖 Automaticky dle intervalu</span>
-        </div>
+      <div class="pipe-step">
+        <div class="pipe-num">2</div>
+        <h3>AI připraví obsah každý týden</h3>
+        <p>Videa, grafiky, texty — vždy ve dvou variantách. Systém ví co tvoří a nikdy neopakuje.</p>
+        <span class="step-tag">🤖 Automaticky dle intervalu</span>
       </div>
-      <div class="pipeline-step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h3>Ty jen vybereš a schválíš</h3>
-          <p>Varianta A nebo B. Klikneš schválit. Stáhneš nebo naplánuješ. Hotovo.</p>
-          <span class="step-tag">✓ Bez komunikace, bez briefů</span>
-        </div>
+      <div class="pipe-step">
+        <div class="pipe-num">3</div>
+        <h3>Ty jen vybereš a schválíš</h3>
+        <p>Varianta A nebo B. Klikneš schválit. Stáhneš nebo naplánuješ. Hotovo.</p>
+        <span class="step-tag">✓ Bez komunikace, bez briefů</span>
       </div>
     </div>
   </div>
 </section>
 <!-- DASHBOARD PREVIEW -->
-<section class="section-light" style="padding-top: 0; padding-bottom: 100px;">
+<section class="section-light">
   <div class="container">
-    <div class="eyebrow fade-up" style="margin-bottom: 24px;">03 · co vidíš v dashboardu</div>
-    <h2 class="fade-up" style="margin-bottom: 40px;">Vybereš variantu.<br><em>Schválíš. Jdeš dál.</em></h2>
+    <div class="eyebrow fade-up" style="margin-bottom:24px">03 · co vidíš v dashboardu</div>
+    <h2 class="fade-up" style="margin-bottom:40px">Vybereš variantu.<br><em>Schválíš. Jdeš dál.</em></h2>
     <div class="dashboard-preview fade-up">
       <div class="dp-topbar">
         <div class="dp-dots">
@@ -449,19 +527,19 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
         </div>
         <div class="dp-bar"><div class="dp-bar-fill" style="width:50%"></div></div>
         <div class="dp-pair">
-          <div class="dp-card selected" onclick="var p=this.closest('.dp-pair');p.querySelectorAll('.dp-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
+          <div class="dp-card selected">
             <span class="dp-card-type video">▶ VIDEO · Reels</span>
-            <div class="dp-thumb" style="aspect-ratio:9/16;max-height:120px;background:linear-gradient(135deg,#1a2e1a,#2d4a1e);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px">
-              <div style="width:28px;height:28px;border-radius:50%;background:rgba(208,236,120,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(208,236,120,0.7)">▶</div>
+            <div class="dp-thumb" style="aspect-ratio:9/16;max-height:130px;background:linear-gradient(135deg,#1a2e1a,#2d4a1e);flex-direction:column;gap:6px">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(208,236,120,0.2);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(208,236,120,0.7)">▶</div>
               <span style="font-size:9px;color:rgba(208,236,120,0.4);letter-spacing:.06em">15s · Reels</span>
             </div>
             <div class="dp-hook">"Tohle mi trvalo 2 hodiny. Teď to zvládnu za 5 minut."</div>
             <div class="dp-body-text">Hook přímý · tón osobní · Varianta A</div>
           </div>
-          <div class="dp-card" onclick="var p=this.closest('.dp-pair');p.querySelectorAll('.dp-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
+          <div class="dp-card">
             <span class="dp-card-type video">▶ VIDEO · Reels</span>
-            <div class="dp-thumb" style="aspect-ratio:9/16;max-height:120px;background:linear-gradient(135deg,#1e2a2e,#1a3040);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px">
-              <div style="width:28px;height:28px;border-radius:50%;background:rgba(147,197,253,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(147,197,253,0.6)">▶</div>
+            <div class="dp-thumb" style="aspect-ratio:9/16;max-height:130px;background:linear-gradient(135deg,#1e2a2e,#1a3040);flex-direction:column;gap:6px">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(147,197,253,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(147,197,253,0.6)">▶</div>
               <span style="font-size:9px;color:rgba(147,197,253,0.3);letter-spacing:.06em">12s · Reels</span>
             </div>
             <div class="dp-hook">"Co kdybys měla obsah na celý týden hotový za odpoledne?"</div>
@@ -469,23 +547,23 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
           </div>
         </div>
         <div class="dp-pair">
-          <div class="dp-card" onclick="var p=this.closest('.dp-pair');p.querySelectorAll('.dp-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
+          <div class="dp-card">
             <span class="dp-card-type graphic">◻ GRAFIKA</span>
-            <div class="dp-thumb" style="aspect-ratio:1/1;max-height:90px;background:linear-gradient(135deg,#2a2e1e,#3a4228);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px">
-              <div style="width:32px;height:4px;background:rgba(208,236,120,0.3);border-radius:2px"></div>
-              <div style="width:24px;height:4px;background:rgba(208,236,120,0.2);border-radius:2px"></div>
-              <div style="width:28px;height:4px;background:rgba(208,236,120,0.25);border-radius:2px"></div>
+            <div class="dp-thumb" style="aspect-ratio:1/1;max-height:100px;background:linear-gradient(135deg,#2a2e1e,#3a4228);flex-direction:column;gap:5px">
+              <div style="width:36px;height:4px;background:rgba(208,236,120,0.3);border-radius:2px"></div>
+              <div style="width:26px;height:4px;background:rgba(208,236,120,0.2);border-radius:2px"></div>
+              <div style="width:30px;height:4px;background:rgba(208,236,120,0.25);border-radius:2px"></div>
               <span style="font-size:8px;color:rgba(208,236,120,0.35);margin-top:4px;letter-spacing:.06em">světlý styl</span>
             </div>
             <div class="dp-hook">"3 věci které mi ušetří hodiny každý týden."</div>
             <div class="dp-body-text">Varianta A · seznam</div>
           </div>
-          <div class="dp-card" onclick="var p=this.closest('.dp-pair');p.querySelectorAll('.dp-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
+          <div class="dp-card">
             <span class="dp-card-type graphic">◻ GRAFIKA</span>
-            <div class="dp-thumb" style="aspect-ratio:1/1;max-height:90px;background:linear-gradient(135deg,#1e1e1e,#2a2a2a);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px">
-              <div style="width:32px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px"></div>
-              <div style="width:20px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px"></div>
-              <div style="width:26px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px"></div>
+            <div class="dp-thumb" style="aspect-ratio:1/1;max-height:100px;background:linear-gradient(135deg,#1e1e1e,#2a2a2a);flex-direction:column;gap:5px">
+              <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px"></div>
+              <div style="width:22px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px"></div>
+              <div style="width:28px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px"></div>
               <span style="font-size:8px;color:rgba(255,255,255,0.2);margin-top:4px;letter-spacing:.06em">tmavý styl</span>
             </div>
             <div class="dp-hook">"Přestala jsem řešit obsah. Začala jsem ho tvořit."</div>
@@ -500,23 +578,67 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
     </div>
   </div>
 </section>
+<!-- TESTIMONIAL -->
+<div class="testimonial-strip">
+  <div class="quote-mark">"</div>
+  <div>
+    <div class="testimonial-text">Poprvé jsem měla pocit, že obsah skutečně mluví za mě — bez toho, abych u toho trávila hodiny.</div>
+    <div class="testimonial-author">Veronika N. · wellness terapeutka · Praha · Ready to Go Start plán</div>
+  </div>
+</div>
 <!-- DELIVERABLES -->
 <section class="section-light alt">
   <div class="container">
     <div class="eyebrow fade-up">04 · co dostaneš</div>
     <h2 class="fade-up">Vše připravené<br><em>k použití.</em></h2>
     <div class="deliver-grid">
-      <div class="deliver-item fade-up"><div class="d-check">✔</div><h3>Videa + Reels</h3><p>AI zpracuje tvoje záběry nebo vybere z knihovny. Hook overlay, střih, 2 varianty.</p></div>
-      <div class="deliver-item fade-up"><div class="d-check">✔</div><h3>Grafické příspěvky</h3><p>Canva šablony na míru tvého brandu. Vlastní fotka nebo AI generovaný vizuál.</p></div>
-      <div class="deliver-item fade-up"><div class="d-check">✔</div><h3>Texty a hooky</h3><p>Psané v tvém tónu. Systém ví co jsi už použila — nikdy neopakuje.</p></div>
-      <div class="deliver-item fade-up"><div class="d-check">✔</div><h3>Archiv na Google Drive</h3><p>Každý výstup automaticky uložený ve tvé složce. Stahuj kdykoli.</p></div>
+      <div class="deliver-item fade-up"><div class="d-check">✔</div><h3>Videa + Reels</h3><p>AI zpracuje tvoje záběry nebo vybere z knihovny. Hook overlay, střih, 2 varianty připravené k publikaci.</p></div>
+      <div class="deliver-item fade-up d2"><div class="d-check">✔</div><h3>Grafické příspěvky</h3><p>Canva šablony na míru tvého brandu. Vlastní fotka nebo AI generovaný vizuál. Feed, Stories, LinkedIn.</p></div>
+      <div class="deliver-item fade-up"><div class="d-check">✔</div><h3>Texty a hooky</h3><p>Psané v tvém tónu. Systém ví co jsi už použila — nikdy neopakuje. Vždy 2 varianty.</p></div>
+      <div class="deliver-item fade-up d2"><div class="d-check">✔</div><h3>Archiv na Google Drive</h3><p>Každý výstup automaticky uložený ve tvé složce. Stahuj kdykoli, sdílej snadno.</p></div>
+    </div>
+  </div>
+</section>
+<!-- BENTO — WHY RTG -->
+<section class="section-light">
+  <div class="container">
+    <div class="eyebrow fade-up">05 · proč ready to go</div>
+    <h2 class="fade-up">Systém který<br><em>pracuje za tebe.</em></h2>
+    <div class="bento">
+      <div class="bento-card featured fade-up">
+        <div class="bento-deco"></div>
+        <span class="bento-icon">⚡</span>
+        <div class="bento-stat">0h</div>
+        <h3>Žádná tvorba od nuly</h3>
+        <p>Systém přečte tvůj brand jednou a pak generuje obsah každý týden automaticky. Ty jen schvaluješ.</p>
+      </div>
+      <div class="bento-card fade-up d2">
+        <span class="bento-icon">🔄</span>
+        <h3>Nikdy se neopakuje</h3>
+        <p>AI pamatuje co jsi schválila. Každý týden nový obsah, žádné kopie.</p>
+      </div>
+      <div class="bento-card fade-up d3">
+        <span class="bento-icon">🎯</span>
+        <h3>Vždy 2 varianty</h3>
+        <p>Ke každému příspěvku dostaneš A a B. Vyber co ti sedí víc.</p>
+      </div>
+      <div class="bento-card fade-up d2">
+        <span class="bento-icon">📅</span>
+        <h3>Interval dle tebe</h3>
+        <p>Týdně, ob týden, měsíčně — nastav si jak ti vyhovuje.</p>
+      </div>
+      <div class="bento-card fade-up d3">
+        <span class="bento-icon">☁️</span>
+        <h3>Vše v Google Drive</h3>
+        <p>Každý výstup automaticky uložený. Stáhni a publikuj.</p>
+      </div>
     </div>
   </div>
 </section>
 <!-- PRICING -->
-<section class="section-light" id="plans">
+<section class="section-light alt" id="plans">
   <div class="container">
-    <div class="eyebrow fade-up">05 · plány</div>
+    <div class="eyebrow fade-up">06 · plány</div>
     <h2 class="fade-up">Vyber si,<br><em>kde začneš.</em></h2>
     <div class="pricing-grid">
       <div class="plan fade-up">
@@ -530,7 +652,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
           <li><span class="ck">✔</span>2 varianty každého výstupu</li>
         </ul>
       </div>
-      <div class="plan featured fade-up">
+      <div class="plan featured fade-up d2">
         <div class="plan-head"><div class="plan-badge">NEJOBLÍBENĚJŠÍ</div><div class="plan-name">Plus</div><div class="plan-tag">Nahraješ → dostaneš.</div></div>
         <div class="plan-counts"><span class="count-pill v">▶ 4 videa / týden</span><span class="count-pill g">◻ 4 grafiky / týden</span></div>
         <ul class="plan-features">
@@ -541,7 +663,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
           <li><span class="pl">+</span>Plánování přímo na sítě</li>
         </ul>
       </div>
-      <div class="plan fade-up">
+      <div class="plan fade-up d3">
         <div class="plan-head"><div class="plan-name">Pro</div><div class="plan-tag">Maximální výstup.</div></div>
         <div class="plan-counts"><span class="count-pill v">▶ 8 videí / týden</span><span class="count-pill g">◻ 10 grafik / týden</span></div>
         <ul class="plan-features">
@@ -553,25 +675,26 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
         </ul>
       </div>
     </div>
-    <p style="text-align:center; margin-top: 28px; font-size: 13px; color: var(--text-muted-light);">Interval generování: každý týden / ob týden / ob 3 týdny / měsíčně — nastav si sám/sama.</p>
+    <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--text-muted-light)">Interval generování: každý týden / ob týden / ob 3 týdny / měsíčně — nastav si sám/sama.</p>
   </div>
 </section>
 <!-- CTA -->
 <section class="cta-dark" id="cta">
   <div class="container">
     <h2>Začni tvořit<br><em>jednodušeji.</em></h2>
-    <p>Bez chaosu. Bez složitého procesu. Bez hodin práce.</p>
+    <p>Bez chaosu. Bez složitého procesu. Bez hodin práce. Zadáš jednou — dostáváš každý týden.</p>
     <div class="cta-actions">
       <a href="/ready-to-go/register" class="btn-lime">Chci to vyzkoušet</a>
-      <a href="/ready-to-go/register" class="btn-ghost-dark">Chci vidět ukázky →</a>
+      <a href="#how" class="btn-ghost-dark">Jak to funguje →</a>
     </div>
+    <div class="cta-note">Žádný závazek · Ozveme se do 24 hodin</div>
   </div>
 </section>
 <footer>
   <div class="f-logo">Ready <em>to Go</em></div>
   <p>Lucifera AI Content Studio · Praha, Kampa</p>
 </footer>
-<!-- THREE.JS 3D HERO -->
+<!-- THREE.JS -->
 <script>
 (function() {
   const canvas = document.getElementById('hero-canvas');
@@ -581,121 +704,64 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.25); }
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.set(0, 0, 6);
-  const ambient = new THREE.AmbientLight(0xffffff, 0.3);
-  scene.add(ambient);
-  const lime_light = new THREE.PointLight(0xd0ec78, 2, 20);
-  lime_light.position.set(2, 2, 3);
-  scene.add(lime_light);
-  const blue_light = new THREE.PointLight(0x4080ff, 1, 20);
-  blue_light.position.set(-3, -1, 2);
-  scene.add(blue_light);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  const ll = new THREE.PointLight(0xd0ec78, 2, 20);
+  ll.position.set(2, 2, 3); scene.add(ll);
+  scene.add(new THREE.PointLight(0x4080ff, 1, 20)).position.set(-3, -1, 2);
   const particles = [];
   const pGeo = new THREE.SphereGeometry(0.04, 8, 8);
   for (let i = 0; i < 60; i++) {
-    const mat = new THREE.MeshStandardMaterial({
-      color: Math.random() > 0.5 ? 0xd0ec78 : 0xffffff,
-      emissive: Math.random() > 0.5 ? 0xd0ec78 : 0x333333,
-      emissiveIntensity: 0.3,
-      transparent: true,
-      opacity: Math.random() * 0.5 + 0.2,
-    });
+    const mat = new THREE.MeshStandardMaterial({ color: Math.random()>0.5?0xd0ec78:0xffffff, emissive: Math.random()>0.5?0xd0ec78:0x333333, emissiveIntensity:0.3, transparent:true, opacity:Math.random()*0.5+0.2 });
     const mesh = new THREE.Mesh(pGeo, mat);
-    mesh.position.set(
-      (Math.random() - 0.5) * 14,
-      (Math.random() - 0.5) * 10,
-      (Math.random() - 0.5) * 6 - 2
-    );
-    mesh.userData.speed = Math.random() * 0.003 + 0.001;
-    mesh.userData.offset = Math.random() * Math.PI * 2;
-    scene.add(mesh);
-    particles.push(mesh);
+    mesh.position.set((Math.random()-0.5)*14,(Math.random()-0.5)*10,(Math.random()-0.5)*6-2);
+    mesh.userData.speed = Math.random()*0.003+0.001;
+    mesh.userData.offset = Math.random()*Math.PI*2;
+    scene.add(mesh); particles.push(mesh);
   }
-  const torusGeo = new THREE.TorusKnotGeometry(1.2, 0.3, 128, 16, 2, 3);
-  const torusMat = new THREE.MeshStandardMaterial({
-    color: 0xd0ec78, emissive: 0x4a6b0a, emissiveIntensity: 0.2,
-    roughness: 0.3, metalness: 0.8, transparent: true, opacity: 0.15,
-  });
-  const torus = new THREE.Mesh(torusGeo, torusMat);
-  torus.position.set(3.5, 0, -1);
-  scene.add(torus);
-  const wireMat = new THREE.MeshBasicMaterial({ color: 0xd0ec78, wireframe: true, transparent: true, opacity: 0.08 });
-  const wire = new THREE.Mesh(torusGeo, wireMat);
-  wire.position.copy(torus.position);
-  scene.add(wire);
-  const icoGeo = new THREE.IcosahedronGeometry(0.9, 1);
-  const icoMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.12 });
-  const ico = new THREE.Mesh(icoGeo, icoMat);
-  ico.position.set(-3.5, 1, -1);
-  scene.add(ico);
-  const icoWire = new THREE.Mesh(icoGeo, new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.06 }));
-  icoWire.position.copy(ico.position);
-  scene.add(icoWire);
-  let mouseX = 0, mouseY = 0;
-  document.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-    mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
-  });
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
+  const tGeo = new THREE.TorusKnotGeometry(1.2,0.3,128,16,2,3);
+  const torus = new THREE.Mesh(tGeo, new THREE.MeshStandardMaterial({color:0xd0ec78,emissive:0x4a6b0a,emissiveIntensity:0.2,roughness:0.3,metalness:0.8,transparent:true,opacity:0.15}));
+  torus.position.set(3.5,0,-1); scene.add(torus);
+  const wire = new THREE.Mesh(tGeo, new THREE.MeshBasicMaterial({color:0xd0ec78,wireframe:true,transparent:true,opacity:0.08}));
+  wire.position.copy(torus.position); scene.add(wire);
+  const iGeo = new THREE.IcosahedronGeometry(0.9,1);
+  const ico = new THREE.Mesh(iGeo, new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.1,metalness:0.9,transparent:true,opacity:0.12}));
+  ico.position.set(-3.5,1,-1); scene.add(ico);
+  const iWire = new THREE.Mesh(iGeo, new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.06}));
+  iWire.position.copy(ico.position); scene.add(iWire);
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-0.5)*2;my=-(e.clientY/window.innerHeight-0.5)*2;});
+  window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);});
   const clock = new THREE.Clock();
-  function animate() {
+  (function animate(){
     requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
-    torus.rotation.x = t * 0.15; torus.rotation.y = t * 0.2;
-    wire.rotation.copy(torus.rotation);
-    ico.rotation.x = t * 0.1; ico.rotation.y = -t * 0.15;
-    icoWire.rotation.copy(ico.rotation);
-    camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.04;
-    camera.position.y += (mouseY * 0.2 - camera.position.y) * 0.04;
+    const t=clock.getElapsedTime();
+    torus.rotation.x=t*0.15; torus.rotation.y=t*0.2; wire.rotation.copy(torus.rotation);
+    ico.rotation.x=t*0.1; ico.rotation.y=-t*0.15; iWire.rotation.copy(ico.rotation);
+    camera.position.x+=(mx*0.3-camera.position.x)*0.04;
+    camera.position.y+=(my*0.2-camera.position.y)*0.04;
     camera.lookAt(scene.position);
-    particles.forEach(p => {
-      p.position.y += Math.sin(t * p.userData.speed * 10 + p.userData.offset) * 0.003;
-      p.position.x += Math.cos(t * p.userData.speed * 8 + p.userData.offset) * 0.002;
-    });
-    lime_light.position.x = Math.sin(t * 0.5) * 3;
-    lime_light.position.y = Math.cos(t * 0.3) * 2;
-    renderer.render(scene, camera);
-  }
-  animate();
+    particles.forEach(p=>{p.position.y+=Math.sin(t*p.userData.speed*10+p.userData.offset)*0.003;p.position.x+=Math.cos(t*p.userData.speed*8+p.userData.offset)*0.002;});
+    ll.position.x=Math.sin(t*0.5)*3; ll.position.y=Math.cos(t*0.3)*2;
+    renderer.render(scene,camera);
+  })();
 })();
 </script>
-<!-- SCROLL ANIMATIONS -->
+<!-- SCROLL & INTERACTIONS -->
 <script>
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-  });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-const pipeObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const steps = e.target.querySelectorAll('.pipeline-step');
-      steps.forEach((s, i) => {
-        setTimeout(() => s.classList.add('visible'), i * 200);
-      });
-      pipeObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.2 });
-document.querySelectorAll('.pipeline').forEach(el => pipeObs.observe(el));
-
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  const hero = document.querySelector('.hero-inner');
-  if (hero) hero.style.transform = `translateY(${scrollY * 0.2}px)`;
-  const glow = document.querySelector('.hero-glow');
-  if (glow) glow.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.1}px))`;
+const obs = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+const pObs = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.pipe-step').forEach((s,i)=>setTimeout(()=>s.classList.add('visible'),i*200));pObs.unobserve(e.target);}});},{threshold:0.2});
+document.querySelectorAll('.pipeline-wrap').forEach(el=>pObs.observe(el));
+window.addEventListener('scroll',()=>{
+  const sy=window.scrollY;
+  const h=document.querySelector('.hero-inner');
+  if(h) h.style.transform=`translateY(${sy*0.18}px)`;
+  const g=document.querySelector('.hero-glow');
+  if(g) g.style.transform=`translate(-50%,calc(-50% + ${sy*0.08}px))`;
 });
-
-document.querySelectorAll('.dp-card').forEach(card => {
-  card.addEventListener('click', function() {
-    const pair = this.closest('.dp-pair');
-    pair.querySelectorAll('.dp-card').forEach(c => c.classList.remove('selected'));
+document.querySelectorAll('.dp-card').forEach(card=>{
+  card.addEventListener('click',function(){
+    this.closest('.dp-pair').querySelectorAll('.dp-card').forEach(c=>c.classList.remove('selected'));
     this.classList.add('selected');
   });
 });
