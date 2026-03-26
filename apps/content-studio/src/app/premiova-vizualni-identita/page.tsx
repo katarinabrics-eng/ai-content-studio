@@ -1440,19 +1440,19 @@ export default function PremiovaVizualniIdentita() {
       <section className="deliverables" style={{background:"#fafaf7", padding:"80px 0"}}>
         <div style={{textAlign:"center", marginBottom:"48px", padding:"0 48px", maxWidth:"800px", marginLeft:"auto", marginRight:"auto"}}>
           <div className="label">ukázky výstupů · prémiová identita</div>
-          <h2 style={{marginTop:"12px", marginBottom:"12px"}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
-          <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
+          <h2 style={{marginTop:"12px", marginBottom:"12px"}}>Výstupy, které mění to,<br /><em>jak vás svět vidí.</em></h2>
+          <p className="section-sub">Vizuální identita · brand strategie · grafické šablony · obsah · fotoplán. Vše co potřebujete pro silnou vizuální značku.</p>
         </div>
         <div className="codostanete-columns" style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"10px", padding:"0 10px"}}>
           {[
-            {src:"/placeholders/CO%20DOSTANETE/vizual%20board%20vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat"},
-            {src:"/placeholders/CO%20DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci"},
-            {src:"/placeholders/CO%20DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát"},
-            {src:"/placeholders/CO%20DOSTANETE/vizual%20board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí"},
-            {src:"/placeholders/CO%20DOSTANETE/Canva%20sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony"},
-            {src:"/placeholders/CO%20DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře"},
-            {src:"/placeholders/CO%20DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook"},
-            {src:"/placeholders/CO%20DOSTANETE/vizualni%20banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady"},
+            {src:"/placeholders/CO%20DOSTANETE/vizual%20board%20vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat", desc:"Ještě před focením uvidíte přesně jak budete vypadat. Outfity, prostředí, nálada, kompozice — vše promyšlené dopředu. Na focení přijdete připravená. Žádná improvizace, žádná nejistota."},
+            {src:"/placeholders/CO%20DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci", desc:"Strategický dokument který popisuje kdo jste, jak komunikujete a pro koho tvoříte. Váš archetyp, tón hlasu, klíčová témata. Základ pro veškerý obsah — fotky, texty, sítě."},
+            {src:"/placeholders/CO%20DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát", desc:"Krátké autentické videozáběry připravené k publikaci. Teplý grading dle vašeho vizuálního stylu. Hotové pro Instagram, LinkedIn i Stories — stačí zveřejnit."},
+            {src:"/placeholders/CO%20DOSTANETE/vizual%20board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí", desc:"Kontaktní sheet vašich fotografií roztříděný dle scény, nálady a záběru. Vždy víte co máte k dispozici a pro jaký příspěvek to použít."},
+            {src:"/placeholders/CO%20DOSTANETE/Canva%20sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony", desc:"Deset grafických šablon nastavených přesně na váš brand — vaše barvy, fonty, styl. Otevřete v Canva, upravíte text a máte hotový příspěvek za minutu."},
+            {src:"/placeholders/CO%20DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře", desc:"Měsíční obsahový cyklus s tématy pro každý týden. Nikdy nebudete stát nad prázdnou stránkou a přemýšlet co zveřejnit. Každý příspěvek má jasný záměr."},
+            {src:"/placeholders/CO%20DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook", desc:"Konkrétní návrhy příspěvků — témata, hooky, texty. Víte přesně co publikovat, kde a kdy. Obsah který přitahuje správné klienty, ne jen lajky."},
+            {src:"/placeholders/CO%20DOSTANETE/vizualni%20banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady", desc:"Roztříděná knihovna vašich fotografií dle scény, nálady a záběru. Vždy víte kde hledat správnou fotku pro každý příspěvek. ✦ Přístup do stocku fotografií je součástí Content Day."},
           ].map((item, i) => (
             <div key={i} style={{
               borderRadius:"10px",
