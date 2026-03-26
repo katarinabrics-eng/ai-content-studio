@@ -841,8 +841,8 @@ export default function PremiovaVizualniIdentita() {
         /* WOW FRAME WRAPPER — before photos + arrows */
         .pvi-page .wow-frame-wrap{
           position:relative;
-          padding-left:140px;
-          padding-right:0;
+          padding-left:0;
+          padding-right:120px;
           width:100%;
           min-width:500px;
           overflow:visible;
@@ -867,8 +867,8 @@ export default function PremiovaVizualniIdentita() {
           margin-top:7px;
         }
         .pvi-page .wow-pred-1{
-          top:40px;left:-18px;
-          transform:rotate(-7deg);
+          top:40px;right:-100px;left:auto;
+          transform:rotate(7deg);
           animation:float1 4.5s ease-in-out infinite;
         }
         .pvi-page .wow-pred-2{
@@ -879,7 +879,7 @@ export default function PremiovaVizualniIdentita() {
         .pvi-page .wow-arrow{
           position:absolute;z-index:11;pointer-events:none;overflow:visible;
         }
-        .pvi-page .wow-arrow-1{top:120px;left:118px;width:80px;height:56px;}
+        .pvi-page .wow-arrow-1{top:120px;right:28px;left:auto;width:80px;height:56px;}
         .pvi-page .wow-arrow-2{top:300px;left:96px;width:72px;height:52px;}
 
         /* WOW PHOTO FRAME — Mac-style */
@@ -1394,8 +1394,8 @@ export default function PremiovaVizualniIdentita() {
               </div>
               {/* Arrow */}
               <svg className="wow-arrow wow-arrow-1" viewBox="0 0 80 56" fill="none">
-                <path d="M8,48 C20,48 38,14 72,10" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                <path d="M65,4 L74,11 L63,17" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                <path d="M72,48 C60,48 42,14 8,10" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                <path d="M15,4 L6,11 L17,17" stroke="#8fb82e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
               {/* Mac window frame */}
               <div className="wow-frame">
