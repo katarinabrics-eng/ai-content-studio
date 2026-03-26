@@ -1424,21 +1424,21 @@ export default function PremiovaVizualniIdentita() {
 
       {/* SEKCE 7 — CO DOSTANETE */}
       <section className="deliverables" style={{background:"#fafaf7", padding:"80px 0"}}>
-        <div style={{textAlign:"center", marginBottom:"48px", padding:"0 48px"}}>
+        <div style={{textAlign:"center", marginBottom:"48px", padding:"0 48px", maxWidth:"800px", marginLeft:"auto", marginRight:"auto"}}>
           <div className="label">ukázky výstupů · prémiová identita</div>
           <h2 style={{marginTop:"12px", marginBottom:"12px"}}>Co dostanete hned<br /><em>na první konzultaci.</em></h2>
           <p className="section-sub">Vizuální board · brand strategie · grafické šablony · fotoplán · obsah. Vše připravené ještě před focením.</p>
         </div>
         <div style={{columns:4, columnGap:"10px", padding:"0 10px"}}>
           {[
-            {src:"/placeholders/CO DOSTANETE/vizual board vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat", ratio:"4/5"},
-            {src:"/placeholders/CO DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci", ratio:"4/3"},
-            {src:"/placeholders/CO DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát", ratio:"4/3"},
-            {src:"/placeholders/CO DOSTANETE/vizual board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí", ratio:"4/5"},
-            {src:"/placeholders/CO DOSTANETE/Canva sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony", ratio:"4/3"},
-            {src:"/placeholders/CO DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře", ratio:"4/5"},
-            {src:"/placeholders/CO DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook", ratio:"4/3"},
-            {src:"/placeholders/CO DOSTANETE/vizualni banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady", ratio:"4/3"},
+            {src:"/placeholders/CO%20DOSTANETE/vizual%20board%20vyber.jpg", pill:"Vizuální board", title:"Výběr vašeho stylu", sub:"Ještě před focením víte přesně jak budete vypadat", ratio:"4/5"},
+            {src:"/placeholders/CO%20DOSTANETE/BrandDna.jpg", pill:"Brand DNA", title:"Archetyp · tón · strategie", sub:"Průvodce pro obsah a komunikaci", ratio:"4/3"},
+            {src:"/placeholders/CO%20DOSTANETE/Reels.jpg", pill:"Reels · video", title:"Video záběry s hookem", sub:"Střihový brief · 15s formát", ratio:"4/3"},
+            {src:"/placeholders/CO%20DOSTANETE/vizual%20board.jpg", pill:"Vizuální board", title:"Contact sheet s vaší podobou", sub:"Outfit plán · nálada · prostředí", ratio:"4/5"},
+            {src:"/placeholders/CO%20DOSTANETE/Canva%20sablony.jpg", pill:"Canva šablony", title:"10 šablon na míru", sub:"Vaše barvy · fonty · ikony", ratio:"4/3"},
+            {src:"/placeholders/CO%20DOSTANETE/Strategie.jpg", pill:"Strategie", title:"Komunikační rámec", sub:"Témata · plán obsahu · scénáře", ratio:"4/5"},
+            {src:"/placeholders/CO%20DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook", ratio:"4/3"},
+            {src:"/placeholders/CO%20DOSTANETE/vizualni%20banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady", ratio:"4/3"},
           ].map((item, i) => (
             <div key={i} style={{
               breakInside:"avoid",
