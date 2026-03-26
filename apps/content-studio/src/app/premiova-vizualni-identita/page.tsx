@@ -1236,6 +1236,8 @@ export default function PremiovaVizualniIdentita() {
           /* Galerie — 1 sloupec na telefonu */
           .pvi-page .codostanete-columns{ grid-template-columns:1fr !important; }
         }
+        .codostanete-item:hover .overlay-default { opacity: 0 !important; }
+        .codostanete-item:hover .overlay-hover { opacity: 1 !important; }
       `}</style>
 
       {/* SEKCE 1 — HERO (krémová) */}
@@ -1502,7 +1504,7 @@ export default function PremiovaVizualniIdentita() {
             {src:"/placeholders/CO%20DOSTANETE/Prispevky.jpg", pill:"Příspěvky na sítě", title:"Obsah připravený k použití", sub:"Instagram · LinkedIn · Facebook", desc:"Konkrétní návrhy příspěvků — témata, hooky, texty. Víte přesně co publikovat, kde a kdy. Obsah který přitahuje správné klienty, ne jen lajky."},
             {src:"/placeholders/CO%20DOSTANETE/vizualni%20banka.jpg", pill:"Vizuální banka", title:"Knihovna vašich fotek", sub:"Tříděno dle scény a nálady", desc:"Roztříděná knihovna vašich fotografií dle scény, nálady a záběru. Vždy víte kde hledat správnou fotku pro každý příspěvek. ✦ Přístup do stocku fotografií je součástí Content Day."},
           ].map((item, i) => (
-            <div key={i} style={{
+            <div key={i} className="codostanete-item" style={{
               borderRadius:"10px",
               overflow:"hidden",
               position:"relative",
@@ -1519,7 +1521,8 @@ export default function PremiovaVizualniIdentita() {
                   objectFit:"cover",
                 }}
               />
-              <div style={{
+              {/* Default overlay — viditelný, skryje se při hover */}
+              <div className="overlay-default" style={{
                 position:"absolute",
                 inset:0,
                 display:"flex",
@@ -1527,6 +1530,8 @@ export default function PremiovaVizualniIdentita() {
                 justifyContent:"flex-end",
                 padding:"16px",
                 background:"linear-gradient(to top, rgba(17,17,17,0.55) 0%, transparent 50%)",
+                opacity:1,
+                transition:"opacity 0.35s ease",
               }}>
                 <span style={{
                   display:"inline-block",
@@ -1552,6 +1557,47 @@ export default function PremiovaVizualniIdentita() {
                   fontSize:"11px",
                   color:"rgba(250,247,242,0.6)",
                 }}>{item.sub}</div>
+              </div>
+              {/* Hover overlay — zelený, viditelný při hover */}
+              <div className="overlay-hover" style={{
+                position:"absolute",
+                inset:0,
+                display:"flex",
+                flexDirection:"column",
+                justifyContent:"flex-end",
+                padding:"20px",
+                background:"rgba(208,236,120,0.92)",
+                opacity:0,
+                transition:"opacity 0.35s ease",
+              }}>
+                <span style={{
+                  display:"inline-block",
+                  fontSize:"9px",
+                  letterSpacing:".1em",
+                  textTransform:"uppercase",
+                  padding:"3px 10px",
+                  borderRadius:"100px",
+                  background:"rgba(17,17,17,0.12)",
+                  color:"rgba(17,17,17,0.6)",
+                  border:"1px solid rgba(17,17,17,0.12)",
+                  marginBottom:"8px",
+                  width:"fit-content",
+                }}>{item.pill}</span>
+                <div style={{width:"28px", height:"1px", background:"rgba(17,17,17,0.2)", marginBottom:"10px"}}></div>
+                <div style={{
+                  fontFamily:"var(--font-display, Georgia, serif)",
+                  fontSize:"18px",
+                  fontWeight:400,
+                  color:"#111",
+                  lineHeight:1.2,
+                  marginBottom:"6px",
+                }}>{item.title}</div>
+                <div style={{
+                  fontSize:"12px",
+                  color:"rgba(17,17,17,0.65)",
+                  lineHeight:1.5,
+                  fontWeight:300,
+                }}>{item.desc}</div>
               </div>
             </div>
           ))}
