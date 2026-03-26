@@ -1564,39 +1564,47 @@ export default function PremiovaVizualniIdentita() {
                 inset:0,
                 display:"flex",
                 flexDirection:"column",
-                justifyContent:"flex-end",
-                padding:"20px",
-                background:"rgba(208,236,120,0.92)",
+                justifyContent:"center",
+                alignItems:"center",
+                textAlign:"center",
+                padding:"24px",
+                background:"rgba(208,236,120,0.93)",
                 opacity:0,
                 transition:"opacity 0.35s ease",
               }}>
                 <span style={{
                   display:"inline-block",
-                  fontSize:"9px",
-                  letterSpacing:".1em",
+                  fontSize:"10px",
+                  fontWeight:700,
+                  letterSpacing:".12em",
                   textTransform:"uppercase",
-                  padding:"3px 10px",
+                  padding:"4px 14px",
                   borderRadius:"100px",
-                  background:"rgba(17,17,17,0.12)",
-                  color:"rgba(17,17,17,0.6)",
-                  border:"1px solid rgba(17,17,17,0.12)",
-                  marginBottom:"8px",
-                  width:"fit-content",
+                  background:"rgba(17,17,17,0.15)",
+                  color:"rgba(17,17,17,0.75)",
+                  border:"1px solid rgba(17,17,17,0.18)",
+                  marginBottom:"14px",
                 }}>{item.pill}</span>
-                <div style={{width:"28px", height:"1px", background:"rgba(17,17,17,0.2)", marginBottom:"10px"}}></div>
                 <div style={{
                   fontFamily:"var(--font-display, Georgia, serif)",
-                  fontSize:"18px",
+                  fontSize:"22px",
                   fontWeight:400,
                   color:"#111",
                   lineHeight:1.2,
-                  marginBottom:"6px",
+                  marginBottom:"10px",
                 }}>{item.title}</div>
                 <div style={{
-                  fontSize:"12px",
+                  width:"32px",
+                  height:"1px",
+                  background:"rgba(17,17,17,0.25)",
+                  margin:"0 auto 12px",
+                }}></div>
+                <div style={{
+                  fontSize:"13px",
                   color:"rgba(17,17,17,0.65)",
-                  lineHeight:1.5,
+                  lineHeight:1.6,
                   fontWeight:300,
+                  maxWidth:"220px",
                 }}>{item.desc}</div>
               </div>
             </div>
