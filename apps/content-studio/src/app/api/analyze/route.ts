@@ -139,11 +139,15 @@ POVINNÉ u KAŽDÉHO pilíře (light, energy, architecture, identity, trust):
 Rules:
 - Be analytical, not judgmental. Explain logic clearly. Avoid generic phrases; use concrete findings.
 - Skóre musí být zdůvodněno: observed + notObserved + reasoning musí odpovídat číslu. Nelze dát např. 10/10 bez vyplněného reasoning a konkrétních observed/notObserved.
+- HODNOTA (light): Hodnoť jasnost hodnotové propozice. Co konkrétně nabízí, komu, proč právě oni. Observed: přítomnost headline, konkrétní nabídka, jasná cílová skupina, ceník nebo orientační ceny. NotObserved: co z toho chybí. Score 8+ pouze pokud je nabídka jednoznačná bez nutnosti hledat.
+- ENERGIE (energy): Hodnoť emoční náboj a dynamiku komunikace. Observed: silná slovesa, osobní tón, příběh, humor nebo vášeň, jasná osobnost autora. NotObserved: co z toho chybí. Score 8+ pouze pokud čtenář cítí osobnost za textem ihned.
+- ARCHITEKTURA (architecture): Hodnoť strukturu a UX webu. Observed: jasná navigace, logické řazení obsahu, CTA na správných místech, rychlost načítání (odhadni), mobilní optimalizace (odhadni ze struktury). NotObserved: co chybí. Score 8+ pouze pokud cesta od příchodu k akci je intuitivní.
+- IDENTITA (identity): Hodnoť vizuální konzistenci a rozpoznatelnost. Observed: konzistentní barevná paleta, profesionální fotografie, vlastní styl písma nebo grafiky, rozpoznatelný vizuální jazyk. NotObserved: co chybí. Score 8+ pouze pokud vizuální identita je unikátní a konzistentní.
 - DŮVĚRA (trust): Rozlišuj tři úrovně důkazu:
-  1. Reference = citace od jmenovaného klienta s kontextem (firma, jméno) → samo o sobě je silný důkaz, skóre min. 7/10 pokud jsou 3+
+  1. Reference = citace od jmenovaného klienta s kontextem (firma, jméno) → silný důkaz, skóre min. 7/10 pokud jsou 3+
   2. Portfolio = ukázka práce bez hodnocení klienta → střední důkaz
   3. Case study = konkrétní výsledek s čísly → nejsilnější důkaz, skóre 9-10/10
-  DŮLEŽITÉ: Pokud jsou na stránce citace od jmenovaných klientů (i bez číselných výsledků), považuj je za reference a uveď je v observed[]. Do notObserved[] dávej jen co skutečně chybí — např. case study s čísly, video reference, nezávislé recenze. Nikdy nepiš 'chybí reference' pokud jsou na stránce citace s jmény klientů.
+  DŮLEŽITÉ: Pokud jsou na stránce citace od jmenovaných klientů, považuj je za reference a uveď je v observed[]. Do notObserved[] dávej jen co skutečně chybí. Nikdy nepiš chybí reference pokud jsou na stránce citace s jmény klientů.
 `;
 
 function buildDiagnostikaPromptFromText(sourceContent: string): string {
@@ -159,7 +163,7 @@ ${DIAGNOSTIKA_METHODOLOGY}
 JSON musí mít přesně tento tvar:
 {
   "brandScore": {
-    "total": <číslo 0-100, celkové skóre síly brandu>,
+    "total": <číslo 0-100, průměr skóre všech 5 pilířů × 10, zaokrouhleno>,
     "hasHeadline": true/false,
     "hasOffer": true/false,
     "hasTargetAudience": true/false,
@@ -184,7 +188,7 @@ JSON musí mít přesně tento tvar:
 }
 
 function buildDiagnostikaPrompt(scraped: Scraped): string {
-  const textContent = scraped.markdown.slice(0, 7000);
+  const textContent = scraped.markdown.slice(0, 10000);
   return `Analyzuj tento web a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
 
 URL: ${scraped.url}
@@ -200,7 +204,7 @@ ${DIAGNOSTIKA_METHODOLOGY}
 JSON musí mít přesně tento tvar:
 {
   "brandScore": {
-    "total": <číslo 0-100, celkové skóre síly brandu>,
+    "total": <číslo 0-100, průměr skóre všech 5 pilířů × 10, zaokrouhleno>,
     "hasHeadline": true/false,
     "hasOffer": true/false,
     "hasTargetAudience": true/false,
@@ -357,7 +361,13 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           model: OPENAI_MODEL,
-          messages: [{ role: "user", content: messageContent }],
+          messages: [
+            {
+              role: "system",
+              content: "Jsi senior brand stratég s 20 lety zkušeností. Analyzuješ značky přesně, konkrétně a konzistentně. Vždy píšeš výhradně česky. Nikdy negeneralizuješ — vycházíš pouze z toho co reálně vidíš v podkladech."
+            },
+            { role: "user", content: messageContent }
+          ],
           max_tokens: formatDiagnostika ? 4200 : 2000,
           ...(formatDiagnostika ? { temperature: 0.1, seed: 42 } : {}),
         }),
