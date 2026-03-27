@@ -139,7 +139,11 @@ POVINNÉ u KAŽDÉHO pilíře (light, energy, architecture, identity, trust):
 Rules:
 - Be analytical, not judgmental. Explain logic clearly. Avoid generic phrases; use concrete findings.
 - Skóre musí být zdůvodněno: observed + notObserved + reasoning musí odpovídat číslu. Nelze dát např. 10/10 bez vyplněného reasoning a konkrétních observed/notObserved.
-- DŮVĚRA (trust): Rozlišuj portfolio = ukázka práce, reference = hlas klienta, case study = důkaz výsledku. V reasoning to případně vysvětli.
+- DŮVĚRA (trust): Rozlišuj tři úrovně důkazu:
+  1. Reference = citace od jmenovaného klienta s kontextem (firma, jméno) → samo o sobě je silný důkaz, skóre min. 7/10 pokud jsou 3+
+  2. Portfolio = ukázka práce bez hodnocení klienta → střední důkaz
+  3. Case study = konkrétní výsledek s čísly → nejsilnější důkaz, skóre 9-10/10
+  DŮLEŽITÉ: Pokud jsou na stránce citace od jmenovaných klientů (i bez číselných výsledků), považuj je za reference a uveď je v observed[]. Do notObserved[] dávej jen co skutečně chybí — např. case study s čísly, video reference, nezávislé recenze. Nikdy nepiš 'chybí reference' pokud jsou na stránce citace s jmény klientů.
 `;
 
 function buildDiagnostikaPromptFromText(sourceContent: string): string {
