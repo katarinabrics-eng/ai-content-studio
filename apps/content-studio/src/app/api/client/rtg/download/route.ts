@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     // Ověř přístup
     const { data: projectData } = await supabase
       .from("client_projects")
-      .select("id, drive_folder_url")
+      .select("id, google_drive_folder_id")
       .eq("short_code", code)
       .eq("access_token", token)
       .single();
@@ -46,12 +46,12 @@ export async function GET(request: Request) {
       );
     }
 
-    const project = projectData as { id: string; drive_folder_url?: string | null };
+    const project = projectData as { id: string; google_drive_folder_id?: string | null };
 
     // Načti batch — ověř, že patří tomuto projektu
     const { data: batchData } = await supabase
       .from("content_batches")
-      .select("id, project_id, week_label, status, drive_folder_url")
+      .select("id, project_id, week_label, status")
       .eq("id", batch_id)
       .maybeSingle();
 
@@ -67,7 +67,6 @@ export async function GET(request: Request) {
       project_id: string;
       week_label: string;
       status: string;
-      drive_folder_url?: string | null;
     };
 
     if (batch.project_id !== project.id) {
@@ -77,19 +76,18 @@ export async function GET(request: Request) {
       );
     }
 
-    // Prefer batch-level drive URL, fallback na project-level
-    const driveUrl = batch.drive_folder_url ?? project.drive_folder_url ?? null;
-
-    if (!driveUrl) {
+    if (!project.google_drive_folder_id) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Obsah ještě není připraven ke stažení. Ozveme se e-mailem.",
+          error: "Obsah ještě není připraven ke stažení. Obraťte se na kurátora.",
           not_ready: true,
         },
         { status: 404 }
       );
     }
+
+    const driveUrl = `https://drive.google.com/drive/folders/${project.google_drive_folder_id}`;
 
     return NextResponse.json({ ok: true, driveUrl, week_label: batch.week_label });
   } catch (e) {
