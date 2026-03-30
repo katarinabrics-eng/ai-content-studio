@@ -27,43 +27,46 @@
 
 ## 🟡 DŮLEŽITÉ — tento týden
 
-### PRIORITA ZÍTRA: Unifikace klientského portálu dle tarifů
+### PRIORITA ZÍTRA: Unifikace klientského portálu
 
-**Cíl:** Jeden klientský portál který zobrazuje nástroje podle toho co si klient zakoupil. Žádné mrtvé stránky, žádné duplikáty.
+#### 1. SQL migrace (začít tím)
+```sql
+ALTER TABLE client_projects
+  ADD COLUMN IF NOT EXISTS services text[] DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS pvi_active boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS portrait_active boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS magnet_used boolean DEFAULT false;
 
-**Tarify a co klient vidí:**
+-- Testovací data:
+UPDATE client_projects SET
+  services = '{"rtg"}',
+  rtg_plan = 'start'
+WHERE short_code = 'test';
+```
 
-RTG Start (2 900 Kč/měsíc):
-- `/client/[code]/rtg` — schvalování obsahu ✅
-- `/client/[code]/rtg/plans` — upgrade tarifu ✅
-- Sidebar: Můj obsah, Kalendář, Brand DNA, Moje fotky, Přehled
+#### 2. Podmíněný Sidebar
+`Sidebar.tsx` zobrazuje sekce dle `services`:
+- `services` includes `'rtg'` → RTG sekce (Můj obsah, Kalendář, Brand DNA, Fotky)
+- `services` includes `'pvi'` → PVI sekce (Dashboard, Scan, Brief, Média, Timeline)
+- `services` includes `'portrait'` → Galerie fotek + upsell
+- Vždy dole: Upgrade banner pokud chybí vyšší tarif
 
-RTG Plus (4 900 Kč/měsíc):
-- Vše ze Start + Analytika — co fungovalo, Plánování IG/FB/LI
+#### 3. Nová stránka `/client/[code]/gallery`
+- Zobrazí fotky z Google Drive focení
+- Výběr oblíbených fotek (kliknutím)
+- Stažení vybraných
+- Upsell banner: RTG / PVI / Avatar
 
-RTG Pro (7 900 Kč/měsíc):
-- Vše z Plus + Avatar výstupy, Automatizace
+#### 4. Upgrade bannery v portálu
+- RTG Start → banner "Chceš víc obsahu? Přejdi na Plus"
+- Po využití magnetu → banner "Chceš takhle každý týden?"
 
-Prémiová vizuální identita (jednorázová):
-- `/client/[code]` — Brand Dashboard (Score, DNA, pilíře, spider chart)
-- `/client/[code]/brief` — Brief projektu
-- `/client/[code]/media-library` — Vizuální knihovna
-- `/client/[code]/status` — Timeline zakázky
-- Sidebar: Dashboard, Výsledky Scanu, Brief, Média
-
-Kombinace PVI + RTG: Vše z obou
-
-**Co je potřeba udělat:**
-1. [ ] SQL migrace — přidat `service_type` do `client_projects`: `CHECK (service_type IN ('rtg', 'pvi', 'rtg_pvi'))`
-2. [ ] `Sidebar.tsx` — zobrazovat položky podmíněně dle `service_type` + `plan`
-3. [ ] Middleware nebo guard — přesměrovat na správný dashboard po přihlášení
-4. [ ] Opravit `/client/approval` a `/client/assets` — redirect nebo obsah dle tarifu
-5. [ ] Sjednotit autentizaci — dlouhodobý cíl
-
-**Postup zítra:**
-1. SQL migrace — přidat `service_type`
-2. Podmíněný Sidebar dle tarifu
-3. Otestovat na testovacím klientovi
+#### Pořadí práce:
+1. [ ] SQL migrace (`services`, `pvi_active`, `portrait_active`, `magnet_used`)
+2. [ ] `Sidebar.tsx` — podmíněný dle `services` + `rtg_plan`
+3. [ ] Otestovat na test klientovi (`short_code = 'test'`)
+4. [ ] `/client/[code]/gallery` — nová stránka
+5. [ ] Upgrade bannery
 
 ---
 
