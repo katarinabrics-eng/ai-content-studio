@@ -18,30 +18,18 @@
       CHECK (rtg_plan IN ('start', 'plus', 'pro'));
   ```
 
-- [ ] **API route chybí** — vytvořit `/api/client/rtg/download/route.ts`
-  - Má vrátit buď ZIP blob nebo `{ driveUrl: string }`
-  - Zatím může vrátit Drive URL na složku batche
-  - Soubor: `src/app/api/client/rtg/download/route.ts`
-
-- [ ] **API route chybí** — zkopírovat `update-text/route.ts` z dodaného ZIP do:
-  `src/app/api/client/rtg/update-text/route.ts`
+- [x] **API route** `/api/client/rtg/download/route.ts` ✅ 2026-03-30
+  - Vrací `driveUrl` z batch nebo project záznamu
+- [x] **API route** `/api/client/rtg/update-text/route.ts` ✅ 2026-03-30
+  - PATCH — ukládá `text_hook_edited` / `text_body_edited`
 
 ---
 
 ## 🟡 DŮLEŽITÉ — tento týden
 
-- [ ] **Sidebar.tsx** — nasadit opravenou verzi z ZIP balíčku
-  - Přidat RTG odkaz do navigace
-  - Odstranit duplikáty (Příspěvky / Ke schválení → jedno)
-  - Předat nové props: `rtgPlan`, `pendingApprovals`
-
-- [ ] **rtg/page.tsx** — nasadit novou verzi (dodaný soubor)
-  - Autosave textu funguje, download funkce připravena
-  - Potřebuje fungující `/api/client/rtg/download`
-
-- [ ] **Nová stránka** `/client/[projectCode]/rtg/plans/page.tsx` — WIP
-  - Pricing karty Start / Plus / Pro ✅ vytvořeno 2026-03-30
-  - CTA tlačítka zatím alert → TODO: napojit na Stripe
+- [x] **Sidebar.tsx** — RTG odkaz přidán, duplikáty odstraněny ✅ 2026-03-30
+- [x] **rtg/page.tsx** — autosave textu + download napojeny na API ✅ 2026-03-30
+- [ ] **rtg/plans/page.tsx** — CTA tlačítka zatím alert → TODO: napojit na Stripe
 
 - [ ] **Hlavní dashboard** `/client/[projectCode]/page.tsx`
   - Přidat odkaz/banner na RTG portál pokud má klient `rtg_plan`
@@ -59,6 +47,10 @@
 - [x] `CLAUDE.md` — vibe code dokument vytvořen
 - [x] `TASKS.md` — tento soubor
 - [x] `ready-to-go/page.tsx` — existuje jako `/ready-to-go.html` (redirect z Next.js route)
+- [x] `api/client/rtg/update-text` — autosave textu do DB
+- [x] `api/client/rtg/download` — vrátí Drive URL batche
+- [x] `Sidebar.tsx` — RTG odkaz, bez duplikátů
+- [x] `rtg/page.tsx` — autosave + download napojeny
 
 ---
 
