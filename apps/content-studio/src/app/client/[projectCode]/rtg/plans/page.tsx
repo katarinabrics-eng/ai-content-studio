@@ -282,7 +282,7 @@ function PlansInner() {
               ) : (
                 <div>
                   <a
-                    href={`mailto:katarina@studiolucifera.cz?subject=${encodeURIComponent(`Zájem o RTG ${plan.name} - ${projectCode.toUpperCase()}`)}&body=${encodeURIComponent(`Dobrý den,\n\nmám zájem o přechod na plán RTG ${plan.name} (${plan.price.toLocaleString("cs-CZ")} Kč/měsíc).\n\nProjekt: ${projectCode.toUpperCase()}`)}`}
+                    href={`mailto:ahoj@studiolucifera.cz?subject=${encodeURIComponent(`Zájem o RTG ${plan.name} - ${projectCode.toUpperCase()}`)}&body=${encodeURIComponent(`Dobrý den,\n\nmám zájem o přechod na plán RTG ${plan.name} (${plan.price.toLocaleString("cs-CZ")} Kč/měsíc).\n\nProjekt: ${projectCode.toUpperCase()}`)}`}
                     style={{
                       display: "block",
                       textAlign: "center",
