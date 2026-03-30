@@ -27,7 +27,43 @@
 
 ## 🟡 DŮLEŽITÉ — tento týden
 
-*(vše hotovo — viz HOTOVO níže)*
+### PRIORITA ZÍTRA: Unifikace klientského portálu dle tarifů
+
+**Cíl:** Jeden klientský portál který zobrazuje nástroje podle toho co si klient zakoupil. Žádné mrtvé stránky, žádné duplikáty.
+
+**Tarify a co klient vidí:**
+
+RTG Start (2 900 Kč/měsíc):
+- `/client/[code]/rtg` — schvalování obsahu ✅
+- `/client/[code]/rtg/plans` — upgrade tarifu ✅
+- Sidebar: Můj obsah, Kalendář, Brand DNA, Moje fotky, Přehled
+
+RTG Plus (4 900 Kč/měsíc):
+- Vše ze Start + Analytika — co fungovalo, Plánování IG/FB/LI
+
+RTG Pro (7 900 Kč/měsíc):
+- Vše z Plus + Avatar výstupy, Automatizace
+
+Prémiová vizuální identita (jednorázová):
+- `/client/[code]` — Brand Dashboard (Score, DNA, pilíře, spider chart)
+- `/client/[code]/brief` — Brief projektu
+- `/client/[code]/media-library` — Vizuální knihovna
+- `/client/[code]/status` — Timeline zakázky
+- Sidebar: Dashboard, Výsledky Scanu, Brief, Média
+
+Kombinace PVI + RTG: Vše z obou
+
+**Co je potřeba udělat:**
+1. [ ] SQL migrace — přidat `service_type` do `client_projects`: `CHECK (service_type IN ('rtg', 'pvi', 'rtg_pvi'))`
+2. [ ] `Sidebar.tsx` — zobrazovat položky podmíněně dle `service_type` + `plan`
+3. [ ] Middleware nebo guard — přesměrovat na správný dashboard po přihlášení
+4. [ ] Opravit `/client/approval` a `/client/assets` — redirect nebo obsah dle tarifu
+5. [ ] Sjednotit autentizaci — dlouhodobý cíl
+
+**Postup zítra:**
+1. SQL migrace — přidat `service_type`
+2. Podmíněný Sidebar dle tarifu
+3. Otestovat na testovacím klientovi
 
 ---
 
