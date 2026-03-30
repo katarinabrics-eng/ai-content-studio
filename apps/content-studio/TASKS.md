@@ -186,6 +186,37 @@ WHERE short_code = 'test';
 - [ ] Error logging — Sentry nebo vlastní
 - [ ] Testy pro klíčové API routes
 
+### Magnet — technická implementace
+
+#### Magnet UX flow (schválený design)
+
+**Zobrazení:**
+- Výchozí stav: fotka BEZ vodoznaku (vidí plnou kvalitu)
+- Hover na fotku: vodoznak ZMIZÍ (CSS `:hover` transition)
+- Stažení: soubor dostane vodoznak přes Canvas API
+- Opakované použití stejné URL: zobrazí vodoznak hned
+
+**CSS implementace:**
+```css
+.post-preview { position: relative }
+.post-preview .watermark {
+  opacity: 1; transition: opacity 0.3s;
+  position: absolute; inset: 0;
+  /* "LUCIFERA PREVIEW" text přes celý obrázek */
+}
+.post-preview:hover .watermark { opacity: 0 }
+```
+
+**Stažení s vodoznakem:**
+- Canvas API: nakresli obrázek + přidej text overlay
+- Vrátí blob ke stažení
+- Originální soubor bez vodoznaku zůstane na serveru
+
+**Opakované použití:**
+- Sledovat přes `localStorage` nebo IP + fingerprint
+- Při druhém použití stejné domény → rovnou vodoznak
+- Reset po zakoupení tarifu
+
 ---
 
 ## 📝 POZNÁMKY ze session
