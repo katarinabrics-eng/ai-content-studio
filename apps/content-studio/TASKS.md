@@ -90,7 +90,6 @@
 ---
 
 ## 📝 POZNÁMKY ze session
-
 ### 2026-03-30
 - Pracovaly jsme na RTG dashboard prototypu a nasazení
 - Sidebar měl duplikáty a chyběl RTG odkaz — opraveno
