@@ -280,28 +280,28 @@ function PlansInner() {
                   Aktuální plán
                 </div>
               ) : (
-                <button
-                  onClick={() =>
-                    alert(
-                      `Zájem o plán ${plan.name} — brzy dostupné. Napište nám na studio@lucifera.cz`
-                    )
-                  }
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "center",
-                    padding: "12px 20px",
-                    borderRadius: 8,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    background: plan.featured ? "#b7e94c" : "#f5f3ee",
-                    color: plan.featured ? "#111" : "#555",
-                    border: plan.featured ? "none" : "1px solid #e8e4dc",
-                  }}
-                >
-                  {plan.id === "plus" ? "Začít s Plus →" : "Přejít na Pro →"}
-                </button>
+                <div>
+                  <a
+                    href={`mailto:katarina@studiolucifera.cz?subject=${encodeURIComponent(`Zájem o RTG ${plan.name} - ${projectCode.toUpperCase()}`)}&body=${encodeURIComponent(`Dobrý den,\n\nmám zájem o přechod na plán RTG ${plan.name} (${plan.price.toLocaleString("cs-CZ")} Kč/měsíc).\n\nProjekt: ${projectCode.toUpperCase()}`)}`}
+                    style={{
+                      display: "block",
+                      textAlign: "center",
+                      padding: "12px 20px",
+                      borderRadius: 8,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      textDecoration: "none",
+                      background: plan.featured ? "#b7e94c" : "#f5f3ee",
+                      color: plan.featured ? "#111" : "#555",
+                      border: plan.featured ? "none" : "1px solid #e8e4dc",
+                    }}
+                  >
+                    {plan.id === "plus" ? "Začít s Plus →" : "Přejít na Pro →"}
+                  </a>
+                  <p style={{ textAlign: "center", fontSize: 11, color: "#aaa", margin: "8px 0 0" }}>
+                    Odpovídáme do 24 hodin
+                  </p>
+                </div>
               )}
             </div>
           );

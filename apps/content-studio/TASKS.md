@@ -29,11 +29,10 @@
 
 - [x] **Sidebar.tsx** — RTG odkaz přidán, duplikáty odstraněny ✅ 2026-03-30
 - [x] **rtg/page.tsx** — autosave textu + download napojeny na API ✅ 2026-03-30
-- [ ] **rtg/plans/page.tsx** — CTA tlačítka zatím alert → TODO: napojit na Stripe
-
-- [ ] **Hlavní dashboard** `/client/[projectCode]/page.tsx`
-  - Přidat odkaz/banner na RTG portál pokud má klient `rtg_plan`
-  - Přidat notifikaci pokud čeká obsah ke schválení
+- [x] **rtg/plans/page.tsx** — CTA přes mailto, "Odpovídáme do 24 hodin" ✅ 2026-03-30
+- [x] **Hlavní dashboard** `/client/[projectCode]/page.tsx` ✅ 2026-03-30
+  - RTG banner s odkazem na portál
+  - Badge s počtem postů čekajících na schválení
 
 ---
 
@@ -51,6 +50,8 @@
 - [x] `api/client/rtg/download` — vrátí Drive URL batche
 - [x] `Sidebar.tsx` — RTG odkaz, bez duplikátů
 - [x] `rtg/page.tsx` — autosave + download napojeny
+- [x] `rtg/plans/page.tsx` — mailto CTA místo alert
+- [x] `client/[projectCode]/page.tsx` — RTG banner + notifikační badge
 
 ---
 
@@ -128,7 +129,7 @@
 ## 🔵 BACKLOG — příště
 
 ### RTG systém
-- [ ] Stripe napojení pro upgrade plánů (Start → Plus → Pro)
+- [ ] Stripe napojení pro upgrade plánů (Start → Plus → Pro) — zatím mailto, Stripe až v další fázi
 - [ ] Email notifikace klientovi když je batch připraven
 - [ ] Download ZIP — reálná implementace (stáhnout soubory z Drive, zazipit)
 - [ ] Admin `/admin/rtg` — přehled všech batchů, statusů
