@@ -73,6 +73,35 @@ function WorkspaceDashboard({
   const [workspace, setWorkspace] = useState<WorkspaceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rtgPlan, setRtgPlan] = useState<string | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Načti RTG plán a počet postů čekajících na schválení
+  useEffect(() => {
+    if (!projectCode || !token) return;
+    async function loadRtg() {
+      try {
+        const res = await fetch(
+          `/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+        );
+        const data = await res.json() as {
+          ok: boolean;
+          project?: { plan?: string | null };
+          posts?: Array<{ status: string }>;
+        };
+        if (data.ok) {
+          setRtgPlan(data.project?.plan ?? null);
+          const pending = (data.posts ?? []).filter(
+            (p) => p.status === "client_review" || p.status === "pending"
+          ).length;
+          setPendingCount(pending);
+        }
+      } catch {
+        // RTG data nejsou kritická — tiše ignorujeme chybu
+      }
+    }
+    loadRtg();
+  }, [projectCode, token]);
 
   useEffect(() => {
     if (!projectCode) return;
@@ -266,6 +295,40 @@ function WorkspaceDashboard({
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {pendingCount > 0 && (
+              <a
+                href={`/client/${projectCode}/rtg?token=${encodeURIComponent(token)}`}
+                style={{
+                  background: "#b7e94c",
+                  color: "#111",
+                  fontSize: 11,
+                  padding: "5px 14px",
+                  borderRadius: 20,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <span style={{
+                  background: "#111",
+                  color: "#b7e94c",
+                  borderRadius: "50%",
+                  width: 18,
+                  height: 18,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 10,
+                  fontWeight: 800,
+                  flexShrink: 0,
+                }}>
+                  {pendingCount}
+                </span>
+                ke schválení
+              </a>
+            )}
             <span
               style={{
                 background: "#f0fce0",
@@ -281,6 +344,55 @@ function WorkspaceDashboard({
             </span>
           </div>
         </div>
+
+        {/* RTG banner — zobrazí se pouze pokud má klient rtg_plan */}
+        {rtgPlan && (
+          <div style={{ padding: "16px 32px 0" }}>
+            <a
+              href={`/client/${projectCode}/rtg?token=${encodeURIComponent(token)}`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                background: "#f5f3ee",
+                border: "1px solid #e8e4dc",
+                borderLeft: "3px solid #b7e94c",
+                borderRadius: 10,
+                padding: "14px 20px",
+                textDecoration: "none",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{
+                  width: 36,
+                  height: 36,
+                  background: "#b7e94c",
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 16,
+                  flexShrink: 0,
+                }}>
+                  ▶
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+                    {pendingCount > 0 ? "Váš obsah čeká na schválení" : "RTG obsah"}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+                    {pendingCount > 0
+                      ? `${pendingCount} ${pendingCount === 1 ? "příspěvek" : pendingCount < 5 ? "příspěvky" : "příspěvků"} čeká na váš výběr`
+                      : `Plán ${rtgPlan.charAt(0).toUpperCase() + rtgPlan.slice(1)} · Klientský portál`}
+                  </div>
+                </div>
+              </div>
+              <div style={{ fontSize: 13, color: "#b7e94c", fontWeight: 600, flexShrink: 0 }}>
+                Otevřít →
+              </div>
+            </a>
+          </div>
+        )}
 
         {/* Dashboard grid */}
         <div
