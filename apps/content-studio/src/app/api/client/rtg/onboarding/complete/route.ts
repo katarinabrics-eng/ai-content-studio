@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * POST /api/client/rtg/onboarding/complete
- * Body: { code, token, web_url, interval_days, topics }
+ * Body: { code, token, web_url, interval_days, topics, agent_style, platforms }
  */
 export async function POST(request: Request) {
   try {
@@ -16,9 +16,11 @@ export async function POST(request: Request) {
       web_url?: string;
       interval_days?: 7 | 14 | 21 | 30;
       topics?: string[];
+      agent_style?: string;
+      platforms?: string[];
     };
 
-    const { code, token, web_url, interval_days, topics } = body;
+    const { code, token, web_url, interval_days, topics, agent_style, platforms } = body;
 
     if (!code?.trim() || !token?.trim()) {
       return NextResponse.json(
@@ -53,6 +55,8 @@ export async function POST(request: Request) {
         web_url: web_url ?? null,
         interval_days: interval_days ?? null,
         topics: topics ?? [],
+        agent_style: agent_style ?? null,
+        platforms: platforms ?? [],
         onboarding_completed: true,
         rtg_activated_at: now,
         updated_at: now,
