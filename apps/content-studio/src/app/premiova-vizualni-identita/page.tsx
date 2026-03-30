@@ -1692,12 +1692,18 @@ export default function PremiovaVizualniIdentita() {
 
               {/* Content Starter */}
               <div style={{background:"#fff",border:"1px solid var(--gray-light)",borderRadius:18,padding:"28px 32px"}}>
-                <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:12}}>Content Starter</div>
+                <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"#aaa",marginBottom:4}}>Content Starter</div>
+                <div style={{fontSize:11,color:"var(--lime-dark)",fontWeight:600,marginBottom:12}}>součást Content Day</div>
                 <div style={{fontFamily:"var(--font-playfair),serif",fontSize:36,fontWeight:700,color:"var(--black)",lineHeight:1,marginBottom:20,paddingBottom:20,borderBottom:"1px solid var(--gray-light)",display:"flex",alignItems:"baseline",gap:5}}>4 900 <span style={{fontSize:16,fontWeight:400,color:"#aaa"}}>Kč</span></div>
                 <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:8,marginBottom:24}}>
-                  {["návrh vizuálního stylu","ilustrační vizuály","5 krátkých video záběrů","návrhy příspěvků + texty"].map(i=>(
-                    <li key={i} style={{display:"flex",gap:8,alignItems:"center",fontSize:13,color:"#555"}}>
-                      <span style={{color:"var(--lime-dark)",fontWeight:700}}>✓</span>{i}
+                  {[
+                    "60minutový strategický hovor",
+                    "Vaše data a vizuály připravené předem",
+                    "Upravujeme obsah živě dle vašich reakcí",
+                    "Odcházíte s hotovým výstupem",
+                  ].map(i=>(
+                    <li key={i} style={{display:"flex",gap:8,alignItems:"flex-start",fontSize:13,color:"#555"}}>
+                      <span style={{color:"var(--lime-dark)",fontWeight:700,flexShrink:0}}>✓</span>{i}
                     </li>
                   ))}
                 </ul>
@@ -1707,7 +1713,7 @@ export default function PremiovaVizualniIdentita() {
                   padding:"12px",borderRadius:10,
                   fontSize:13,fontWeight:600,textDecoration:"none",
                 }}>Chci začít →</a>
-                <div style={{fontSize:11,color:"#bbb",textAlign:"center",marginTop:8}}>Výstup do 2 dnů · bez závazku</div>
+                <div style={{fontSize:11,color:"#bbb",textAlign:"center",marginTop:8}}>Výstup hotový do konce hovoru · bez závazku</div>
               </div>
             </div>
           </div>
