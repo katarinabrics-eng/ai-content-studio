@@ -1,6 +1,6 @@
 # TASKS.md — Lucifera AI Content Studio
 # Živý pracovní log. Aktualizovat po každé session.
-# Poslední update: 2026-03-30
+# Poslední update: 2026-03-31
 
 ---
 
@@ -27,30 +27,24 @@
 
 ## 🟡 DŮLEŽITÉ — tento týden
 
-- [x] **Sidebar.tsx** — RTG odkaz přidán, duplikáty odstraněny ✅ 2026-03-30
-- [x] **rtg/page.tsx** — autosave textu + download napojeny na API ✅ 2026-03-30
-- [x] **rtg/plans/page.tsx** — CTA přes mailto, "Odpovídáme do 24 hodin" ✅ 2026-03-30
-- [x] **Hlavní dashboard** `/client/[projectCode]/page.tsx` ✅ 2026-03-30
-  - RTG banner s odkazem na portál
-  - Badge s počtem postů čekajících na schválení
+*(vše hotovo — viz HOTOVO níže)*
 
 ---
 
-## 🟢 HOTOVO — tato session (2026-03-30)
+## 🟢 HOTOVO — session 2026-03-31
+
+- [x] `rtg/onboarding/page.tsx` — přepracován na 4 kroky: URL, styl agenta, platformy, témata výběrem ✅ 2026-03-31
+- [x] `api/client/rtg/onboarding/complete` — ukládá `agent_style` a `platforms` ✅ 2026-03-31
+
+## 🟢 HOTOVO — session 2026-03-30
 
 - [x] Prototyp RTG klientského dashboardu (vizuální artifact)
 - [x] Pricing karty Start / Plus / Pro — design hotový
-- [x] `rtg/page.tsx` — autosave + download funkce napsány
-- [x] `Sidebar.tsx` — opravená verze připravena
-- [x] `/rtg/plans/page.tsx` — nová stránka připravena
-- [x] `CLAUDE.md` — vibe code dokument vytvořen
-- [x] `TASKS.md` — tento soubor
-- [x] `ready-to-go/page.tsx` — existuje jako `/ready-to-go.html` (redirect z Next.js route)
 - [x] `api/client/rtg/update-text` — autosave textu do DB
-- [x] `api/client/rtg/download` — vrátí Drive URL batche
+- [x] `api/client/rtg/download` — vrátí Drive URL batche (opraveno: `google_drive_folder_id`)
 - [x] `Sidebar.tsx` — RTG odkaz, bez duplikátů
 - [x] `rtg/page.tsx` — autosave + download napojeny
-- [x] `rtg/plans/page.tsx` — mailto CTA místo alert
+- [x] `rtg/plans/page.tsx` — mailto CTA místo alert, `ahoj@studiolucifera.cz`
 - [x] `client/[projectCode]/page.tsx` — RTG banner + notifikační badge
 
 ---
@@ -164,17 +158,19 @@
 - Web Analyzer: Firecrawl API řeší CORS — musí běžet server-side
 - Design: světlý (#f5f3ee krémová + #b7e94c limetka), NIKDY tmavý sidebar
 
-### 2026-03-30 (session 2)
-- RTG ceny zkontrolovány — jsou správně ve všech souborech
-- `rtg/plans/page.tsx` vytvořen — pricing karty Start/Plus/Pro, CTA mailto
-- `ready-to-go/page.tsx` nahrazen plnohodnotnou landing page (byl jen redirect na HTML)
+### 2026-03-31
+- RTG onboarding přepracován — 4 kroky: URL, styl agenta (5 možností), platformy (grid), témata (pills + custom, max 5)
+- API `onboarding/complete` rozšířeno o `agent_style` a `platforms`
+- Download: Drive URL (ne ZIP) — `google_drive_folder_id` z `client_projects`
+
+### 2026-03-30
+- RTG dashboard, Sidebar, autosave, download, RTG banner + badge na hlavním dashboardu
 - Post-commit hook pro čištění TASKS.md přidán do `.git/hooks/post-commit`
-- CLAUDE.md rozšířen o pravidla pro TASKS.md
 
 ### Otevřené otázky
-- Jak bude fungovat download? ZIP nebo Drive URL?
 - Kdy napojit Stripe pro upgrade plánů?
 - Má mít `/admin/rtg` přehled pending schválení?
+- SQL migrace pro `agent_style` a `platforms` na `client_projects` — bylo spuštěno?
 
 ---
 
