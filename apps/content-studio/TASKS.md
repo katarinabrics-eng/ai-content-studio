@@ -35,6 +35,8 @@
 
 - [x] `rtg/onboarding/page.tsx` — přepracován na 4 kroky: URL, styl agenta, platformy, témata výběrem ✅ 2026-03-31
 - [x] `api/client/rtg/onboarding/complete` — ukládá `agent_style` a `platforms` ✅ 2026-03-31
+- [x] `supabase/migrations/20260330120000_add_rtg_columns.sql` — přidány RTG sloupce do `client_projects`: `agent_style`, `platforms`, `topics`, `interval_days`, `onboarding_completed`, `rtg_activated_at`, `rtg_plan`, `google_drive_folder_id` ✅ 2026-03-31
+  - ⚠️ Spustit ručně v Supabase SQL Editoru
 
 ## 🟢 HOTOVO — session 2026-03-30
 
@@ -170,7 +172,7 @@
 ### Otevřené otázky
 - Kdy napojit Stripe pro upgrade plánů?
 - Má mít `/admin/rtg` přehled pending schválení?
-- SQL migrace pro `agent_style` a `platforms` na `client_projects` — bylo spuštěno?
+- ⚠️ Spustit migraci `20260330120000_add_rtg_columns.sql` v Supabase Dashboard
 
 ---
 
