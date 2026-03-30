@@ -39,9 +39,9 @@
   - Autosave textu funguje, download funkce připravena
   - Potřebuje fungující `/api/client/rtg/download`
 
-- [ ] **Nová stránka** — nasadit `/client/[projectCode]/rtg/plans/page.tsx`
-  - Pricing karty Start / Plus / Pro
-  - CTA tlačítka zatím vedou na `alert` → napojit na Stripe nebo email
+- [ ] **Nová stránka** `/client/[projectCode]/rtg/plans/page.tsx` — WIP
+  - Pricing karty Start / Plus / Pro ✅ vytvořeno 2026-03-30
+  - CTA tlačítka zatím alert → TODO: napojit na Stripe
 
 - [ ] **Hlavní dashboard** `/client/[projectCode]/page.tsx`
   - Přidat odkaz/banner na RTG portál pokud má klient `rtg_plan`
@@ -58,6 +58,7 @@
 - [x] `/rtg/plans/page.tsx` — nová stránka připravena
 - [x] `CLAUDE.md` — vibe code dokument vytvořen
 - [x] `TASKS.md` — tento soubor
+- [x] `ready-to-go/page.tsx` — existuje jako `/ready-to-go.html` (redirect z Next.js route)
 
 ---
 
@@ -99,6 +100,13 @@
 - CLAUDE.md vytvořen pro Claude Code context
 - Web Analyzer: Firecrawl API řeší CORS — musí běžet server-side
 - Design: světlý (#f5f3ee krémová + #b7e94c limetka), NIKDY tmavý sidebar
+
+### 2026-03-30 (session 2)
+- RTG ceny zkontrolovány — jsou správně ve všech souborech
+- `rtg/plans/page.tsx` vytvořen — pricing karty Start/Plus/Pro, CTA mailto
+- `ready-to-go/page.tsx` nahrazen plnohodnotnou landing page (byl jen redirect na HTML)
+- Post-commit hook pro čištění TASKS.md přidán do `.git/hooks/post-commit`
+- CLAUDE.md rozšířen o pravidla pro TASKS.md
 
 ### Otevřené otázky
 - Jak bude fungovat download? ZIP nebo Drive URL?
