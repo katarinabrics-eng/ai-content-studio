@@ -62,6 +62,77 @@
 
 ---
 
+## 📂 EXISTUJÍCÍ SOUBORY A STRÁNKY
+
+> ⚠️ Před vytvořením nového souboru vždy zkontroluj tento seznam.
+> Také spusť: `find src/app -name "*.tsx" | grep -i [název]`
+
+### Veřejné stránky (`src/app/`)
+```
+/                           src/app/page.tsx
+/brand-scan                 src/app/brand-scan/page.tsx
+/diagnostika                src/app/diagnostika/page.tsx
+/diagnostika/view           src/app/diagnostika/view/page.tsx
+/gdpr                       src/app/gdpr/page.tsx
+/intake                     src/app/intake/page.tsx
+/kontakt                    src/app/kontakt/page.tsx
+/kreativa                   src/app/kreativa/page.tsx
+/lucifera-diagnostic        src/app/lucifera-diagnostic/page.tsx
+/lucifera-diagnostic/book   src/app/lucifera-diagnostic/book/page.tsx
+/lucifera-diagnostic/start  src/app/lucifera-diagnostic/start/page.tsx
+/lucifera-diagnostic/success src/app/lucifera-diagnostic/success/page.tsx
+/obchodni-podminky          src/app/obchodni-podminky/page.tsx
+/portrety                   src/app/portrety/page.tsx
+/premiova-vizualni-identita src/app/premiova-vizualni-identita/page.tsx
+/project                    src/app/project/page.tsx
+/ready-to-go                src/app/ready-to-go/page.tsx  ← redirect na /ready-to-go.html
+/ready-to-go/register       src/app/ready-to-go/register/page.tsx
+/rezervace                  src/app/rezervace/page.tsx
+/start                      src/app/start/page.tsx
+/start/success              src/app/start/success/page.tsx
+/studio                     src/app/studio/page.tsx
+/d/[shortCode]              src/app/d/[shortCode]/page.tsx
+```
+
+### Statické HTML (`public/`)
+```
+/ready-to-go.html           public/ready-to-go.html  ← hlavní RTG landing page
+```
+
+### Klientský portál (`src/app/client/`)
+```
+/client/approval            src/app/client/approval/page.tsx
+/client/assets              src/app/client/assets/page.tsx
+/client/onboarding          src/app/client/onboarding/page.tsx
+/client/pristup             src/app/client/pristup/page.tsx
+/client/status              src/app/client/status/page.tsx
+/client/verify              src/app/client/verify/page.tsx
+/client/[projectCode]               src/app/client/[projectCode]/page.tsx
+/client/[projectCode]/brief         src/app/client/[projectCode]/brief/page.tsx
+/client/[projectCode]/media-library src/app/client/[projectCode]/media-library/page.tsx
+/client/[projectCode]/rtg           src/app/client/[projectCode]/rtg/page.tsx
+/client/[projectCode]/rtg/onboarding src/app/client/[projectCode]/rtg/onboarding/page.tsx
+/client/[projectCode]/rtg/plans     src/app/client/[projectCode]/rtg/plans/page.tsx
+```
+
+### Admin (`src/app/admin/`)
+```
+/admin                      src/app/admin/page.tsx
+/admin/dashboard            src/app/admin/dashboard/page.tsx
+/admin/drive                src/app/admin/drive/page.tsx
+/admin/login                src/app/admin/login/page.tsx
+/admin/rtg                  src/app/admin/rtg/page.tsx
+/admin/workspace/[id]       src/app/admin/workspace/[projectId]/page.tsx
+```
+
+### Ostatní
+```
+/curator                    src/app/curator/page.tsx
+/drafts                     src/app/drafts/page.tsx
+```
+
+---
+
 ## 🔵 BACKLOG — příště
 
 ### RTG systém

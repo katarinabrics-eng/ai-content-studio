@@ -181,6 +181,15 @@ Plus = Nejoblíbenější (featured karta)
 
 ---
 
+## Před vytvořením nového souboru
+
+**Vždy** před `Write` nebo vytvořením nové stránky:
+1. Zkontroluj sekci `📂 EXISTUJÍCÍ SOUBORY A STRÁNKY` v `TASKS.md`
+2. Spusť: `find src/app -name "*.tsx" | grep -i [název]`
+3. Pokud soubor existuje — uprav ho, nevytvářej nový
+
+---
+
 ## Workflow pro nové funkce
 
 1. Přečti existující soubor který měníš
@@ -189,6 +198,18 @@ Plus = Nejoblíbenější (featured karta)
 4. Pro větší soubory napiš přesný str_replace
 5. Zkontroluj importy
 6. Neměň co nebylo zmíněno
+
+---
+
+## Pravidla pro TASKS.md
+
+Při každé aktualizaci TASKS.md dodržuj tato pravidla:
+
+- **HOTOVO sekce:** Maž záznamy starší než 3 dny (porovnej s datem v záznamu)
+- **POZNÁMKY ze session:** Zachovej pouze poslední 3 session, starší smaž
+- **BACKLOG:** Nikdy nemaž — jen přidávej nové položky
+- **KRITICKÉ a DŮLEŽITÉ:** Nikdy nemaž dokud nejsou označeny jako hotové (`[x]`)
+- Při každé aktualizaci TASKS.md zkontroluj datum a vymaž co je starší
 
 ---
 
