@@ -1722,38 +1722,20 @@ export default function PremiovaVizualniIdentita() {
           <div style={{
             background:"var(--black)",border:"1px solid rgba(255,255,255,0.06)",
             borderRadius:16,padding:"32px 40px",
+            display:"flex",alignItems:"center",justifyContent:"space-between",gap:32,flexWrap:"wrap",
           }}>
-            <div style={{textAlign:"center",marginBottom:24}}>
+            <div>
               <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",marginBottom:6}}>Chcete to bez starostí?</div>
               <div style={{fontSize:22,fontWeight:700,color:"#fff",marginBottom:4}}>Content Autopilot — Ready to Go</div>
               <div style={{fontSize:13,color:"rgba(255,255,255,0.4)"}}>Pravidelný obsah · publikace · správa</div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:24}}>
-              {[
-                {name:"Start",price:"2 900",desc:"2 videa · 8 grafik"},
-                {name:"Plus",price:"4 900",desc:"4 videa · 16 grafik · carousely",featured:true},
-                {name:"Pro",price:"7 900",desc:"8 videí · 30 grafik · agent"},
-              ].map(t=>(
-                <div key={t.name} style={{
-                  background: t.featured ? "rgba(183,233,76,0.08)" : "rgba(255,255,255,0.04)",
-                  border: t.featured ? "1px solid rgba(183,233,76,0.25)" : "1px solid rgba(255,255,255,0.07)",
-                  borderRadius:12,padding:"18px 20px",textAlign:"center",
-                }}>
-                  <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color: t.featured ? "var(--lime)" : "rgba(255,255,255,0.3)",marginBottom:6}}>{t.name}</div>
-                  <div style={{fontFamily:"var(--font-playfair),serif",fontSize:28,fontWeight:700,color: t.featured ? "var(--lime)" : "#fff",lineHeight:1,marginBottom:4}}>{t.price} <span style={{fontSize:13,fontWeight:400}}>Kč</span></div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>/ měsíc</div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,0.25)",marginTop:6}}>{t.desc}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{textAlign:"center"}}>
-              <a href="/ready-to-go" style={{
-                display:"inline-flex",alignItems:"center",gap:8,
-                background:"#b7e94c",color:"#111",
-                padding:"13px 28px",borderRadius:10,
-                fontSize:13,fontWeight:700,textDecoration:"none",
-              }}>Zjistit více o RTG →</a>
-            </div>
+            <a href="/ready-to-go" style={{
+              display:"inline-flex",alignItems:"center",gap:8,
+              background:"#b7e94c",color:"#111",
+              padding:"13px 28px",borderRadius:10,
+              fontSize:13,fontWeight:700,textDecoration:"none",
+              whiteSpace:"nowrap",flexShrink:0,
+            }}>Zjistit více o RTG →</a>
           </div>
 
           <div style={{fontSize:12,color:"#bbb",textAlign:"center",marginTop:24}}>Žádné dlouhodobé závazky · domlouváme individuálně</div>
