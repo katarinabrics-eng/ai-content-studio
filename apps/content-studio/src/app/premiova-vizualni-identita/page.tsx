@@ -1615,6 +1615,25 @@ export default function PremiovaVizualniIdentita() {
       {/* SEKCE 8 — CENA (krémová) */}
       <section className="pricing" style={{background:"var(--cream)",padding:"96px 80px"}}>
         <div style={{maxWidth:1100,margin:"0 auto"}}>
+          {/* Levitující šipky */}
+          <style>{`
+            @keyframes float-up {
+              0%, 100% { transform: translateY(0); opacity: 0.35; }
+              50% { transform: translateY(-12px); opacity: 1; }
+            }
+          `}</style>
+          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:18,marginBottom:20}}>
+            {[0, 0.3, 0.6].map((delay) => (
+              <svg
+                key={delay}
+                width="22" height="28" viewBox="0 0 22 28" fill="none"
+                style={{animation:`float-up 1.8s ease-in-out ${delay}s infinite`}}
+              >
+                <path d="M11 26V4M11 4L3 12M11 4L19 12" stroke="#b7e94c" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ))}
+          </div>
+
           <div className="label" style={{color:"var(--lime-dark)",textAlign:"center"}}>Jak spolupráce probíhá</div>
           <h2 style={{color:"var(--black)",textAlign:"center"}}>Vyberte si,<br /><em style={{color:"var(--black)"}}>kde chcete začít.</em></h2>
 
