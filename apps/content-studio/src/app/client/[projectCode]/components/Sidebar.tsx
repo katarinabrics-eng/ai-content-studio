@@ -119,9 +119,9 @@ export function Sidebar({ token, projectCode, clientName }: SidebarProps) {
         {navItem("Visual Board", undefined, "Nové")}
 
         {sectionLabel("Obsah")}
+        {navItem("Ready to Go", `${base}/rtg${t}`)}
+        {navItem("Ke schválení", `${base}/rtg${t}`)}
         {navItem("Fotografie", `/client/assets${t}`)}
-        {navItem("Příspěvky", `/client/approval${t}`)}
-        {navItem("Ke schválení", `/client/approval${t}`)}
 
         {sectionLabel("Dokumenty")}
         {navItem("Mé dokumenty", `/client/assets${t}`)}
