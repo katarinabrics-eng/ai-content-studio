@@ -70,14 +70,40 @@ function PostCard({
   post,
   selected,
   onSelect,
+  code,
+  token,
 }: {
   post: Post;
   selected: boolean;
   onSelect: () => void;
+  code: string;
+  token: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [hook, setHook] = useState(post.hook ?? "");
   const [body, setBody] = useState(post.body ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function saveText() {
+    setSaving(true);
+    try {
+      await Promise.all([
+        fetch("/api/client/rtg/update-text", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ post_id: post.id, field: "hook", value: hook, code, token }),
+        }),
+        fetch("/api/client/rtg/update-text", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ post_id: post.id, field: "body", value: body, code, token }),
+        }),
+      ]);
+    } finally {
+      setSaving(false);
+      setEditing(false);
+    }
+  }
   const isApproved = post.status === "approved";
   const isCarousel = post.type === "CAROUSEL";
   const isVideo = post.type === "VIDEO";
@@ -192,10 +218,11 @@ function PostCard({
               className="w-full text-xs text-[#555] border border-[#e8e8e4] rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#d0ec78]"
             />
             <button
-              onClick={(e) => { e.stopPropagation(); setEditing(false); }}
-              className="text-xs text-[#888] underline self-start"
+              onClick={(e) => { e.stopPropagation(); saveText(); }}
+              disabled={saving}
+              className="text-xs text-[#888] underline self-start disabled:opacity-50"
             >
-              Uložit
+              {saving ? "Ukládám…" : "Uložit"}
             </button>
           </>
         ) : (
@@ -300,6 +327,8 @@ function PairRow({
             post={pair.variantA}
             selected={selected === "A"}
             onSelect={() => !alreadyApproved && setSelected("A")}
+            code={code}
+            token={token}
           />
         )}
         {pair.variantB && (
@@ -307,6 +336,8 @@ function PairRow({
             post={pair.variantB}
             selected={selected === "B"}
             onSelect={() => !alreadyApproved && setSelected("B")}
+            code={code}
+            token={token}
           />
         )}
       </div>
@@ -331,6 +362,49 @@ function PairRow({
         </div>
       )}
       {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  );
+}
+
+// ─── DownloadBanner ───────────────────────────────────────────────────────────
+
+function DownloadBanner({ batchId, code, token }: { batchId: string; code: string; token: string }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleDownload() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/client/rtg/download?batch_id=${encodeURIComponent(batchId)}&code=${encodeURIComponent(code)}&token=${encodeURIComponent(token)}`
+      );
+      const data = (await res.json()) as { ok: boolean; driveUrl?: string; error?: string };
+      if (data.ok && data.driveUrl) {
+        window.open(data.driveUrl, "_blank", "noopener,noreferrer");
+      } else {
+        setError(data.error ?? "Odkaz není dostupný.");
+      }
+    } catch {
+      setError("Chyba připojení.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="mt-10 rounded-xl bg-[#f3fbdc] border border-[#d0ec78] p-6 text-center">
+      <p className="text-[#111] font-semibold text-lg mb-1">
+        ✅ Všechno schváleno! Obsah je připraven ke stažení.
+      </p>
+      {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+      <button
+        onClick={handleDownload}
+        disabled={loading}
+        className="mt-3 px-5 py-2 rounded-lg bg-[#111] text-white text-sm font-medium hover:bg-[#333] transition-colors disabled:opacity-50"
+      >
+        {loading ? "Načítám…" : "Stáhnout obsah →"}
+      </button>
     </div>
   );
 }
@@ -510,18 +584,8 @@ function RtgDashboardInner() {
       </div>
 
       {/* Vše schváleno banner */}
-      {batchFullyApproved && (
-        <div className="mt-10 rounded-xl bg-[#f3fbdc] border border-[#d0ec78] p-6 text-center">
-          <p className="text-[#111] font-semibold text-lg mb-1">
-            ✅ Všechno schváleno! Obsah je připraven ke stažení.
-          </p>
-          <button
-            onClick={() => alert("Stahování bude brzy dostupné")}
-            className="mt-3 px-5 py-2 rounded-lg bg-[#111] text-white text-sm font-medium hover:bg-[#333] transition-colors"
-          >
-            Stáhnout obsah
-          </button>
-        </div>
+      {batchFullyApproved && batch && (
+        <DownloadBanner batchId={batch.id} code={code} token={token} />
       )}
     </div>
   );
