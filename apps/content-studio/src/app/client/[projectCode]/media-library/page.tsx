@@ -187,7 +187,7 @@ export default function MediaLibraryPage() {
   const [vbColor, setVbColor] = useState('')
   const [vbLoading, setVbLoading] = useState(false)
   const [vbError, setVbError] = useState<string | null>(null)
-  const [vbColumns, setVbColumns] = useState(4)
+  const [vbColumns, setVbColumns] = useState(8)
 
   useEffect(() => {
     fetchMedia('all')
