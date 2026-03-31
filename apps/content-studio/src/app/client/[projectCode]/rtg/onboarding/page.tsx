@@ -138,6 +138,16 @@ function OnboardingInner() {
   }
 
   async function handleComplete() {
+    // Magnet flow — bez autentizace, uložit do localStorage
+    if (code === "magnet") {
+      localStorage.setItem(
+        "magnet_onboarding",
+        JSON.stringify({ web_url: webUrl, agent_style: agentId, platforms, topics })
+      );
+      router.push("/client/magnet/rtg/preview");
+      return;
+    }
+
     setSaving(true);
     setSaveError(null);
     try {
