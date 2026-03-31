@@ -57,6 +57,11 @@ type WorkspaceData = {
     folder_structure?: unknown[];
   } | null;
   selected_photos?: string[] | null;
+  rtg_plan?: string | null;
+  google_drive_folder_id?: string | null;
+  agent_style?: string | null;
+  platforms?: string[] | null;
+  topics?: string[] | null;
 };
 
 // ─── Inner dashboard (needs params + token) ──────────────────────────────────
@@ -120,10 +125,15 @@ function WorkspaceDashboard({
             id: proj.id,
             name: proj.brief?.brand_name ?? null,
             email: null,
-            web_url: null,
+            web_url: proj.web_url ?? null,
             scan_result: proj.scan_result ?? {},
             drive_config: proj.drive_config ?? null,
             selected_photos: proj.selected_photos ?? null,
+            rtg_plan: proj.rtg_plan ?? null,
+            google_drive_folder_id: proj.google_drive_folder_id ?? null,
+            agent_style: proj.agent_style ?? null,
+            platforms: proj.platforms ?? null,
+            topics: proj.topics ?? null,
           });
         }
       } catch (e) {
@@ -197,6 +207,11 @@ function WorkspaceDashboard({
   const scan = workspace?.scan_result ?? {};
   const brandDna = scan.brandDna ?? {};
   const pillarAnalysis = scan.pillarAnalysis ?? {};
+
+  // Typ klienta
+  const hasRtg = !!(workspace?.rtg_plan || rtgPlan);
+  const hasPvi = !!(scan.brandScore?.total);
+  const hasPortrait = !!workspace?.google_drive_folder_id;
   const brandScore = scan.brandScore?.total ?? 50;
   const suggestedStrategists = scan.suggested_strategists ?? [];
 
@@ -394,54 +409,186 @@ function WorkspaceDashboard({
           </div>
         )}
 
-        {/* Dashboard grid */}
-        <div
-          style={{
-            padding: "24px 32px",
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+        {/* ── RTG-only dashboard ─────────────────────────────────────── */}
+        {!hasPvi && hasRtg && (
+          <div style={{ padding: "24px 32px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+            {/* Velký RTG banner */}
+            <a
+              href={`/client/${projectCode}/rtg?token=${encodeURIComponent(token)}`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                background: "#111",
+                borderRadius: 14,
+                padding: "28px 32px",
+                textDecoration: "none",
+                gap: 24,
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 11, color: "#b7e94c", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+                  Ready to Go · Obsah
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 6 }}>
+                  {pendingCount > 0 ? "Váš obsah čeká na schválení" : "Váš obsah je připravený"}
+                </div>
+                <div style={{ fontSize: 14, color: "#aaa" }}>
+                  {pendingCount > 0
+                    ? `${pendingCount} ${pendingCount === 1 ? "příspěvek čeká" : pendingCount < 5 ? "příspěvky čekají" : "příspěvků čeká"} na váš výběr`
+                    : "Otevřít portál a zkontrolovat obsah"}
+                </div>
+              </div>
+              <div style={{
+                background: "#b7e94c",
+                color: "#111",
+                padding: "12px 24px",
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: 14,
+                flexShrink: 0,
+              }}>
+                Otevřít →
+              </div>
+            </a>
+
+            {/* Statistiky */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+              {[
+                { label: "Plán", value: (workspace?.rtg_plan || rtgPlan || "—").charAt(0).toUpperCase() + (workspace?.rtg_plan || rtgPlan || "").slice(1) },
+                { label: "Ke schválení", value: String(pendingCount) },
+                { label: "Status", value: "Aktivní" },
+              ].map((stat) => (
+                <div key={stat.label} style={{
+                  background: "#fff",
+                  border: "1px solid #e8e4dc",
+                  borderRadius: 12,
+                  padding: "20px 24px",
+                }}>
+                  <div style={{ fontSize: 24, fontWeight: 700, color: "#111", marginBottom: 4 }}>{stat.value}</div>
+                  <div style={{ fontSize: 12, color: "#aaa" }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Brand DNA pokud existuje */}
+            {(workspace?.agent_style || (workspace?.platforms ?? []).length > 0 || (workspace?.topics ?? []).length > 0) && (
+              <div style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "20px 24px" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 14 }}>Váš nastavený styl</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {workspace?.agent_style && (
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 11, color: "#aaa", width: 90, flexShrink: 0, paddingTop: 2 }}>Styl agenta</span>
+                      <span style={{ fontSize: 13, color: "#333" }}>{workspace.agent_style}</span>
+                    </div>
+                  )}
+                  {(workspace?.platforms ?? []).length > 0 && (
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 11, color: "#aaa", width: 90, flexShrink: 0, paddingTop: 2 }}>Platformy</span>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {(workspace?.platforms ?? []).map((p) => (
+                          <span key={p} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: "#f5f3ee", border: "1px solid #e8e4dc", color: "#555" }}>{p}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {(workspace?.topics ?? []).length > 0 && (
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 11, color: "#aaa", width: 90, flexShrink: 0, paddingTop: 2 }}>Témata</span>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {(workspace?.topics ?? []).map((t) => (
+                          <span key={t} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: "#f5f3ee", border: "1px solid #e8e4dc", color: "#555" }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Upgrade odkaz */}
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <a
+                href={`/client/${projectCode}/rtg/plans?token=${encodeURIComponent(token)}`}
+                style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}
+              >
+                Změnit plán →
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* ── PVI dashboard (brand scan existuje) ────────────────────── */}
+        {hasPvi && (
+          <div
+            style={{
+              padding: "24px 32px",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 16,
+            }}
+          >
+            {/* Row 1: Score + Web preview + Pipeline */}
+            <ScoreCard
+              score={brandScore}
+              persona={archetype}
+              topPillar={topPillar}
+              weakPillar={weakPillar}
+            />
+            <WebPreviewCard
+              webUrl={webUrl}
+              brandName={brandName}
+              positioning={positioning}
+            />
+            <PipelineCard
+              diagnostics={pillarEntries.length > 0 ? scan : null}
+              driveConfig={driveConfig}
+              selectedPhotos={selectedPhotos}
+            />
+
+            {/* Row 2: Pillars + Spider */}
+            <PillarsCard pillarAnalysis={pillarAnalysis} />
+            <SpiderChart scores={spiderScores} />
+            <BrandIdentityCard
+              colorPalette={colorPalette}
+              typography={typography}
+              tone={tone}
+            />
+
+            {/* Row 3: Strategists (2col) + BrandVoice */}
+            <div style={{ gridColumn: "span 2" }}>
+              <StrategistsCard strategistIds={suggestedStrategists} />
+            </div>
+            <BrandVoiceCard keyMessages={keyMessages} />
+
+            {/* Row 4: Symbols (2col) + Documents */}
+            <div style={{ gridColumn: "span 2" }}>
+              <SymbolsCard archetype={archetype} />
+            </div>
+            <DocumentsList folderStructure={folderStructure} />
+          </div>
+        )}
+
+        {/* ── Prázdný stav — žádný scan, žádný RTG ──────────────────── */}
+        {!hasPvi && !hasRtg && (
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "80px 32px",
             gap: 16,
-          }}
-        >
-          {/* Row 1: Score + Web preview + Pipeline */}
-          <ScoreCard
-            score={brandScore}
-            persona={archetype}
-            topPillar={topPillar}
-            weakPillar={weakPillar}
-          />
-          <WebPreviewCard
-            webUrl={webUrl}
-            brandName={brandName}
-            positioning={positioning}
-          />
-          <PipelineCard
-            diagnostics={pillarEntries.length > 0 ? scan : null}
-            driveConfig={driveConfig}
-            selectedPhotos={selectedPhotos}
-          />
-
-          {/* Row 2: Pillars + Spider */}
-          <PillarsCard pillarAnalysis={pillarAnalysis} />
-          <SpiderChart scores={spiderScores} />
-          <BrandIdentityCard
-            colorPalette={colorPalette}
-            typography={typography}
-            tone={tone}
-          />
-
-          {/* Row 3: Strategists (2col) + BrandVoice */}
-          <div style={{ gridColumn: "span 2" }}>
-            <StrategistsCard strategistIds={suggestedStrategists} />
+            color: "#aaa",
+            textAlign: "center",
+          }}>
+            <div style={{ fontSize: 48, opacity: 0.3 }}>◎</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: "#555" }}>Brand analýza se připravuje</div>
+            <div style={{ fontSize: 14, color: "#aaa", maxWidth: 360 }}>
+              Vaše výsledky budou dostupné po dokončení Brand Scanu. Obvykle do 24 hodin.
+            </div>
           </div>
-          <BrandVoiceCard keyMessages={keyMessages} />
-
-          {/* Row 4: Symbols (2col) + Documents */}
-          <div style={{ gridColumn: "span 2" }}>
-            <SymbolsCard archetype={archetype} />
-          </div>
-          <DocumentsList folderStructure={folderStructure} />
-        </div>
+        )}
       </div>
     </div>
   );
