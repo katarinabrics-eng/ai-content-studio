@@ -278,7 +278,16 @@ function WorkspaceDashboard({
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar token={token} projectCode={projectCode} clientName={clientName} />
+      <Sidebar
+        token={token}
+        projectCode={projectCode}
+        clientName={clientName}
+        rtgPlan={workspace?.rtg_plan ?? rtgPlan}
+        pendingApprovals={pendingCount}
+        hasPvi={hasPvi}
+        hasRtg={hasRtg}
+        hasPortrait={hasPortrait}
+      />
 
       {/* Main content */}
       <div style={{ flex: 1, overflow: "auto" }}>
