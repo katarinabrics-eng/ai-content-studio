@@ -3,7 +3,6 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Suspense } from "react";
 import { ClientTokenGuard, type ClientInfo } from "../ClientTokenGuard";
-import { Sidebar } from "./components/Sidebar";
 import { WebPreviewCard } from "./components/WebPreviewCard";
 import { ScoreCard } from "./components/ScoreCard";
 import { PillarsCard } from "./components/PillarsCard";
@@ -277,20 +276,8 @@ function WorkspaceDashboard({
   const clientName = client.name || client.email || brandName;
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar
-        token={token}
-        projectCode={projectCode}
-        clientName={clientName}
-        rtgPlan={workspace?.rtg_plan ?? rtgPlan}
-        pendingApprovals={pendingCount}
-        hasPvi={hasPvi}
-        hasRtg={hasRtg}
-        hasPortrait={hasPortrait}
-      />
-
-      {/* Main content */}
-      <div style={{ flex: 1, overflow: "auto" }}>
+    // Sidebar je poskytován [projectCode]/layout.tsx
+    <div style={{ flex: 1, overflow: "auto" }}>
         {/* Header */}
         <div
           style={{
@@ -598,7 +585,6 @@ function WorkspaceDashboard({
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
