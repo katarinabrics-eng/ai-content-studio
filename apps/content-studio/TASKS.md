@@ -186,6 +186,15 @@ WHERE short_code = 'test';
 - [ ] Error logging — Sentry nebo vlastní
 - [ ] Testy pro klíčové API routes
 
+### Magnet route `/client/magnet/rtg/onboarding`
+- [ ] Veřejná stránka bez autentizace
+- [ ] Přijme `?web=` parametr z ready-to-go stránky
+- [ ] Předvyplní URL v kroku 1 onboardingu
+- [ ] Po dokončení onboardingu vytvoří dočasný projekt v DB (`magnet_used = false`)
+- [ ] Vygeneruje 3 posty
+- [ ] Zobrazí je s hover vodoznakem
+- [ ] CTA: "Stáhnout bez vodoznaku" → `/ready-to-go#plans`
+
 ### Magnet — technická implementace
 
 #### Magnet UX flow (schválený design)
