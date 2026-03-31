@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -95,6 +95,14 @@ function OnboardingInner() {
 
   // Krok 1
   const [webUrl, setWebUrl] = useState("");
+
+  useEffect(() => {
+    const webParam = searchParams.get("web");
+    if (webParam) {
+      setWebUrl(webParam);
+      setStep(2);
+    }
+  }, [searchParams]);
   // Krok 2
   const [agentId, setAgentId] = useState<string | null>(null);
   // Krok 3
