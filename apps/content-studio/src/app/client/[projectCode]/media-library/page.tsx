@@ -91,6 +91,7 @@ const VB_LABELS = ['Reels vibe', 'Carousel BG', 'Quote post', 'Story moment', 'F
 
 function VBCard({ file, index }: { file: VBFile; index: number }) {
   const [hovered, setHovered] = useState(false)
+  const [liked, setLiked] = useState(false)
   const label = VB_LABELS[index % VB_LABELS.length]
 
   return (
@@ -130,13 +131,40 @@ function VBCard({ file, index }: { file: VBFile; index: number }) {
         </div>
       )}
 
-      {/* Hover overlay */}
+      {/* Srdíčko — vpravo nahoře */}
+      <div
+        title="Uložit do oblíbených"
+        onClick={(e) => { e.stopPropagation(); setLiked(prev => !prev) }}
+        style={{
+          position: 'absolute', top: 8, right: 8,
+          width: 32, height: 32, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.92)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer',
+          opacity: hovered || liked ? 1 : 0,
+          transition: 'opacity 0.2s, transform 0.15s',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+          zIndex: 4,
+        }}
+        onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.15)'}
+        onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24"
+          fill={liked ? '#e05a5a' : 'none'}
+          stroke="#e05a5a" strokeWidth="2"
+          strokeLinecap="round" strokeLinejoin="round"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </div>
+
+      {/* Hover overlay — gradient + tlačítko Použít dole uprostřed */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 3,
         background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)',
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        gap: 6,
+        alignItems: 'center', justifyContent: 'flex-end',
+        paddingBottom: 12,
         opacity: hovered ? 1 : 0,
         transition: 'opacity 0.2s',
         borderRadius: 8,
@@ -147,13 +175,6 @@ function VBCard({ file, index }: { file: VBFile; index: number }) {
           style={{ background: 'rgba(255,255,255,0.95)', color: '#111', fontSize: 12, fontWeight: 500, padding: '8px 16px', borderRadius: 8, border: '0.5px solid rgba(0,0,0,0.15)', cursor: 'pointer', fontFamily: 'inherit' }}
         >
           ➕ Použít
-        </button>
-        <button
-          title="Uložím do oblíbených"
-          onClick={(e) => { e.stopPropagation(); window.open(file.thumbnailUrl, '_blank') }}
-          style={{ background: 'rgba(255,255,255,0.95)', color: '#111', fontSize: 12, fontWeight: 500, padding: '8px 16px', borderRadius: 8, border: '0.5px solid rgba(0,0,0,0.15)', cursor: 'pointer', fontFamily: 'inherit' }}
-        >
-          ❤️ Uložit
         </button>
       </div>
     </div>
