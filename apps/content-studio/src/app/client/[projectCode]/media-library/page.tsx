@@ -85,14 +85,30 @@ function Skeleton() {
   )
 }
 
+const VB_LABELS = ['Reels vibe', 'Carousel BG', 'Quote post', 'Story moment', 'Feed lifestyle', 'Reels portrait', 'Brand detail']
+
+// Mozaikový pattern: index % 7 určuje span
+function getSpan(index: number): React.CSSProperties {
+  if (index % 7 === 0) return { gridRow: 'span 2' }        // portrait — vysoká
+  if (index % 7 === 3) return { gridColumn: 'span 2' }     // landscape — široká
+  return {}                                                  // square
+}
+
 // ─── VB Photo Card s hover overlay ───────────────────────────────────────────
 
-function VBCard({ file }: { file: VBFile }) {
+function VBCard({ file, index }: { file: VBFile; index: number }) {
   const [hovered, setHovered] = useState(false)
+  const label = VB_LABELS[index % VB_LABELS.length]
+  const spanStyle = getSpan(index)
 
   return (
     <div
-      style={{ borderRadius: 10, overflow: 'hidden', position: 'relative', cursor: 'pointer', aspectRatio: '4/3' }}
+      style={{
+        borderRadius: 10, overflow: 'hidden', position: 'relative',
+        cursor: 'pointer', ...spanStyle,
+        // portrait spans 2 rows → fill height; others fixed
+        minHeight: spanStyle.gridRow ? undefined : 200,
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -100,22 +116,27 @@ function VBCard({ file }: { file: VBFile }) {
       <img
         src={file.thumbnailUrl}
         alt={file.name}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }}
         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
           e.currentTarget.style.display = 'none'
         }}
       />
 
-      {/* Style label */}
-      {file.style && !hovered && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '16px 10px 8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.4))' }}>
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', letterSpacing: '.06em', textTransform: 'uppercase' }}>{file.style}</span>
+      {/* Label v levém dolním rohu */}
+      {!hovered && (
+        <div style={{ position: 'absolute', bottom: 8, left: 8, zIndex: 2 }}>
+          <span style={{
+            fontSize: 9, fontWeight: 500, padding: '2px 8px', borderRadius: 10,
+            background: 'rgba(255,255,255,0.85)', color: '#333',
+          }}>
+            {label}
+          </span>
         </div>
       )}
 
       {/* Hover overlay */}
       <div style={{
-        position: 'absolute', inset: 0,
+        position: 'absolute', inset: 0, zIndex: 3,
         background: 'rgba(0,0,0,0.35)',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'flex-end',
@@ -124,16 +145,18 @@ function VBCard({ file }: { file: VBFile }) {
         transition: 'opacity 0.2s',
       }}>
         <button
+          title="Vytvořím z toho příspěvek"
           onClick={(e) => { e.stopPropagation(); alert('Brzy: vytvoření příspěvku z této fotky') }}
           style={{ background: '#b7e94c', color: '#111', fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
         >
-          Použít v příspěvku
+          ➕ Použít
         </button>
         <button
+          title="Uložím do oblíbených"
           onClick={(e) => { e.stopPropagation(); window.open(file.thumbnailUrl, '_blank') }}
           style={{ background: 'rgba(255,255,255,0.9)', color: '#111', fontSize: 11, padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
         >
-          Stáhnout
+          ❤️ Uložit
         </button>
       </div>
     </div>
@@ -159,7 +182,7 @@ export default function MediaLibraryPage() {
   const [search, setSearch] = useState('')
 
   // Visual bank tab state
-  const [activeTab, setActiveTab] = useState<'moje' | 'banka'>('moje')
+  const [activeTab, setActiveTab] = useState<'moje' | 'banka' | 'oblibene'>('moje')
   const [vbFiles, setVbFiles] = useState<VBFile[]>([])
   const [vbFolders, setVbFolders] = useState<VBFolder[]>([])
   const [vbTotal, setVbTotal] = useState(0)
@@ -276,7 +299,7 @@ export default function MediaLibraryPage() {
 
       {/* Hlavní tabs */}
       <div style={{ background: '#fff', borderBottom: '0.5px solid #e8e8e4', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 0 }}>
-        {([['moje', 'Moje média'], ['banka', 'Vizuální banka']] as const).map(([key, label]) => (
+        {([['moje', 'Moje média'], ['banka', 'Vizuální banka'], ['oblibene', 'Oblíbené ❤️']] as const).map(([key, label]) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
@@ -447,13 +470,30 @@ export default function MediaLibraryPage() {
                 <div style={{ fontSize: 12, color: '#9a9a90', marginBottom: 16 }}>
                   {vbTotal} fotek{vbStyle && ` · ${vbStyle}`}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                  {vbFiles.map(f => <VBCard key={f.id} file={f} />)}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridAutoRows: '200px', gap: 8 }}>
+                  {vbFiles.map((f, i) => <VBCard key={f.id} file={f} index={i} />)}
                 </div>
               </>
             )}
           </div>
         </>
+      )}
+
+      {/* ── OBLÍBENÉ ────────────────────────────────────────────────────────────── */}
+      {activeTab === 'oblibene' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 32px', gap: 12, textAlign: 'center' }}>
+          <div style={{ fontSize: 40, opacity: 0.25 }}>❤️</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#555' }}>Zatím nemáš žádné oblíbené</div>
+          <div style={{ fontSize: 13, color: '#aaa', maxWidth: 320, lineHeight: 1.6 }}>
+            Klikni ❤️ Uložit na fotce ve Vizuální bance pro přidání do oblíbených.
+          </div>
+          <button
+            onClick={() => setActiveTab('banka')}
+            style={{ marginTop: 8, padding: '9px 20px', borderRadius: 8, border: '1px solid #e8e8e4', background: '#fff', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
+          >
+            Procházet Vizuální banku →
+          </button>
+        </div>
       )}
 
       {/* Selection bar */}
