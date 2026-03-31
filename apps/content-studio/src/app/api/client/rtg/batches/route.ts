@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     // Ověř přístup přes short_code + access_token
     const { data: projectData } = await supabase
       .from("client_projects")
-      .select("id, plan, interval_days, client_name, onboarding_completed")
+      .select("id, plan, rtg_plan, interval_days, client_name, onboarding_completed, pvi_active, portrait_active, google_drive_folder_id")
       .eq("short_code", code)
       .eq("access_token", token)
       .single();
@@ -41,9 +41,13 @@ export async function GET(request: Request) {
     const project = projectData as {
       id: string;
       plan: string | null;
+      rtg_plan: string | null;
       interval_days: number | null;
       client_name: string | null;
       onboarding_completed: boolean;
+      pvi_active: boolean;
+      portrait_active: boolean;
+      google_drive_folder_id: string | null;
     };
 
     // Nejnovější pending nebo partial batch
@@ -90,9 +94,13 @@ export async function GET(request: Request) {
       posts,
       project: {
         plan: project.plan,
+        rtg_plan: project.rtg_plan ?? project.plan,
         interval_days: project.interval_days,
         client_name: project.client_name,
         onboarding_completed: project.onboarding_completed,
+        pvi_active: project.pvi_active ?? false,
+        portrait_active: project.portrait_active ?? false,
+        google_drive_folder_id: project.google_drive_folder_id ?? null,
       },
     });
   } catch (e) {

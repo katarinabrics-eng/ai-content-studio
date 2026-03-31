@@ -7,9 +7,55 @@ import { Sidebar } from "./components/Sidebar";
 type ProjectInfo = {
   rtg_plan: string | null;
   google_drive_folder_id: string | null;
+  pvi_active: boolean;
+  portrait_active: boolean;
   scan_result: { brandScore?: { total?: number } } | null;
   client_name: string | null;
 };
+
+async function loadProjectInfo(projectCode: string, token: string): Promise<ProjectInfo | null> {
+  // Krok 1: zkus RTG systém (short_code + access_token)
+  try {
+    const rtgRes = await fetch(
+      `/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+    );
+    const rtgData = await rtgRes.json();
+    if (rtgData.ok && rtgData.project) {
+      return {
+        rtg_plan: rtgData.project.rtg_plan ?? rtgData.project.plan ?? null,
+        google_drive_folder_id: rtgData.project.google_drive_folder_id ?? null,
+        pvi_active: rtgData.project.pvi_active ?? false,
+        portrait_active: rtgData.project.portrait_active ?? false,
+        scan_result: null, // RTG systém nemá scan_result
+        client_name: rtgData.project.client_name ?? null,
+      };
+    }
+  } catch {
+    // RTG fetch selhal, zkus magic link
+  }
+
+  // Krok 2: zkus magic link systém (client_token)
+  try {
+    const pvRes = await fetch(
+      `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+    );
+    const pvData = await pvRes.json();
+    if (pvData.project) {
+      return {
+        rtg_plan: pvData.project.rtg_plan ?? null,
+        google_drive_folder_id: pvData.project.google_drive_folder_id ?? null,
+        pvi_active: pvData.project.pvi_active ?? false,
+        portrait_active: pvData.project.portrait_active ?? false,
+        scan_result: pvData.project.scan_result ?? null,
+        client_name: pvData.project.client_name ?? pvData.project.brief?.brand_name ?? null,
+      };
+    }
+  } catch {
+    // obě cesty selhaly
+  }
+
+  return null;
+}
 
 function ClientLayoutInner({ children }: { children: React.ReactNode }) {
   const params = useParams();
@@ -23,19 +69,18 @@ function ClientLayoutInner({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!token || !projectCode) return;
 
-    fetch(`/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.project) setProject(data.project);
-      })
-      .catch(() => {});
+    loadProjectInfo(projectCode, token).then((info) => {
+      if (info) setProject(info);
+    });
 
-    fetch(`/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`)
+    // Počet postů ke schválení (RTG systém)
+    fetch(
+      `/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+    )
       .then((r) => r.json())
       .then((data) => {
-        if (data.batches) {
-          const count = (data.batches as Array<{ posts?: Array<{ status: string }> }>)
-            .flatMap((b) => b.posts ?? [])
+        if (data.ok && data.posts) {
+          const count = (data.posts as Array<{ status: string }>)
             .filter((p) => p.status === "client_review").length;
           setPendingCount(count);
         }
@@ -43,9 +88,10 @@ function ClientLayoutInner({ children }: { children: React.ReactNode }) {
       .catch(() => {});
   }, [projectCode, token]);
 
+  // Typ klienta — RTG plán OR pvi_active OR portrait_active
   const hasRtg = !!(project?.rtg_plan);
-  const hasPvi = !!(project?.scan_result?.brandScore?.total);
-  const hasPortrait = !!(project?.google_drive_folder_id);
+  const hasPvi = !!(project?.pvi_active || project?.scan_result?.brandScore?.total);
+  const hasPortrait = !!(project?.portrait_active || project?.google_drive_folder_id);
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
