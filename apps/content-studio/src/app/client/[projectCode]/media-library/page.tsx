@@ -87,27 +87,23 @@ function Skeleton() {
 
 const VB_LABELS = ['Reels vibe', 'Carousel BG', 'Quote post', 'Story moment', 'Feed lifestyle', 'Reels portrait', 'Brand detail']
 
-// Mozaikový pattern: index % 7 určuje span
-function getSpan(index: number): React.CSSProperties {
-  if (index % 7 === 0) return { gridRow: 'span 2' }        // portrait — vysoká
-  if (index % 7 === 3) return { gridColumn: 'span 2' }     // landscape — široká
-  return {}                                                  // square
-}
-
 // ─── VB Photo Card s hover overlay ───────────────────────────────────────────
 
 function VBCard({ file, index }: { file: VBFile; index: number }) {
   const [hovered, setHovered] = useState(false)
   const label = VB_LABELS[index % VB_LABELS.length]
-  const spanStyle = getSpan(index)
 
   return (
     <div
       style={{
-        borderRadius: 10, overflow: 'hidden', position: 'relative',
-        cursor: 'pointer', ...spanStyle,
-        // portrait spans 2 rows → fill height; others fixed
-        minHeight: spanStyle.gridRow ? undefined : 200,
+        breakInside: 'avoid',
+        marginBottom: 8,
+        position: 'relative',
+        display: 'inline-block',
+        width: '100%',
+        cursor: 'pointer',
+        borderRadius: 8,
+        overflow: 'hidden',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -116,7 +112,7 @@ function VBCard({ file, index }: { file: VBFile; index: number }) {
       <img
         src={file.thumbnailUrl}
         alt={file.name}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }}
+        style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 8 }}
         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
           e.currentTarget.style.display = 'none'
         }}
@@ -143,6 +139,7 @@ function VBCard({ file, index }: { file: VBFile; index: number }) {
         paddingBottom: 12, gap: 6,
         opacity: hovered ? 1 : 0,
         transition: 'opacity 0.2s',
+        borderRadius: 8,
       }}>
         <button
           title="Vytvořím z toho příspěvek"
@@ -470,7 +467,7 @@ export default function MediaLibraryPage() {
                 <div style={{ fontSize: 12, color: '#9a9a90', marginBottom: 16 }}>
                   {vbTotal} fotek{vbStyle && ` · ${vbStyle}`}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridAutoRows: '200px', gap: 8 }}>
+                <div style={{ columns: 4, columnGap: 8, width: '100%' }}>
                   {vbFiles.map((f, i) => <VBCard key={f.id} file={f} index={i} />)}
                 </div>
               </>
