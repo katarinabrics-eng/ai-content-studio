@@ -608,7 +608,9 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.2); }
       <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px">
         <div onclick="rtgCard(this)" style="display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid #111;border-radius:12px;padding:14px;cursor:pointer">
           <div style="flex-shrink:0;width:110px;aspect-ratio:9/16;border-radius:8px;overflow:hidden;position:relative;">
-            <img src="/images/demo/demo-video-a.jpg" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+            <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;border-radius:8px;" poster="/images/demo/demo-video-a.jpg">
+              <source src="/images/demo/demo-video-a.mp4" type="video/mp4">
+            </video>
             <div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.5);color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;backdrop-filter:blur(4px);">&#9658; 15s &middot; Reels</div>
           </div>
           <div style="flex:1;padding-top:4px;">
@@ -629,7 +631,9 @@ footer p { font-size: 13px; color: rgba(255,255,255,0.2); }
         </div>
         <div onclick="rtgCard(this)" style="display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid #e8e4dc;border-radius:12px;padding:14px;cursor:pointer">
           <div style="flex-shrink:0;width:110px;aspect-ratio:9/16;border-radius:8px;overflow:hidden;position:relative;">
-            <img src="/images/demo/demo-video-b.jpg" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+            <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;border-radius:8px;" poster="/images/demo/demo-video-b.jpg">
+              <source src="/images/demo/demo-video-b.mp4" type="video/mp4">
+            </video>
             <div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.5);color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;backdrop-filter:blur(4px);">&#9658; 12s &middot; Reels</div>
           </div>
           <div style="flex:1;padding-top:4px;">
