@@ -133,10 +133,10 @@ function VBCard({ file, index }: { file: VBFile; index: number }) {
       {/* Hover overlay */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 3,
-        background: 'rgba(0,0,0,0.35)',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)',
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'flex-end',
-        paddingBottom: 12, gap: 6,
+        alignItems: 'center', justifyContent: 'center',
+        gap: 6,
         opacity: hovered ? 1 : 0,
         transition: 'opacity 0.2s',
         borderRadius: 8,
@@ -144,14 +144,14 @@ function VBCard({ file, index }: { file: VBFile; index: number }) {
         <button
           title="Vytvořím z toho příspěvek"
           onClick={(e) => { e.stopPropagation(); alert('Brzy: vytvoření příspěvku z této fotky') }}
-          style={{ background: '#b7e94c', color: '#111', fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+          style={{ background: 'rgba(255,255,255,0.95)', color: '#111', fontSize: 12, fontWeight: 500, padding: '8px 16px', borderRadius: 8, border: '0.5px solid rgba(0,0,0,0.15)', cursor: 'pointer', fontFamily: 'inherit' }}
         >
           ➕ Použít
         </button>
         <button
           title="Uložím do oblíbených"
           onClick={(e) => { e.stopPropagation(); window.open(file.thumbnailUrl, '_blank') }}
-          style={{ background: 'rgba(255,255,255,0.9)', color: '#111', fontSize: 11, padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+          style={{ background: 'rgba(255,255,255,0.95)', color: '#111', fontSize: 12, fontWeight: 500, padding: '8px 16px', borderRadius: 8, border: '0.5px solid rgba(0,0,0,0.15)', cursor: 'pointer', fontFamily: 'inherit' }}
         >
           ❤️ Uložit
         </button>
@@ -294,6 +294,12 @@ export default function MediaLibraryPage() {
           </div>
         </div>
       )}
+
+      {/* Nadpis knihovny */}
+      <div style={{ padding: '20px 32px 4px' }}>
+        <h1 style={{ fontSize: 20, fontWeight: 500, color: '#111', margin: 0, marginBottom: 4 }}>Vyber vizuál pro svůj obsah</h1>
+        <p style={{ fontSize: 13, color: '#888', margin: 0, marginBottom: 16 }}>Ulož si co se ti líbí, nebo rovnou tvoř příspěvek</p>
+      </div>
 
       {/* Hlavní tabs */}
       <div style={{ background: '#fff', borderBottom: '0.5px solid #e8e8e4', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 0 }}>
