@@ -27,46 +27,59 @@
 
 ## 🟡 DŮLEŽITÉ — tento týden
 
-### PRIORITA ZÍTRA: Unifikace klientského portálu
+### 🏗️ HLAVNÍ PRIORITA: Unifikovaný klientský dashboard — architektura
 
-#### 1. SQL migrace (začít tím)
+#### Jeden login, tři produkty
+
+Detekce produktů klienta ze sloupců v `client_projects`:
+- `pvi_active: boolean`
+- `rtg_plan: start|plus|pro|null`
+- `portrait_active: boolean`
+
+#### Sidebar sekce dle produktu
+
+**Vždy viditelné:**
+- Dashboard (přehled)
+- Vizuální knihovna
+
+**Pokud `pvi_active`:**
+- Brand DNA (score, pilíře, archetyp)
+- Strategie
+- Brief
+
+**Pokud `rtg_plan`:**
+- Ke schválení (badge s počtem)
+- Kalendář
+- Moje posty
+
+**Pokud `portrait_active`:**
+- Moje fotky (galerie z Drive)
+- Výběr fotek
+
+**CTA bannery:**
+- RTG klient bez PVI → „Zjisti sílu své značky" → BrandScan
+- Foto klient bez RTG → „Chceš obsah každý týden?" → RTG
+- RTG klient → „Nafotit se v ateliéru" → Portréty
+
+#### Agenti (postupně)
+1. Brand Scan agent — **HOTOVÝ ZÁKLAD**
+2. RTG content agent — **STAVÍME**
+3. Higgsfield vizuální agent — **PŘÍŠTĚ**
+
+#### Supabase migrace potřebná
 ```sql
 ALTER TABLE client_projects
-  ADD COLUMN IF NOT EXISTS services text[] DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS pvi_active boolean DEFAULT false,
   ADD COLUMN IF NOT EXISTS portrait_active boolean DEFAULT false,
-  ADD COLUMN IF NOT EXISTS magnet_used boolean DEFAULT false;
-
--- Testovací data:
-UPDATE client_projects SET
-  services = '{"rtg"}',
-  rtg_plan = 'start'
-WHERE short_code = 'test';
+  ADD COLUMN IF NOT EXISTS services text[] DEFAULT '{}';
 ```
 
-#### 2. Podmíněný Sidebar
-`Sidebar.tsx` zobrazuje sekce dle `services`:
-- `services` includes `'rtg'` → RTG sekce (Můj obsah, Kalendář, Brand DNA, Fotky)
-- `services` includes `'pvi'` → PVI sekce (Dashboard, Scan, Brief, Média, Timeline)
-- `services` includes `'portrait'` → Galerie fotek + upsell
-- Vždy dole: Upgrade banner pokud chybí vyšší tarif
-
-#### 3. Nová stránka `/client/[code]/gallery`
-- Zobrazí fotky z Google Drive focení
-- Výběr oblíbených fotek (kliknutím)
-- Stažení vybraných
-- Upsell banner: RTG / PVI / Avatar
-
-#### 4. Upgrade bannery v portálu
-- RTG Start → banner "Chceš víc obsahu? Přejdi na Plus"
-- Po využití magnetu → banner "Chceš takhle každý týden?"
-
 #### Pořadí práce:
-1. [ ] SQL migrace (`services`, `pvi_active`, `portrait_active`, `magnet_used`)
-2. [ ] `Sidebar.tsx` — podmíněný dle `services` + `rtg_plan`
+1. [ ] SQL migrace (`pvi_active`, `portrait_active`, `services`)
+2. [ ] `Sidebar.tsx` — podmíněný dle `pvi_active` / `rtg_plan` / `portrait_active`
 3. [ ] Otestovat na test klientovi (`short_code = 'test'`)
-4. [ ] `/client/[code]/gallery` — nová stránka
-5. [ ] Upgrade bannery
+4. [ ] `/client/[code]/gallery` — galerie fotek z Drive focení
+5. [ ] Upgrade/upsell bannery (RTG → BrandScan, foto → RTG)
 
 ---
 
