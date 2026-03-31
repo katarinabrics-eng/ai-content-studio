@@ -79,12 +79,13 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ files, folders, total: media.length });
   } catch (err) {
-    console.error("[visual-bank] Drive API error:", err);
-    // Fallback — vrať prázdné soubory se složkami
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[visual-bank] Drive API error:", message);
     return NextResponse.json({
       files: [],
       folders: FALLBACK_FOLDERS,
       total: 0,
+      error: message, // viditelné v Network tabu pro debug
     });
   }
 }
