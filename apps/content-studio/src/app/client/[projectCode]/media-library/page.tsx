@@ -187,6 +187,7 @@ export default function MediaLibraryPage() {
   const [vbColor, setVbColor] = useState('')
   const [vbLoading, setVbLoading] = useState(false)
   const [vbError, setVbError] = useState<string | null>(null)
+  const [vbColumns, setVbColumns] = useState(4)
 
   useEffect(() => {
     fetchMedia('all')
@@ -464,10 +465,32 @@ export default function MediaLibraryPage() {
             )}
             {!vbLoading && !vbError && vbFiles.length > 0 && (
               <>
-                <div style={{ fontSize: 12, color: '#9a9a90', marginBottom: 16 }}>
-                  {vbTotal} fotek{vbStyle && ` · ${vbStyle}`}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, color: '#9a9a90' }}>
+                    {vbTotal} fotek{vbStyle && ` · ${vbStyle}`}
+                  </div>
+                  {/* Přepínač počtu sloupců */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ fontSize: 10, color: '#ccc', marginRight: 4 }}>Sloupce</span>
+                    {[2, 3, 4, 5, 6, 8].map(n => (
+                      <button
+                        key={n}
+                        onClick={() => setVbColumns(n)}
+                        style={{
+                          width: 26, height: 26, borderRadius: 6, border: 'none',
+                          background: vbColumns === n ? '#111' : '#f0f0ec',
+                          color: vbColumns === n ? '#fff' : '#666',
+                          fontSize: 11, fontWeight: vbColumns === n ? 600 : 400,
+                          cursor: 'pointer', fontFamily: 'inherit',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ columns: 4, columnGap: 8, width: '100%' }}>
+                <div style={{ columns: vbColumns, columnGap: 8, width: '100%' }}>
                   {vbFiles.map((f, i) => <VBCard key={f.id} file={f} index={i} />)}
                 </div>
               </>
