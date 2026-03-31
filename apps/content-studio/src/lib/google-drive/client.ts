@@ -5,23 +5,33 @@ import { google } from "googleapis";
 // ---------------------------------------------------------------------------
 
 function getAuth() {
+  // Preferuj JSON blob GOOGLE_SERVICE_ACCOUNT, fallback na oddělené proměnné
+  const jsonBlob = process.env.GOOGLE_SERVICE_ACCOUNT;
+  if (jsonBlob) {
+    const sa = JSON.parse(jsonBlob) as {
+      client_email: string;
+      private_key: string;
+    };
+    return new google.auth.JWT({
+      email: sa.client_email,
+      key: sa.private_key,
+      scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+    });
+  }
+
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  const projectId = process.env.GOOGLE_SERVICE_ACCOUNT_PROJECT_ID;
 
-  if (!email || !rawKey || !projectId) {
+  if (!email || !rawKey) {
     throw new Error(
       "Chybí Google Service Account env variables: " +
-        "GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY, " +
-        "GOOGLE_SERVICE_ACCOUNT_PROJECT_ID"
+        "GOOGLE_SERVICE_ACCOUNT nebo GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY"
     );
   }
 
-  const privateKey = rawKey.replace(/\\n/g, "\n");
-
   return new google.auth.JWT({
     email,
-    key: privateKey,
+    key: rawKey.replace(/\\n/g, "\n"),
     scopes: ["https://www.googleapis.com/auth/drive.readonly"],
   });
 }
