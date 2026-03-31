@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -53,6 +53,16 @@ const TYPE_LABELS: Record<string, string> = {
   template: 'Šablony',
 }
 
+// Barevná paleta složek pro vizuální banku
+const STYLE_COLORS: { style: string; color: string; label: string }[] = [
+  { style: 'Cool Business / Modern Office', color: '#4A6FA5', label: 'K02' },
+  { style: 'Clean Minimal / Light Aesthetic', color: '#D8D4CC', label: 'K03' },
+  { style: 'Soft Feminine / Pastel / Care', color: '#E8B4B8', label: 'K04' },
+  { style: 'Edgy Feminine', color: '#2C2C2C', label: 'K05' },
+  { style: 'Raw Feminine', color: '#8B7355', label: 'K06' },
+  { style: 'Teal Lifestyle Balance', color: '#4A9B8E', label: 'K09' },
+]
+
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function Skeleton() {
@@ -75,11 +85,68 @@ function Skeleton() {
   )
 }
 
+// ─── VB Photo Card s hover overlay ───────────────────────────────────────────
+
+function VBCard({ file }: { file: VBFile }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      style={{ borderRadius: 10, overflow: 'hidden', position: 'relative', cursor: 'pointer', aspectRatio: '4/3' }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={file.thumbnailUrl}
+        alt={file.name}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+          e.currentTarget.style.display = 'none'
+        }}
+      />
+
+      {/* Style label */}
+      {file.style && !hovered && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '16px 10px 8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.4))' }}>
+          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', letterSpacing: '.06em', textTransform: 'uppercase' }}>{file.style}</span>
+        </div>
+      )}
+
+      {/* Hover overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(0,0,0,0.35)',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'flex-end',
+        paddingBottom: 12, gap: 6,
+        opacity: hovered ? 1 : 0,
+        transition: 'opacity 0.2s',
+      }}>
+        <button
+          onClick={(e) => { e.stopPropagation(); alert('Brzy: vytvoření příspěvku z této fotky') }}
+          style={{ background: '#b7e94c', color: '#111', fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          Použít v příspěvku
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); window.open(file.thumbnailUrl, '_blank') }}
+          style={{ background: 'rgba(255,255,255,0.9)', color: '#111', fontSize: 11, padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          Stáhnout
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function MediaLibraryPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const projectCode = params.projectCode as string
+  const token = searchParams.get('token') ?? ''
 
   // Client media tab state
   const [media, setMedia] = useState<MediaFile[]>([])
@@ -97,6 +164,7 @@ export default function MediaLibraryPage() {
   const [vbFolders, setVbFolders] = useState<VBFolder[]>([])
   const [vbTotal, setVbTotal] = useState(0)
   const [vbStyle, setVbStyle] = useState('')
+  const [vbColor, setVbColor] = useState('')
   const [vbLoading, setVbLoading] = useState(false)
   const [vbError, setVbError] = useState<string | null>(null)
 
@@ -112,7 +180,9 @@ export default function MediaLibraryPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/client/media?projectCode=${projectCode}&type=${type}`)
+      const res = await fetch(
+        `/api/client/media?projectCode=${projectCode}&token=${encodeURIComponent(token)}&type=${type}`
+      )
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setMedia(data.media)
@@ -142,8 +212,9 @@ export default function MediaLibraryPage() {
     }
   }
 
-  function switchStyle(style: string) {
+  function switchStyle(style: string, color: string = '') {
     setVbStyle(style)
+    setVbColor(color)
     fetchVB(style)
   }
 
@@ -203,7 +274,7 @@ export default function MediaLibraryPage() {
         </div>
       )}
 
-      {/* Hlavní tabs: Moje média / Vizuální banka */}
+      {/* Hlavní tabs */}
       <div style={{ background: '#fff', borderBottom: '0.5px solid #e8e8e4', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 0 }}>
         {([['moje', 'Moje média'], ['banka', 'Vizuální banka']] as const).map(([key, label]) => (
           <button
@@ -311,35 +382,56 @@ export default function MediaLibraryPage() {
       {/* ── VIZUÁLNÍ BANKA ──────────────────────────────────────────────────────── */}
       {activeTab === 'banka' && (
         <>
-          {/* Style pills */}
-          <div style={{ background: '#fff', borderBottom: '0.5px solid #e8e8e4', padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <button
-              onClick={() => switchStyle('')}
+          {/* Barevné kroužky */}
+          <div style={{ background: '#fff', borderBottom: '0.5px solid #e8e8e4', padding: '12px 32px', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase', color: '#c0c0b8', marginRight: 4 }}>Styl</span>
+            {/* Kroužek "Vše" */}
+            <div
+              onClick={() => switchStyle('', '')}
+              title="Vše"
               style={{
-                padding: '6px 14px', borderRadius: 100, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer',
-                border: vbStyle === '' ? '1.5px solid #111' : '1px solid #e8e8e4',
-                background: vbStyle === '' ? '#111' : '#fff',
-                color: vbStyle === '' ? '#fff' : '#555',
-                fontWeight: vbStyle === '' ? 600 : 400,
+                width: 28, height: 28, borderRadius: '50%', cursor: 'pointer',
+                background: 'linear-gradient(135deg, #4A6FA5 0%, #E8B4B8 33%, #4A9B8E 66%, #2C2C2C 100%)',
+                border: vbColor === '' ? '2.5px solid #111' : '2px solid transparent',
+                boxShadow: vbColor === '' ? '0 0 0 1px #fff inset' : 'none',
+                flexShrink: 0,
               }}
-            >
-              Vše
-            </button>
-            {vbFolders.map(f => (
-              <button
-                key={f.name}
-                onClick={() => switchStyle(f.style)}
+            />
+            {STYLE_COLORS.map(({ style, color, label }) => (
+              <div
+                key={style}
+                onClick={() => switchStyle(style, color)}
+                title={label + ' · ' + style}
                 style={{
-                  padding: '6px 14px', borderRadius: 100, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer',
-                  border: vbStyle === f.style ? '1.5px solid #111' : '1px solid #e8e8e4',
-                  background: vbStyle === f.style ? '#111' : '#fff',
-                  color: vbStyle === f.style ? '#fff' : '#555',
-                  fontWeight: vbStyle === f.style ? 600 : 400,
+                  width: 28, height: 28, borderRadius: '50%', cursor: 'pointer',
+                  background: color,
+                  border: vbColor === color ? '2.5px solid #111' : '2px solid rgba(0,0,0,0.1)',
+                  boxShadow: vbColor === color ? '0 0 0 2px #fff inset' : 'none',
+                  flexShrink: 0,
+                  transition: 'transform 0.15s',
                 }}
-              >
-                {f.style}
-              </button>
+                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.15)'}
+                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'}
+              />
             ))}
+
+            {/* Style text pills z API */}
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginLeft: 8, borderLeft: '0.5px solid #e8e8e4', paddingLeft: 12 }}>
+              {vbFolders.map(f => (
+                <button
+                  key={f.name}
+                  onClick={() => switchStyle(f.style, '')}
+                  style={{
+                    padding: '4px 12px', borderRadius: 100, fontSize: 11, fontFamily: 'inherit', cursor: 'pointer',
+                    border: vbStyle === f.style && !vbColor ? '1.5px solid #111' : '1px solid #e8e8e4',
+                    background: vbStyle === f.style && !vbColor ? '#111' : '#fff',
+                    color: vbStyle === f.style && !vbColor ? '#fff' : '#555',
+                  }}
+                >
+                  {f.style}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div style={{ padding: '24px 32px' }}>
@@ -352,26 +444,11 @@ export default function MediaLibraryPage() {
             )}
             {!vbLoading && !vbError && vbFiles.length > 0 && (
               <>
-                <div style={{ fontSize: 12, color: '#9a9a90', marginBottom: 16 }}>{vbTotal} fotek{vbStyle && ` · ${vbStyle}`}</div>
+                <div style={{ fontSize: 12, color: '#9a9a90', marginBottom: 16 }}>
+                  {vbTotal} fotek{vbStyle && ` · ${vbStyle}`}
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                  {vbFiles.map(f => (
-                    <div key={f.id} style={{ borderRadius: 10, overflow: 'hidden', position: 'relative', cursor: 'pointer', aspectRatio: '4/3' }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={f.thumbnailUrl}
-                        alt={f.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                          e.currentTarget.style.display = 'none'
-                        }}
-                      />
-                      {f.style && (
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '16px 10px 8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.4))' }}>
-                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.85)', letterSpacing: '.06em', textTransform: 'uppercase' }}>{f.style}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {vbFiles.map(f => <VBCard key={f.id} file={f} />)}
                 </div>
               </>
             )}

@@ -10,6 +10,7 @@ const supabase = createClient(
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const projectCode = searchParams.get('projectCode')
+  const token = searchParams.get('token') || ''
   const type = searchParams.get('type') || 'all'
 
   if (!projectCode) {
@@ -17,16 +18,54 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { data: project } = await supabase
-      .from('client_projects')
-      .select('id, name, drive_folder_id, brand_colors')
-      .eq('short_code', projectCode)
-      .single()
+    let project: { id: string; name: string; drive_folder_id: string | null; brand_colors: string[] | null } | null = null
 
-    if (!project) {
-      return NextResponse.json({ error: 'projekt nenalezen' }, { status: 404 })
+    // 1. Zkus RTG auth (short_code + access_token)
+    if (token) {
+      const { data } = await supabase
+        .from('client_projects')
+        .select('id, client_name, google_drive_folder_id, brand_colors')
+        .eq('short_code', projectCode)
+        .eq('access_token', token)
+        .single()
+
+      if (data) {
+        project = {
+          id: data.id,
+          name: data.client_name || projectCode,
+          drive_folder_id: data.google_drive_folder_id || null,
+          brand_colors: data.brand_colors || [],
+        }
+      }
     }
 
+    // 2. Zkus magic link auth (client_projects bez tokenu nebo přes client_access_links)
+    if (!project) {
+      const { data } = await supabase
+        .from('client_projects')
+        .select('id, client_name, google_drive_folder_id, brand_colors, client_token')
+        .eq('short_code', projectCode)
+        .single()
+
+      if (data) {
+        // Pokud máme token, ověř že matchuje client_token (magic link)
+        if (token && data.client_token && data.client_token !== token) {
+          return NextResponse.json({ error: 'Neplatný přístup' }, { status: 401 })
+        }
+        project = {
+          id: data.id,
+          name: data.client_name || projectCode,
+          drive_folder_id: data.google_drive_folder_id || null,
+          brand_colors: data.brand_colors || [],
+        }
+      }
+    }
+
+    if (!project) {
+      return NextResponse.json({ error: 'projekt nenalezen nebo neplatný přístup' }, { status: 404 })
+    }
+
+    // Načti Drive konfiguraci
     const { data: driveConfig } = await supabase
       .from('client_drive_config')
       .select('*')
@@ -36,19 +75,21 @@ export async function GET(req: NextRequest) {
     let folderId = driveConfig?.folder_id || project.drive_folder_id
 
     if (!folderId) {
+      // fallback na vizuální banku
       folderId = '1tl0_AbkCbBfGIcY6A607KpoLDHxAVL-u'
     }
 
     const files = await listFolderContents(folderId)
 
     const mediaTypes: Record<string, string[]> = {
-      photo: ['jpg','jpeg','png','webp','heic'],
-      video: ['mp4','mov','avi','webm'],
+      photo: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
+      video: ['mp4', 'mov', 'avi', 'webm'],
       broll: [],
-      illustration: ['svg','ai','pdf'],
+      illustration: ['svg', 'ai', 'pdf'],
       template: [],
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const categorized = files.map((f: any) => {
       const ext = f.name?.split('.').pop()?.toLowerCase() || ''
       const mimeType = f.mimeType || ''
@@ -63,12 +104,8 @@ export async function GET(req: NextRequest) {
       }
 
       const folderName = f.subfolder?.toLowerCase() || ''
-      if (folderName.includes('broll') || folderName.includes('b-roll')) {
-        fileType = 'broll'
-      }
-      if (folderName.includes('sablony') || folderName.includes('šablony') || folderName.includes('template')) {
-        fileType = 'template'
-      }
+      if (folderName.includes('broll') || folderName.includes('b-roll')) fileType = 'broll'
+      if (folderName.includes('sablony') || folderName.includes('šablony') || folderName.includes('template')) fileType = 'template'
 
       return {
         id: f.id,
@@ -82,15 +119,8 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    const filtered = type === 'all'
-      ? categorized
-      : categorized.filter((f: any) => f.fileType === type)
-
-    const photos = filtered.filter((f: any) => f.fileType === 'photo')
-    const videos = filtered.filter((f: any) => f.fileType === 'video')
-    const broll = filtered.filter((f: any) => f.fileType === 'broll')
-    const illustrations = filtered.filter((f: any) => f.fileType === 'illustration')
-    const templates = filtered.filter((f: any) => f.fileType === 'template')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filtered = type === 'all' ? categorized : categorized.filter((f: any) => f.fileType === type)
 
     return NextResponse.json({
       project: {
@@ -99,18 +129,24 @@ export async function GET(req: NextRequest) {
         brandColors: project.brand_colors || [],
       },
       stats: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         total: filtered.length,
-        photos: photos.length,
-        videos: videos.length,
-        broll: broll.length,
-        illustrations: illustrations.length,
-        templates: templates.length,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        photos: filtered.filter((f: any) => f.fileType === 'photo').length,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        videos: filtered.filter((f: any) => f.fileType === 'video').length,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        broll: filtered.filter((f: any) => f.fileType === 'broll').length,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        illustrations: filtered.filter((f: any) => f.fileType === 'illustration').length,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        templates: filtered.filter((f: any) => f.fileType === 'template').length,
       },
       media: filtered,
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Media API error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Chyba serveru' }, { status: 500 })
   }
 }
