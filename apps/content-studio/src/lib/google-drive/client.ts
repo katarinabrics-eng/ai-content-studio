@@ -50,6 +50,7 @@ export interface DriveFile {
   mimeType: string;
   webViewLink: string;
   webContentLink: string;
+  thumbnailLink: string | null;
   modifiedTime: string;
   subfolder: string | null;
 }
@@ -69,7 +70,7 @@ export async function listFolderContents(folderId: string): Promise<DriveFile[]>
       const res = await drive.files.list({
         q: `'${currentFolderId}' in parents and trashed = false`,
         fields:
-          "nextPageToken, files(id, name, mimeType, webViewLink, webContentLink, modifiedTime)",
+          "nextPageToken, files(id, name, mimeType, webViewLink, webContentLink, thumbnailLink, modifiedTime)",
         pageSize: 200,
         pageToken,
       });
@@ -90,6 +91,7 @@ export async function listFolderContents(folderId: string): Promise<DriveFile[]>
             mimeType: file.mimeType ?? "",
             webViewLink: file.webViewLink ?? "",
             webContentLink: file.webContentLink ?? "",
+            thumbnailLink: file.thumbnailLink ?? null,
             modifiedTime: file.modifiedTime ?? "",
             subfolder: subfolderName,
           });

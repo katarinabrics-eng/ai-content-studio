@@ -72,7 +72,11 @@ export async function GET(req: NextRequest) {
     const files = paged.map((f) => ({
       id: f.id,
       name: f.name,
-      thumbnailUrl: `/api/admin/drive/image-proxy?fileId=${f.id}`,
+      // thumbnailLink z Drive API je rychlý přímý URL (nevyžaduje proxy)
+      // fallback na image-proxy pokud thumbnailLink chybí
+      thumbnailUrl: f.thumbnailLink
+        ? f.thumbnailLink.replace("=s220", "=s400")
+        : `/api/admin/drive/image-proxy?fileId=${f.id}`,
       style: f.subfolder ? parseStyleName(f.subfolder) : "",
       type: f.mimeType.startsWith("video/") ? "video" : "photo",
     }));
