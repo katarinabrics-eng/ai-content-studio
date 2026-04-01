@@ -273,6 +273,37 @@ NEXT_PUBLIC_SITE_URL=https://ai-content-studio-omega.vercel.app
 
 ---
 
+## KOMPLETNÍ PRODUKT ARCHITEKTURA
+
+### VSTUP: `/brand-scan` = jeden vstupní bod
+- **Cesta A:** zadá web → analýza → dashboard
+- **Cesta B:** bez webu → knihovna → 3× zdarma
+- **Free omezení:** localStorage (3 příspěvky + 20min session)
+
+### VIZUÁLNÍ KNIHOVNA = jádro systému
+- **Tab 1:** Inspirace (Vizuální banka Drive K02–K09)
+- **Tab 2:** Moje fotky
+- **Tab 3:** Oblíbené ❤️ (trénuje AI styl)
+- **Flow:** fotka → ➕ Použít → loading → preview → 200 kreditů
+
+### DASHBOARD MODULY DLE TARIFU
+- **Vždy:** Vizuální knihovna
+- **RTG:** Obsah (schvalování, kalendář, posty)
+- **PVI:** Značka (DNA, pilíře, brief)
+- **Foto:** Fotografie (galerie, výběr, stažení)
+- **Locked = preview mód, ne šedé mrtvé**
+
+### KREDIT
+Header vpravo: „Zbývá X kreditů"
+Při nízkém stavu (<200): červeně „Zbývá posledních X kreditů"
+Odečet: 200 kreditů za příspěvek z knihovny
+
+### AI KOMUNIKACE
+Nikdy: „AI generovalo"
+Vždy: „Tvořím pro tebe" / „Na základě tvého stylu"
+
+---
+
 ## PRODUKT ARCHITEKTURA
 
 ### Jeden unifikovaný onboarding
