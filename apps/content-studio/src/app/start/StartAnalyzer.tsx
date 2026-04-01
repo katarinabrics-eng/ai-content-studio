@@ -1,0 +1,1057 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { ScoreRing } from "@/components/ScoreRing";
+import { ScoreCard } from "@/app/diagnostika/ScoreCard";
+import { GapQuestions } from "@/app/diagnostika/GapQuestions";
+import { WebAnalyzer } from "@/app/diagnostika/WebAnalyzer";
+import { StrategyOutput } from "@/app/diagnostika/StrategyOutput";
+import { ScanResultScrollExperience } from "./ScanResultScrollExperience";
+import { DiagnostikaResultsView } from "@/app/diagnostika/DiagnostikaResultsView";
+import { ScanRitualLoading } from "./ScanRitualLoading";
+import {
+  buildManualData as buildManualDataFromLib,
+  type MissingFieldKey,
+  MISSING_FIELD_LABELS,
+  MANUAL_STYLE_OPTIONS,
+} from "@/lib/diagnostika-manual";
+import { ChoiceButton } from "@/components/ChoiceButton";
+import { tokens } from "@/lib/design-tokens";
+
+/** Doplňující otázky dle systémového promptu v2.0 – vždy volby, nikdy přímé textové otázky. */
+const GUIDANCE_QUESTIONS_FULL = [
+  { id: "positioning", question: "Jak byste nejlépe popsali hlavní zaměření vašeho podnikání?", options: ["Prémiové služby pro náročné klienty", "Dostupné řešení pro širokou veřejnost", "Specializovaný expert v oboru", "Kreativní studio / tvůrčí práce"] },
+  { id: "audience", question: "Kdo je váš typický klient?", options: ["Podnikatelé a manažeři", "Ženy budující osobní značku", "Malé a střední firmy", "Kreativci a freelanceři", "Začátečníci", "Široká veřejnost"] },
+  { id: "goals", question: "Co je hlavní cíl komunikace na sociálních sítích?", options: ["Budovat důvěru a autoritu", "Generovat přímé poptávky", "Vzdělávat a inspirovat", "Ukázat zákulisí a osobnost"] },
+  { id: "style", question: "Jaký tón komunikace vám sedí?", options: ["Klidný a autoritativní", "Přátelský a osobní", "Odborný a precizní", "Inspirativní a energický"] },
+  { id: "differentiation", question: "Jak se hlavně odlišujete od konkurence?", options: ["Osobním přístupem a vztahem", "Výsledky a měřitelným dopadem", "Specializací na konkrétní niku", "Stylem a vizuální identitou"] },
+  { id: "platform", question: "Kde je vaše primární platforma?", options: ["Instagram (foto + reels)", "LinkedIn (odbornost)", "Facebook (komunita)", "TikTok / YouTube (video)"] },
+  { id: "business_phase", question: "V jaké fázi podnikání jste?", options: ["Začínám, hledám první klienty", "Mám klienty, chci růst", "Rebranding / nový směr", "Škáluju, chci systém"] },
+  { id: "success_definition", question: "Co pro vás znamená úspěch za 3 měsíce?", options: ["Nové poptávky z internetu", "Silnější brand a viditelnost", "Větší engagement komunity", "Konkrétní počet nových klientů"] },
+];
+
+/** Mapování: questionId → odpověď z analýzy (pokud je dostatečně vyplněná, otázku nezobrazujeme). */
+function isAnsweredByWeb(questionId: string, result: Result | null): boolean {
+  if (!result?.brandDna) return false;
+  const d = result.brandDna;
+  const s = result.brandScore ?? {};
+  const has = (v: string | undefined, minLen = 15) => (v ?? "").trim().length >= minLen;
+  switch (questionId) {
+    case "positioning": return has(d.positioning);
+    case "audience": return s.hasTargetAudience === true || has(d.targetAudience);
+    case "goals": return has(d.communicationStyle) || has(d.uniqueValue);
+    case "style": return has(d.tone) || has(d.communicationStyle);
+    case "differentiation": return has(d.uniqueValue);
+    case "platform": return false; // žádné pole z analýzy
+    case "business_phase": return false;
+    case "success_definition": return false;
+    default: return false;
+  }
+}
+
+/** Zobraz jen otázky, na které web neposkytl odpověď. Max 5, pořadí 1–8. */
+function getRelevantGuidanceQuestions(result: Result | null): typeof GUIDANCE_QUESTIONS_FULL {
+  const relevant = GUIDANCE_QUESTIONS_FULL.filter((q) => !isAnsweredByWeb(q.id, result));
+  return relevant.slice(0, 5);
+}
+
+/** Z výsledku analýzy webu odvodí, která pole chybí – zobrazí se v druhém kroku. */
+function getMissingFieldsFromResult(result: Result | null): MissingFieldKey[] {
+  if (!result?.brandDna) return [];
+  const vs = result.brandDna.visualStyle;
+  const score = result.brandScore ?? {};
+  const has = (v: string | undefined, minLen = 8) => (v ?? "").trim().length >= minLen;
+  const missing: MissingFieldKey[] = [];
+  if (score.hasVisualIdentity !== true || !vs) missing.push("preferred_style");
+  if (!has(vs?.primaryColor)) missing.push("brand_colors");
+  if (!has(vs?.typography)) missing.push("brand_fonts");
+  if (!has(result.brandDna.tone) && !has(result.brandDna.communicationStyle)) missing.push("tone_of_voice");
+  if (!has(result.brandDna.positioning)) missing.push("positioning");
+  if (!has(result.brandDna.targetAudience) && score.hasTargetAudience !== true) missing.push("target_audience");
+  return missing;
+}
+
+type BrandScore = { total?: number; hasHeadline?: boolean; hasOffer?: boolean; hasTargetAudience?: boolean; hasCTA?: boolean; hasVisualIdentity?: boolean; hasSocialProof?: boolean };
+type VisualStyle = { primaryColor?: string; secondaryColor?: string; mood?: string; typography?: string };
+type BrandDna = {
+  name?: string; positioning?: string; tone?: string; targetAudience?: string; communicationStyle?: string;
+  contentPillars?: string[]; uniqueValue?: string; missingElements?: string[]; visualStyle?: VisualStyle;
+};
+type Result = {
+  brandScore?: BrandScore;
+  brandDna?: BrandDna;
+  summary?: string;
+  pillarAnalysis?: Record<string, { score?: number; interpretation?: string; observed?: string[]; notObserved?: string[]; reasoning?: string; strategicOpportunity?: string }>;
+  suggested_strategists?: Array<{ id: string; label: string; tagline?: string; reason?: string; fit_score?: number }>;
+};
+type Scraped = { markdown?: string; screenshot?: string | null; url?: string; title?: string; description?: string };
+
+type TeaserData = {
+  index: number;
+  weakness1: string;
+  weakness2: string;
+  strength: string;
+  suggestedDirection: string;
+};
+
+const WEAKNESS_LABELS: { key: keyof BrandScore; label: string }[] = [
+  { key: "hasHeadline", label: "Chybí jasná hlavní zpráva" },
+  { key: "hasOffer", label: "Není zřetelná nabídka" },
+  { key: "hasTargetAudience", label: "Není definována cílová skupina" },
+  { key: "hasCTA", label: "Chybí výzva k akci" },
+  { key: "hasVisualIdentity", label: "Vizuální identita není sjednocená" },
+  { key: "hasSocialProof", label: "Chybí reference nebo důkazy" },
+];
+
+function deriveTeaser(result: Result): TeaserData {
+  const score = result.brandScore ?? {};
+  const total = result.brandScore?.total ?? 0;
+  const index = Math.min(100, Math.max(0, total));
+
+  const weaknesses: string[] = [];
+  if (result.brandDna?.missingElements?.length) {
+    weaknesses.push(...result.brandDna.missingElements.slice(0, 2));
+  }
+  while (weaknesses.length < 2) {
+    const next = WEAKNESS_LABELS.find((w) => !(score[w.key] === true) && !weaknesses.some((x) => x === w.label));
+    if (next) weaknesses.push(next.label);
+    else break;
+  }
+  const weakness1 = weaknesses[0] ?? "Slabá čitelnost nabídky";
+  const weakness2 = weaknesses[1] ?? "Doplnit vizuální konzistenci";
+
+  const strength =
+    result.brandDna?.uniqueValue?.trim() ||
+    result.brandDna?.contentPillars?.[0]?.trim() ||
+    (total >= 50 ? "Dobrá základní struktura" : "Potenciál pro posílení značky");
+
+  const firstSentence = result.summary?.trim().split(/[.!]/)[0]?.trim();
+  const suggestedDirection =
+    (firstSentence ? firstSentence + (result.summary?.includes(".") ? "." : "") : null) ||
+    "Doporučujeme doplnit vizuální konzistenci a jasnou nabídku.";
+
+  return { index, weakness1, weakness2, strength, suggestedDirection };
+}
+
+function Check({ label, ok }: { label: string; ok?: boolean }) {
+  return (
+    <div style={{ display: "flex", gap: 9, padding: "6px 0", borderBottom: "1px solid rgba(0,0,0,0.06)", alignItems: "center" }}>
+      <span style={{ color: ok ? "#b7e94c" : "#555", fontSize: 13, minWidth: 16 }}>{ok ? "✓" : "✗"}</span>
+      <span style={{ fontSize: 12, color: ok ? "#555" : "#777" }}>{label}</span>
+    </div>
+  );
+}
+
+function Pill({ text, color = "#777" }: { text: string; color?: string }) {
+  return <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: color + "18", border: `1px solid ${color}30`, color }}>{text}</span>;
+}
+
+function Row({ label, value }: { label: string; value?: string | null }) {
+  if (!value) return null;
+  return (
+    <div style={{ marginBottom: 13 }}>
+      <div style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>{label}</div>
+      <div style={{ fontSize: 13, color: "#111111", lineHeight: 1.6 }}>{value}</div>
+    </div>
+  );
+}
+
+function ColorDot({ hex }: { hex?: string }) {
+  if (!hex) return null;
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <span style={{ width: 14, height: 14, borderRadius: "50%", background: hex, border: "1px solid rgba(0,0,0,0.12)", display: "inline-block" }} />
+      <span style={{ fontSize: 11, color: "#777", fontFamily: "monospace" }}>{hex}</span>
+    </span>
+  );
+}
+
+const C = {
+  card: { background: "#ffffff", border: "1px solid rgba(0,0,0,0.09)", borderRadius: 14, padding: 20, marginBottom: 12 },
+  lbl: { fontSize: 9, color: "#555", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
+  inp: { width: "100%", background: "#ffffff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 10, padding: "12px 14px", color: "#111111", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
+  btn: { width: "100%", padding: 13, background: "#b7e94c", color: "#111", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
+};
+
+const C_FILL = {
+  card: { background: "#ffffff", border: "1px solid rgba(0,0,0,0.09)", borderRadius: 14, padding: 20, marginBottom: 12 },
+  lbl: { fontSize: 9, color: "#555", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: 5, display: "block" },
+  inp: { width: "100%", background: "#ffffff", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 10, padding: "12px 14px", color: "#111111", fontSize: 14, outline: "none", boxSizing: "border-box" as const },
+  btn: { width: "100%", padding: 13, background: "#b7e94c", color: "#111", fontWeight: 700, fontSize: 14, border: "none", borderRadius: 10, cursor: "pointer" as const, marginTop: 10 },
+};
+
+export function StartAnalyzer({
+  diagnostika = false,
+  hideIntro = false,
+  initialUrl,
+  initialManualText,
+}: {
+  diagnostika?: boolean;
+  hideIntro?: boolean;
+  initialUrl?: string;
+  initialManualText?: string;
+}) {
+  const [url, setUrl] = useState("");
+  const [phase, setPhase] = useState<"input" | "loading" | "guidance" | "result" | "teaser" | "fillMissing" | "nameForm">("input");
+  const autoStartedRef = useRef(false);
+  const [msg, setMsg] = useState("");
+  const [scraped, setScraped] = useState<Scraped | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [error, setError] = useState("");
+  const [mode, setMode] = useState<"web" | "manual">("web");
+  const [manualText, setManualText] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [offerTypes, setOfferTypes] = useState<string[]>([]);
+  const [audience, setAudience] = useState<string[]>([]);
+  const [priceLevel, setPriceLevel] = useState<string | null>(null);
+  const [manualOptionalText, setManualOptionalText] = useState("");
+  const [brandFile, setBrandFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preferredStyle, setPreferredStyle] = useState<string | null>(null);
+  const [brandColors, setBrandColors] = useState("");
+  const [brandFonts, setBrandFonts] = useState("");
+  const [toneOfVoice, setToneOfVoice] = useState("");
+  const [missingFields, setMissingFields] = useState<MissingFieldKey[]>([]);
+  const [fillMissingValues, setFillMissingValues] = useState<Partial<Record<MissingFieldKey, string>>>({});
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [teaserView, setTeaserView] = useState<"scroll" | "workspace">("scroll");
+  const [resultDisplayName, setResultDisplayName] = useState("");
+  const [resultDisplayWeb, setResultDisplayWeb] = useState("");
+  const [nameFormName, setNameFormName] = useState("");
+  const [nameFormWeb, setNameFormWeb] = useState("");
+  const [nameFormError, setNameFormError] = useState<string | null>(null);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [diagnostikaViewUrl, setDiagnostikaViewUrl] = useState<string | null>(null);
+
+  function buildManualData(): string {
+    return buildManualDataFromLib({
+      brandName,
+      offerTypes,
+      audience,
+      priceLevel,
+      manualOptionalText,
+      preferred_style: preferredStyle,
+      brand_colors: brandColors.trim() || undefined,
+      brand_fonts: brandFonts.trim() || undefined,
+      tone_of_voice: toneOfVoice.trim() || undefined,
+    });
+  }
+
+  const hasManualInput =
+    brandName.trim() &&
+    (offerTypes.length > 0 ||
+      audience.length > 0 ||
+      priceLevel ||
+      manualOptionalText.trim() ||
+      brandFile ||
+      imageFile);
+
+  const score = result?.brandScore?.total ?? 0;
+
+  const analyze = async (overrideUrl?: string) => {
+    const urlToUse = String(overrideUrl ?? url ?? "").trim();
+    if (mode === "web" && !urlToUse) return;
+    if (diagnostika && mode === "manual" && !hasManualInput) return;
+    setError("");
+    setSaveError(null);
+    setResult(null);
+    setScraped(null);
+    setAnswers({});
+    const loadingMessages =
+      mode === "web"
+        ? ["Načítám web...", "Analyzuji obsah...", "Generuji skóre..."]
+        : ["Analyzuji zadané podklady...", "Analyzuji obsah...", "Generuji skóre..."];
+    let loadingStep = 0;
+    let progressInterval: ReturnType<typeof setInterval> | undefined;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    try {
+      setPhase("loading");
+      setMsg(loadingMessages[0]);
+      progressInterval = setInterval(() => {
+        loadingStep = Math.min(loadingStep + 1, loadingMessages.length - 1);
+        setMsg(loadingMessages[loadingStep]);
+      }, 5000);
+      const controller = new AbortController();
+      timeout = setTimeout(() => controller.abort(), 90_000);
+      const body: Record<string, unknown> = diagnostika ? { format: "diagnostika" } : {};
+      if (mode === "web") {
+        body.url = urlToUse;
+      } else if (diagnostika) {
+        body.manualData = mode === "manual" ? (buildManualData() || undefined) : undefined;
+        if (brandFile) {
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+            r.onerror = reject;
+            r.readAsDataURL(brandFile);
+          });
+          body.pdfBase64 = base64;
+        }
+        if (imageFile) {
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+            r.onerror = reject;
+            r.readAsDataURL(imageFile);
+          });
+          body.imageBase64 = base64;
+          body.imageMimeType = imageFile.type;
+        }
+      }
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      clearInterval(progressInterval);
+      let data: { result?: Result; scraped?: Scraped; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        setError("Server vrátil neplatnou odpověď (ne JSON). Zkontrolujte na Vercelu env: OPENAI_API_KEY, FIRECRAWL_API_KEY. Případně timeout — analýza trvá 20–60 s.");
+        setPhase("input");
+        return;
+      }
+      if (!res.ok) throw new Error(data.error || "Chyba analýzy");
+      setScraped(data.scraped ?? null);
+      const resResult = data.result;
+      const resData = typeof resResult === "object" && resResult !== null ? (resResult as Result) : null;
+      setResult(resData);
+      const total = resData?.brandScore?.total ?? 0;
+      if (diagnostika && resData) {
+        if (mode === "web") {
+          const missing = getMissingFieldsFromResult(resData);
+          if (missing.length > 0) {
+            setMissingFields(missing);
+            setFillMissingValues({});
+            setPhase("fillMissing");
+            return;
+          }
+        }
+        try {
+          const saveRes = await fetch("/api/diagnostika/save-scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: data.scraped?.title || (resData?.brandDna as { name?: string } | undefined)?.name || undefined,
+              webUrl: mode === "web" ? urlToUse : undefined,
+              manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
+              result: resData,
+            }),
+          });
+          let saveData: { id?: string; error?: string };
+          try {
+            saveData = await saveRes.json();
+          } catch {
+            setSaveError("Odpověď serveru (save-scan) nebyla platné JSON. Zkuste to znovu.");
+            setNameFormWeb(mode === "web" ? urlToUse : "");
+            setNameFormName("");
+            setPhase(total < 60 ? "guidance" : "nameForm");
+            return;
+          }
+          if (saveRes.ok && saveData?.id) {
+            setProjectId(saveData.id);
+            setSaveError(null);
+            setNameFormWeb(mode === "web" ? urlToUse : "");
+            setNameFormName("");
+            setNameFormError(null);
+            setPhase(total < 60 ? "guidance" : "nameForm");
+            return;
+          } else {
+            setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit do projektu.");
+            setNameFormWeb(mode === "web" ? urlToUse : "");
+            setNameFormName("");
+          }
+        } catch {
+          setSaveError("Výsledek se nepodařilo uložit do projektu. Zkuste to znovu nebo nás kontaktujte.");
+          setNameFormWeb(mode === "web" ? urlToUse : "");
+          setNameFormName("");
+        }
+        setPhase(total < 60 ? "guidance" : "nameForm");
+      } else if (diagnostika) {
+        setPhase(total < 60 ? "guidance" : "nameForm");
+      } else {
+        setPhase(total < 60 ? "guidance" : "result");
+      }
+    } catch (e) {
+      if (progressInterval !== undefined) clearInterval(progressInterval);
+      if (timeout !== undefined) clearTimeout(timeout);
+      const msg = e instanceof Error ? e.message : "Nepodařilo se analyzovat.";
+      const friendly =
+        msg === "fetch failed" || msg === "Failed to fetch"
+          ? "Spojení se serverem selhalo. Zkontrolujte, že server běží a že v .env.local máte OPENAI_API_KEY a FIRECRAWL_API_KEY."
+          : msg.includes("abort") || (e instanceof Error && e.name === "AbortError")
+            ? "Požadavek vypršel (timeout). Zkuste to znovu."
+            : msg;
+      setError(friendly);
+      setPhase("input");
+    }
+  };
+
+  const confirmGuidance = async () => {
+    setPhase("loading");
+    setMsg("Obohacuji Brand DNA o vaše odpovědi...");
+    try {
+      const answersFiltered = Object.fromEntries(
+        Object.entries(answers).filter(([, v]) => v != null && String(v).trim() !== "")
+      );
+      const res = await fetch("/api/analyze/refine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url || "zadané podklady", brandDna: result?.brandDna, answers: answersFiltered }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Chyba");
+      const updatedResult = data.result;
+      if (updatedResult) {
+        const next = updatedResult as Result;
+        setResult((prev) => {
+          if (!prev) return next;
+          return {
+            ...next,
+            pillarAnalysis: next.pillarAnalysis && Object.keys(next.pillarAnalysis).length > 0 ? next.pillarAnalysis : prev.pillarAnalysis,
+            suggested_strategists: Array.isArray(next.suggested_strategists) && next.suggested_strategists.length > 0 ? next.suggested_strategists : prev.suggested_strategists,
+          };
+        });
+      }
+      if (diagnostika && updatedResult) {
+        try {
+          const saveRes = await fetch("/api/diagnostika/save-scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              projectId: projectId ?? undefined,
+              webUrl: mode === "web" ? url.trim() : undefined,
+              manualInput: mode === "manual" ? buildManualData() || undefined : undefined,
+              result: updatedResult,
+            }),
+          });
+          const saveData = await saveRes.json();
+          if (saveData?.id) setProjectId(saveData.id);
+        } catch { /* ignore */ }
+      }
+    } catch {
+      // keep current result
+    }
+    setPhase(diagnostika ? "nameForm" : "result");
+  };
+
+  const reset = () => {
+    setPhase("input");
+    setUrl("");
+    setResult(null);
+    setScraped(null);
+    setAnswers({});
+    setError("");
+    setResultDisplayName("");
+    setResultDisplayWeb("");
+    setNameFormName("");
+    setNameFormWeb("");
+    setNameFormError(null);
+    setLeadEmail("");
+    setLeadSubmitted(false);
+    setLeadError(null);
+    setDiagnostikaViewUrl(null);
+    setMode("web");
+    setManualText("");
+    setBrandName("");
+    setOfferTypes([]);
+    setAudience([]);
+    setPriceLevel(null);
+    setManualOptionalText("");
+    setBrandFile(null);
+    setImageFile(null);
+    setPreferredStyle(null);
+    setBrandColors("");
+    setBrandFonts("");
+    setToneOfVoice("");
+    setMissingFields([]);
+    setFillMissingValues({});
+    setProjectId(null);
+    setTeaserView("scroll");
+  };
+
+  const confirmNameForm = async () => {
+    const clientName = nameFormName.trim();
+    const web = nameFormWeb.trim();
+    setNameFormError(null);
+    const resultWithClientName = result ? { ...result, client_name: clientName || undefined } : result;
+    if (projectId && result) {
+      try {
+        const saveRes = await fetch("/api/diagnostika/save-scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projectId,
+            webUrl: web || undefined,
+            result: resultWithClientName,
+          }),
+        });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) {
+          setNameFormError(saveData?.error ?? "Nepodařilo se uložit.");
+          return;
+        }
+      } catch {
+        setNameFormError("Chyba připojení.");
+        return;
+      }
+    }
+    const projectNameFromAi = scraped?.title || (result?.brandDna as { name?: string } | undefined)?.name;
+    setResultDisplayName(clientName || projectNameFromAi || "");
+    setResultDisplayWeb(web);
+    setPhase("teaser");
+  };
+
+  const confirmFillMissing = async () => {
+    if (!result) return;
+    const total = result.brandScore?.total ?? 0;
+    const hexes = (fillMissingValues.brand_colors ?? "")
+      .trim()
+      .split(/[,\s]+/)
+      .map((s) => (s.startsWith("#") ? s : `#${s}`))
+      .filter((s) => /^#[0-9A-Fa-f]{3,6}$/.test(s));
+    const merged: Result = {
+      ...result,
+      brandDna: {
+        ...result.brandDna,
+        positioning: fillMissingValues.positioning?.trim() || result.brandDna?.positioning,
+        targetAudience: fillMissingValues.target_audience?.trim() || result.brandDna?.targetAudience,
+        tone: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.tone,
+        communicationStyle: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.communicationStyle,
+        visualStyle: {
+          ...result.brandDna?.visualStyle,
+          primaryColor: hexes[0] || result.brandDna?.visualStyle?.primaryColor,
+          secondaryColor: hexes[1] || result.brandDna?.visualStyle?.secondaryColor,
+          typography: fillMissingValues.brand_fonts?.trim() || result.brandDna?.visualStyle?.typography,
+          mood: fillMissingValues.tone_of_voice?.trim() || result.brandDna?.visualStyle?.mood,
+        },
+      },
+    };
+    setResult(merged);
+    try {
+      const saveRes = await fetch("/api/diagnostika/save-scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: projectId ?? undefined,
+          webUrl: url.trim(),
+          result: merged,
+        }),
+      });
+      const saveData = await saveRes.json();
+      if (saveRes.ok && saveData?.id) {
+        setProjectId(saveData.id);
+        setNameFormWeb(url.trim());
+        setNameFormName("");
+        setNameFormError(null);
+      } else {
+        setSaveError(saveData?.error ?? "Výsledek se nepodařilo uložit.");
+      }
+    } catch {
+      setSaveError("Výsledek se nepodařilo uložit. Zkuste to znovu.");
+    }
+    setPhase(total < 60 ? "guidance" : "nameForm");
+  };
+
+  async function handleSaveLead() {
+    const trimmed = leadEmail.trim();
+    if (!trimmed || !result) return;
+    setLeadSubmitting(true);
+    setLeadError(null);
+    try {
+      const scrapedMeta =
+        scraped != null
+          ? { url: scraped.url, title: scraped.title, description: scraped.description }
+          : {};
+      const res = await fetch("/api/analysis-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmed,
+          analyzedUrl: scraped?.url ?? url ?? "",
+          result: { brandScore: result.brandScore, brandDna: result.brandDna, summary: result.summary },
+          scrapedMeta,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setLeadSubmitted(true);
+      } else {
+        setLeadError(data.error ?? "Nepodařilo se odeslat.");
+      }
+    } catch {
+      setLeadError("Chyba při odesílání. Zkuste to znovu.");
+    } finally {
+      setLeadSubmitting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    if (initialUrl && typeof initialUrl === "string" && initialUrl.trim()) {
+      autoStartedRef.current = true;
+      const u = initialUrl.trim().startsWith("http") ? initialUrl.trim() : `https://${initialUrl.trim()}`;
+      setUrl(u);
+      setMode("web");
+      analyze(u);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUrl]);
+
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    if (initialManualText && typeof initialManualText === "string" && initialManualText.trim()) {
+      autoStartedRef.current = true;
+      setManualOptionalText(initialManualText.trim());
+      setBrandName("Značka");
+      setMode("manual");
+      const t = setTimeout(() => {
+        analyze();
+      }, 200);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialManualText]);
+
+  const embedCompact = Boolean(diagnostika && hideIntro);
+  return (
+    <div style={{ minHeight: embedCompact ? undefined : "100vh", background: "#ffffff", color: "#111111" }}>
+      <style>{`
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .analyzer-fade{animation:up 0.35s ease}
+        .analyzer-inp:focus{border-color:#b7e94c!important;box-shadow:0 0 0 3px rgba(183,233,76,0.18)!important}
+        .analyzer-inp::placeholder{color:#bbbbbb}
+        .manual-pill:hover:not(:disabled){box-shadow:0 0 24px rgba(183,233,76,0.15);border-color:rgba(183,233,76,0.4)!important}
+        @media (max-width: 768px) {
+          .analyzer-header-badge { display: none !important; }
+          .analyzer-grid-2col { grid-template-columns: 1fr !important; }
+          .analyzer-main-wrap { padding-left: 16px !important; padding-right: 16px !important; padding-top: 28px !important; }
+        }
+        @media (max-width: 480px) {
+          .analyzer-main-wrap { padding-left: 12px !important; padding-right: 12px !important; padding-top: 20px !important; padding-bottom: 32px !important; }
+          .analyzer-header-text { font-size: 10px !important; }
+        }
+      `}</style>
+
+      <header style={{ borderBottom: "1px solid rgba(0,0,0,0.09)", padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(183,233,76,0.12)", border: "1px solid rgba(183,233,76,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#5a8a00" }}>L</div>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555" }}>Lucifera <span style={{ color: "#b7e94c" }}>·</span> AI Content System</span>
+        <span className="analyzer-header-badge" style={{ marginLeft: "auto", fontSize: 10, color: "#555", background: "#f0efeb", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
+      </header>
+
+      {phase === "loading" && diagnostika && <ScanRitualLoading />}
+
+      {phase === "nameForm" && diagnostika && result && (
+        <div className="analyzer-main-wrap max-w-screen-xl mx-auto px-8 pt-11 pb-20">
+          {saveError && (
+            <div role="alert" style={{ background: "rgba(220,80,80,0.12)", borderBottom: "1px solid rgba(220,80,80,0.3)", padding: "12px 22px", color: "#e8a0a0", fontSize: 13 }}>
+              {saveError}
+            </div>
+          )}
+          <div style={{ maxWidth: 420, margin: "0 auto" }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "#111111", marginBottom: 16 }}>
+              Než zobrazíme výsledky — jak vás máme oslovovat?
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 12, color: "#555", marginBottom: 6 }}>Jak vás máme oslovovat?</label>
+                <input
+                  type="text"
+                  value={nameFormName}
+                  onChange={(e) => setNameFormName(e.target.value)}
+                  placeholder="Vaše jméno"
+                  className="analyzer-inp"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "#ffffff", color: "#111111", fontSize: 14, boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 12, color: "#555", marginBottom: 6 }}>Web</label>
+                <input
+                  type="text"
+                  value={nameFormWeb}
+                  onChange={(e) => setNameFormWeb(e.target.value)}
+                  placeholder="https://…"
+                  className="analyzer-inp"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.12)", background: "#ffffff", color: "#111111", fontSize: 14, boxSizing: "border-box" }}
+                />
+              </div>
+              {nameFormError && <p style={{ fontSize: 13, color: "#dc2626" }}>{nameFormError}</p>}
+              <button
+                type="button"
+                onClick={confirmNameForm}
+                style={{ padding: "12px 20px", borderRadius: 10, border: "none", background: "#b7e94c", color: "#111", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+              >
+                Zobrazit výsledky →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === "teaser" && diagnostika && result ? (
+        <>
+          {saveError && (
+            <div role="alert" style={{ background: "rgba(220,80,80,0.12)", borderBottom: "1px solid rgba(220,80,80,0.3)", padding: "12px 22px", color: "#e8a0a0", fontSize: 13 }}>
+              {saveError}
+            </div>
+          )}
+          <DiagnostikaResultsView
+            result={result}
+            scraped={scraped}
+            displayName={resultDisplayName}
+            displayWeb={resultDisplayWeb}
+            projectId={projectId}
+            accessUrl={diagnostikaViewUrl}
+            onBack={reset}
+            onSaveLead={async (data) => {
+              if (!data.email?.trim() || !result) return;
+              setLeadSubmitting(true);
+              setLeadError(null);
+              try {
+                const saveRes = await fetch("/api/diagnostika/save-scan", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    ...(projectId && { projectId }),
+                    name: data.name || undefined,
+                    webUrl: data.web || undefined,
+                    email: data.email.trim(),
+                    result: {
+                      brandScore: result.brandScore,
+                      brandDna: result.brandDna,
+                      summary: result.summary,
+                      pillarAnalysis: result.pillarAnalysis,
+                      suggested_strategists: result.suggested_strategists,
+                    },
+                  }),
+                });
+                const saveData = await saveRes.json();
+                if (saveRes.ok && saveData?.viewUrl) {
+                  setDiagnostikaViewUrl(saveData.viewUrl);
+                  setLeadSubmitted(true);
+                } else {
+                  setLeadError(saveData?.error ?? "Nepodařilo se uložit.");
+                }
+              } catch {
+                setLeadError("Chyba připojení.");
+              } finally {
+                setLeadSubmitting(false);
+              }
+            }}
+            leadSubmitted={leadSubmitted}
+            leadError={leadError}
+            leadSubmitting={leadSubmitting}
+          />
+        </>
+      ) : (
+      <div className="analyzer-main-wrap max-w-screen-xl mx-auto px-8 pt-11 pb-20">
+
+        {phase === "input" && (
+          <WebAnalyzer
+            diagnostika={diagnostika}
+            hideIntro={hideIntro}
+            mode={mode}
+            setMode={setMode}
+            url={url}
+            setUrl={setUrl}
+            brandName={brandName}
+            setBrandName={setBrandName}
+            offerTypes={offerTypes}
+            setOfferTypes={setOfferTypes}
+            audience={audience}
+            setAudience={setAudience}
+            priceLevel={priceLevel}
+            setPriceLevel={setPriceLevel}
+            manualOptionalText={manualOptionalText}
+            setManualOptionalText={setManualOptionalText}
+            brandFile={brandFile}
+            setBrandFile={setBrandFile}
+            imageFile={imageFile}
+            setImageFile={setImageFile}
+            preferredStyle={preferredStyle}
+            setPreferredStyle={setPreferredStyle}
+            brandColors={brandColors}
+            setBrandColors={setBrandColors}
+            brandFonts={brandFonts}
+            setBrandFonts={setBrandFonts}
+            toneOfVoice={toneOfVoice}
+            setToneOfVoice={setToneOfVoice}
+            hasManualInput={!!hasManualInput}
+            onAnalyze={(overrideUrl?: string) => {
+              Promise.resolve(analyze(overrideUrl)).catch((e: unknown) => {
+                setError(e instanceof Error ? e.message : "Nepodařilo se spustit analýzu.");
+                setPhase("input");
+              });
+            }}
+            error={error}
+            onRetry={() => setError("")}
+          />
+        )}
+
+        {phase === "fillMissing" && result && missingFields.length > 0 && (
+          <div className="analyzer-fade" style={{ maxWidth: 640, margin: "0 auto" }}>
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#555", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
+            <p className="text-sm mb-6" style={{ color: tokens.colors.muted }}>
+              Z analýzy webu nám chybí několik údajů. Doplňte je prosím – pak pokračujeme k výsledkům.
+            </p>
+            <div className="space-y-6">
+              {missingFields.includes("preferred_style") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.preferred_style}</label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {MANUAL_STYLE_OPTIONS.map((opt) => (
+                      <ChoiceButton
+                        key={opt.id}
+                        label={opt.label}
+                        selected={fillMissingValues.preferred_style === opt.id}
+                        onClick={() => setFillMissingValues((p) => ({ ...p, preferred_style: p.preferred_style === opt.id ? undefined : opt.id }))}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {missingFields.includes("brand_colors") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.brand_colors}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. #1a1a2e, #16213e"
+                    value={fillMissingValues.brand_colors ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, brand_colors: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+              {missingFields.includes("brand_fonts") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.brand_fonts}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. Inter, Playfair Display"
+                    value={fillMissingValues.brand_fonts ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, brand_fonts: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+              {missingFields.includes("tone_of_voice") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.tone_of_voice}</label>
+                  <textarea
+                    style={{ ...C_FILL.inp, minHeight: 80 }}
+                    placeholder="Např. důvěra, profesionalita, teplo, energie…"
+                    value={fillMissingValues.tone_of_voice ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, tone_of_voice: e.target.value }))}
+                    className="analyzer-inp rounded-xl resize-y placeholder:text-zinc-500"
+                  />
+                </div>
+              )}
+              {missingFields.includes("positioning") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.positioning}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. prémiové služby pro náročné klienty, dostupné řešení pro širokou veřejnost"
+                    value={fillMissingValues.positioning ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, positioning: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+              {missingFields.includes("target_audience") && (
+                <div style={{ ...C_FILL.card }}>
+                  <label style={C_FILL.lbl}>{MISSING_FIELD_LABELS.target_audience}</label>
+                  <input
+                    type="text"
+                    style={C_FILL.inp}
+                    placeholder="Např. podnikatelé, ženy budující osobní značku, malé firmy"
+                    value={fillMissingValues.target_audience ?? ""}
+                    onChange={(e) => setFillMissingValues((p) => ({ ...p, target_audience: e.target.value }))}
+                    className="analyzer-inp rounded-xl"
+                  />
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              style={{ ...C_FILL.btn, marginTop: 20 }}
+              onClick={confirmFillMissing}
+            >
+              Pokračovat k výsledkům →
+            </button>
+          </div>
+        )}
+
+        {phase === "loading" && !diagnostika && (
+          <div style={{ textAlign: "center", padding: "80px 0" }}>
+            <div style={{ position: "relative", width: 52, height: 52, margin: "0 auto 20px" }}>
+              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid rgba(183,233,76,0.2)" }} />
+              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "2px solid transparent", borderTopColor: "#b7e94c", animation: "spin 0.9s linear infinite" }} />
+            </div>
+            <p style={{ color: "#b7e94c", fontSize: 14, fontWeight: 500 }}>{msg}</p>
+            <p style={{ color: "#555", fontSize: 11, marginTop: 6 }}>cca 15–25 sekund</p>
+          </div>
+        )}
+
+        {phase === "guidance" && result && (
+          <div className="analyzer-fade">
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#555", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← zpět</button>
+            <ScoreCard
+              score={score}
+              url={url || undefined}
+              subtitle="Web nemá dostatek podkladů"
+              hint="Doplňte výběrem – žádné psaní."
+              screenshot={scraped?.screenshot ?? undefined}
+            />
+            <GapQuestions
+              questions={getRelevantGuidanceQuestions(result)}
+              answers={answers}
+              onAnswer={(questionId, value) => setAnswers((p) => ({ ...p, [questionId]: value }))}
+              confirmLabel="Zobrazit Brand DNA →"
+              onConfirm={confirmGuidance}
+              onSkipAll={confirmGuidance}
+            />
+          </div>
+        )}
+
+        {phase === "result" && result && (
+          <div className="analyzer-fade">
+            <button type="button" onClick={reset} style={{ background: "none", border: "none", color: "#555", fontSize: 12, cursor: "pointer", marginBottom: 14 }}>← Analyzovat jiný web</button>
+            {scraped?.screenshot && (
+              <div style={{ ...C.card, padding: 12, marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={C.lbl}>Vizuální náhled webu</span>
+                  <span style={{ fontSize: 10, color: "#555" }}>Firecrawl screenshot</span>
+                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element -- dynamic base64 screenshot, next/image does not optimize data URLs */}
+                <img src={scraped.screenshot.startsWith("data:") ? scraped.screenshot : `data:image/png;base64,${scraped.screenshot}`} alt="screenshot" style={{ width: "100%", borderRadius: 8, border: "1px solid rgba(0,0,0,0.09)", maxHeight: 260, objectFit: "cover", objectPosition: "top" }} />
+              </div>
+            )}
+            <div className="analyzer-grid-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+              <div style={{ ...C.card, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, margin: 0 }}>
+                <ScoreRing score={score} />
+                <p style={{ fontSize: 10, color: "#555", textAlign: "center", wordBreak: "break-all" }}>{scraped?.url}</p>
+              </div>
+              <div style={{ ...C.card, margin: 0 }}>
+                <span style={C.lbl}>Co jsme našli</span>
+                <Check label="Positioning / headline" ok={result.brandScore?.hasHeadline} />
+                <Check label="Definovaná nabídka" ok={result.brandScore?.hasOffer} />
+                <Check label="Cílová skupina" ok={result.brandScore?.hasTargetAudience} />
+                <Check label="Výzva k akci" ok={result.brandScore?.hasCTA} />
+                <Check label="Vizuální identita" ok={result.brandScore?.hasVisualIdentity} />
+                <Check label="Reference / důkazy" ok={result.brandScore?.hasSocialProof} />
+              </div>
+            </div>
+            <div style={C.card}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <span style={C.lbl}>Brand DNA</span>
+                {result.brandDna?.communicationStyle && <Pill text={result.brandDna.communicationStyle} color="#a8e063" />}
+              </div>
+              <Row label="Název" value={result.brandDna?.name} />
+              <Row label="Positioning" value={result.brandDna?.positioning} />
+              <Row label="Tón" value={result.brandDna?.tone} />
+              <Row label="Cílová skupina" value={result.brandDna?.targetAudience} />
+              <Row label="Unikátní hodnota" value={result.brandDna?.uniqueValue} />
+              {result.brandDna?.visualStyle && (
+                <div style={{ marginBottom: 13 }}>
+                  <div style={{ fontSize: 9, color: "#555", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 6 }}>Vizuální styl</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 6 }}>
+                    <ColorDot hex={result.brandDna.visualStyle.primaryColor} />
+                    <ColorDot hex={result.brandDna.visualStyle.secondaryColor} />
+                  </div>
+                  {result.brandDna.visualStyle.mood && <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5 }}>{result.brandDna.visualStyle.mood}</p>}
+                  {result.brandDna.visualStyle.typography && <p style={{ fontSize: 11, color: "#555", marginTop: 3 }}>{result.brandDna.visualStyle.typography}</p>}
+                </div>
+              )}
+              {result.brandDna?.contentPillars && result.brandDna.contentPillars.length > 0 && (
+                <div style={{ marginBottom: 12 }}>
+                  <span style={C.lbl}>Obsahové pilíře</span>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {result.brandDna.contentPillars.map((p) => <Pill key={p} text={p} color="#777" />)}
+                  </div>
+                </div>
+              )}
+              {result.brandDna?.missingElements && result.brandDna.missingElements.length > 0 && (
+                <div>
+                  <span style={C.lbl}>Co posílí brand</span>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {result.brandDna.missingElements.map((m) => <Pill key={m} text={m} color="#e05a5a" />)}
+                  </div>
+                </div>
+              )}
+            </div>
+            {result.summary && (
+              <div style={{ ...C.card, borderColor: "rgba(168,224,99,0.1)", background: "rgba(168,224,99,0.015)" }}>
+                <span style={C.lbl}>Hodnocení stratéga</span>
+                <p style={{ fontSize: 13, color: "#777", lineHeight: 1.7 }}>{result.summary}</p>
+              </div>
+            )}
+            <details style={{ marginBottom: 12 }}>
+              <summary style={{ fontSize: 11, color: "#2a2a3a", cursor: "pointer", padding: "6px 0", userSelect: "none" }}>
+                Načtený text webu ({Math.round((scraped?.markdown?.length ?? 0) / 100) / 10}k znaků)
+              </summary>
+              <div style={{ ...C.card, marginTop: 6, maxHeight: 160, overflow: "auto" }}>
+                <pre style={{ fontSize: 10, color: "#555", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{scraped?.markdown?.slice(0, 2000)}...</pre>
+              </div>
+            </details>
+            <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.15)", background: "rgba(168,224,99,0.015)" }}>
+              <p style={{ color: "#a8e063", fontWeight: 600, marginBottom: 5 }}>Brand DNA připravena ✓</p>
+              {diagnostika ? (
+                <p style={{ color: "#111111", fontSize: 12 }}>Výsledek diagnostiky je připraven.</p>
+              ) : (
+                <>
+                  <p style={{ color: "#111111", fontSize: 12, marginBottom: 14 }}>Modul 2: generátor postů ve stylu tohoto klienta</p>
+                  <button type="button" style={{ ...C.btn, maxWidth: 260, margin: "0 auto" }}>Pokračovat na tvorbu obsahu →</button>
+                </>
+              )}
+            </div>
+
+            {!leadSubmitted ? (
+              <div style={{ ...C.card, borderColor: "rgba(168,224,99,0.2)", background: "rgba(168,224,99,0.03)" }}>
+                <p style={{ color: "#111111", fontSize: 14, marginBottom: 8 }}>Chcete se k analýze vrátit a my vás můžeme kontaktovat?</p>
+                <p style={{ color: "#555", fontSize: 12, marginBottom: 12 }}>Zadejte e-mail – nebudeme vás spamovat, můžeme vám poslat ukázku a dál s vámi pracovat.</p>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+                  <input
+                    type="email"
+                    placeholder="vas@email.cz"
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    className="analyzer-inp"
+                    style={{ ...C.inp, flex: "1 1 200px", marginTop: 0 }}
+                  />
+                  <button
+                    type="button"
+                    style={{ ...C.btn, width: "auto", padding: "12px 20px", marginTop: 0 }}
+                    onClick={handleSaveLead}
+                    disabled={leadSubmitting || !leadEmail.trim()}
+                  >
+                    {leadSubmitting ? "Odesílám…" : "Odeslat"}
+                  </button>
+                </div>
+                {leadError && <p style={{ color: "#e05a5a", fontSize: 12, marginTop: 8 }}>{leadError}</p>}
+              </div>
+            ) : (
+              <div style={{ ...C.card, textAlign: "center", borderColor: "rgba(168,224,99,0.2)", background: "rgba(168,224,99,0.05)" }}>
+                <p style={{ color: "#a8e063", fontWeight: 600 }}>Děkujeme, budeme vás kontaktovat.</p>
+                <p style={{ color: "#777", fontSize: 12, marginTop: 4 }}>Vaše analýza je u nás uložená.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      )}
+    </div>
+  );
+}

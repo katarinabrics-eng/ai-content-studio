@@ -1,0 +1,750 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import BookingCalendar from "@/components/booking/BookingCalendar";
+
+export type BrandScore = {
+  total?: number;
+  hasHeadline?: boolean;
+  hasOffer?: boolean;
+  hasTargetAudience?: boolean;
+  hasCTA?: boolean;
+  hasVisualIdentity?: boolean;
+  hasSocialProof?: boolean;
+};
+export type VisualStyle = { primaryColor?: string; secondaryColor?: string; mood?: string; typography?: string };
+export type BrandDna = {
+  name?: string;
+  positioning?: string;
+  tone?: string;
+  targetAudience?: string;
+  communicationStyle?: string;
+  contentPillars?: string[];
+  uniqueValue?: string;
+  missingElements?: string[];
+  visualStyle?: VisualStyle;
+};
+export type PillarAnalysisItem = {
+  score?: number;
+  interpretation?: string;
+  observed?: string[];
+  notObserved?: string[];
+  reasoning?: string;
+  strategicOpportunity?: string;
+};
+export type SuggestedStrategistItem = {
+  id: string;
+  label: string;
+  tagline?: string;
+  reason?: string;
+  fit_score?: number;
+};
+
+export type ScanResult = {
+  brandScore?: BrandScore;
+  brandDna?: BrandDna;
+  summary?: string;
+  pillarAnalysis?: Record<string, PillarAnalysisItem>;
+  suggested_strategists?: SuggestedStrategistItem[];
+};
+
+const PILLARS = [
+  { id: "light", title: "SVĚTLO", subtitle: "Clarity of Value" },
+  { id: "energy", title: "ENERGIE", subtitle: "" },
+  { id: "architecture", title: "ARCHITEKTURA", subtitle: "" },
+  { id: "identity", title: "IDENTITA", subtitle: "" },
+  { id: "trust", title: "DŮVĚRA", subtitle: "" },
+] as const;
+
+function derivePillarScores(result: ScanResult): Record<string, number> {
+  const s = result.brandScore ?? {};
+  const d = result.brandDna ?? {};
+  const light = Math.round(
+    ((s.hasHeadline ? 1 : 0) + (s.hasOffer ? 1 : 0) + (s.hasTargetAudience ? 1 : 0)) / 3 * 10
+  );
+  const energy = Math.min(
+    10,
+    (d.uniqueValue?.trim() ? 3 : 0) + Math.min(4, (d.contentPillars?.length ?? 0) * 2) + 3
+  );
+  const architecture = s.hasCTA ? 7 : 3;
+  const identity = Math.min(
+    10,
+    (s.hasVisualIdentity ? 4 : 0) + (d.tone ? 3 : 0) + (d.communicationStyle ? 3 : 0)
+  );
+  const trust = s.hasSocialProof ? 7 : 3;
+  return { light, energy, architecture, identity, trust };
+}
+
+function Section({
+  children,
+  className = "",
+  compact,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  compact?: boolean;
+}) {
+  return (
+    <section
+      className={`flex flex-col items-center justify-center px-6 text-center ${compact ? "py-8" : "py-12 md:py-14"} ${className}`}
+      style={{ background: "#ffffff", color: "#111111" }}
+    >
+      {children}
+    </section>
+  );
+}
+
+function HeroSubline({ total }: { total: number }) {
+  if (total >= 65) return "Vaše značka má solidní základ. Největší prostor je v důvěře a diferenciaci.";
+  if (total >= 45) return "Vaše značka má potenciál růstu. Největší prostor je v oblasti důvěry a diferenciace.";
+  return "Vaše značka má potenciál. Největší prostor je v jasnosti nabídky a důvěře.";
+}
+
+export function ScanResultScrollExperience({
+  result,
+  projectId,
+  displayName = "",
+  displayWeb = "",
+  accessToken,
+  onBack,
+  onEnterWorkspace,
+}: {
+  result: ScanResult;
+  projectId: string | null;
+  /** Jméno / název projektu pro hlavičku a předvyplnění formuláře „Uložit výsledky“. */
+  displayName?: string;
+  /** Web pro předvyplnění formuláře „Uložit výsledky“. */
+  displayWeb?: string;
+  /** Token pro stránku /diagnostika/view — uložení přes update-input. */
+  accessToken?: string;
+  onBack?: () => void;
+  /** Po odeslání e-mailu: vstup do pracovní plochy (tabbed Brand DNA atd.). */
+  onEnterWorkspace?: () => void;
+}) {
+  const total = Math.min(100, Math.max(0, result.brandScore?.total ?? 0));
+  const summary = result.summary?.trim() ?? "";
+  const d = result.brandDna ?? {};
+  const scores = derivePillarScores(result);
+  const pillarAnalysis = result.pillarAnalysis ?? {};
+  const pillarList = PILLARS.map((p) => ({
+    ...p,
+    score: pillarAnalysis[p.id]?.score ?? scores[p.id] ?? 5,
+  }));
+  const riskCommoditization = scores.energy <= 4;
+  const [openPillar, setOpenPillar] = useState<string | null>(null);
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [leadName, setLeadName] = useState(displayName);
+  const [leadWeb, setLeadWeb] = useState(displayWeb);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadError, setLeadError] = useState<string | null>(null);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [accessUrl, setAccessUrl] = useState<string | null>(null);
+  const [secondaryCtaExpanded, setSecondaryCtaExpanded] = useState(false);
+
+  useEffect(() => {
+    setLeadName(displayName);
+    setLeadWeb(displayWeb);
+  }, [displayName, displayWeb]);
+
+  async function handleSaveLead() {
+    const email = leadEmail.trim();
+    const name = leadName.trim();
+    const web = leadWeb.trim();
+    if (!email) {
+      setLeadError("E-mail je povinný.");
+      return;
+    }
+    setLeadSubmitting(true);
+    setLeadError(null);
+    try {
+      if (accessToken) {
+        const res = await fetch("/api/diagnostika/update-input", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: accessToken,
+            name: name || null,
+            email,
+            web_url: web || null,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setLeadSubmitted(true);
+        } else {
+          setLeadError(data?.error ?? "Nepodařilo se uložit.");
+        }
+        setLeadSubmitting(false);
+        return;
+      }
+      const res = await fetch("/api/diagnostika/save-scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(projectId && { projectId }),
+          name: name || undefined,
+          webUrl: web || undefined,
+          email,
+          result: {
+            brandScore: result.brandScore,
+            brandDna: result.brandDna,
+            summary: result.summary,
+            pillarAnalysis: result.pillarAnalysis,
+            suggested_strategists: result.suggested_strategists,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data?.viewUrl) {
+        setAccessUrl(data.viewUrl);
+        setLeadSubmitted(true);
+      } else {
+        setLeadError(data?.error ?? "Nepodařilo se uložit.");
+      }
+      setLeadSubmitting(false);
+      return;
+    } catch {
+      setLeadError("Chyba připojení.");
+    } finally {
+      setLeadSubmitting(false);
+    }
+  }
+
+  function Collapsible({
+    children,
+    isOpen,
+    onToggle,
+  }: {
+    children: React.ReactNode;
+    isOpen: boolean;
+    onToggle: () => void;
+  }) {
+    return (
+      <div className="mt-4">
+        <p className="text-xs text-[#555] uppercase tracking-wider mb-2">Jak jsme hodnotili</p>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="text-sm font-medium text-[#b7e94c] hover:text-[#d0ec78] underline underline-offset-2 transition bg-transparent border-0 cursor-pointer p-0"
+        >
+          {isOpen ? "− Skrýt metodiku" : "Zjistit, jak jsme hodnotili →"}
+        </button>
+        {isOpen && (
+          <div className="mt-3 p-4 rounded-xl bg-[#f0efeb] border border-black/12 text-sm text-[#555] leading-relaxed">
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function PillarBlock({
+    id,
+    title,
+    subtitle,
+    children,
+    showTrustMethodology,
+  }: {
+    id: string;
+    title: string;
+    subtitle?: string;
+    children: React.ReactNode;
+    showTrustMethodology?: boolean;
+  }) {
+    const analysis = pillarAnalysis[id];
+    const score = analysis?.score ?? scores[id as keyof typeof scores] ?? 5;
+    const hasInterpretation = analysis?.interpretation?.trim();
+    const hasExpandableContent =
+      analysis &&
+      (analysis.observed?.length ||
+        analysis.notObserved?.length ||
+        analysis.reasoning?.trim() ||
+        analysis.interpretation?.trim() ||
+        analysis.strategicOpportunity?.trim() ||
+        (showTrustMethodology && id === "trust"));
+    const isOpen = openPillar === id;
+
+    const publicInterpretation = hasInterpretation
+      ? analysis!.interpretation!
+      : analysis?.reasoning
+        ? analysis.reasoning.split(/(?<=[.!])\s+/).slice(0, 2).join(" ").trim() || null
+        : null;
+
+    return (
+      <Section>
+        <div className="max-w-xl mx-auto text-left">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#111111] mb-1">{title}</h2>
+          {subtitle && <p className="text-sm text-[#555] mb-4">{subtitle}</p>}
+          <p className="text-2xl font-bold text-[#b7e94c] mb-4">{title}: {score}/10</p>
+
+          <div className="space-y-3">
+            {publicInterpretation ? (
+              <p className="text-base text-[#555] leading-relaxed">{publicInterpretation}</p>
+            ) : (
+              <div>{children}</div>
+            )}
+
+            <Collapsible
+              isOpen={isOpen}
+              onToggle={() => setOpenPillar(isOpen ? null : id)}
+            >
+              <div className="space-y-4">
+                {hasExpandableContent ? (
+                  <>
+                    {analysis?.observed && analysis.observed.length > 0 && (
+                      <div>
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co jsme zaznamenali</p>
+                        <ul className="list-disc list-inside text-[#555] space-y-1">
+                          {analysis.observed.map((item, i) => (
+                            <li key={i}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {analysis?.notObserved && analysis.notObserved.length > 0 && (
+                      <div>
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co jsme nezaznamenali</p>
+                        <ul className="list-disc list-inside text-[#777] space-y-1">
+                          {analysis.notObserved.map((item, i) => (
+                            <li key={i}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {showTrustMethodology && id === "trust" && (
+                      <div>
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Metodika rozlišuje mezi</p>
+                        <div className="text-[#777] space-y-1.5 text-xs">
+                          <p><strong className="text-[#555]">Portfolio</strong> = ukázka práce</p>
+                          <p><strong className="text-[#555]">Reference</strong> = hlas klienta</p>
+                          <p><strong className="text-[#555]">Case study</strong> = důkaz výsledku</p>
+                        </div>
+                      </div>
+                    )}
+                    {analysis?.reasoning?.trim() && (
+                      <div>
+                        <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Proč to ovlivnilo skóre</p>
+                        <p className="text-[#555] leading-relaxed">{analysis.reasoning}</p>
+                      </div>
+                    )}
+                    {(!analysis?.observed?.length && !analysis?.notObserved?.length && !analysis?.reasoning?.trim()) &&
+                      (analysis?.interpretation?.trim() || analysis?.strategicOpportunity?.trim()) && (
+                      <div className="space-y-2">
+                        {analysis.interpretation?.trim() && (
+                          <p className="text-[#555] leading-relaxed">{analysis.interpretation}</p>
+                        )}
+                        {analysis.strategicOpportunity?.trim() && (
+                          <p className="text-[#5a8a00] text-sm">
+                            <span className="text-[#555] uppercase tracking-wider text-xs block mb-1">Doporučený směr</span>
+                            {analysis.strategicOpportunity}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-[#555] text-sm">Pro tento pilíř není k dispozici rozepsaná metodika hodnocení.</p>
+                    <p className="text-[#777] text-xs">Skóre vychází z analýzy obsahu webu a zadaných podkladů.</p>
+                  </div>
+                )}
+              </div>
+            </Collapsible>
+          </div>
+        </div>
+      </Section>
+    );
+  }
+
+  return (
+    <div className="bg-white text-[#111111] animate-fade-in">
+      {onBack && (
+        <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-3 border-b border-black/9 bg-white/90 backdrop-blur">
+          <div className="flex items-center gap-4">
+            {displayName ? (
+              <span className="text-sm font-medium text-[#555] truncate max-w-[200px]">{displayName}</span>
+            ) : null}
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-xs text-[#555] hover:text-[#111111] transition shrink-0"
+            >
+              ← Analyzovat jiný web
+            </button>
+          </div>
+          <span className="text-[10px] uppercase tracking-widest text-[#777]">Lucifera Strategic Brand Scan™</span>
+        </div>
+      )}
+
+      {/* CTA: Chci – Prémiovou vizuální identitu (platba za Visual Board / konzultaci) */}
+      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 py-2.5 px-4 border-b border-black/9 bg-white/95 backdrop-blur">
+        <a
+          href="/rezervace?from=premiova"
+          className="inline-flex items-center justify-center rounded-lg bg-[#b7e94c] px-4 py-2 text-sm font-medium text-[#111] hover:bg-[#d0ec78]"
+        >
+          Chci – Prémiovou vizuální identitu
+        </a>
+      </div>
+
+      {/* 1. HERO – Zrcadlo */}
+      <Section>
+        <div className="animate-fade-in">
+          <p className="text-xs uppercase tracking-[0.25em] text-[#555] mb-4">
+            Index vizuální úrovně značky
+          </p>
+          <p className="text-6xl md:text-8xl font-bold text-[#111111] mb-2">
+            {total}
+            <span className="text-[#555] font-normal text-4xl md:text-5xl"> / 100</span>
+          </p>
+          <p className="text-sm text-[#777] max-w-md mx-auto mt-6 leading-relaxed">
+            „{HeroSubline({ total })}“
+          </p>
+        </div>
+      </Section>
+
+      {/* 2. Radar – 5 pilířů */}
+      <Section>
+        <div className="w-full max-w-lg mx-auto space-y-6">
+          <p className="text-xs uppercase tracking-widest text-[#555] mb-8">Pět pilířů značky</p>
+          <div className="flex flex-wrap justify-center gap-8">
+            {pillarList.map((p) => (
+              <div key={p.id} className="flex flex-col items-center gap-1">
+                <span className="text-lg font-semibold text-[#111111]">{p.title}</span>
+                <span className="text-2xl font-bold text-[#b7e94c]">{p.score}/10</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[#777] text-sm mt-10 max-w-md mx-auto">
+            „Vaše značka není slabá. Ale není ještě strategicky sladěná.“
+          </p>
+        </div>
+      </Section>
+
+      {/* 3. Přechod */}
+      <Section compact>
+        <p className="text-xl md:text-2xl text-[#555] max-w-lg mx-auto">
+          Značka není jen vizuál.<br />Je to systém.
+        </p>
+      </Section>
+
+      {/* 4. PILÍŘ I – SVĚTLO */}
+      <PillarBlock id="light" title="SVĚTLO" subtitle="Clarity of Value">
+        <div className="space-y-4 text-sm text-[#555]">
+          <div>
+            <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co funguje</p>
+            <ul className="list-disc list-inside space-y-1">
+              {d.positioning && <li>Je jasné, že nabízíte konkrétní hodnotu</li>}
+              {d.targetAudience && <li>Komunikace je srozumitelná</li>}
+              {!d.positioning && !d.targetAudience && <li>Základní struktura je rozpoznatelná</li>}
+            </ul>
+          </div>
+          <div>
+            <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Co brzdí růst</p>
+            <ul className="list-disc list-inside space-y-1">
+              {!result.brandScore?.hasHeadline && <li>Hlavní claim je generický nebo chybí</li>}
+              {!result.brandScore?.hasTargetAudience && <li>Cílová skupina není jednoznačně identifikovaná</li>}
+              {(result.brandScore?.hasHeadline && result.brandScore?.hasTargetAudience) && <li>Možnost ještě více vyostřit hlavní zprávu</li>}
+            </ul>
+          </div>
+        </div>
+        {d.positioning && (
+          <div className="mt-8 p-4 rounded-xl bg-[rgba(183,233,76,0.12)] border border-[rgba(183,233,76,0.4)]">
+            <p className="text-xs uppercase tracking-wider text-[#555] mb-2">Pokud by měl být claim přesnější, mohl by znít například:</p>
+            <p className="text-[#111111] font-medium">„{d.positioning}“</p>
+          </div>
+        )}
+      </PillarBlock>
+
+      {/* 5. Přechod */}
+      <Section compact>
+        <p className="text-xl text-[#555] max-w-lg mx-auto">
+          Značka může být jasná.<br />Ale proč právě ona?
+        </p>
+      </Section>
+
+      {/* 6. PILÍŘ II – ENERGIE */}
+      <PillarBlock id="energy" title="ENERGIE">
+        {riskCommoditization && (
+          <p className="text-amber-400/90 text-sm font-medium mb-6">Riziko zaměnitelnosti: vysoké</p>
+        )}
+        <p className="text-[#777] text-sm mb-4">Osa: Cena ↔ Prémiovost · Obecné ↔ Specializované</p>
+        {d.uniqueValue ? <p className="text-[#555]">Unikátní hodnota: {d.uniqueValue}</p> : null}
+        <p className="text-[#777] text-sm mt-6">„Vaše značka dnes soutěží v přeplněné kategorii.“</p>
+      </PillarBlock>
+
+      {/* 7. PILÍŘ III – ARCHITEKTURA */}
+      <PillarBlock id="architecture" title="ARCHITEKTURA">
+        <p className="text-[#777] text-sm">
+          {result.brandScore?.hasCTA
+            ? "Výzva k akci je přítomna – uživatel ví, co má udělat."
+            : "Uživatel musí projít více kroků, než pochopí, co má udělat. Body tření. Konverzní mezera."}
+        </p>
+      </PillarBlock>
+
+      {/* 8. PILÍŘ IV – IDENTITA */}
+      <PillarBlock id="identity" title="IDENTITA">
+        <p className="text-[#777] text-sm mb-4">Vaše značka působí spíše:</p>
+        <ul className="list-disc list-inside text-[#555] text-sm space-y-1 mb-6">
+          {d.tone && <li>{d.tone}</li>}
+          {d.communicationStyle && <li>{d.communicationStyle}</li>}
+          {result.brandScore?.hasVisualIdentity ? <li>Vizuálně sjednoceně</li> : <li>Bez výrazného emočního tónu</li>}
+        </ul>
+        <p className="text-[#555] text-sm">Silnější směr by mohl být: Autoritativní + Lidský</p>
+      </PillarBlock>
+
+      {/* 9. PILÍŘ V – DŮVĚRA */}
+      <PillarBlock id="trust" title="DŮVĚRA" showTrustMethodology>
+        {!result.brandScore?.hasSocialProof && (
+          <ul className="list-disc list-inside text-[#777] text-sm space-y-1 mb-6">
+            <li>Chybí reference</li>
+            <li>Chybí konkrétní výsledky</li>
+            <li>Chybí expertní ukotvení</li>
+          </ul>
+        )}
+        <p className="text-[#777] text-sm">„Bez důvěry značka nezíská prémiovou pozici.“</p>
+      </PillarBlock>
+
+      {/* 10. Shrnutí */}
+      <Section>
+        <div className="max-w-xl mx-auto text-left">
+          <h2 className="text-2xl font-bold text-[#111111] mb-8">Strategický profil vaší značky</h2>
+          <div className="grid grid-cols-2 gap-3 text-sm mb-8">
+            {pillarList.map((p) => (
+              <div key={p.id} className="flex justify-between py-2 border-b border-black/12">
+                <span className="text-[#777]">{p.title}</span>
+                <span className="font-semibold text-[#111111]">{p.score}</span>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-4 text-sm text-[#555]">
+            {d.missingElements && d.missingElements.length > 0 && (
+              <div>
+                <p className="text-[#555] uppercase tracking-wider text-xs mb-2">3 klíčová rizika / okamžité akce</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {d.missingElements.slice(0, 3).map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {summary && (
+              <div>
+                <p className="text-[#555] uppercase tracking-wider text-xs mb-2">Doporučený strategický posun</p>
+                <p className="text-[#555]">{summary}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </Section>
+
+      {/* 10b. Pro vaši značku doporučujeme (pouze pokud máme suggested_strategists) – bez CTA tlačítka */}
+      {result.suggested_strategists && result.suggested_strategists.length > 0 && (
+        <Section>
+          <div className="max-w-xl mx-auto text-left">
+            <h2 className="text-2xl font-bold text-[#111111] mb-6">Pro vaši značku doporučujeme</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {result.suggested_strategists.slice(0, 2).map((s) => (
+                <div
+                  key={s.id}
+                  className="rounded-xl border border-black/12 bg-[#f7f7f5] p-4 text-left"
+                >
+                  <div className="font-semibold text-[#111111]">{s.label}</div>
+                  {s.tagline && <div className="text-sm text-[#777] mt-1">{s.tagline}</div>}
+                  {s.fit_score != null && (
+                    <div className="text-xs text-[#b7e94c] mt-2">Fit: {s.fit_score} %</div>
+                  )}
+                  {s.reason && (
+                    <p className="text-sm text-[#555] mt-2">{s.reason}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {/* Info před CTA – dočasné uložení */}
+      <Section compact>
+        <p className="text-sm text-[#555] max-w-xl mx-auto text-center leading-relaxed">
+          Vaše výsledky jsou dočasně uloženy v této session. Zadejte email a uchováme je — až se vrátíte, vše bude na místě. Bez emailu data po zavření stránky zmizí.
+        </p>
+      </Section>
+
+      {/* Primární CTA – jeden velký blok */}
+      <Section className="pb-6">
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-semibold text-[#111111] mb-6 leading-relaxed">
+            Značka má potenciál. Otázka je, zda ho chcete využít.
+          </h2>
+          <button
+            type="button"
+            onClick={() => setOpenCalendar(true)}
+            className="w-full max-w-md mx-auto bg-lime-400 text-black font-semibold py-4 px-8 rounded-xl hover:scale-[1.02] transition-all duration-300 text-lg"
+          >
+            Rezervovat strategický hovor
+          </button>
+          <div className="mt-3 text-center">
+            <p className="text-[#555] text-sm">
+              7 800 Kč · strategický hovor · vizuální board · strategie · 3 Canva šablony na míru
+            </p>
+            <p className="text-[#777] text-xs mt-1">
+              Pokud nebudete s výsledkem spokojeni, částku vrátíme. Veškerý obsah vám zůstává.{" "}
+              <a href="/obchodni-podminky" className="text-[#555] hover:text-[#777] underline underline-offset-1">
+                Podmínky vrácení
+              </a>
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      {/* Sekundární CTA – uložte výsledky (rozbalovací) */}
+      <Section className="pb-16">
+        <div className="max-w-xl mx-auto">
+          {!leadSubmitted ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setSecondaryCtaExpanded((v) => !v)}
+                className="text-sm text-[#777] hover:text-[#111111] underline underline-offset-2 transition"
+              >
+                {secondaryCtaExpanded ? "− Skrýt" : "Zatím nechci konzultaci — uložte moje výsledky."}
+              </button>
+              {secondaryCtaExpanded && (
+                <div className="mt-4 p-4 rounded-xl bg-[#f7f7f5] border border-black/12 space-y-3">
+                  <div>
+                    <label className="block text-xs text-[#555] mb-1">Jméno nebo název projektu</label>
+                    <input
+                      type="text"
+                      value={leadName}
+                      onChange={(e) => setLeadName(e.target.value)}
+                      placeholder="Vaše jméno nebo firma"
+                      className="w-full rounded-lg border border-black/12 bg-white px-4 py-2.5 text-[#111111] text-sm placeholder:text-[#bbbbbb] focus:border-[#b7e94c] focus:outline-none focus:ring-1 focus:ring-[rgba(183,233,76,0.18)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#555] mb-1">Web</label>
+                    <input
+                      type="text"
+                      value={leadWeb}
+                      onChange={(e) => setLeadWeb(e.target.value)}
+                      placeholder="https://…"
+                      className="w-full rounded-lg border border-black/12 bg-white px-4 py-2.5 text-[#111111] text-sm placeholder:text-[#bbbbbb] focus:border-[#b7e94c] focus:outline-none focus:ring-1 focus:ring-[rgba(183,233,76,0.18)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-[#555] mb-1">E-mail</label>
+                    <input
+                      type="email"
+                      placeholder="vas@email.cz"
+                      value={leadEmail}
+                      onChange={(e) => setLeadEmail(e.target.value)}
+                      className="w-full rounded-lg border border-black/12 bg-white px-4 py-2.5 text-[#111111] text-sm placeholder:text-[#bbbbbb] focus:border-[#b7e94c] focus:outline-none focus:ring-1 focus:ring-[rgba(183,233,76,0.18)]"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSaveLead}
+                    disabled={leadSubmitting || !leadEmail.trim()}
+                    className="rounded-lg bg-[#555] text-white font-medium px-5 py-2.5 hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+                  >
+                    {leadSubmitting ? "Ukládám…" : "Uložit výsledky"}
+                  </button>
+                </div>
+              )}
+              {secondaryCtaExpanded && leadError && (
+                <p className="mt-2 text-sm text-red-400">{leadError}</p>
+              )}
+            </>
+          ) : (
+            <div className="p-4 rounded-xl bg-[#f7f7f5] border border-black/12">
+              <p className="text-sm text-[#555]">
+                Výsledky jsou uloženy. Až budete připraveni pokračovat, napište nám na{" "}
+                <a href="mailto:ahoj@studiolucifera.cz" className="text-[#b7e94c] underline">ahoj@studiolucifera.cz</a>
+                {" "}— aktivujeme váš účet.
+              </p>
+              {accessUrl && (
+                <p className="text-xs text-[#555] mt-2">
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(accessUrl)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#b7e94c] text-[#111] text-xs font-semibold hover:bg-[#a0d42e] transition-colors"
+                  >
+                    📋 Zkopírovat odkaz k výsledkům
+                  </button>
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </Section>
+
+      {/* DARK MODAL – kalendář */}
+      {openCalendar && !openConfirmation && (
+          <div
+            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6"
+            onClick={() => setOpenCalendar(false)}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <BookingCalendar
+                service="board"
+                theme="dark"
+                showBackLink={false}
+                onDirectCheckout={(date) => {
+                  setSelectedDate(date);
+                  setOpenConfirmation(true);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Prémiový potvrzovací mezikrok */}
+        {openConfirmation && selectedDate && (
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-6">
+            <div className="bg-white border border-black/12 rounded-3xl p-12 max-w-lg w-full text-[#111111]">
+              <h3 className="text-3xl font-semibold mb-6">
+                Potvrzení vstupu do spolupráce
+              </h3>
+              <p className="text-[#555] mb-6">
+                Rezervujete termín strategického Visual Boardu.
+                Tento krok je závazný a zahajuje přípravu spolupráce.
+              </p>
+              <div className="mb-8">
+                <div className="text-[#777] text-sm">Vybraný termín</div>
+                <div className="text-2xl font-semibold mt-1">{selectedDate}</div>
+                <div className="text-2xl font-semibold mt-4">7 800 Kč</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = `/api/checkout?type=board&date=${encodeURIComponent(selectedDate)}`;
+                }}
+                className="w-full py-4 rounded-xl bg-[#b7e94c] text-[#111] font-semibold hover:scale-[1.02] transition-all"
+              >
+                Uhradit a vstoupit do spolupráce
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenConfirmation(false);
+                  setOpenCalendar(false);
+                }}
+                className="w-full mt-4 text-[#777] hover:text-[#111111] transition"
+              >
+                Zrušit
+              </button>
+            </div>
+          </div>
+        )}
+
+      <Section compact>
+        <p className="text-xs text-[#777] max-w-md mx-auto text-center leading-relaxed">
+          Metodika Lucifera Strategic Brand Scan™ je součástí placené spolupráce. Veřejná verze je orientační náhled.
+        </p>
+      </Section>
+    </div>
+  );
+}

@@ -238,11 +238,11 @@ const CONTACT_SHOTS = [
 
 
 const FIXED_PALETTE = [
-  { name: "Linen",  hex: "#E8D0D0" },
-  { name: "Walnut", hex: "#7C5C3E" },
-  { name: "Ivory",  hex: "#FAF8EE" },
-  { name: "Sage",   hex: "#8B9E7A" },
-  { name: "Ink",    hex: "#2C2C2E" },
+  { name: "Linen",  hex: "#E8D0D0", role: "Primární" },
+  { name: "Walnut", hex: "#7C5C3E", role: "Akcent" },
+  { name: "Ivory",  hex: "#FAF8EE", role: "Pozadí" },
+  { name: "Sage",   hex: "#8B9E7A", role: "Doplňkový" },
+  { name: "Ink",    hex: "#2C2C2E", role: "Text" },
 ];
 const FIXED_OUTFITS = ["Lněné oblečení", "Přírodní tóny", "Casual styl"];
 const FIXED_PROPS   = ["Zápisník", "Káva", "Přirozené světlo", "Rostliny"];

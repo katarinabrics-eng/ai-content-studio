@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const buffer = await downloadFileAsBuffer(fileId)
-    return new NextResponse(buffer, {
+    return new NextResponse(buffer as unknown as BodyInit, {
       headers: {
         'Content-Type': mimeType,
         'Cache-Control': 'public, max-age=3600',

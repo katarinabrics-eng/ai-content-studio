@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const buffer = await downloadFileAsBuffer(fileId);
-    return new Response(buffer, {
+    return new Response(buffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "image/jpeg",
         "Cache-Control": "public, max-age=3600",
