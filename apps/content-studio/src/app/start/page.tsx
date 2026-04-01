@@ -564,7 +564,7 @@ export default function StartPage() {
                 </button>
                 <button
                   className="hero-cta-secondary"
-                  onClick={scrollToLibrary}
+                  onClick={() => router.push('/client/magnet/rtg/onboarding')}
                 >
                   nebo začni tvořit rovnou →
                 </button>
