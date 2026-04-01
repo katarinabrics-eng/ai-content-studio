@@ -3,41 +3,66 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-const COLORS = [
-  { hex: '#E8B4B8', label: 'Teplá' },
-  { hex: '#F5F0E8', label: 'Luxusní' },
-  { hex: '#E8E8E0', label: 'Minimal' },
-  { hex: '#B8D4C8', label: 'Fresh' },
-  { hex: '#2C2C2C', label: 'Bold' },
-  { hex: '#D4B896', label: 'Zemitá' },
-  { hex: '#A8C4D4', label: 'Klidná' },
-  { hex: '#E8D4B8', label: 'Jemná' },
+const COLLECTIONS = [
+  { hex: '#4A6FA5', label: 'Cool Business', style: 'K02' },
+  { hex: '#E8E4DC', label: 'Clean Minimal', style: 'K03' },
+  { hex: '#E8B4B8', label: 'Soft Feminine', style: 'K04' },
+  { hex: '#2C2C2C', label: 'Edgy Feminine', style: 'K05' },
+  { hex: '#8B7355', label: 'Raw Feminine',  style: 'K06' },
+  { hex: '#4A9B8E', label: 'Teal Lifestyle', style: 'K09' },
 ]
 
-const GRID_ITEMS = [
-  { label: 'Teplá', color: '#E8B4B8' },
-  { label: 'Luxusní', color: '#F5F0E8' },
-  { label: 'Minimal', color: '#E8E8E0' },
-  { label: 'Fresh', color: '#B8D4C8' },
-  { label: 'Bold', color: '#2C2C2C' },
-  { label: 'Zemitá', color: '#D4B896' },
-]
+type Photo = {
+  id: string
+  name: string
+  thumbnailUrl: string | null
+  webViewLink: string | null
+  subfolder: string | null
+}
 
 export default function StartPage() {
   const router = useRouter()
-  const [selectedColor, setSelectedColor] = useState<string>('')
-  const [bgTint, setBgTint] = useState<string>('transparent')
+  const [selectedStyle, setSelectedStyle] = useState<string>('K04')
+  const [bgTint, setBgTint] = useState<string>(COLLECTIONS[2].hex + '0f')
   const [webUrl, setWebUrl] = useState('')
   const [mounted, setMounted] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+  const [gridPhotos, setGridPhotos] = useState<Photo[]>([])
+  const [gridLoading, setGridLoading] = useState(false)
+  // first photo per collection for carousel thumbnails
+  const [collectionThumbs, setCollectionThumbs] = useState<Record<string, string>>({})
 
+  // Načti kolekci při mount (K04 default) + thumbnaily pro carousel
   useEffect(() => {
     setMounted(true)
+    loadCollection('K04', COLLECTIONS[2].hex)
+    // Načti po jednom thumbnailu pro každou kolekci
+    COLLECTIONS.forEach((c) => {
+      fetch(`/api/client/visual-bank?limit=1&style=${c.style}`)
+        .then((r) => r.json())
+        .then((data) => {
+          const first = data?.files?.[0]
+          if (first?.thumbnailUrl) {
+            setCollectionThumbs((prev) => ({ ...prev, [c.style]: first.thumbnailUrl }))
+          }
+        })
+        .catch(() => {})
+    })
   }, [])
 
-  function handleColorSelect(hex: string) {
-    setSelectedColor(hex)
+  async function loadCollection(style: string, hex: string) {
+    setGridLoading(true)
     setBgTint(hex + '0f')
+    setSelectedStyle(style)
+    try {
+      const res = await fetch(`/api/client/visual-bank?limit=6&style=${style}`)
+      const data = await res.json()
+      setGridPhotos(data?.files ?? [])
+    } catch {
+      setGridPhotos([])
+    } finally {
+      setGridLoading(false)
+    }
   }
 
   function handleAnalyze() {
@@ -50,6 +75,8 @@ export default function StartPage() {
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter') handleAnalyze()
   }
+
+  const activeCollection = COLLECTIONS.find((c) => c.style === selectedStyle)
 
   return (
     <div>
@@ -94,19 +121,16 @@ export default function StartPage() {
         .start-header-link {
           font-size: 14px;
           color: #555;
-          text-decoration: none;
           cursor: pointer;
           background: none;
           border: none;
           font-family: 'DM Sans', sans-serif;
         }
-
         .start-header-link:hover { color: #111; }
 
         .start-header-cta {
           font-size: 14px;
           color: #111;
-          text-decoration: none;
           font-weight: 500;
           cursor: pointer;
           background: none;
@@ -149,10 +173,7 @@ export default function StartPage() {
           padding: 28px;
         }
 
-        .start-input-row {
-          display: flex;
-          gap: 10px;
-        }
+        .start-input-row { display: flex; gap: 10px; }
 
         .start-url-input {
           flex: 1;
@@ -166,7 +187,6 @@ export default function StartPage() {
           outline: none;
           transition: border-color 150ms;
         }
-
         .start-url-input:focus { border-color: #b7e94c; }
         .start-url-input::placeholder { color: #bbb; }
 
@@ -183,7 +203,6 @@ export default function StartPage() {
           white-space: nowrap;
           transition: background 150ms;
         }
-
         .start-analyze-btn:hover { background: #333; }
 
         .start-checklist {
@@ -213,7 +232,6 @@ export default function StartPage() {
           font-family: 'DM Sans', sans-serif;
           padding: 0;
         }
-
         .start-secondary-link:hover { color: #555; }
 
         .start-browser-mock {
@@ -233,10 +251,7 @@ export default function StartPage() {
           gap: 12px;
         }
 
-        .start-browser-dots {
-          display: flex;
-          gap: 6px;
-        }
+        .start-browser-dots { display: flex; gap: 6px; }
 
         .start-browser-dot {
           width: 10px;
@@ -278,28 +293,14 @@ export default function StartPage() {
           min-width: 180px;
         }
 
-        .start-overlay-label {
-          font-size: 11px;
-          color: #888;
-          margin-bottom: 4px;
-        }
+        .start-overlay-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+        .start-overlay-score { font-size: 18px; font-weight: 600; color: #e05a5a; line-height: 1.2; }
+        .start-overlay-hint { font-size: 11px; color: #888; margin-top: 6px; }
 
-        .start-overlay-score {
-          font-size: 18px;
-          font-weight: 600;
-          color: #e05a5a;
-          line-height: 1.2;
-        }
-
-        .start-overlay-hint {
-          font-size: 11px;
-          color: #888;
-          margin-top: 6px;
-        }
-
+        /* PALETA SEKCE */
         .start-palette-section {
           width: 100%;
-          padding: 64px 48px;
+          padding: 64px 48px 32px;
           text-align: center;
         }
 
@@ -316,11 +317,12 @@ export default function StartPage() {
           margin-top: 8px;
         }
 
+        /* KROUŽKY */
         .start-color-row {
           display: flex;
           justify-content: center;
-          gap: 12px;
-          margin-top: 24px;
+          gap: 20px;
+          margin-top: 28px;
           flex-wrap: wrap;
         }
 
@@ -328,33 +330,88 @@ export default function StartPage() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 6px;
+          gap: 7px;
           cursor: pointer;
         }
 
         .start-color-dot {
-          width: 40px;
-          height: 40px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           transition: box-shadow 150ms, transform 150ms;
         }
-
         .start-color-dot:hover { transform: scale(1.1); }
 
         .start-color-label {
           font-size: 10px;
           color: #888;
+          white-space: nowrap;
         }
 
+        /* KOLOTOČ KOLEKCÍ */
+        .start-carousel-wrap {
+          width: 100%;
+          padding: 24px 48px 0;
+          overflow: hidden;
+        }
+
+        .start-carousel {
+          display: flex;
+          gap: 12px;
+          overflow-x: auto;
+          scroll-behavior: smooth;
+          padding-bottom: 8px;
+          /* skryj scrollbar */
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .start-carousel::-webkit-scrollbar { display: none; }
+
+        .start-carousel-card {
+          flex-shrink: 0;
+          width: 140px;
+          height: 90px;
+          border-radius: 12px;
+          overflow: hidden;
+          cursor: pointer;
+          position: relative;
+          transition: transform 150ms, box-shadow 150ms;
+          border: 2px solid transparent;
+        }
+        .start-carousel-card:hover { transform: scale(1.03); }
+        .start-carousel-card.active { border-color: #111; }
+
+        .start-carousel-bg {
+          position: absolute;
+          inset: 0;
+          background-size: cover;
+          background-position: center;
+        }
+
+        .start-carousel-label {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 6px 10px;
+          font-size: 10px;
+          font-weight: 500;
+          color: white;
+          background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%);
+          font-family: 'DM Sans', sans-serif;
+        }
+
+        /* GRID */
         .start-grid-section {
           width: 100%;
-          padding: 0 48px 80px;
+          padding: 24px 48px 80px;
         }
 
         .start-visual-grid {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
-          gap: 16px;
+          gap: 12px;
+          transition: opacity 200ms ease;
         }
 
         .start-grid-card {
@@ -364,25 +421,25 @@ export default function StartPage() {
           cursor: pointer;
           aspect-ratio: 4/5;
           transition: transform 200ms;
+          background: #f0ede8;
         }
-
         .start-grid-card:hover { transform: scale(1.02); }
 
-        .start-grid-bg {
+        .start-grid-img {
           width: 100%;
           height: 100%;
-          position: absolute;
-          inset: 0;
+          object-fit: cover;
+          display: block;
         }
 
         .start-grid-label {
           position: absolute;
-          bottom: 12px;
-          left: 12px;
-          font-size: 11px;
+          bottom: 10px;
+          left: 10px;
+          font-size: 10px;
           background: rgba(255,255,255,0.85);
-          padding: 4px 10px;
-          border-radius: 6px;
+          padding: 3px 8px;
+          border-radius: 5px;
           color: #333;
           font-family: 'DM Sans', sans-serif;
         }
@@ -401,12 +458,27 @@ export default function StartPage() {
           background: white;
           color: #111;
           border: none;
-          padding: 8px 16px;
+          padding: 8px 14px;
           border-radius: 8px;
-          font-size: 13px;
+          font-size: 12px;
           font-family: 'DM Sans', sans-serif;
           font-weight: 500;
           cursor: pointer;
+        }
+
+        /* placeholder shimmer při loading */
+        .start-grid-placeholder {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, #f0ede8 25%, #e8e4dc 50%, #f0ede8 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.2s infinite;
+        }
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
         }
 
         @media (max-width: 768px) {
@@ -418,17 +490,17 @@ export default function StartPage() {
           }
           .start-h1 { font-size: 36px; }
           .start-browser-mock { display: none; }
-          .start-palette-section { padding: 40px 20px; }
-          .start-grid-section { padding: 0 20px 60px; }
+          .start-palette-section { padding: 40px 20px 20px; }
+          .start-carousel-wrap { padding: 16px 20px 0; }
+          .start-grid-section { padding: 16px 20px 60px; }
           .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
-          .start-palette-section { padding: 40px 20px; }
         }
       `}</style>
 
       <div
         className="start-page"
         style={{
-          backgroundColor: bgTint !== 'transparent' ? bgTint : '#ffffff',
+          backgroundColor: bgTint,
           transition: 'background-color 300ms ease, opacity 400ms ease',
           opacity: mounted ? 1 : 0,
         }}
@@ -513,8 +585,6 @@ export default function StartPage() {
                 title="Lucifera PVI preview"
                 scrolling="no"
               />
-
-              {/* Overlay karta */}
               <div className="start-overlay-card">
                 <div className="start-overlay-label">Nejslabší místo</div>
                 <div className="start-overlay-score">Důvěra · 4/10</div>
@@ -528,24 +598,23 @@ export default function StartPage() {
         <section className="start-palette-section">
           <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
           <p className="start-section-sub">
-            Vyber tón — a uvidíš jak může vypadat tvůj obsah
+            Vyber styl — a uvidíš reálné fotky z dané kolekce
           </p>
 
+          {/* Kroužky kolekcí */}
           <div className="start-color-row">
-            {COLORS.map((c) => (
+            {COLLECTIONS.map((c) => (
               <div
-                key={c.hex}
+                key={c.style}
                 className="start-color-item"
-                onClick={() => handleColorSelect(c.hex)}
+                onClick={() => loadCollection(c.style, c.hex)}
               >
                 <div
                   className="start-color-dot"
                   style={{
                     background: c.hex,
-                    border: c.hex === '#F5F0E8' || c.hex === '#E8E8E0' || c.hex === '#E8D4B8'
-                      ? '1px solid #e0ddd8'
-                      : 'none',
-                    boxShadow: selectedColor === c.hex
+                    border: c.hex === '#E8E4DC' ? '1px solid #d0ccc4' : 'none',
+                    boxShadow: selectedStyle === c.style
                       ? '0 0 0 3px white, 0 0 0 5px #111'
                       : 'none',
                   }}
@@ -556,74 +625,80 @@ export default function StartPage() {
           </div>
         </section>
 
+        {/* KOLOTOČ KOLEKCÍ */}
+        <div className="start-carousel-wrap">
+          <div className="start-carousel">
+            {COLLECTIONS.map((c) => {
+              const thumb = collectionThumbs[c.style]
+              return (
+                <div
+                  key={c.style}
+                  className={`start-carousel-card${selectedStyle === c.style ? ' active' : ''}`}
+                  onClick={() => loadCollection(c.style, c.hex)}
+                >
+                  <div
+                    className="start-carousel-bg"
+                    style={{
+                      backgroundColor: c.hex,
+                      backgroundImage: thumb ? `url(${thumb})` : undefined,
+                    }}
+                  />
+                  <span className="start-carousel-label">{c.label}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
         {/* VIZUÁLNÍ GRID */}
         <section className="start-grid-section">
-          <div className="start-visual-grid">
-            {GRID_ITEMS.map((item, i) => (
-              <div
-                key={i}
-                className="start-grid-card"
-                onMouseEnter={() => setHoveredCard(i)}
-                onMouseLeave={() => setHoveredCard(null)}
-                onClick={() => router.push('/client/magnet/rtg/onboarding')}
-              >
-                {/* Barevné pozadí jako placeholder */}
-                <div
-                  className="start-grid-bg"
-                  style={{ background: item.color }}
-                />
-
-                {/* Dekorativní prvky simulující obsah */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    padding: 20,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    gap: 8,
-                  }}
-                >
-                  <div style={{
-                    height: 10,
-                    borderRadius: 4,
-                    background: item.color === '#2C2C2C'
-                      ? 'rgba(255,255,255,0.2)'
-                      : 'rgba(0,0,0,0.1)',
-                    width: '70%',
-                  }} />
-                  <div style={{
-                    height: 8,
-                    borderRadius: 4,
-                    background: item.color === '#2C2C2C'
-                      ? 'rgba(255,255,255,0.12)'
-                      : 'rgba(0,0,0,0.07)',
-                    width: '50%',
-                  }} />
-                  <div style={{
-                    height: 8,
-                    borderRadius: 4,
-                    background: item.color === '#2C2C2C'
-                      ? 'rgba(255,255,255,0.12)'
-                      : 'rgba(0,0,0,0.07)',
-                    width: '60%',
-                  }} />
-                </div>
-
-                <span className="start-grid-label">{item.label}</span>
-
-                {/* Hover overlay */}
-                <div
-                  className="start-grid-overlay"
-                  style={{ opacity: hoveredCard === i ? 1 : 0 }}
-                >
-                  <button className="start-grid-overlay-btn">
-                    Vytvořit příspěvek →
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div
+            className="start-visual-grid"
+            style={{ opacity: gridLoading ? 0.5 : 1 }}
+          >
+            {gridPhotos.length > 0
+              ? gridPhotos.map((photo, i) => (
+                  <div
+                    key={photo.id}
+                    className="start-grid-card"
+                    onMouseEnter={() => setHoveredCard(i)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                  >
+                    {photo.thumbnailUrl ? (
+                      <img
+                        src={photo.thumbnailUrl}
+                        alt={photo.subfolder ?? activeCollection?.label ?? ''}
+                        className="start-grid-img"
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: activeCollection?.hex ?? '#e8e4dc',
+                        }}
+                      />
+                    )}
+                    <span className="start-grid-label">
+                      {activeCollection?.label ?? ''}
+                    </span>
+                    <div
+                      className="start-grid-overlay"
+                      style={{ opacity: hoveredCard === i ? 1 : 0 }}
+                    >
+                      <button className="start-grid-overlay-btn">
+                        Vytvořit příspěvek →
+                      </button>
+                    </div>
+                  </div>
+                ))
+              : // Placeholder shimmer při prvním načítání
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="start-grid-card">
+                    <div className="start-grid-placeholder" />
+                  </div>
+                ))}
           </div>
         </section>
       </div>
