@@ -14,57 +14,28 @@ type Collection = {
   folder: string
 }
 
-const HERO_VARIANTS = [
-  {
-    h1a: 'Vypadá to dobře.',
-    h1b: 'Ale něco nesedí.',
-    sub: 'Z toho co dáváš ven není jasné co děláš, pro koho to je a proč by si tě měl někdo vybrat.',
-    cta: null,
-  },
-  {
-    h1a: 'Nechceš to řešit.',
-    h1b: 'Chceš rovnou tvořit.',
-    sub: 'Tady máš obsah který můžeš vzít a použít. Bez přemýšlení. Bez začátků od nuly.',
-    cta: 'Přejít do vizuální knihovny →',
-  },
-  {
-    h1a: 'Tady je tvůj stock.',
-    h1b: 'Připravený k použití.',
-    sub: '247 vizuálů v 7 kolekcích. Vyber styl — a začni tvořit rovnou.',
-    cta: 'Přejít do vizuální knihovny →',
-  },
-  {
-    h1a: 'Naplánováno.',
-    h1b: 'Celý měsíc.',
-    sub: 'Obsah rozmístěný na týdny dopředu. Ty jen schvaluješ a jdeš dál.',
-    cta: 'Přejít do vizuální knihovny →',
-  },
-  {
-    h1a: 'Obsah je hotový.',
-    h1b: 'Stačí ho vzít.',
-    sub: 'Text, vizuál, hashtagy. Připraveno pro Instagram, Reels i Stories.',
-    cta: 'Přejít do vizuální knihovny →',
-  },
-  {
-    h1a: 'Tvoje značka',
-    h1b: 'má směr.',
-    sub: 'Brand DNA, skóre 74/100, 5 pilířů. Víš co funguje a co opravit.',
-    cta: 'Spustit diagnostiku →',
-  },
+const ROTATING_SENTENCES = [
+  "Tvoříš. Ale zákazník neví proč jít za tebou.",
+  "Máš jasno. Chceš rovnou tvořit.",
+  "Web máš. Výsledky chybí.",
+  "Nechceš řešit strategii. Chceš výsledek.",
+  "Vypadá to dobře. Ale něco nesedí.",
+  "Obsah potřebuješ teď. Ne za týden.",
 ]
 
-const SLIDES = [
-  { visual: 'diagnostika' },
-  { visual: 'approval' },
-  { visual: 'library' },
-  { visual: 'calendar' },
-  { visual: 'post' },
-  { visual: 'brand' },
+const K04_PHOTOS = [
+  '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg',
+  '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg',
+  '/placeholders/stock-vizualni knihovna/K04/k04-003.png',
+  '/placeholders/stock-vizualni knihovna/K04/k04-004.jpeg',
+  '/placeholders/stock-vizualni knihovna/K04/k04-005.png',
+  '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
+  '/placeholders/stock-vizualni knihovna/K04/k04-007.jpeg',
+  '/placeholders/stock-vizualni knihovna/K04/k04-008.png',
 ]
 
 export default function StartPage() {
   const router = useRouter()
-  const [webUrl, setWebUrl] = useState('')
   const [mounted, setMounted] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [collections, setCollections] = useState<Collection[]>([])
@@ -74,30 +45,69 @@ export default function StartPage() {
   const [bgColor, setBgColor] = useState('transparent')
   const fetchRef = useRef(0)
 
-  // Animovaný hero — crossfade bez blikání
-  const [slideIndex, setSlideIndex] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Typewriter
+  const [displayText, setDisplayText] = useState('')
+  const [sentenceIndex, setSentenceIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
 
-  const heroVariant = slideIndex
+  // Slides
+  const [activeSlide, setActiveSlide] = useState(0)
+  const slideIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  function startInterval() {
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    intervalRef.current = setInterval(() => {
-      setSlideIndex(i => (i + 1) % 6)
-    }, 4000)
+  function startSlideInterval() {
+    if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
+    slideIntervalRef.current = setInterval(() => {
+      setActiveSlide(i => (i + 1) % 6)
+    }, 6000)
   }
 
   function goToSlide(i: number) {
-    setSlideIndex(i)
-    startInterval()
+    setActiveSlide(i)
+    startSlideInterval()
   }
+
+  // Typewriter effect
+  useEffect(() => {
+    if (isPaused) return
+    const current = ROTATING_SENTENCES[sentenceIndex]
+    let timeout: ReturnType<typeof setTimeout>
+
+    if (!isDeleting && displayText === current) {
+      setIsPaused(true)
+      timeout = setTimeout(() => {
+        setIsPaused(false)
+        setIsDeleting(true)
+      }, 2500)
+      return () => clearTimeout(timeout)
+    }
+
+    if (isDeleting && displayText === '') {
+      setIsDeleting(false)
+      setSentenceIndex(i => (i + 1) % ROTATING_SENTENCES.length)
+      return
+    }
+
+    const speed = isDeleting ? 30 : 50
+    timeout = setTimeout(() => {
+      if (isDeleting) {
+        setDisplayText(prev => prev.slice(0, -1))
+      } else {
+        setDisplayText(current.slice(0, displayText.length + 1))
+      }
+    }, speed)
+
+    return () => clearTimeout(timeout)
+  }, [displayText, sentenceIndex, isDeleting, isPaused])
 
   useEffect(() => {
     setMounted(true)
     loadCollections()
-    startInterval()
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    startSlideInterval()
+    return () => {
+      if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function loadCollections() {
@@ -126,17 +136,6 @@ export default function StartPage() {
       setActivePhotos(col.photos.slice(0, 16))
       setGridLoading(false)
     }, 250)
-  }
-
-  function handleAnalyze() {
-    const url = webUrl.trim()
-    if (!url) return
-    const withProtocol = url.startsWith('http') ? url : 'https://' + url
-    router.push('/brand-scan?url=' + encodeURIComponent(withProtocol))
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') handleAnalyze()
   }
 
   function scrollToLibrary() {
@@ -192,165 +191,176 @@ export default function StartPage() {
 
         /* HERO */
         .start-hero {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
           width: 100%;
-          padding: 120px 80px 80px;
-          transition: background-color 0.8s ease;
+          padding: 80px 0;
         }
         .start-hero-inner {
           max-width: 1200px;
           margin: 0 auto;
+          padding: 0 80px;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 72px;
+          gap: 80px;
           align-items: center;
+          width: 100%;
         }
-        .start-hero-left { max-width: 460px; }
+        .start-hero-left { max-width: 480px; }
 
-        /* TEXT CROSSFADE — wrapper fixná výška */
-        .hero-text-outer {
-          position: relative;
-          min-height: 200px;
+        /* TYPEWRITER */
+        .typewriter-block {
+          min-height: 120px;
+          overflow: hidden;
         }
-        .hero-text-variant {
-          position: absolute;
-          top: 0; left: 0; width: 100%;
-          transition: opacity 0.8s ease;
-          pointer-events: none;
-        }
-        .hero-text-variant.active {
-          opacity: 1;
-          pointer-events: auto;
-        }
-        .hero-text-variant.inactive {
-          opacity: 0;
-        }
-
-        .start-h1 {
+        .typewriter-text {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(2rem, 3.5vw, 3rem);
+          font-size: clamp(1.8rem, 2.8vw, 2.4rem);
           font-weight: 700;
-          line-height: 1.1;
           color: #111;
+          line-height: 1.3;
         }
-        .start-subtitle {
-          font-size: 18px;
-          color: #555;
-          line-height: 1.6;
-          margin-top: 24px;
-        }
-        .start-glass-card {
-          margin-top: 32px;
-          background: rgba(255,255,255,0.85);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid #e8e4dc;
-          border-radius: 20px;
-          padding: 28px 32px;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.06);
-        }
-        .start-input-row { display: flex; gap: 10px; }
-        .start-url-input {
-          flex: 1; border: 1px solid #e8e4dc; border-radius: 10px;
-          padding: 12px 16px; font-size: 15px; font-family: 'DM Sans', sans-serif;
-          color: #111; background: white; outline: none; transition: border-color 150ms;
-        }
-        .start-url-input:focus { border-color: #b7e94c; }
-        .start-url-input::placeholder { color: #bbb; }
-        .start-analyze-btn {
-          background: #b7e94c; color: #111; border: none;
-          padding: 12px 24px; border-radius: 10px; font-size: 14px;
-          font-weight: 600; font-family: 'DM Sans', sans-serif;
-          cursor: pointer; white-space: nowrap; transition: background 150ms;
-        }
-        .start-analyze-btn:hover { background: #a0d63a; }
-        .start-checklist {
-          display: flex; gap: 16px; margin-top: 16px;
-          font-size: 12px; color: #5a7a00; flex-wrap: wrap;
-        }
-        .start-microcopy { margin-top: 12px; font-size: 12px; color: #aaa; }
-        .start-secondary-link {
-          display: inline-block; margin-top: 16px; font-size: 13px;
-          color: #888; text-decoration: underline; cursor: pointer;
-          background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0;
-        }
-        .start-secondary-link:hover { color: #5a7a00; }
-
-        /* CTA pre variant 1 */
-        .start-library-cta {
+        .typewriter-cursor {
           display: inline-block;
+          width: 2px;
+          height: 1.1em;
+          background: #111;
+          margin-left: 3px;
+          vertical-align: text-bottom;
+          animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+
+        /* PEVNÝ PODTEXT */
+        .hero-subtitle {
+          margin-top: 24px;
+          font-size: 16px;
+          color: #555;
+          line-height: 1.7;
+        }
+
+        /* CTA BLOK */
+        .hero-cta-block {
           margin-top: 32px;
-          background: #b7e94c;
-          color: #111;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .hero-cta-primary {
+          background: #111;
+          color: white;
           border: none;
           padding: 14px 28px;
           border-radius: 10px;
           font-size: 15px;
-          font-weight: 600;
+          font-weight: 500;
           font-family: 'DM Sans', sans-serif;
           cursor: pointer;
           transition: background 150ms;
         }
-        .start-library-cta:hover { background: #a0d63a; }
+        .hero-cta-primary:hover { background: #333; }
+        .hero-cta-secondary {
+          margin-top: 12px;
+          font-size: 14px;
+          color: #888;
+          text-decoration: underline;
+          cursor: pointer;
+          background: none;
+          border: none;
+          font-family: 'DM Sans', sans-serif;
+          padding: 0;
+        }
+        .hero-cta-secondary:hover { color: #555; }
 
         /* PRAVÝ SLOUPEC */
         .start-hero-right {
-          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
         }
 
-        /* SLIDE CROSSFADE WRAPPER */
+        /* SLIDES WRAPPER */
         .slides-outer {
           position: relative;
           width: 100%;
-          min-height: 420px;
+          height: 480px;
+          overflow: hidden;
         }
-
         .slide-item {
           position: absolute;
-          top: 0; left: 0; width: 100%;
-          transition: opacity 1s ease;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          transition: opacity 1.2s ease;
           pointer-events: none;
         }
         .slide-item.active {
           opacity: 1;
           pointer-events: auto;
         }
-        .slide-item.inactive {
-          opacity: 0;
+        .slide-item.inactive { opacity: 0; }
+
+        /* BROWSER WINDOW */
+        .browser-window {
+          background: white;
+          border-radius: 12px;
+          border: 1px solid #e8e4dc;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+          overflow: hidden;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+        .browser-bar {
+          background: #f5f5f5;
+          padding: 10px 16px;
+          border-bottom: 1px solid #e8e4dc;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+        .browser-dot {
+          width: 10px; height: 10px; border-radius: 50%;
+          display: inline-block; flex-shrink: 0;
+        }
+        .browser-content {
+          flex: 1;
+          overflow: hidden;
+          padding: 14px;
         }
 
-        /* MOCK A/B KARTY */
+        /* AB KARTY */
         .ab-cards {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 12px;
-          margin-bottom: 16px;
+          gap: 10px;
+          margin-bottom: 12px;
         }
         .ab-card {
           border: 1.5px solid #e8e4dc;
-          border-radius: 12px;
+          border-radius: 10px;
           overflow: hidden;
           cursor: pointer;
-          transition: border-color 200ms, box-shadow 200ms;
+          transition: border-color 200ms;
           background: white;
         }
-        .ab-card:hover, .ab-card.selected {
-          border-color: #b7e94c;
-          box-shadow: 0 0 0 3px rgba(183,233,76,0.2);
-        }
+        .ab-card:hover { border-color: #b7e94c; }
         .ab-card-img {
           width: 100%;
+          max-height: 200px;
           aspect-ratio: 9/16;
           object-fit: cover;
           display: block;
         }
         .ab-card-label {
-          padding: 8px 12px;
-          font-size: 11px;
+          padding: 6px 10px;
+          font-size: 10px;
           font-weight: 600;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
           color: #888;
           text-align: center;
         }
@@ -359,9 +369,9 @@ export default function StartPage() {
           background: #b7e94c;
           color: #111;
           border: none;
-          padding: 12px;
-          border-radius: 10px;
-          font-size: 14px;
+          padding: 10px;
+          border-radius: 8px;
+          font-size: 13px;
           font-weight: 600;
           font-family: 'DM Sans', sans-serif;
           cursor: pointer;
@@ -369,55 +379,27 @@ export default function StartPage() {
         }
         .ab-approve-btn:hover { background: #a0d63a; }
 
-        /* READY BANNER */
-        .ready-banner {
-          background: #f5fbea;
-          border: 1.5px solid #b7e94c;
-          border-radius: 20px;
-          padding: 48px 32px;
-          text-align: center;
-        }
-        .ready-banner-icon { font-size: 48px; margin-bottom: 16px; }
-        .ready-banner-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 22px;
-          font-weight: 700;
-          color: #111;
-          margin-bottom: 8px;
-        }
-        .ready-banner-sub { font-size: 14px; color: #666; margin-bottom: 24px; }
-        .ready-banner-btn {
-          background: #111;
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 10px;
-          font-size: 14px;
-          font-weight: 600;
-          font-family: 'DM Sans', sans-serif;
-          cursor: pointer;
-        }
-
-        /* SLIDE DOTS */
+        /* DOTS NAVIGACE */
         .slide-dots {
           display: flex;
           gap: 8px;
           justify-content: center;
-          margin-top: 20px;
+          margin-top: 16px;
+          align-items: center;
         }
         .slide-dot {
-          width: 8px;
           height: 8px;
-          border-radius: 50%;
-          background: #e0ddd8;
+          width: 8px;
+          border-radius: 4px;
+          background: #e8e4dc;
           cursor: pointer;
-          transition: background 200ms, transform 200ms;
+          transition: width 300ms ease, background 300ms ease;
           border: none;
           padding: 0;
         }
         .slide-dot.active {
-          background: #b7e94c;
-          transform: scale(1.3);
+          background: #111;
+          width: 20px;
         }
 
         /* GALERIE SEKCE */
@@ -433,7 +415,7 @@ export default function StartPage() {
         }
         .start-section-title {
           font-family: 'DM Sans', sans-serif;
-          font-size: clamp(2rem, 3vw, 2.8rem);
+          font-size: clamp(1.8rem, 2.5vw, 2.4rem);
           font-weight: 600;
           color: #111;
           text-align: center;
@@ -515,15 +497,15 @@ export default function StartPage() {
         }
 
         @media (max-width: 1024px) {
-          .start-hero { padding: 80px 48px 60px; }
-          .start-hero-inner { gap: 48px; }
+          .start-hero-inner { gap: 48px; padding: 0 48px; }
           .start-visual-grid { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 768px) {
           .start-header { padding: 14px 20px; }
-          .start-hero { padding: 60px 20px 40px; }
-          .start-hero-inner { grid-template-columns: 1fr; gap: 40px; }
+          .start-hero { min-height: auto; padding: 60px 0 40px; }
+          .start-hero-inner { grid-template-columns: 1fr; gap: 40px; padding: 0 20px; }
           .start-hero-left { max-width: 100%; }
+          .slides-outer { height: 360px; }
           .start-gallery-section { padding: 40px 0 60px; }
           .start-gallery-inner { padding: 0 20px; }
           .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
@@ -549,256 +531,229 @@ export default function StartPage() {
         </header>
 
         {/* HERO */}
-        <section className="start-hero" style={{ backgroundColor: bgColor }}>
+        <section className="start-hero">
           <div className="start-hero-inner">
 
-            {/* LEVÝ SLOUPEC — crossfade text */}
+            {/* LEVÝ SLOUPEC */}
             <div className="start-hero-left">
-              <div className="hero-text-outer">
-                {HERO_VARIANTS.map((v, i) => (
-                  <div
-                    key={i}
-                    className={`hero-text-variant ${heroVariant === i ? 'active' : 'inactive'}`}
-                  >
-                    <h1 className="start-h1">
-                      {v.h1a}<br />{v.h1b}
-                    </h1>
-                    <p className="start-subtitle">{v.sub}</p>
-                  </div>
-                ))}
+
+              {/* 1. Typewriter */}
+              <div className="typewriter-block">
+                <span className="typewriter-text">
+                  {displayText}
+                  <span className="typewriter-cursor" />
+                </span>
               </div>
 
-              {/* Varianta 0: input karta */}
-              {heroVariant === 0 && (
-                <div className="start-glass-card">
-                  <div className="start-input-row">
-                    <input
-                      type="url"
-                      className="start-url-input"
-                      placeholder="např. lucifera.cz"
-                      value={webUrl}
-                      onChange={(e) => setWebUrl(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                    />
-                    <button className="start-analyze-btn" onClick={handleAnalyze}>
-                      Spustit analýzu →
-                    </button>
-                  </div>
-                  <div className="start-checklist">
-                    <span>✓ Screenshot webu</span>
-                    <span>✓ Analýza textu</span>
-                    <span>✓ Brand DNA</span>
-                    <span>✓ Skóre značky</span>
-                  </div>
-                  <p className="start-microcopy">
-                    Zdarma · Bez registrace · Výsledek během minuty
-                  </p>
-                  <button
-                    className="start-secondary-link"
-                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                  >
-                    nebo začni bez analýzy →
-                  </button>
-                </div>
-              )}
+              {/* 2. Pevný podtext */}
+              <p className="hero-subtitle">
+                Hybridní tvorba pod lidským dohledem.<br />
+                AI + profesionální fotografie + tvůj výběr.<br />
+                Vizuální obsah na míru tvé značce.
+              </p>
 
-              {/* Varianty 1–4: CTA do knihovny, varianta 5: diagnostika */}
-              {heroVariant >= 1 && heroVariant <= 4 && (
-                <button className="start-library-cta" onClick={scrollToLibrary}>
-                  Přejít do vizuální knihovny →
+              {/* 3. CTA blok */}
+              <div className="hero-cta-block">
+                <button
+                  className="hero-cta-primary"
+                  onClick={() => router.push('/brand-scan')}
+                >
+                  Zjisti, kde ti unikají klienti →
                 </button>
-              )}
-              {heroVariant === 5 && (
-                <button className="start-library-cta" onClick={handleAnalyze}>
-                  Spustit diagnostiku →
+                <button
+                  className="hero-cta-secondary"
+                  onClick={scrollToLibrary}
+                >
+                  nebo začni tvořit rovnou →
                 </button>
-              )}
+              </div>
             </div>
 
-            {/* PRAVÝ SLOUPEC — crossfade slides */}
+            {/* PRAVÝ SLOUPEC */}
             <div className="start-hero-right">
               <div className="slides-outer">
 
                 {/* Slide 0: DiagnostikaDemo */}
-                <div className={`slide-item ${slideIndex === 0 ? 'active' : 'inactive'}`}>
+                <div className={`slide-item ${activeSlide === 0 ? 'active' : 'inactive'}`}>
                   <DiagnostikaDemo hideHeader hideFooter />
                 </div>
 
-                {/* Slide 1: Mock A/B karty */}
-                <div className={`slide-item ${slideIndex === 1 ? 'active' : 'inactive'}`}>
-                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#888', marginBottom: '12px' }}>
-                    KOL 04 · VARIANTA A vs B
-                  </div>
-                  <div className="ab-cards">
-                    <div className="ab-card">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/demo/demo-video-a.jpg" alt="Varianta A" className="ab-card-img" />
-                      <div className="ab-card-label">VIDEO A</div>
-                    </div>
-                    <div className="ab-card">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/demo/demo-video-b.jpg" alt="Varianta B" className="ab-card-img" />
-                      <div className="ab-card-label">VIDEO B</div>
-                    </div>
-                  </div>
-                  <button className="ab-approve-btn" onClick={() => router.push('/client/magnet/rtg/onboarding')}>
-                    Schválit vybranou →
-                  </button>
-                </div>
-
-                {/* Slide 2: RTG dashboard — Ke schválení (mock) */}
-                <div className={`slide-item ${slideIndex === 2 ? 'active' : 'inactive'}`}>
-                  <div style={{ background: '#f5f3ee', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e8e4dc' }}>
-                    {/* mini header */}
-                    <div style={{ background: 'white', borderBottom: '0.5px solid #e8e4dc', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: '#888' }}>ready-to-go · klientský portál</span>
+                {/* Slide 1: A/B schvalování */}
+                <div className={`slide-item ${activeSlide === 1 ? 'active' : 'inactive'}`}>
+                  <div className="browser-window">
+                    <div className="browser-bar">
+                      <span className="browser-dot" style={{ background: '#ff5f57' }} />
+                      <span className="browser-dot" style={{ background: '#ffbd2e' }} />
+                      <span className="browser-dot" style={{ background: '#28ca41' }} />
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>ready-to-go · klientský portál</span>
                       <span style={{ fontSize: '11px', color: '#888' }}>Veronika Novotná</span>
                     </div>
-                    {/* mini tabs */}
-                    <div style={{ background: 'white', borderBottom: '0.5px solid #e8e4dc', padding: '0 14px', display: 'flex', gap: '16px' }}>
-                      {['Ke schválení', 'Plánování', 'Vizuální knihovna'].map((t, i) => (
-                        <div key={t} style={{ fontSize: '11px', padding: '8px 0', color: i === 0 ? '#111' : '#aaa', borderBottom: i === 0 ? '2px solid #111' : '2px solid transparent', cursor: 'pointer' }}>{t}</div>
-                      ))}
+                    <div className="browser-content">
+                      <div className="ab-cards">
+                        <div className="ab-card">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/images/demo/demo-video-a.jpg" alt="Varianta A" className="ab-card-img" />
+                          <div className="ab-card-label">VIDEO · REELS</div>
+                          <div style={{ padding: '0 10px 8px', fontSize: '11px', color: '#555', lineHeight: 1.3 }}>&ldquo;Ráno. Okno. Ticho.&rdquo;</div>
+                        </div>
+                        <div className="ab-card">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/images/demo/demo-video-b.jpg" alt="Varianta B" className="ab-card-img" />
+                          <div className="ab-card-label">VIDEO · REELS</div>
+                          <div style={{ padding: '0 10px 8px', fontSize: '11px', color: '#555', lineHeight: 1.3 }}>&ldquo;Tohle ti nikdo neřekne.&rdquo;</div>
+                        </div>
+                      </div>
+                      <button className="ab-approve-btn">Schválit vybranou →</button>
                     </div>
-                    {/* obsah */}
-                    <div style={{ padding: '12px 14px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#111' }}>Ke schválení tento týden</span>
-                        <span style={{ fontSize: '11px', color: '#aaa' }}>2 / 10</span>
-                      </div>
-                      {/* 2 VIDEO karty */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-                        {[
-                          { src: '/images/demo/demo-video-a.jpg', label: 'VIDEO · REELS', title: '"Ráno. Okno. Ticho před dnem."', sub: 'Storytelling · přirozený moment', tag: 'Varianta A' },
-                          { src: '/images/demo/demo-video-b.jpg', label: 'VIDEO · REELS', title: '"Tohle ti nikdo neřekne."', sub: 'Hook přímý · osobní tón', tag: 'Varianta B' },
-                        ].map((card, i) => (
-                          <div key={i} style={{ background: 'white', borderRadius: '8px', border: '1px solid #e8e4dc', overflow: 'hidden' }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={card.src} alt="" style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }} />
-                            <div style={{ padding: '8px' }}>
-                              <div style={{ fontSize: '9px', color: '#b7e94c', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '3px' }}>{card.label}</div>
-                              <div style={{ fontSize: '11px', fontWeight: 600, color: '#111', marginBottom: '2px', lineHeight: 1.3 }}>{card.title}</div>
-                              <div style={{ fontSize: '10px', color: '#888', marginBottom: '5px' }}>{card.sub}</div>
-                              <span style={{ fontSize: '9px', padding: '2px 6px', background: '#f5f3ee', borderRadius: '4px', color: '#666' }}>{card.tag}</span>
-                            </div>
-                          </div>
+                  </div>
+                </div>
+
+                {/* Slide 2: Vizuální knihovna grid */}
+                <div className={`slide-item ${activeSlide === 2 ? 'active' : 'inactive'}`}>
+                  <div className="browser-window">
+                    <div className="browser-bar">
+                      <span className="browser-dot" style={{ background: '#ff5f57' }} />
+                      <span className="browser-dot" style={{ background: '#ffbd2e' }} />
+                      <span className="browser-dot" style={{ background: '#28ca41' }} />
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Vizuální knihovna · 247 médií</span>
+                    </div>
+                    <div className="browser-content" style={{ padding: '12px' }}>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                        {['#E8B4B8', '#D4889C', '#F0C8CC', '#EDD5C0'].map(hex => (
+                          <div key={hex} style={{ width: 20, height: 20, borderRadius: '50%', background: hex, border: '1px solid rgba(0,0,0,0.08)', flexShrink: 0 }} />
                         ))}
                       </div>
-                      {/* 2 GRAFIKA karty — jen fotky */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                        {['/images/demo/demo-grafika-a.jpg', '/images/demo/demo-grafika-b.jpg'].map((src, i) => (
-                          <div key={i} style={{ background: 'white', borderRadius: '8px', border: '1px solid #e8e4dc', overflow: 'hidden' }}>
-                            <div style={{ padding: '5px 8px', fontSize: '9px', fontWeight: 600, color: '#5a7a00', letterSpacing: '0.06em' }}>□ GRAFIKA</div>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={src} alt="" style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', display: 'block' }} />
-                          </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
+                        {K04_PHOTOS.map((src, i) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={i} src={src} alt="" style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', borderRadius: '4px', display: 'block' }} />
                         ))}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#888', textAlign: 'center' }}>
+                        247 vizuálů · 7 kolekcí · AI + profesionální fotografie
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Slide 3: Kalendář */}
-                <div className={`slide-item ${slideIndex === 3 ? 'active' : 'inactive'}`}>
-                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 500 }}>Duben 2026</span>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: '#e8f4f8', color: '#2d7dd2' }}>Instagram</span>
-                        <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: '#e8f0e8', color: '#2d7d2d' }}>Facebook</span>
+                <div className={`slide-item ${activeSlide === 3 ? 'active' : 'inactive'}`}>
+                  <div className="browser-window">
+                    <div className="browser-bar">
+                      <span className="browser-dot" style={{ background: '#ff5f57' }} />
+                      <span className="browser-dot" style={{ background: '#ffbd2e' }} />
+                      <span className="browser-dot" style={{ background: '#28ca41' }} />
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>Duben 2026</span>
+                      <span style={{ fontSize: '11px', color: '#5a7a00', fontWeight: 500 }}>+ Naplánovat</span>
+                    </div>
+                    <div className="browser-content">
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                        {['Instagram', 'Facebook', 'LinkedIn'].map((s, i) => (
+                          <span key={s} style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: i === 0 ? '#f3fbdc' : '#f5f5f5', color: i === 0 ? '#5a7a00' : '#888', border: i === 0 ? '0.5px solid rgba(183,233,76,0.4)' : '0.5px solid #e8e4dc' }}>{s}</span>
+                        ))}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', fontSize: '10px' }}>
+                        {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
+                          <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '4px 0', fontWeight: 500 }}>{d}</div>
+                        ))}
+                        {[
+                          { d: 1, e: null }, { d: 2, e: 'Reels' }, { d: 3, e: null }, { d: 4, e: 'Grafika' }, { d: 5, e: null }, { d: 6, e: null }, { d: 7, e: 'Stories' },
+                          { d: 8, e: null }, { d: 9, e: 'Newsletter' }, { d: 10, e: null }, { d: 11, e: 'Reels' }, { d: 12, e: null }, { d: 13, e: null }, { d: 14, e: 'Carousel' },
+                          { d: 15, e: 'Grafika' }, { d: 16, e: null }, { d: 17, e: null }, { d: 18, e: 'Reels' }, { d: 19, e: null }, { d: 20, e: null }, { d: 21, e: 'Stories' },
+                        ].map((item, i) => (
+                          <div key={i} style={{
+                            textAlign: 'center', padding: '3px 1px', borderRadius: '4px',
+                            background: item.e ? '#f3fbdc' : 'transparent',
+                            border: item.e ? '0.5px solid rgba(183,233,76,0.4)' : 'none',
+                          }}>
+                            <div style={{ color: '#111', fontWeight: item.e ? 500 : 400 }}>{item.d}</div>
+                            {item.e && <div style={{ fontSize: '8px', color: '#5a7a00', marginTop: '1px' }}>{item.e}</div>}
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', fontSize: '10px' }}>
-                      {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
-                        <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '4px 0', fontWeight: 500 }}>{d}</div>
-                      ))}
-                      {[
-                        { d: 1, e: null }, { d: 2, e: 'Reels' }, { d: 3, e: null }, { d: 4, e: 'Grafika' }, { d: 5, e: null }, { d: 6, e: null }, { d: 7, e: 'Stories' },
-                        { d: 8, e: null }, { d: 9, e: 'Post' }, { d: 10, e: null }, { d: 11, e: 'Reels' }, { d: 12, e: null }, { d: 13, e: null }, { d: 14, e: 'Carousel' },
-                        { d: 15, e: 'Grafika' }, { d: 16, e: null }, { d: 17, e: null }, { d: 18, e: 'Reels' }, { d: 19, e: null }, { d: 20, e: null }, { d: 21, e: 'Stories' },
-                      ].map((item, i) => (
-                        <div key={i} style={{
-                          textAlign: 'center', padding: '3px 1px', borderRadius: '4px',
-                          background: item.e ? '#f3fbdc' : 'transparent',
-                          border: item.e ? '0.5px solid rgba(183,233,76,0.4)' : 'none',
-                        }}>
-                          <div style={{ color: '#111', fontWeight: item.e ? 500 : 400 }}>{item.d}</div>
-                          {item.e && <div style={{ fontSize: '8px', color: '#5a7a00', marginTop: '1px' }}>{item.e}</div>}
-                        </div>
-                      ))}
-                    </div>
-                    <p style={{ fontSize: '11px', color: '#888', marginTop: '8px', textAlign: 'center' }}>
-                      12 příspěvků naplánováno · 3 ke schválení
-                    </p>
                   </div>
                 </div>
 
                 {/* Slide 4: Hotový příspěvek */}
-                <div className={`slide-item ${slideIndex === 4 ? 'active' : 'inactive'}`}>
-                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '10px', color: '#b7e94c', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>GRAFIKA · INSTAGRAM</div>
-                        <p style={{ fontSize: '12px', fontWeight: 500, color: '#111', marginBottom: '6px', lineHeight: 1.4 }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
-                        <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.5, marginBottom: '8px' }}>Každé ráno si říkám — dneska to zvládnu. A pak přijde ten moment.</p>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#b7e94c', border: 'none', fontWeight: 500, cursor: 'pointer' }}>Použít →</button>
-                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>Upravit</button>
+                <div className={`slide-item ${activeSlide === 4 ? 'active' : 'inactive'}`}>
+                  <div className="browser-window">
+                    <div className="browser-bar">
+                      <span className="browser-dot" style={{ background: '#ff5f57' }} />
+                      <span className="browser-dot" style={{ background: '#ffbd2e' }} />
+                      <span className="browser-dot" style={{ background: '#28ca41' }} />
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Hotový příspěvek</span>
+                    </div>
+                    <div className="browser-content">
+                      <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '10px', color: '#b7e94c', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>GRAFIKA · INSTAGRAM</div>
+                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#111', marginBottom: '6px', lineHeight: 1.4 }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
+                          <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.5, marginBottom: '10px' }}>Každé ráno si říkám — dneska to zvládnu.</p>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '6px', background: '#b7e94c', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Použít →</button>
+                            <button style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '6px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>Upravit</button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div style={{ marginTop: '12px', padding: '8px 12px', background: '#f5f3ee', borderRadius: '8px', fontSize: '11px', color: '#888' }}>
-                      #osobnirozvoj #mindset #rannirutina #zivotniStyl
+                      <div style={{ padding: '8px 12px', background: '#f5f3ee', borderRadius: '8px', fontSize: '11px', color: '#888' }}>
+                        #osobnirozvoj #mindset #rannirutina #zivotniStyl
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Slide 5: Brand DNA */}
-                <div className={`slide-item ${slideIndex === 5 ? 'active' : 'inactive'}`}>
-                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                      <div>
-                        <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px' }}>INDEX ZNAČKY</div>
-                        <div style={{ fontSize: '36px', fontWeight: 700, color: '#111', lineHeight: 1 }}>74</div>
-                        <div style={{ fontSize: '11px', color: '#5a7a00' }}>↑ Nad průměrem oboru</div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '10px', color: '#888', marginBottom: '6px' }}>BRAND DNA</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-end' }}>
+                <div className={`slide-item ${activeSlide === 5 ? 'active' : 'inactive'}`}>
+                  <div className="browser-window">
+                    <div className="browser-bar">
+                      <span className="browser-dot" style={{ background: '#ff5f57' }} />
+                      <span className="browser-dot" style={{ background: '#ffbd2e' }} />
+                      <span className="browser-dot" style={{ background: '#28ca41' }} />
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Brand DNA · diagnostika</span>
+                    </div>
+                    <div className="browser-content">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                        <div>
+                          <div style={{ fontSize: '48px', fontWeight: 700, color: '#111', lineHeight: 1 }}>74</div>
+                          <div style={{ fontSize: '12px', color: '#888', margin: '4px 0 2px' }}>Index značky</div>
+                          <div style={{ fontSize: '12px', color: '#5a7a00', fontWeight: 500 }}>↑ Nad průměrem oboru</div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
                           {['Soft feminine', 'Klidná', 'Pečující', 'Estetická'].map(t => (
-                            <span key={t} style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: '#f3fbdc', border: '0.5px solid rgba(183,233,76,0.4)', color: '#5a7a00' }}>{t}</span>
+                            <span key={t} style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '10px', background: '#f3fbdc', border: '0.5px solid rgba(183,233,76,0.4)', color: '#5a7a00' }}>{t}</span>
                           ))}
                         </div>
                       </div>
-                    </div>
-                    {[
-                      { name: 'Hodnota', score: 8, color: '#b7e94c' },
-                      { name: 'Pozice', score: 7, color: '#b7e94c' },
-                      { name: 'Architektura', score: 8, color: '#b7e94c' },
-                      { name: 'Identita', score: 9, color: '#b7e94c' },
-                      { name: 'Důvěra', score: 4, color: '#e05a5a' },
-                    ].map(p => (
-                      <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                        <div style={{ width: '80px', fontSize: '11px', color: '#555' }}>{p.name}</div>
-                        <div style={{ flex: 1, height: '4px', background: '#f0ece4', borderRadius: '2px' }}>
-                          <div style={{ width: `${p.score * 10}%`, height: '4px', background: p.color, borderRadius: '2px' }} />
+                      {[
+                        { name: 'Hodnota', score: 8, color: '#b7e94c' },
+                        { name: 'Pozice', score: 7, color: '#b7e94c' },
+                        { name: 'Architektura', score: 8, color: '#b7e94c' },
+                        { name: 'Identita', score: 9, color: '#b7e94c' },
+                        { name: 'Důvěra', score: 4, color: '#e05a5a' },
+                      ].map(p => (
+                        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <div style={{ width: '80px', fontSize: '12px', color: '#555' }}>{p.name}</div>
+                          <div style={{ flex: 1, height: '5px', background: '#f0ece4', borderRadius: '3px' }}>
+                            <div style={{ width: `${p.score * 10}%`, height: '5px', background: p.color, borderRadius: '3px' }} />
+                          </div>
+                          <div style={{ fontSize: '11px', color: p.color === '#e05a5a' ? '#e05a5a' : '#5a7a00', fontWeight: 500, width: '28px' }}>{p.score}/10</div>
                         </div>
-                        <div style={{ fontSize: '11px', color: p.color, fontWeight: 500, width: '28px' }}>{p.score}/10</div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
 
               </div>{/* /slides-outer */}
 
-              {/* DOTS — 6 slides */}
+              {/* DOTS */}
               <div className="slide-dots">
-                {SLIDES.map((_, i) => (
+                {[0, 1, 2, 3, 4, 5].map(i => (
                   <button
                     key={i}
-                    className={`slide-dot${slideIndex === i ? ' active' : ''}`}
+                    className={`slide-dot${activeSlide === i ? ' active' : ''}`}
                     onClick={() => goToSlide(i)}
                   />
                 ))}
