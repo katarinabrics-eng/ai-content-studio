@@ -74,33 +74,22 @@ export default function StartPage() {
   const [bgColor, setBgColor] = useState('transparent')
   const fetchRef = useRef(0)
 
-  // Animovaný hero
+  // Animovaný hero — crossfade bez blikání
   const [slideIndex, setSlideIndex] = useState(0)
-  const [textVisible, setTextVisible] = useState(true)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // heroVariant mapuje slideIndex na text variantu (6 slidů, 6 variant)
   const heroVariant = slideIndex
-  const variant = HERO_VARIANTS[heroVariant]
 
   function startInterval() {
     if (intervalRef.current) clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
-      setTextVisible(false)
-      setTimeout(() => {
-        setSlideIndex(i => (i + 1) % 6)
-        setTextVisible(true)
-      }, 300)
+      setSlideIndex(i => (i + 1) % 6)
     }, 4000)
   }
 
   function goToSlide(i: number) {
-    setTextVisible(false)
-    setTimeout(() => {
-      setSlideIndex(i)
-      setTextVisible(true)
-    }, 300)
-    startInterval() // restart timer
+    setSlideIndex(i)
+    startInterval()
   }
 
   useEffect(() => {
@@ -215,24 +204,30 @@ export default function StartPage() {
           gap: 72px;
           align-items: center;
         }
-        .start-hero-left { max-width: 520px; }
+        .start-hero-left { max-width: 460px; }
 
-        /* TEXT ANIMACE */
-        .hero-text-wrap {
-          transition: opacity 300ms ease, transform 300ms ease;
+        /* TEXT CROSSFADE — wrapper fixná výška */
+        .hero-text-outer {
+          position: relative;
+          min-height: 200px;
         }
-        .hero-text-wrap.visible {
+        .hero-text-variant {
+          position: absolute;
+          top: 0; left: 0; width: 100%;
+          transition: opacity 0.8s ease;
+          pointer-events: none;
+        }
+        .hero-text-variant.active {
           opacity: 1;
-          transform: translateY(0);
+          pointer-events: auto;
         }
-        .hero-text-wrap.hidden {
+        .hero-text-variant.inactive {
           opacity: 0;
-          transform: translateY(8px);
         }
 
         .start-h1 {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(3rem, 6vw, 5rem);
+          font-size: clamp(2rem, 3.5vw, 3rem);
           font-weight: 700;
           line-height: 1.1;
           color: #111;
@@ -305,10 +300,25 @@ export default function StartPage() {
           align-items: center;
         }
 
-        /* SLIDE WRAP */
-        .slide-wrap {
+        /* SLIDE CROSSFADE WRAPPER */
+        .slides-outer {
+          position: relative;
           width: 100%;
-          transition: opacity 300ms ease;
+          min-height: 420px;
+        }
+
+        .slide-item {
+          position: absolute;
+          top: 0; left: 0; width: 100%;
+          transition: opacity 1s ease;
+          pointer-events: none;
+        }
+        .slide-item.active {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .slide-item.inactive {
+          opacity: 0;
         }
 
         /* MOCK A/B KARTY */
@@ -422,8 +432,8 @@ export default function StartPage() {
           padding: 0 48px;
         }
         .start-section-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 2rem;
+          font-family: 'DM Sans', sans-serif;
+          font-size: clamp(2rem, 3vw, 2.8rem);
           font-weight: 600;
           color: #111;
           text-align: center;
@@ -542,14 +552,20 @@ export default function StartPage() {
         <section className="start-hero" style={{ backgroundColor: bgColor }}>
           <div className="start-hero-inner">
 
-            {/* LEVÝ SLOUPEC — animovaný text */}
+            {/* LEVÝ SLOUPEC — crossfade text */}
             <div className="start-hero-left">
-              <div className={`hero-text-wrap ${textVisible ? 'visible' : 'hidden'}`}>
-                <h1 className="start-h1">
-                  {variant.h1a}<br />
-                  {variant.h1b}
-                </h1>
-                <p className="start-subtitle">{variant.sub}</p>
+              <div className="hero-text-outer">
+                {HERO_VARIANTS.map((v, i) => (
+                  <div
+                    key={i}
+                    className={`hero-text-variant ${heroVariant === i ? 'active' : 'inactive'}`}
+                  >
+                    <h1 className="start-h1">
+                      {v.h1a}<br />{v.h1b}
+                    </h1>
+                    <p className="start-subtitle">{v.sub}</p>
+                  </div>
+                ))}
               </div>
 
               {/* Varianta 0: input karta */}
@@ -599,74 +615,91 @@ export default function StartPage() {
               )}
             </div>
 
-            {/* PRAVÝ SLOUPEC — slides */}
+            {/* PRAVÝ SLOUPEC — crossfade slides */}
             <div className="start-hero-right">
-              <div
-                className="slide-wrap"
-                style={{ opacity: textVisible ? 1 : 0.3 }}
-              >
+              <div className="slides-outer">
+
                 {/* Slide 0: DiagnostikaDemo */}
-                {slideIndex === 0 && (
+                <div className={`slide-item ${slideIndex === 0 ? 'active' : 'inactive'}`}>
                   <DiagnostikaDemo hideHeader hideFooter />
-                )}
+                </div>
 
                 {/* Slide 1: Mock A/B karty */}
-                {slideIndex === 1 && (
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#888', marginBottom: '12px' }}>
-                      KOL 04 · VARIANTA A vs B
-                    </div>
-                    <div className="ab-cards">
-                      <div className="ab-card">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/images/demo/demo-video-a.jpg" alt="Varianta A" className="ab-card-img" />
-                        <div className="ab-card-label">VIDEO A</div>
-                      </div>
-                      <div className="ab-card">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/images/demo/demo-video-b.jpg" alt="Varianta B" className="ab-card-img" />
-                        <div className="ab-card-label">VIDEO B</div>
-                      </div>
-                    </div>
-                    <button
-                      className="ab-approve-btn"
-                      onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                    >
-                      Schválit vybranou →
-                    </button>
+                <div className={`slide-item ${slideIndex === 1 ? 'active' : 'inactive'}`}>
+                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', color: '#888', marginBottom: '12px' }}>
+                    KOL 04 · VARIANTA A vs B
                   </div>
-                )}
+                  <div className="ab-cards">
+                    <div className="ab-card">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/images/demo/demo-video-a.jpg" alt="Varianta A" className="ab-card-img" />
+                      <div className="ab-card-label">VIDEO A</div>
+                    </div>
+                    <div className="ab-card">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/images/demo/demo-video-b.jpg" alt="Varianta B" className="ab-card-img" />
+                      <div className="ab-card-label">VIDEO B</div>
+                    </div>
+                  </div>
+                  <button className="ab-approve-btn" onClick={() => router.push('/client/magnet/rtg/onboarding')}>
+                    Schválit vybranou →
+                  </button>
+                </div>
 
-                {/* Slide 2: Vizuální knihovna preview */}
-                {slideIndex === 2 && (
-                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 500 }}>Vizuální knihovna</span>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        {['#E8B4B8', '#E8E4DC', '#4A9B8E', '#2C2C2C', '#8B7355'].map(c => (
-                          <div key={c} style={{ width: '16px', height: '16px', borderRadius: '50%', background: c, border: '1px solid rgba(0,0,0,0.06)' }} />
+                {/* Slide 2: RTG dashboard — Ke schválení (mock) */}
+                <div className={`slide-item ${slideIndex === 2 ? 'active' : 'inactive'}`}>
+                  <div style={{ background: '#f5f3ee', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e8e4dc' }}>
+                    {/* mini header */}
+                    <div style={{ background: 'white', borderBottom: '0.5px solid #e8e4dc', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', color: '#888' }}>ready-to-go · klientský portál</span>
+                      <span style={{ fontSize: '11px', color: '#888' }}>Veronika Novotná</span>
+                    </div>
+                    {/* mini tabs */}
+                    <div style={{ background: 'white', borderBottom: '0.5px solid #e8e4dc', padding: '0 14px', display: 'flex', gap: '16px' }}>
+                      {['Ke schválení', 'Plánování', 'Vizuální knihovna'].map((t, i) => (
+                        <div key={t} style={{ fontSize: '11px', padding: '8px 0', color: i === 0 ? '#111' : '#aaa', borderBottom: i === 0 ? '2px solid #111' : '2px solid transparent', cursor: 'pointer' }}>{t}</div>
+                      ))}
+                    </div>
+                    {/* obsah */}
+                    <div style={{ padding: '12px 14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#111' }}>Ke schválení tento týden</span>
+                        <span style={{ fontSize: '11px', color: '#aaa' }}>2 / 10</span>
+                      </div>
+                      {/* 2 VIDEO karty */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                        {[
+                          { src: '/images/demo/demo-video-a.jpg', label: 'VIDEO · REELS', title: '"Ráno. Okno. Ticho před dnem."', sub: 'Storytelling · přirozený moment', tag: 'Varianta A' },
+                          { src: '/images/demo/demo-video-b.jpg', label: 'VIDEO · REELS', title: '"Tohle ti nikdo neřekne."', sub: 'Hook přímý · osobní tón', tag: 'Varianta B' },
+                        ].map((card, i) => (
+                          <div key={i} style={{ background: 'white', borderRadius: '8px', border: '1px solid #e8e4dc', overflow: 'hidden' }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={card.src} alt="" style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }} />
+                            <div style={{ padding: '8px' }}>
+                              <div style={{ fontSize: '9px', color: '#b7e94c', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '3px' }}>{card.label}</div>
+                              <div style={{ fontSize: '11px', fontWeight: 600, color: '#111', marginBottom: '2px', lineHeight: 1.3 }}>{card.title}</div>
+                              <div style={{ fontSize: '10px', color: '#888', marginBottom: '5px' }}>{card.sub}</div>
+                              <span style={{ fontSize: '9px', padding: '2px 6px', background: '#f5f3ee', borderRadius: '4px', color: '#666' }}>{card.tag}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* 2 GRAFIKA karty — jen fotky */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                        {['/images/demo/demo-grafika-a.jpg', '/images/demo/demo-grafika-b.jpg'].map((src, i) => (
+                          <div key={i} style={{ background: 'white', borderRadius: '8px', border: '1px solid #e8e4dc', overflow: 'hidden' }}>
+                            <div style={{ padding: '5px 8px', fontSize: '9px', fontWeight: 600, color: '#5a7a00', letterSpacing: '0.06em' }}>□ GRAFIKA</div>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={src} alt="" style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', display: 'block' }} />
+                          </div>
                         ))}
                       </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '4px' }}>
-                      {[
-                        '/images/demo/demo-grafika-a.jpg', '/images/demo/demo-grafika-b.jpg',
-                        '/images/demo/demo-video-a.jpg', '/images/demo/demo-video-b.jpg',
-                        '/images/demo/demo-grafika-a.jpg', '/images/demo/demo-grafika-b.jpg',
-                        '/images/demo/demo-video-a.jpg', '/images/demo/demo-video-b.jpg',
-                      ].map((src, i) => (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img key={i} src={src} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '4px' }} />
-                      ))}
-                    </div>
-                    <p style={{ fontSize: '11px', color: '#888', marginTop: '8px', textAlign: 'center' }}>
-                      247 vizuálů · 7 kolekcí · Tvůj stock
-                    </p>
                   </div>
-                )}
+                </div>
 
                 {/* Slide 3: Kalendář */}
-                {slideIndex === 3 && (
+                <div className={`slide-item ${slideIndex === 3 ? 'active' : 'inactive'}`}>
                   <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                       <span style={{ fontSize: '13px', fontWeight: 500 }}>Duben 2026</span>
@@ -681,7 +714,7 @@ export default function StartPage() {
                       ))}
                       {[
                         { d: 1, e: null }, { d: 2, e: 'Reels' }, { d: 3, e: null }, { d: 4, e: 'Grafika' }, { d: 5, e: null }, { d: 6, e: null }, { d: 7, e: 'Stories' },
-                        { d: 8, e: null }, { d: 9, e: 'Newsletter' }, { d: 10, e: null }, { d: 11, e: 'Reels' }, { d: 12, e: null }, { d: 13, e: null }, { d: 14, e: 'Carousel' },
+                        { d: 8, e: null }, { d: 9, e: 'Post' }, { d: 10, e: null }, { d: 11, e: 'Reels' }, { d: 12, e: null }, { d: 13, e: null }, { d: 14, e: 'Carousel' },
                         { d: 15, e: 'Grafika' }, { d: 16, e: null }, { d: 17, e: null }, { d: 18, e: 'Reels' }, { d: 19, e: null }, { d: 20, e: null }, { d: 21, e: 'Stories' },
                       ].map((item, i) => (
                         <div key={i} style={{
@@ -698,31 +731,21 @@ export default function StartPage() {
                       12 příspěvků naplánováno · 3 ke schválení
                     </p>
                   </div>
-                )}
+                </div>
 
                 {/* Slide 4: Hotový příspěvek */}
-                {slideIndex === 4 && (
+                <div className={`slide-item ${slideIndex === 4 ? 'active' : 'inactive'}`}>
                   <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
                     <div style={{ display: 'flex', gap: '12px' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '10px', color: '#b7e94c', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>
-                          GRAFIKA · INSTAGRAM
-                        </div>
-                        <p style={{ fontSize: '12px', fontWeight: 500, color: '#111', marginBottom: '6px', lineHeight: 1.4 }}>
-                          &ldquo;Ráno. Okno. Ticho před dnem.&rdquo;
-                        </p>
-                        <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.5, marginBottom: '8px' }}>
-                          Každé ráno si říkám — dneska to zvládnu. A pak přijde ten moment, kdy všechno zpomalí.
-                        </p>
+                        <div style={{ fontSize: '10px', color: '#b7e94c', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>GRAFIKA · INSTAGRAM</div>
+                        <p style={{ fontSize: '12px', fontWeight: 500, color: '#111', marginBottom: '6px', lineHeight: 1.4 }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
+                        <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.5, marginBottom: '8px' }}>Každé ráno si říkám — dneska to zvládnu. A pak přijde ten moment.</p>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#b7e94c', border: 'none', fontWeight: 500, cursor: 'pointer' }}>
-                            Použít →
-                          </button>
-                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>
-                            Upravit
-                          </button>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#b7e94c', border: 'none', fontWeight: 500, cursor: 'pointer' }}>Použít →</button>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>Upravit</button>
                         </div>
                       </div>
                     </div>
@@ -730,10 +753,10 @@ export default function StartPage() {
                       #osobnirozvoj #mindset #rannirutina #zivotniStyl
                     </div>
                   </div>
-                )}
+                </div>
 
                 {/* Slide 5: Brand DNA */}
-                {slideIndex === 5 && (
+                <div className={`slide-item ${slideIndex === 5 ? 'active' : 'inactive'}`}>
                   <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                       <div>
@@ -766,8 +789,9 @@ export default function StartPage() {
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
+                </div>
+
+              </div>{/* /slides-outer */}
 
               {/* DOTS — 6 slides */}
               <div className="slide-dots">
