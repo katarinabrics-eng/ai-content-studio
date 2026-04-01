@@ -137,37 +137,47 @@ export default function StartPage() {
         /* HERO */
         .start-hero {
           width: 100%;
-          padding: 80px 80px 72px;
+          padding: 120px 80px 80px;
+          background: #ffffff;
+        }
+
+        .start-hero-inner {
+          max-width: 1200px;
+          margin: 0 auto;
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 72px;
           align-items: center;
-          background: #ffffff;
+        }
+
+        .start-hero-left {
+          max-width: 520px;
         }
 
         .start-h1 {
           font-family: 'Playfair Display', serif;
-          font-size: 54px;
+          font-size: clamp(2.8rem, 5vw, 4rem);
           font-weight: 600;
-          line-height: 1.13;
+          line-height: 1.15;
           color: #111;
         }
 
         .start-subtitle {
-          font-size: 17px;
-          color: #666;
+          font-size: 18px;
+          color: #555;
           line-height: 1.6;
-          margin-top: 16px;
+          margin-top: 24px;
         }
 
         .start-glass-card {
           margin-top: 32px;
-          background: rgba(255,255,255,0.7);
+          background: rgba(255,255,255,0.85);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(0,0,0,0.08);
+          border: 1px solid #e8e4dc;
           border-radius: 20px;
-          padding: 28px;
+          padding: 28px 32px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.06);
         }
 
         .start-input-row { display: flex; gap: 10px; }
@@ -188,26 +198,26 @@ export default function StartPage() {
         .start-url-input::placeholder { color: #bbb; }
 
         .start-analyze-btn {
-          background: #111;
-          color: white;
+          background: #b7e94c;
+          color: #111;
           border: none;
           padding: 12px 24px;
           border-radius: 10px;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           font-family: 'DM Sans', sans-serif;
           cursor: pointer;
           white-space: nowrap;
           transition: background 150ms;
         }
-        .start-analyze-btn:hover { background: #333; }
+        .start-analyze-btn:hover { background: #a0d63a; }
 
         .start-checklist {
           display: flex;
           gap: 16px;
           margin-top: 16px;
           font-size: 12px;
-          color: #888;
+          color: #5a7a00;
           flex-wrap: wrap;
         }
 
@@ -225,7 +235,7 @@ export default function StartPage() {
           font-family: 'DM Sans', sans-serif;
           padding: 0;
         }
-        .start-secondary-link:hover { color: #555; }
+        .start-secondary-link:hover { color: #5a7a00; }
 
         /* PRAVÝ SLOUPEC */
         .start-hero-right { position: relative; }
@@ -391,9 +401,10 @@ export default function StartPage() {
 
         .start-section-title {
           font-family: 'Playfair Display', serif;
-          font-size: 28px;
+          font-size: 2rem;
           font-weight: 600;
           color: #111;
+          text-align: center;
         }
 
         .start-section-sub { font-size: 14px; color: #888; margin-top: 8px; }
@@ -552,18 +563,18 @@ export default function StartPage() {
         }
 
         @media (max-width: 1024px) {
-          .start-hero { padding: 60px 48px; gap: 48px; }
-          .start-h1 { font-size: 44px; }
+          .start-hero { padding: 80px 48px 60px; }
+          .start-hero-inner { gap: 48px; }
         }
 
         @media (max-width: 768px) {
           .start-header { padding: 14px 20px; }
-          .start-hero {
+          .start-hero { padding: 60px 20px 40px; }
+          .start-hero-inner {
             grid-template-columns: 1fr;
-            padding: 48px 20px 40px;
             gap: 40px;
           }
-          .start-h1 { font-size: 36px; }
+          .start-hero-left { max-width: 100%; }
           .start-float-card { display: none; }
           .start-palette-section { padding: 40px 20px 20px; }
           .start-carousel-wrap { padding: 16px 20px 0; }
@@ -592,8 +603,9 @@ export default function StartPage() {
 
         {/* HERO */}
         <section className="start-hero">
+          <div className="start-hero-inner">
           {/* Levý sloupec */}
-          <div>
+          <div className="start-hero-left">
             <h1 className="start-h1">
               Poznej svou značku<br />
               během minut.
@@ -641,6 +653,7 @@ export default function StartPage() {
           {/* Pravý sloupec — DiagnostikaDemo */}
           <div className="start-hero-right">
             <DiagnostikaDemo />
+          </div>
           </div>
         </section>
 
