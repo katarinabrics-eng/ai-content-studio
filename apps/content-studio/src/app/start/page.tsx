@@ -151,10 +151,10 @@ export default function StartPage() {
         .start-hero-left { max-width: 520px; }
 
         .start-h1 {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(2.8rem, 5vw, 4rem);
-          font-weight: 600;
-          line-height: 1.15;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(3rem, 6vw, 5rem);
+          font-weight: 700;
+          line-height: 1.1;
           color: #111;
         }
 
@@ -408,7 +408,7 @@ export default function StartPage() {
             <div className="start-hero-left">
               <h1 className="start-h1">
                 Poznej svou značku<br />
-                během minut.
+                <span style={{ color: '#b7e94c' }}>během minut.</span>
               </h1>
               <p className="start-subtitle">
                 Zadej web — nebo začni tvořit rovnou.<br />
