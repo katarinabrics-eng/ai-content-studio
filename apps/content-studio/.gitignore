@@ -33,10 +33,3 @@ yarn-error.log*
 next-env.d.ts
 
 # Lokální vizuální banka — příliš velké soubory pro git (>1GB)
-public/placeholders/stock-vizualni knihovna/K01/
-public/placeholders/stock-vizualni knihovna/K02/
-public/placeholders/stock-vizualni knihovna/K03/
-public/placeholders/stock-vizualni knihovna/K04/
-public/placeholders/stock-vizualni knihovna/K05/
-public/placeholders/stock-vizualni knihovna/K09/
-public/placeholders/stock-vizualni knihovna/K10/

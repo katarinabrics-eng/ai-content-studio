@@ -1,0 +1,6 @@
+{
+  "id": "k04", "label": "Jemná",
+  "hex": ["#E8B4B8", "#D4889C", "#F0C8CC", "#EDD5C0"],
+  "mood": ["jemný", "pečující", "ženský", "teplý"],
+  "idealFor": ["koučky", "terapeutky", "wellness"]
+}
