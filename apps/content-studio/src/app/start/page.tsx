@@ -29,14 +29,11 @@ export default function StartPage() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [gridPhotos, setGridPhotos] = useState<Photo[]>([])
   const [gridLoading, setGridLoading] = useState(false)
-  // first photo per collection for carousel thumbnails
   const [collectionThumbs, setCollectionThumbs] = useState<Record<string, string>>({})
 
-  // Načti kolekci při mount (K04 default) + thumbnaily pro carousel
   useEffect(() => {
     setMounted(true)
     loadCollection('K04', COLLECTIONS[2].hex)
-    // Načti po jednom thumbnailu pro každou kolekci
     COLLECTIONS.forEach((c) => {
       fetch(`/api/client/visual-bank?limit=1&style=${c.style}`)
         .then((r) => r.json())
@@ -90,6 +87,7 @@ export default function StartPage() {
           font-family: 'DM Sans', system-ui, sans-serif;
         }
 
+        /* HEADER */
         .start-header {
           position: sticky;
           top: 0;
@@ -112,11 +110,7 @@ export default function StartPage() {
           color: #111;
         }
 
-        .start-header-nav {
-          display: flex;
-          align-items: center;
-          gap: 24px;
-        }
+        .start-header-nav { display: flex; align-items: center; gap: 24px; }
 
         .start-header-link {
           font-size: 14px;
@@ -138,21 +132,21 @@ export default function StartPage() {
           font-family: 'DM Sans', sans-serif;
         }
 
+        /* HERO — celá šířka */
         .start-hero {
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 80px 48px 64px;
+          width: 100%;
+          padding: 80px 80px 72px;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 64px;
+          gap: 72px;
           align-items: center;
         }
 
         .start-h1 {
           font-family: 'Playfair Display', serif;
-          font-size: 52px;
+          font-size: 54px;
           font-weight: 600;
-          line-height: 1.15;
+          line-height: 1.13;
           color: #111;
         }
 
@@ -214,11 +208,7 @@ export default function StartPage() {
           flex-wrap: wrap;
         }
 
-        .start-microcopy {
-          margin-top: 12px;
-          font-size: 12px;
-          color: #aaa;
-        }
+        .start-microcopy { margin-top: 12px; font-size: 12px; color: #aaa; }
 
         .start-secondary-link {
           display: inline-block;
@@ -234,68 +224,158 @@ export default function StartPage() {
         }
         .start-secondary-link:hover { color: #555; }
 
-        .start-browser-mock {
-          border-radius: 12px;
-          border: 1px solid #e8e4dc;
-          overflow: hidden;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        /* PRAVÝ SLOUPEC — wrapper pro relativní pozicování levitujících karet */
+        .start-hero-right {
           position: relative;
         }
 
-        .start-browser-bar {
-          background: #f5f5f5;
-          padding: 10px 16px;
-          border-bottom: 1px solid #e8e4dc;
-          display: flex;
-          align-items: center;
-          gap: 12px;
+        /* DARK PVI BLOK */
+        .start-pvi-block {
+          background: #111;
+          border-radius: 16px;
+          padding: 36px 32px;
+          color: white;
+          width: 100%;
         }
 
-        .start-browser-dots { display: flex; gap: 6px; }
-
-        .start-browser-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-        }
-
-        .start-browser-url {
-          font-size: 12px;
-          color: #888;
+        .start-pvi-eyebrow {
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          color: rgba(255,255,255,0.45);
+          margin-bottom: 14px;
           font-family: 'DM Sans', sans-serif;
         }
 
-        .start-browser-content {
-          background: white;
-          position: relative;
-          overflow: hidden;
-          height: 300px;
+        .start-pvi-h3 {
+          font-family: 'Playfair Display', serif;
+          font-size: 24px;
+          font-weight: 600;
+          line-height: 1.25;
+          color: white;
+          margin-bottom: 24px;
         }
 
-        .start-browser-iframe {
-          width: 167%;
-          height: 500px;
-          border: none;
-          pointer-events: none;
-          transform: scale(0.6);
-          transform-origin: top left;
+        .start-pvi-steps {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          margin-bottom: 24px;
+        }
+
+        .start-pvi-step {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .start-pvi-step-num {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.1);
+          border: 1px solid rgba(255,255,255,0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 600;
+          color: rgba(255,255,255,0.7);
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+
+        .start-pvi-step-text {
+          font-size: 13px;
+          color: rgba(255,255,255,0.75);
+          line-height: 1.5;
+        }
+
+        .start-pvi-step-text strong {
+          color: white;
+          font-weight: 500;
+        }
+
+        /* mini preview uvnitř dark bloku */
+        .start-pvi-preview {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 10px;
+          padding: 14px 16px;
+          margin-bottom: 20px;
+          font-size: 11px;
+          color: rgba(255,255,255,0.4);
+          letter-spacing: 0.06em;
+          font-weight: 600;
+          text-align: center;
+          font-family: 'DM Sans', sans-serif;
+        }
+
+        .start-pvi-preview-title {
+          font-size: 13px;
+          font-weight: 600;
+          color: rgba(255,255,255,0.85);
+          letter-spacing: 0.02em;
+          margin-top: 6px;
+        }
+
+        .start-pvi-cta {
           display: block;
+          width: 100%;
+          background: #b7e94c;
+          color: #111;
+          border: none;
+          border-radius: 10px;
+          padding: 12px 20px;
+          font-size: 14px;
+          font-weight: 600;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          text-align: center;
+          transition: background 150ms;
+          margin-bottom: 10px;
+        }
+        .start-pvi-cta:hover { background: #a0d940; }
+
+        .start-pvi-micro {
+          text-align: center;
+          font-size: 11px;
+          color: rgba(255,255,255,0.3);
         }
 
-        .start-overlay-card {
+        /* LEVITUJÍCÍ KARTY */
+        @keyframes float {
+          0%   { transform: translateY(0px); }
+          50%  { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
+        }
+
+        .start-float-card {
           position: absolute;
-          bottom: 16px;
-          right: 16px;
           background: white;
           border-radius: 10px;
-          padding: 12px 16px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-          min-width: 180px;
+          padding: 8px 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+          font-size: 12px;
+          font-family: 'DM Sans', sans-serif;
+          animation: float 3s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 10;
+          white-space: nowrap;
         }
 
-        .start-overlay-label { font-size: 11px; color: #888; margin-bottom: 4px; }
-        .start-overlay-score { font-size: 18px; font-weight: 600; color: #e05a5a; line-height: 1.2; }
-        .start-overlay-hint { font-size: 11px; color: #888; margin-top: 6px; }
+        .start-float-card-label {
+          font-size: 10px;
+          color: #aaa;
+          margin-bottom: 2px;
+        }
+
+        .start-float-card-value {
+          font-size: 15px;
+          font-weight: 600;
+          color: #111;
+          line-height: 1.2;
+        }
 
         /* PALETA SEKCE */
         .start-palette-section {
@@ -311,13 +391,8 @@ export default function StartPage() {
           color: #111;
         }
 
-        .start-section-sub {
-          font-size: 14px;
-          color: #888;
-          margin-top: 8px;
-        }
+        .start-section-sub { font-size: 14px; color: #888; margin-top: 8px; }
 
-        /* KROUŽKY */
         .start-color-row {
           display: flex;
           justify-content: center;
@@ -342,13 +417,9 @@ export default function StartPage() {
         }
         .start-color-dot:hover { transform: scale(1.1); }
 
-        .start-color-label {
-          font-size: 10px;
-          color: #888;
-          white-space: nowrap;
-        }
+        .start-color-label { font-size: 10px; color: #888; white-space: nowrap; }
 
-        /* KOLOTOČ KOLEKCÍ */
+        /* KOLOTOČ */
         .start-carousel-wrap {
           width: 100%;
           padding: 24px 48px 0;
@@ -361,7 +432,6 @@ export default function StartPage() {
           overflow-x: auto;
           scroll-behavior: smooth;
           padding-bottom: 8px;
-          /* skryj scrollbar */
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
@@ -375,7 +445,7 @@ export default function StartPage() {
           overflow: hidden;
           cursor: pointer;
           position: relative;
-          transition: transform 150ms, box-shadow 150ms;
+          transition: transform 150ms;
           border: 2px solid transparent;
         }
         .start-carousel-card:hover { transform: scale(1.03); }
@@ -402,10 +472,7 @@ export default function StartPage() {
         }
 
         /* GRID */
-        .start-grid-section {
-          width: 100%;
-          padding: 24px 48px 80px;
-        }
+        .start-grid-section { width: 100%; padding: 24px 48px 80px; }
 
         .start-visual-grid {
           display: grid;
@@ -425,12 +492,7 @@ export default function StartPage() {
         }
         .start-grid-card:hover { transform: scale(1.02); }
 
-        .start-grid-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
+        .start-grid-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .start-grid-label {
           position: absolute;
@@ -466,7 +528,6 @@ export default function StartPage() {
           cursor: pointer;
         }
 
-        /* placeholder shimmer při loading */
         .start-grid-placeholder {
           width: 100%;
           height: 100%;
@@ -477,8 +538,13 @@ export default function StartPage() {
           animation: shimmer 1.2s infinite;
         }
         @keyframes shimmer {
-          0% { background-position: 200% 0; }
+          0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 1024px) {
+          .start-hero { padding: 60px 48px; gap: 48px; }
+          .start-h1 { font-size: 44px; }
         }
 
         @media (max-width: 768px) {
@@ -486,10 +552,10 @@ export default function StartPage() {
           .start-hero {
             grid-template-columns: 1fr;
             padding: 48px 20px 40px;
-            gap: 32px;
+            gap: 40px;
           }
           .start-h1 { font-size: 36px; }
-          .start-browser-mock { display: none; }
+          .start-float-card { display: none; }
           .start-palette-section { padding: 40px 20px 20px; }
           .start-carousel-wrap { padding: 16px 20px 0; }
           .start-grid-section { padding: 16px 20px 60px; }
@@ -567,28 +633,95 @@ export default function StartPage() {
             </div>
           </div>
 
-          {/* Pravý sloupec — mock browser */}
-          <div className="start-browser-mock">
-            <div className="start-browser-bar">
-              <div className="start-browser-dots">
-                <div className="start-browser-dot" style={{ background: '#FF5F57' }} />
-                <div className="start-browser-dot" style={{ background: '#FFBD2E' }} />
-                <div className="start-browser-dot" style={{ background: '#28C840' }} />
-              </div>
-              <span className="start-browser-url">studiolucifera.cz</span>
+          {/* Pravý sloupec — dark PVI blok + levitující karty */}
+          <div className="start-hero-right">
+
+            {/* Levitující karta 1 — Brand Score (vpravo nahoře) */}
+            <div
+              className="start-float-card"
+              style={{
+                top: -20,
+                right: -24,
+                animationDelay: '0s',
+              }}
+            >
+              <div className="start-float-card-label">Brand Score</div>
+              <div className="start-float-card-value">74 / 100</div>
             </div>
 
-            <div className="start-browser-content">
-              <iframe
-                src="/premiova-vizualni-identita#how"
-                className="start-browser-iframe"
-                title="Lucifera PVI preview"
-                scrolling="no"
-              />
-              <div className="start-overlay-card">
-                <div className="start-overlay-label">Nejslabší místo</div>
-                <div className="start-overlay-score">Důvěra · 4/10</div>
-                <div className="start-overlay-hint">AI doporučení připraveno →</div>
+            {/* Levitující karta 2 — Důvěra (vlevo dole) */}
+            <div
+              className="start-float-card"
+              style={{
+                bottom: 40,
+                left: -28,
+                animationDelay: '1s',
+              }}
+            >
+              <div className="start-float-card-label">Nejslabší místo</div>
+              <div className="start-float-card-value" style={{ color: '#e05a5a' }}>
+                Důvěra · 4/10
+              </div>
+            </div>
+
+            {/* Levitující karta 3 — DNA (vpravo dole) */}
+            <div
+              className="start-float-card"
+              style={{
+                bottom: -16,
+                right: -20,
+                animationDelay: '2s',
+              }}
+            >
+              <div
+                className="start-float-card-value"
+                style={{ color: '#5a7a00', fontSize: 13 }}
+              >
+                ✓ DNA nalezena
+              </div>
+            </div>
+
+            {/* Dark PVI blok */}
+            <div className="start-pvi-block">
+              <div className="start-pvi-eyebrow">JAK DIAGNOSTIKA FUNGUJE</div>
+              <h3 className="start-pvi-h3">
+                Za 2 minuty víte,<br />kde vaše značka stojí.
+              </h3>
+
+              <div className="start-pvi-steps">
+                <div className="start-pvi-step">
+                  <div className="start-pvi-step-num">1</div>
+                  <div className="start-pvi-step-text">
+                    <strong>Zadáte web</strong> — nebo začnete rovnou bez něj
+                  </div>
+                </div>
+                <div className="start-pvi-step">
+                  <div className="start-pvi-step-num">2</div>
+                  <div className="start-pvi-step-text">
+                    <strong>Analyzujeme</strong> text, vizuál, tón a konzistenci značky
+                  </div>
+                </div>
+                <div className="start-pvi-step">
+                  <div className="start-pvi-step-num">3</div>
+                  <div className="start-pvi-step-text">
+                    <strong>Vidíte výsledky</strong> — skóre, slabá místa, doporučení
+                  </div>
+                </div>
+              </div>
+
+              <div className="start-pvi-preview">
+                UKÁZKA VÝSLEDKU
+                <div className="start-pvi-preview-title">VAŠE TVÁŘ JE VAŠE ZNAČKA</div>
+              </div>
+
+              <button
+                className="start-pvi-cta"
+                onClick={handleAnalyze}
+              >
+                Spustit vlastní diagnostiku →
+              </button>
+              <div className="start-pvi-micro">
+                Zdarma · Bez registrace · Výsledky za 2 minuty
               </div>
             </div>
           </div>
@@ -601,7 +734,6 @@ export default function StartPage() {
             Vyber styl — a uvidíš reálné fotky z dané kolekce
           </p>
 
-          {/* Kroužky kolekcí */}
           <div className="start-color-row">
             {COLLECTIONS.map((c) => (
               <div
@@ -693,8 +825,7 @@ export default function StartPage() {
                     </div>
                   </div>
                 ))
-              : // Placeholder shimmer při prvním načítání
-                Array.from({ length: 6 }).map((_, i) => (
+              : Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="start-grid-card">
                     <div className="start-grid-placeholder" />
                   </div>
