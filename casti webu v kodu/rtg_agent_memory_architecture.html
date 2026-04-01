@@ -1,0 +1,159 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.w{font-family:var(--font-sans);padding:4px 0 12px}
+.sec{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:10px}
+.card-head{padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.card-sub{font-size:11px;color:var(--color-text-tertiary)}
+.card-body{padding:12px 14px}
+.badge{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500}
+.badge.db{background:#E6F1FB;color:#185FA5}
+.badge.prompt{background:#eaf3de;color:#3B6D11}
+.badge.auto{background:#FAEEDA;color:#854F0B}
+.layers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.layer{border-radius:var(--border-radius-md);padding:10px 12px;border:0.5px solid var(--color-border-tertiary)}
+.layer-title{font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.layer-items{font-size:11px;color:var(--color-text-secondary);line-height:1.7}
+.arrow{text-align:center;color:var(--color-text-tertiary);font-size:14px;margin:6px 0}
+.prompt-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;font-size:12px;color:var(--color-text-secondary);line-height:1.7;font-family:var(--font-mono)}
+.hl{color:var(--color-text-primary);font-weight:500}
+.hl.lime{color:#3B6D11}
+.hl.blue{color:#185FA5}
+.hl.amber{color:#854F0B}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check-item{display:flex;gap:8px;font-size:12px;color:var(--color-text-secondary);margin-bottom:5px;line-height:1.4}
+.ck{color:#b5d45c;flex-shrink:0;font-weight:500}
+.cr{color:#E24B4A;flex-shrink:0}
+</style>
+<div class="w">
+
+<div class="sec">Problém — proč agenti bez paměti tvoří generický obsah</div>
+<div class="two-col">
+  <div class="card">
+    <div class="card-head"><div class="card-title">❌ Bez paměti</div></div>
+    <div class="card-body">
+      <div class="check-item"><div class="cr">✗</div>Každý týden začíná od nuly</div>
+      <div class="check-item"><div class="cr">✗</div>Neví co už bylo vygenerováno</div>
+      <div class="check-item"><div class="cr">✗</div>Opakuje stejné hooky a témata</div>
+      <div class="check-item"><div class="cr">✗</div>Tón kolísá — jednou přímý, jindy poetický</div>
+      <div class="check-item"><div class="cr">✗</div>Nezná reakce klienta (co schválil, co odmítl)</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><div class="card-title">✅ S pamětí</div></div>
+    <div class="card-body">
+      <div class="check-item"><div class="ck">✔</div>Brand kontext vždy v system promptu</div>
+      <div class="check-item"><div class="ck">✔</div>Ví co generoval minulé týdny → variuje</div>
+      <div class="check-item"><div class="ck">✔</div>Učí se z toho co klient schválil vs odmítl</div>
+      <div class="check-item"><div class="ck">✔</div>Tón konzistentní — přesně dle brand DNA</div>
+      <div class="check-item"><div class="ck">✔</div>Nikdy nezopakuje stejný hook</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">Řešení — 3 vrstvy paměti v Supabase</div>
+<div class="card">
+  <div class="card-body">
+    <div class="layers">
+      <div class="layer">
+        <div class="layer-title">🏛 Vrstva 1 — Permanentní<span class="badge db">project_brief</span></div>
+        <div class="layer-items">
+          archetype<br>tone_of_voice<br>visual_style<br>color_palette<br>forbidden_words<br>target_audience<br>brand_name
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-title">📚 Vrstva 2 — Historie<span class="badge db">content_posts</span></div>
+        <div class="layer-items">
+          posledních 20 hooků<br>použitá témata<br>schválené vs odmítnuté<br>agent_style per post<br>výkon příspěvků<br>pillar distribuce
+        </div>
+      </div>
+      <div class="layer">
+        <div class="layer-title">🧠 Vrstva 3 — Učení<span class="badge auto">auto-update</span></div>
+        <div class="layer-items">
+          approval_rate per styl<br>oblíbené hooky (typ)<br>odmítnuté vzory<br>nejlepší pillar<br>preferovaný tón<br>→ uloženo v project_brief.raw_analysis
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">Jak vypadá system prompt agenta s pamětí</div>
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">System prompt — Text agent (hooks + captions)</div>
+    <span class="badge prompt">GPT-4o</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+<span class="hl">## KDO JSI</span><br>
+Jsi expert na tvorbu obsahu pro značku <span class="hl lime">{{brand_name}}</span>.<br>
+Znáš ji lépe než kdokoliv jiný.<br><br>
+
+<span class="hl">## BRAND DNA</span><br>
+Archetyp: <span class="hl lime">{{archetype}}</span><br>
+Tón: <span class="hl lime">{{tone_of_voice}}</span><br>
+Styl: <span class="hl lime">{{visual_style}}</span><br>
+Cílové publikum: <span class="hl lime">{{target_audience}}</span><br>
+Zakázaná slova: <span class="hl lime">{{forbidden_words}}</span><br><br>
+
+<span class="hl">## CO JSI UŽ NAPSAL (posledních 20 hooků)</span><br>
+<span class="hl blue">{{last_20_hooks}}</span><br>
+→ Tato témata a formulace NEOPAKUJ.<br><br>
+
+<span class="hl">## CO KLIENT SCHVALUJE</span><br>
+<span class="hl blue">{{approved_patterns}}</span><br>
+→ Tímto směrem se pohybuj více.<br><br>
+
+<span class="hl">## CO KLIENT ODMÍTÁ</span><br>
+<span class="hl amber">{{rejected_patterns}}</span><br>
+→ Těmto vzorům se vyhni.<br><br>
+
+<span class="hl">## ZADÁNÍ TOHOTO TÝDNE</span><br>
+Pilíř: <span class="hl lime">{{pillar}}</span><br>
+Typ příspěvku: <span class="hl lime">{{content_type}}</span><br>
+Platforma: <span class="hl lime">{{platform}}</span>
+    </div>
+  </div>
+</div>
+
+<div class="sec">Automatické učení — co se ukládá po každém schválení</div>
+<div class="card">
+  <div class="card-body">
+    <div class="two-col">
+      <div>
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Po schválení → zapsat do DB</div>
+        <div class="check-item"><div class="ck">+</div>hook_type (otázka/výrok/příběh) → +1 score</div>
+        <div class="check-item"><div class="ck">+</div>agent_style → approved_styles[]</div>
+        <div class="check-item"><div class="ck">+</div>pillar → preferred_pillars[]</div>
+        <div class="check-item"><div class="ck">+</div>délka textu → preferred_length</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Po odmítnutí → zapsat do DB</div>
+        <div class="check-item"><div class="cr">−</div>hook_type → -1 score</div>
+        <div class="check-item"><div class="cr">−</div>agent_style → rejected_styles[]</div>
+        <div class="check-item"><div class="cr">−</div>client_note → přidej do forbidden vzorů</div>
+        <div class="check-item"><div class="cr">−</div>pillar → deprioritize</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">Kde se paměť ukládá</div>
+<div class="layers" style="gap:8px">
+  <div class="layer">
+    <div class="layer-title"><span class="badge db">project_brief</span></div>
+    <div class="layer-items">raw_analysis.agent_memory<br>→ permanentní učení<br>→ approved/rejected patterns<br>→ preferred styles</div>
+  </div>
+  <div class="layer">
+    <div class="layer-title"><span class="badge db">content_posts</span></div>
+    <div class="layer-items">hook text (každý post)<br>agent_style<br>status (approved/rejected)<br>client_note<br>→ historie 20 hooků</div>
+  </div>
+  <div class="layer">
+    <div class="layer-title"><span class="badge auto">build_brand_context()</span></div>
+    <div class="layer-items">helper funkce<br>čte obě tabulky<br>sestaví kontext pro prompt<br>volá se před každým generováním</div>
+  </div>
+</div>
+
+</div>

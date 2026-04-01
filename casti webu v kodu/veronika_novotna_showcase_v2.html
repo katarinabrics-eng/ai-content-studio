@@ -1,0 +1,305 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body,div,p,span{font-family:'DM Sans',sans-serif}
+.sc{background:#FAF7F2;padding:56px 40px;color:#2C2820}
+.top-label{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.rtg-badge{background:#2C2820;color:#FAF7F2;font-size:10px;letter-spacing:.12em;padding:4px 12px;border-radius:100px;text-transform:uppercase}
+.klient-name{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,5vw,52px);font-weight:300;line-height:1.1;margin-bottom:4px}
+.klient-sub{font-size:12px;color:#9A8E82;letter-spacing:.04em;margin-bottom:40px}
+.divider{width:40px;height:1px;background:#C8B9A8;margin:0 0 40px}
+
+/* OUTPUT GRID */
+.hero-grid{display:grid;grid-template-columns:1.2fr 0.8fr 1fr;grid-template-rows:240px 200px;gap:10px;margin-bottom:10px}
+.card{border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:16px}
+.card.tall{grid-row:1/3}
+.bg1{background:#E8EDE3}.bg2{background:#EDE6DC}.bg3{background:#E5E0D8}.bg4{background:#DFE8D8}.bg5{background:#E8E3DC}
+.pill{display:inline-block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;border:1px solid rgba(44,40,32,0.15);color:rgba(44,40,32,0.45);margin-bottom:8px;background:rgba(250,247,242,0.7)}
+.card-h{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:#2C2820;line-height:1.3}
+.card-h.lg{font-size:22px}
+.card-cap{font-size:10px;color:rgba(44,40,32,0.4);margin-top:3px}
+.deco{position:absolute;top:16px;right:16px;font-size:24px;opacity:.18}
+
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:40px}
+.sm{border-radius:10px;padding:14px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end}
+.sm-h{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:300;color:#2C2820;line-height:1.35;margin-top:6px}
+
+/* SECTION DIVIDER */
+.sec-div{border-top:1px solid #E5DDD4;margin:0 0 36px;padding-top:36px}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;margin-bottom:4px;color:#2C2820}
+.sec-sub{font-size:12px;color:#9A8E82;margin-bottom:24px}
+
+/* PLANNING */
+.plan-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.plan-calendar{background:#fff;border:0.5px solid #E5DDD4;border-radius:12px;overflow:hidden}
+.cal-head{background:#2C2820;color:#FAF7F2;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.cal-head-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:300}
+.cal-head-sub{font-size:10px;color:rgba(250,247,242,0.5);letter-spacing:.08em}
+.cal-body{padding:16px}
+.week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.day-label{font-size:9px;color:#B5A898;text-align:center;letter-spacing:.06em;padding:2px 0}
+.day-cell{border-radius:4px;padding:4px 2px;min-height:52px;font-size:9px;color:#9A8E82}
+.day-cell.has-content{background:#F5F1EB;border:0.5px solid #E5DDD4}
+.day-num{font-size:10px;color:#2C2820;font-weight:500;margin-bottom:2px}
+.content-dot{display:flex;align-items:center;gap:2px;margin-bottom:1px}
+.dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dot-g{background:#8B9E7A}.dot-v{background:#B5A898}.dot-b{background:#C8B9A8}
+.content-lbl{font-size:8px;color:#9A8E82;white-space:nowrap;overflow:hidden}
+
+.plan-list{display:flex;flex-direction:column;gap:8px}
+.plan-item{background:#fff;border:0.5px solid #E5DDD4;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.plan-week-badge{background:#2C2820;color:#FAF7F2;font-size:9px;padding:3px 8px;border-radius:100px;white-space:nowrap;letter-spacing:.04em;flex-shrink:0}
+.plan-content{flex:1}
+.plan-content-title{font-size:12px;font-weight:500;color:#2C2820;margin-bottom:2px}
+.plan-content-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:9px;padding:2px 7px;border-radius:100px;border:0.5px solid #E5DDD4;color:#9A8E82}
+.plan-count{font-size:11px;color:#B5A898;flex-shrink:0}
+
+/* STRATEGY OUTPUT */
+.strategy-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.strat-card{background:#fff;border:0.5px solid #E5DDD4;border-radius:12px;overflow:hidden}
+.strat-head{padding:16px;border-bottom:0.5px solid #E5DDD4}
+.strat-head-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#B5A898;margin-bottom:6px}
+.strat-head-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:#2C2820}
+.strat-body{padding:16px}
+.strat-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid #F0EBE4}
+.strat-row:last-child{border-bottom:none}
+.strat-icon{width:28px;height:28px;border-radius:6px;background:#F5F1EB;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.strat-label{font-size:11px;font-weight:500;color:#2C2820;line-height:1.3}
+.strat-val{font-size:10px;color:#9A8E82;margin-top:1px}
+
+.score-card{background:#2C2820;border-radius:12px;padding:20px;color:#FAF7F2}
+.score-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(250,247,242,0.45);margin-bottom:12px}
+.score-num{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;color:#FAF7F2;line-height:1}
+.score-sub{font-size:11px;color:rgba(250,247,242,0.5);margin-top:4px;margin-bottom:20px}
+.score-bars{display:flex;flex-direction:column;gap:10px}
+.score-bar-row{display:flex;align-items:center;gap:10px}
+.score-bar-label{font-size:10px;color:rgba(250,247,242,0.5);width:80px;flex-shrink:0}
+.score-bar-track{flex:1;height:3px;background:rgba(255,255,255,0.1);border-radius:2px}
+.score-bar-fill{height:3px;border-radius:2px;background:#edb965}
+.score-bar-val{font-size:10px;color:rgba(250,247,242,0.5);width:24px;text-align:right;flex-shrink:0}
+
+/* RESULTS */
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.res-card{background:#fff;border:0.5px solid #E5DDD4;border-radius:10px;padding:16px}
+.res-num{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:#2C2820;line-height:1}
+.res-num span{font-size:16px;color:#B5A898}
+.res-lbl{font-size:11px;color:#9A8E82;margin-top:3px}
+.res-det{font-size:10px;color:#C8B9A8;margin-top:8px;padding-top:8px;border-top:0.5px solid #EDE8E0}
+
+/* QUOTE */
+.quote{background:#2C2820;border-radius:12px;padding:32px;text-align:center}
+.quote-text{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;font-weight:300;color:#FAF7F2;line-height:1.6;margin-bottom:12px}
+.quote-author{font-size:11px;color:#8A7E72;letter-spacing:.06em}
+</style>
+
+<div class="sc">
+
+<!-- HEADER -->
+<div class="top-label">
+  <span class="rtg-badge">Lucifera · Ready to Go</span>
+</div>
+<div class="klient-name">Veronika Novotná</div>
+<div class="klient-sub">Holistická terapeutka & wellness poradkyně · Praha</div>
+<div class="divider"></div>
+
+<!-- OUTPUT GRID -->
+<div class="hero-grid">
+  <div class="card tall bg1">
+    <div class="deco">🌿</div>
+    <span class="pill">Grafika · Feed</span>
+    <div class="card-h lg">Zastav se<br>na chvíli</div>
+    <div class="card-cap">Možná jen potřebuješ zpomalit · Var. A</div>
+  </div>
+  <div class="card bg2">
+    <div class="deco">▶</div>
+    <span class="pill">Video · Reels 15s</span>
+    <div class="card-h">Tohle mi změnilo pohled na práci s tělem</div>
+    <div class="card-cap">Osobní tón · Var. A</div>
+  </div>
+  <div class="card bg3">
+    <div class="deco">◌</div>
+    <span class="pill">Carousel · 6 slajdů</span>
+    <div class="card-h">3 věci které změní tvůj vztah k sobě</div>
+    <div class="card-cap">Vzdělávací · IG & LI</div>
+  </div>
+  <div class="card bg4">
+    <span class="pill">Citát · čtverec</span>
+    <div class="card-h">"Klid není slabost. Je to síla."</div>
+    <div class="card-cap">Var. B · minimalistický</div>
+  </div>
+  <div class="card bg5">
+    <span class="pill">Reklama · FB Ads</span>
+    <div class="card-h">Wellness není luxus. Je to nutnost.</div>
+    <div class="card-cap">Brand reklama</div>
+  </div>
+</div>
+
+<div class="row4">
+  <div class="sm bg1"><span class="pill">Stories</span><div class="sm-h">Dnes si dovol odpočinout</div></div>
+  <div class="sm bg2"><span class="pill">Video · 12s</span><div class="sm-h">Co kdyby ti pomohl vlastní dech?</div></div>
+  <div class="sm bg3"><span class="pill">Grafika</span><div class="sm-h">Healing začíná uvnitř</div></div>
+  <div class="sm bg4"><span class="pill">LinkedIn</span><div class="sm-h">Proč jsem přestala spěchat</div></div>
+</div>
+
+<!-- PLANNING -->
+<div class="sec-div">
+  <div class="sec-title">Plánování obsahu</div>
+  <div class="sec-sub">Automaticky připraveno každý týden · žádné briefy</div>
+  <div class="plan-wrap">
+    <div class="plan-calendar">
+      <div class="cal-head">
+        <div class="cal-head-title">Březen 2026</div>
+        <div class="cal-head-sub">TÝDEN 3 · AKTIVNÍ</div>
+      </div>
+      <div class="cal-body">
+        <div class="week-row">
+          <div class="day-label">Po</div><div class="day-label">Út</div><div class="day-label">St</div>
+          <div class="day-label">Čt</div><div class="day-label">Pá</div><div class="day-label">So</div><div class="day-label">Ne</div>
+        </div>
+        <div class="week-row">
+          <div class="day-cell has-content"><div class="day-num">16</div><div class="content-dot"><div class="dot dot-g"></div><div class="content-lbl">Grafika</div></div></div>
+          <div class="day-cell"><div class="day-num">17</div></div>
+          <div class="day-cell has-content"><div class="day-num">18</div><div class="content-dot"><div class="dot dot-v"></div><div class="content-lbl">Video</div></div></div>
+          <div class="day-cell"><div class="day-num">19</div></div>
+          <div class="day-cell has-content"><div class="day-num">20</div><div class="content-dot"><div class="dot dot-g"></div><div class="content-lbl">Citát</div></div></div>
+          <div class="day-cell"><div class="day-num">21</div></div>
+          <div class="day-cell"><div class="day-num">22</div></div>
+        </div>
+        <div class="week-row">
+          <div class="day-cell has-content"><div class="day-num">23</div><div class="content-dot"><div class="dot dot-v"></div><div class="content-lbl">Reels</div></div></div>
+          <div class="day-cell"><div class="day-num">24</div></div>
+          <div class="day-cell has-content"><div class="day-num">25</div><div class="content-dot"><div class="dot dot-b"></div><div class="content-lbl">Carousel</div></div></div>
+          <div class="day-cell"><div class="day-num">26</div></div>
+          <div class="day-cell has-content"><div class="day-num">27</div><div class="content-dot"><div class="dot dot-g"></div><div class="content-lbl">Grafika</div></div></div>
+          <div class="day-cell"><div class="day-num">28</div></div>
+          <div class="day-cell"><div class="day-num">29</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="plan-list">
+      <div class="plan-item">
+        <span class="plan-week-badge">TÝDEN 1</span>
+        <div class="plan-content">
+          <div class="plan-content-title">Problém — Klient se pozná</div>
+          <div class="plan-content-tags"><span class="tag">Únava</span><span class="tag">Napětí</span><span class="tag">Nespavost</span></div>
+        </div>
+        <div class="plan-count">4 výstupy</div>
+      </div>
+      <div class="plan-item">
+        <span class="plan-week-badge">TÝDEN 2</span>
+        <div class="plan-content">
+          <div class="plan-content-title">Metoda — Klient pochopí jak</div>
+          <div class="plan-content-tags"><span class="tag">Rituály</span><span class="tag">Byliny</span><span class="tag">Edukace</span></div>
+        </div>
+        <div class="plan-count">4 výstupy</div>
+      </div>
+      <div class="plan-item">
+        <span class="plan-week-badge">TÝDEN 3</span>
+        <div class="plan-content">
+          <div class="plan-content-title">Důkaz — Klient uvěří</div>
+          <div class="plan-content-tags"><span class="tag">Příběh</span><span class="tag">Zkušenost</span><span class="tag">Case study</span></div>
+        </div>
+        <div class="plan-count">4 výstupy</div>
+      </div>
+      <div class="plan-item">
+        <span class="plan-week-badge">TÝDEN 4</span>
+        <div class="plan-content">
+          <div class="plan-content-title">Vstup — Klient se rozhodne</div>
+          <div class="plan-content-tags"><span class="tag">CTA</span><span class="tag">Konzultace</span><span class="tag">Nabídka</span></div>
+        </div>
+        <div class="plan-count">4 výstupy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STRATEGY OUTPUT -->
+<div class="sec-div">
+  <div class="sec-title">Strategický výstup</div>
+  <div class="sec-sub">Brand DNA · komunikační rámec · vizuální identita</div>
+  <div class="strategy-wrap">
+    <div class="strat-card">
+      <div class="strat-head">
+        <div class="strat-head-label">Brand DNA</div>
+        <div class="strat-head-title">Veronika Novotná</div>
+      </div>
+      <div class="strat-body">
+        <div class="strat-row">
+          <div class="strat-icon">◈</div>
+          <div><div class="strat-label">Archetyp značky</div><div class="strat-val">Průvodce & Mudrc — hluboká péče</div></div>
+        </div>
+        <div class="strat-row">
+          <div class="strat-icon">◉</div>
+          <div><div class="strat-label">Hlavní téma</div><div class="strat-val">Rovnováha začíná tady</div></div>
+        </div>
+        <div class="strat-row">
+          <div class="strat-icon">◌</div>
+          <div><div class="strat-label">Komunikační styl</div><div class="strat-val">Přímý, bez ezoteričnosti, konkrétní</div></div>
+        </div>
+        <div class="strat-row">
+          <div class="strat-icon">▣</div>
+          <div><div class="strat-label">Cílová klientka</div><div class="strat-val">Ženy 35–60 let, hledající přirozenou cestu</div></div>
+        </div>
+        <div class="strat-row">
+          <div class="strat-icon">▤</div>
+          <div><div class="strat-label">Vizuální paleta</div><div class="strat-val">Krémová · Šalvěj · Vlašský ořech · Slonová kost</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="score-label">Brand Scan · Výchozí skóre</div>
+      <div class="score-num">71</div>
+      <div class="score-sub">z 100 · Archetyp: Průvodce</div>
+      <div class="score-bars">
+        <div class="score-bar-row">
+          <div class="score-bar-label">Identita</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:82%"></div></div>
+          <div class="score-bar-val">8.2</div>
+        </div>
+        <div class="score-bar-row">
+          <div class="score-bar-label">Energie</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:70%"></div></div>
+          <div class="score-bar-val">7.0</div>
+        </div>
+        <div class="score-bar-row">
+          <div class="score-bar-label">Cesta klienta</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:55%"></div></div>
+          <div class="score-bar-val">5.5</div>
+        </div>
+        <div class="score-bar-row">
+          <div class="score-bar-label">Důvěra</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:60%"></div></div>
+          <div class="score-bar-val">6.0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="sec-div">
+  <div class="results-grid">
+    <div class="res-card">
+      <div class="res-num">18<span> výstupů</span></div>
+      <div class="res-lbl">Za první měsíc spolupráce</div>
+      <div class="res-det">Grafiky · videa · carousely · reklamy</div>
+    </div>
+    <div class="res-card">
+      <div class="res-num">0<span> h</span></div>
+      <div class="res-lbl">Hodin nad tvorbou obsahu</div>
+      <div class="res-det">Jen schválila · stáhla · postla</div>
+    </div>
+    <div class="res-card">
+      <div class="res-num">2<span>×</span></div>
+      <div class="res-lbl">Varianty každého výstupu</div>
+      <div class="res-det">Vždy na výběr · A nebo B</div>
+    </div>
+  </div>
+  <div class="quote">
+    <div class="quote-text">"Poprvé jsem měla pocit, že obsah skutečně mluví za mě — bez toho, abych u toho trávila hodiny."</div>
+    <div class="quote-author">Veronika Novotná · holistická terapeutka · Praha</div>
+  </div>
+</div>
+
+</div>

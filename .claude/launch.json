@@ -3,10 +3,10 @@
   "configurations": [
     {
       "name": "content-studio",
-      "runtimeExecutable": "/tmp/lucifera-dev.sh",
-      "runtimeArgs": [],
-      "port": 3002,
-      "autoPort": false
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "cwd": "/Users/katarina/Documents/AI Content Studio/apps/content-studio"
     }
   ]
 }

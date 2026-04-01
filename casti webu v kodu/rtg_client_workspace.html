@@ -1,0 +1,191 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.ws{font-family:var(--font-sans);background:var(--color-background-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;border:0.5px solid var(--color-border-tertiary)}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.logo span{background:#d0ec78;color:#1a1a1a;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;margin-left:6px}
+.user-row{display:flex;align-items:center;gap:8px}
+.avatar{width:28px;height:28px;background:#d0ec78;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#1a1a1a}
+.username{font-size:13px;color:var(--color-text-secondary)}
+.main{display:grid;grid-template-columns:180px 1fr;min-height:480px}
+.sidebar{background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);padding:16px 0}
+.nav-item{padding:8px 20px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border-left:2px solid transparent;transition:all .15s}
+.nav-item:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.nav-item.active{color:var(--color-text-primary);border-left-color:#b5d45c;font-weight:500}
+.nav-section{font-size:10px;letter-spacing:.08em;color:var(--color-text-tertiary);padding:16px 20px 6px;text-transform:uppercase}
+.content{padding:20px 24px;overflow:auto}
+.week-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.week-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.week-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.badge-pending{background:var(--color-background-warning);color:var(--color-text-warning);font-size:11px;padding:3px 10px;border-radius:100px;font-weight:500}
+.post-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:14px;overflow:hidden;transition:border-color .2s}
+.post-card:hover{border-color:var(--color-border-secondary)}
+.post-header{padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.post-type{display:flex;align-items:center;gap:8px}
+.type-badge{font-size:10px;font-weight:500;padding:3px 10px;border-radius:100px;letter-spacing:.04em}
+.type-video{background:var(--color-background-info);color:var(--color-text-info)}
+.type-graphic{background:var(--color-background-success);color:var(--color-text-success)}
+.platform-dots{display:flex;gap:4px}
+.dot{width:18px;height:18px;border-radius:50%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary)}
+.post-body{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.variant{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;cursor:pointer;transition:all .15s;position:relative}
+.variant:hover{border-color:#b5d45c}
+.variant.selected{border-color:#b5d45c;border-width:1.5px;background:var(--color-background-primary)}
+.variant-label{font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--color-text-tertiary);margin-bottom:8px;text-transform:uppercase}
+.variant-preview{width:100%;aspect-ratio:16/9;background:var(--color-background-tertiary);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--color-text-tertiary);border:0.5px solid var(--color-border-tertiary)}
+.variant-text{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.variant-text strong{color:var(--color-text-primary);font-weight:500}
+.check-circle{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:#d0ec78;border:none;display:flex;align-items:center;justify-content:center;font-size:9px;color:#1a1a1a;opacity:0;transition:opacity .15s}
+.variant.selected .check-circle{opacity:1}
+.post-footer{padding:10px 16px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;background:var(--color-background-secondary)}
+.footer-actions{display:flex;gap:8px}
+.btn-sm{font-size:12px;padding:5px 14px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn-sm:hover{color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.btn-approve{background:#d0ec78;color:#1a1a1a;border-color:#b5d45c;font-weight:500}
+.btn-approve:hover{background:#c3e55a}
+.schedule-row{font-size:12px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:6px}
+.approved-card{background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-lg);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.approved-left{display:flex;align-items:center;gap:10px}
+.approved-icon{width:32px;height:32px;background:#d0ec78;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.approved-text{font-size:13px;font-weight:500;color:var(--color-text-success)}
+.approved-sub{font-size:11px;color:var(--color-text-secondary)}
+.btn-tiny{font-size:11px;padding:4px 10px;border-radius:4px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.progress-bar{background:var(--color-background-secondary);border-radius:100px;height:4px;margin:8px 0 4px}
+.progress-fill{background:#d0ec78;height:4px;border-radius:100px;width:33%}
+.progress-label{font-size:11px;color:var(--color-text-tertiary)}
+</style>
+<div class="ws">
+<div class="topbar">
+  <div class="logo">Ready to Go <span>KLIENTSKÝ PORTÁL</span></div>
+  <div class="user-row">
+    <div class="avatar">MB</div>
+    <span class="username">Marie Bayer</span>
+  </div>
+</div>
+<div class="main">
+  <div class="sidebar">
+    <div class="nav-section">Obsah</div>
+    <div class="nav-item active">Ke schválení</div>
+    <div class="nav-item">Schváleno</div>
+    <div class="nav-item">Naplánováno</div>
+    <div class="nav-section">Nastavení</div>
+    <div class="nav-item">Můj profil</div>
+    <div class="nav-item" style="color:var(--color-text-tertiary);font-size:12px;padding-top:6px">Brand DNA</div>
+  </div>
+  <div class="content">
+    <div class="week-header">
+      <div>
+        <div class="week-title">Týden 24. – 28. 3.</div>
+        <div class="week-sub">Připraveno 3 příspěvky k schválení</div>
+      </div>
+      <div class="badge-pending">3 čekají</div>
+    </div>
+
+    <!-- Already approved -->
+    <div class="approved-card">
+      <div class="approved-left">
+        <div class="approved-icon">✓</div>
+        <div>
+          <div class="approved-text">Grafický příspěvek schválen</div>
+          <div class="approved-sub">Pondělí 24. 3. · Instagram, Facebook</div>
+        </div>
+      </div>
+      <button class="btn-tiny">Upravit</button>
+    </div>
+
+    <!-- Video post - waiting -->
+    <div class="post-card" id="pc1">
+      <div class="post-header">
+        <div class="post-type">
+          <span class="type-badge type-video">VIDEO</span>
+          <span style="font-size:12px;color:var(--color-text-secondary)">Středa 26. 3.</span>
+        </div>
+        <div class="platform-dots">
+          <div class="dot">IG</div>
+          <div class="dot">FB</div>
+        </div>
+      </div>
+      <div class="post-body">
+        <div class="variant" id="v1a" onclick="selectVariant('v1a','v1b','pc1')">
+          <div class="check-circle">✓</div>
+          <div class="variant-label">Varianta A</div>
+          <div class="variant-preview">▶ b-roll záběr · kancelář · 15s</div>
+          <div class="variant-text"><strong>"Tohle mi trvalo 2 hodiny."</strong><br>Hook na osobní zkušenost · tón přímý</div>
+        </div>
+        <div class="variant" id="v1b" onclick="selectVariant('v1b','v1a','pc1')">
+          <div class="check-circle">✓</div>
+          <div class="variant-label">Varianta B</div>
+          <div class="variant-preview">▶ b-roll záběr · lifestyle · 12s</div>
+          <div class="variant-text"><strong>"Co kdybys to měla hotové za 5 minut?"</strong><br>Hook na řešení · tón zvídavý</div>
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="schedule-row">📅 Naplánovat po schválení</div>
+        <div class="footer-actions">
+          <button class="btn-sm" onclick="sendPrompt('Chci upravit text k tomuto video příspěvku')">Upravit text</button>
+          <button class="btn-sm btn-approve" onclick="approveCard('pc1')">Schválit →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphic post -->
+    <div class="post-card" id="pc2">
+      <div class="post-header">
+        <div class="post-type">
+          <span class="type-badge type-graphic">GRAFIKA</span>
+          <span style="font-size:12px;color:var(--color-text-secondary)">Pátek 28. 3.</span>
+        </div>
+        <div class="platform-dots">
+          <div class="dot">IG</div>
+          <div class="dot">LI</div>
+        </div>
+      </div>
+      <div class="post-body">
+        <div class="variant" id="v2a" onclick="selectVariant('v2a','v2b','pc2')">
+          <div class="check-circle">✓</div>
+          <div class="variant-label">Varianta A</div>
+          <div class="variant-preview" style="background:#f3fbdc;color:#555">Světlý styl · lime akcent</div>
+          <div class="variant-text"><strong>"3 věci, které mi ušetří hodiny."</strong><br>Seznam · styl clean</div>
+        </div>
+        <div class="variant" id="v2b" onclick="selectVariant('v2b','v2a','pc2')">
+          <div class="check-circle">✓</div>
+          <div class="variant-label">Varianta B</div>
+          <div class="variant-preview" style="background:#1a1a1a;color:#d0ec78">Tmavý styl · bold</div>
+          <div class="variant-text"><strong>"Proč jsem přestala trávit hodiny u obsahu."</strong><br>Příběh · styl výrazný</div>
+        </div>
+      </div>
+      <div class="post-footer">
+        <div class="schedule-row">📅 Naplánovat po schválení</div>
+        <div class="footer-actions">
+          <button class="btn-sm" onclick="sendPrompt('Chci změnit text grafického příspěvku na pátek')">Upravit</button>
+          <button class="btn-sm btn-approve" onclick="approveCard('pc2')">Schválit →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div style="margin-top:4px">
+      <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+      <div class="progress-label" id="prog-label">1 / 3 schváleno tento týden</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+let approved=1;
+function selectVariant(id,other,card){
+  document.getElementById(id).classList.add('selected');
+  document.getElementById(other).classList.remove('selected');
+}
+function approveCard(id){
+  const card=document.getElementById(id);
+  card.style.opacity='0.5';
+  card.style.pointerEvents='none';
+  const footer=card.querySelector('.post-footer');
+  footer.innerHTML='<div style="font-size:12px;color:var(--color-text-success);padding:2px 0">✓ Schváleno — čeká na naplánování</div>';
+  approved++;
+  const pct=Math.round((approved/3)*100);
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=approved+' / 3 schváleno tento týden';
+}
+</script>

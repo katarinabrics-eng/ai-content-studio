@@ -1,0 +1,155 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{font-family:var(--font-sans);padding:4px 0 12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary)}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary)}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot.keep{background:#b5d45c}
+.dot.extend{background:#3B8BD4}
+.dot.new{background:#D85A30}
+.dot.archive{background:#888780}
+.table-row{display:grid;grid-template-columns:200px 1fr 90px;gap:0;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:8px;overflow:hidden}
+.table-row:hover .t-name{background:var(--color-background-secondary)}
+.t-name{padding:12px 14px;font-size:13px;font-weight:500;color:var(--color-text-primary);border-right:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);display:flex;flex-direction:column;gap:4px}
+.t-name .orig{font-size:11px;color:var(--color-text-tertiary);font-weight:400;font-style:italic}
+.t-detail{padding:10px 14px;font-size:12px;color:var(--color-text-secondary);background:var(--color-background-primary);line-height:1.6}
+.t-detail .cols{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.col-tag{font-size:11px;padding:2px 8px;border-radius:4px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.col-tag.add{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+.t-status{padding:10px 10px;display:flex;align-items:flex-start;justify-content:flex-end;background:var(--color-background-primary)}
+.badge{font-size:10px;font-weight:500;padding:3px 10px;border-radius:100px;white-space:nowrap;letter-spacing:.04em}
+.badge.keep{background:#eaf3de;color:#3B6D11}
+.badge.extend{background:#E6F1FB;color:#185FA5}
+.badge.new{background:#FAECE7;color:#993C1D}
+.badge.archive{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.section-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.sum-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;text-align:center}
+.sum-num{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.sum-label{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+</style>
+<div class="wrap">
+<div class="legend">
+  <div class="leg-item"><div class="dot keep"></div>Zachovat beze změny</div>
+  <div class="leg-item"><div class="dot extend"></div>Rozšířit (přidat sloupce)</div>
+  <div class="leg-item"><div class="dot new"></div>Nová tabulka</div>
+  <div class="leg-item"><div class="dot archive"></div>Archivovat / nepoužít</div>
+</div>
+
+<div class="section-label">Stávající tabulky — použitelné</div>
+
+<div class="table-row">
+  <div class="t-name">client_projects<span class="orig">= klienti v RTG</span></div>
+  <div class="t-detail">Základ je perfektní: web_url, scan_result, payment_status, workflow_status, access_token, email, name.
+    <div class="cols">
+      <span class="col-tag add">+ plan (start|plus|pro)</span>
+      <span class="col-tag add">+ interval_days</span>
+      <span class="col-tag add">+ next_generation_at</span>
+      <span class="col-tag add">+ google_drive_folder_id</span>
+      <span class="col-tag add">+ stripe_customer_id</span>
+    </div>
+  </div>
+  <div class="t-status"><span class="badge extend">ROZŠÍŘIT</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">content_posts<span class="orig">= content_items v RTG</span></div>
+  <div class="t-detail">Má vše klíčové: hook, body, cta, canva_design_id, platform, scheduled_for, status, agent_style, pillar.
+    <div class="cols">
+      <span class="col-tag add">+ type (video|graphic)</span>
+      <span class="col-tag add">+ variant (A|B)</span>
+      <span class="col-tag add">+ pair_index</span>
+      <span class="col-tag add">+ batch_id</span>
+      <span class="col-tag add">+ output_url</span>
+      <span class="col-tag add">+ thumbnail_url</span>
+      <span class="col-tag add">+ source_video_id</span>
+    </div>
+  </div>
+  <div class="t-status"><span class="badge extend">ROZŠÍŘIT</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">project_brief<span class="orig">= brand_profiles v RTG</span></div>
+  <div class="t-detail">Má: brand_name, tone_of_voice, platforms, preferred_style, target_audience, offers, forbidden_words, website_or_profile.
+    <div class="cols">
+      <span class="col-tag add">+ archetype</span>
+      <span class="col-tag add">+ visual_style</span>
+      <span class="col-tag add">+ color_palette (jsonb)</span>
+      <span class="col-tag add">+ raw_analysis (jsonb)</span>
+    </div>
+  </div>
+  <div class="t-status"><span class="badge extend">ROZŠÍŘIT</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">analysis_leads<span class="orig">= onboarding diagnostika</span></div>
+  <div class="t-detail">Zachovat přesně jak je. Slouží jako vstupní bod — URL analýza → výsledek → brand profil.</div>
+  <div class="t-status"><span class="badge keep">ZACHOVAT</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">bookings<span class="orig">= platební flow</span></div>
+  <div class="t-detail">Zachovat. Stripe session, status, expires_at — to vše platí i pro RTG subscription onboarding.</div>
+  <div class="t-status"><span class="badge keep">ZACHOVAT</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">project_activity<span class="orig">= admin log</span></div>
+  <div class="t-detail">Zachovat jako activity feed. project_id → client_projects, type, message — ideální pro admin dashboard.</div>
+  <div class="t-status"><span class="badge keep">ZACHOVAT</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">content_notification_log</div>
+  <div class="t-detail">Zachovat beze změny. Email notifikace per projekt/post — přesně co potřebujeme pro "máš nový obsah".</div>
+  <div class="t-status"><span class="badge keep">ZACHOVAT</span></div>
+</div>
+
+<div class="section-label">Nové tabulky — přidat</div>
+
+<div class="table-row">
+  <div class="t-name">content_batches<span class="orig">nová</span></div>
+  <div class="t-detail">Týdenní skupiny příspěvků. project_id, week_label, generated_at, status (pending|partial|approved), items_total, items_approved.</div>
+  <div class="t-status"><span class="badge new">NOVÁ</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">client_videos<span class="orig">nová</span></div>
+  <div class="t-detail">Nahrané videá klientů. duration_seconds, google_drive_file_id, status (uploaded|processing|ready|needs_cutting|lucifera_cutting), cut_recommendation, admin_task_id.</div>
+  <div class="t-status"><span class="badge new">NOVÁ</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">admin_tasks<span class="orig">nová</span></div>
+  <div class="t-detail">Interní tasky pro Lucifera tým. type (video_cutting|review), status (new|in_progress|done), assigned_to (katerina|lubos), related_video_id.</div>
+  <div class="t-status"><span class="badge new">NOVÁ</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">credit_usage<span class="orig">nová</span></div>
+  <div class="t-detail">Týdenní kredit per klient. week_start, videos_used, graphics_used, extra_items (jsonb pro dokoupené kusy).</div>
+  <div class="t-status"><span class="badge new">NOVÁ</span></div>
+</div>
+
+<div class="section-label">Archivovat — RTG nevyužije</div>
+
+<div class="table-row">
+  <div class="t-name">client_selected_photos</div>
+  <div class="t-detail">Výběr fotek z focení — specifické pro foto workflow Lucifera studia, ne pro RTG obsah.</div>
+  <div class="t-status"><span class="badge archive">ARCHIV</span></div>
+</div>
+
+<div class="table-row">
+  <div class="t-name">intake_submissions / post_drafts</div>
+  <div class="t-detail">Starší workflow — payload jako blob. RTG má strukturovanější přístup přes project_brief a content_posts.</div>
+  <div class="t-status"><span class="badge archive">ARCHIV</span></div>
+</div>
+
+<div class="summary">
+  <div class="sum-card"><div class="sum-num" style="color:#3B6D11">4</div><div class="sum-label">zachovat beze změny</div></div>
+  <div class="sum-card"><div class="sum-num" style="color:#185FA5">3</div><div class="sum-label">rozšířit (+sloupce)</div></div>
+  <div class="sum-card"><div class="sum-num" style="color:#993C1D">4</div><div class="sum-label">nové tabulky</div></div>
+  <div class="sum-card"><div class="sum-num" style="color:#888">3</div><div class="sum-label">archivovat</div></div>
+</div>
+</div>

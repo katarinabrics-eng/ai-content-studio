@@ -1,0 +1,178 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.w{font-family:var(--font-sans);padding:4px 0 12px}
+.tier{margin-bottom:20px}
+.tier-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tier-label::after{content:'';flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.agents{display:grid;gap:10px}
+.agents.cols2{grid-template-columns:1fr 1fr}
+.agents.cols3{grid-template-columns:1fr 1fr 1fr}
+.agent{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.agent-head{padding:12px 14px 10px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.agent-name{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.agent-role{font-size:11px;color:var(--color-text-tertiary)}
+.badge{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500;flex-shrink:0}
+.badge.active{background:#eaf3de;color:#3B6D11}
+.badge.build{background:#E6F1FB;color:#185FA5}
+.badge.future{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.agent-body{padding:10px 14px}
+.phase{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px;color:var(--color-text-secondary);line-height:1.4}
+.phase:last-child{margin-bottom:0}
+.pnum{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0;margin-top:1px}
+.pnum.teal{background:#E1F5EE;color:#0F6E56}
+.pnum.blue{background:#E6F1FB;color:#185FA5}
+.pnum.amber{background:#FAEEDA;color:#854F0B}
+.pnum.coral{background:#FAECE7;color:#993C1D}
+.pnum.gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.input-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:10px}
+.input-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:6px}
+.input-items{display:flex;flex-wrap:wrap;gap:4px}
+.inp{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.cost-row{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);font-size:11px;color:var(--color-text-tertiary)}
+.cost-hi{color:var(--color-text-warning);font-weight:500}
+.cost-lo{color:var(--color-text-success);font-weight:500}
+.arrow-down{text-align:center;color:var(--color-text-tertiary);font-size:16px;margin:4px 0;line-height:1}
+.output-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.out{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px;text-align:center;font-size:11px;color:var(--color-text-secondary)}
+.out strong{display:block;font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+</style>
+<div class="w">
+
+<!-- INPUT CONTEXT -->
+<div class="input-box">
+  <div class="input-label">Sdílený kontext — všichni agenti čtou</div>
+  <div class="input-items">
+    <span class="inp">brand DNA</span>
+    <span class="inp">archetype</span>
+    <span class="inp">tone of voice</span>
+    <span class="inp">visual style</span>
+    <span class="inp">témata / pillars</span>
+    <span class="inp">web URL</span>
+    <span class="inp">forbidden words</span>
+    <span class="inp">color palette</span>
+    <span class="inp">platform targets</span>
+  </div>
+</div>
+
+<div class="arrow-down">↓ každý agent dostane tento kontext automaticky</div>
+
+<!-- ORCHESTRÁTOR -->
+<div class="tier" style="margin-top:10px">
+  <div class="tier-label">Orchestrátor</div>
+  <div class="agents">
+    <div class="agent">
+      <div class="agent-head">
+        <div class="agent-name">
+          🎬 Režisér (Orchestrátor)
+          <span class="badge build">STAVÍME</span>
+        </div>
+        <div class="agent-role">Řídí ostatní agenty · rozhoduje co se generuje tento týden · skládá batch</div>
+      </div>
+      <div class="agent-body">
+        <div class="phase"><div class="pnum teal">1</div>Přečte brand profil klienta + historii (co už bylo vygenerováno)</div>
+        <div class="phase"><div class="pnum teal">2</div>Rozhodne: tento týden X statických, Y videí, Z textových — dle plánu a intervalu</div>
+        <div class="phase"><div class="pnum teal">3</div>Zavolá příslušné agenty, předá jim kontext + zadání</div>
+        <div class="phase"><div class="pnum teal">4</div>Složí výsledky do content_batch, uloží do Supabase, notifikuje klienta</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTI -->
+<div class="tier">
+  <div class="tier-label">Specializovaní agenti</div>
+  <div class="agents cols3">
+
+    <!-- Statické příspěvky -->
+    <div class="agent">
+      <div class="agent-head">
+        <div class="agent-name">
+          🖼 Grafický agent
+          <span class="badge active">MÁŠ ZÁKLAD</span>
+        </div>
+        <div class="agent-role">Statické příspěvky · Canva</div>
+      </div>
+      <div class="agent-body">
+        <div class="phase"><div class="pnum teal">1</div>Analýza: téma, pilíř, cíl příspěvku</div>
+        <div class="phase"><div class="pnum teal">2</div>Styl + žánr dle brand DNA</div>
+        <div class="phase"><div class="pnum teal">3</div>Foto obsah: klient nahrál / b-roll knihovna / AI generuje</div>
+        <div class="phase"><div class="pnum teal">4</div>Canva: hook + grafika → 2 varianty PNG</div>
+      </div>
+      <div class="cost-row"><span>cena</span><span class="cost-lo">nízká</span></div>
+    </div>
+
+    <!-- Video agent -->
+    <div class="agent">
+      <div class="agent-head">
+        <div class="agent-name">
+          🎥 Video agent
+          <span class="badge build">STAVÍME</span>
+        </div>
+        <div class="agent-role">Reels · Stories · video obsah</div>
+      </div>
+      <div class="agent-body">
+        <div class="phase"><div class="pnum blue">A</div><strong style="font-size:11px">Klient nahraje</strong> → střih + hook overlay (nejlevnější)</div>
+        <div class="phase"><div class="pnum blue">B</div><strong style="font-size:11px">B-roll knihovna</strong> → výběr záběru + text + music</div>
+        <div class="phase"><div class="pnum amber">C</div><strong style="font-size:11px">AI generuje</strong> od nuly — Runway/Pika (nejdražší)</div>
+        <div class="phase"><div class="pnum coral">D</div><strong style="font-size:11px">Avatar</strong> — digitální dvojník (Pro plán)</div>
+      </div>
+      <div class="cost-row"><span>cena</span><span>A<span class="cost-lo"> nízká</span> → D<span class="cost-hi"> vysoká</span></span></div>
+    </div>
+
+    <!-- Text agent -->
+    <div class="agent">
+      <div class="agent-head">
+        <div class="agent-name">
+          ✍️ Text agent
+          <span class="badge build">STAVÍME</span>
+        </div>
+        <div class="agent-role">Hooks · captions · carousely</div>
+      </div>
+      <div class="agent-body">
+        <div class="phase"><div class="pnum teal">1</div>Hook: 3 varianty dle brand tónu (otázka / výrok / příběh)</div>
+        <div class="phase"><div class="pnum teal">2</div>Caption: body text + CTA dle platformy</div>
+        <div class="phase"><div class="pnum teal">3</div>Hashtags: dle tématu + brand</div>
+        <div class="phase"><div class="pnum teal">4</div>Carousel: 5–7 slajdů jako strukturovaný obsah</div>
+      </div>
+      <div class="cost-row"><span>cena</span><span class="cost-lo">nejnižší</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FUTURE -->
+<div class="tier">
+  <div class="tier-label">Fáze 2 — připravit architekturu, nestavět teď</div>
+  <div class="agents cols2">
+    <div class="agent">
+      <div class="agent-head">
+        <div class="agent-name">📸 Photoshoot planner <span class="badge future">FÁZE 2</span></div>
+        <div class="agent-role">Vizuální nástěnka přání · příprava na focení</div>
+      </div>
+      <div class="agent-body">
+        <div class="phase"><div class="pnum gray">→</div>Klient si sestaví mood board (styl, oblečení, prostředí)</div>
+        <div class="phase"><div class="pnum gray">→</div>Agent vygeneruje vizuální náhledy jak bude focení vypadat</div>
+      </div>
+    </div>
+    <div class="agent">
+      <div class="agent-head">
+        <div class="agent-name">🤖 Faceless foto agent <span class="badge future">FÁZE 2</span></div>
+        <div class="agent-role">Generování fotek ve vlastním stylu bez focení</div>
+      </div>
+      <div class="agent-body">
+        <div class="phase"><div class="pnum gray">→</div>Klient definuje styl jednou → AI generuje konzistentní fotky</div>
+        <div class="phase"><div class="pnum gray">→</div>Využívá brand color palette + visual style z profilu</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT -->
+<div class="arrow-down">↓</div>
+<div class="output-row">
+  <div class="out"><strong>content_batch</strong>týdenní balík</div>
+  <div class="out"><strong>2 varianty</strong>každého příspěvku</div>
+  <div class="out"><strong>notifikace</strong>email klientovi</div>
+</div>
+
+</div>
