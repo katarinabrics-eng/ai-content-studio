@@ -644,7 +644,7 @@ export function StartAnalyzer({
 
       <header style={{ borderBottom: "1px solid rgba(0,0,0,0.09)", padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(183,233,76,0.12)", border: "1px solid rgba(183,233,76,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#5a8a00" }}>L</div>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555" }}>Lucifera <span style={{ color: "#b7e94c" }}>·</span> AI Content System</span>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "#555" }}>LUCIFERA LIGHT</span>
         <span className="analyzer-header-badge" style={{ marginLeft: "auto", fontSize: 10, color: "#555", background: "#f0efeb", padding: "2px 8px", borderRadius: 5 }}>Web Analyzer · screenshot + text + vision</span>
       </header>
 

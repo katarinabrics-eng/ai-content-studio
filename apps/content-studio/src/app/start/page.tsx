@@ -24,6 +24,11 @@ const ROTATING_SENTENCES = [
   "Obsah potřebuješ teď.\nNe za týden.",
 ]
 
+const LIGHT_SENTENCES = [
+  "Světlo v tvorbě.",
+  "Posvítíme na tvůj vizuál.",
+]
+
 const K04_PHOTOS = [
   '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg',
   '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg',
@@ -46,11 +51,17 @@ export default function StartPage() {
   const [bgColor, setBgColor] = useState('transparent')
   const fetchRef = useRef(0)
 
-  // Typewriter
+  // Typewriter — hero
   const [displayText, setDisplayText] = useState('')
   const [sentenceIndex, setSentenceIndex] = useState(0)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+
+  // Typewriter — Lucifera Light
+  const [lightText, setLightText] = useState('')
+  const [lightIndex, setLightIndex] = useState(0)
+  const [lightDeleting, setLightDeleting] = useState(false)
+  const [lightPaused, setLightPaused] = useState(false)
 
   // Slides
   const [activeSlide, setActiveSlide] = useState(0)
@@ -60,7 +71,7 @@ export default function StartPage() {
     if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
     slideIntervalRef.current = setInterval(() => {
       setActiveSlide(i => (i + 1) % 6)
-    }, 6000)
+    }, 8000)
   }
 
   function goToSlide(i: number) {
@@ -102,6 +113,24 @@ export default function StartPage() {
 
     return () => clearTimeout(timeout)
   }, [displayText, isDeleting, isPaused, sentenceIndex])
+
+  // Typewriter — Lucifera Light
+  useEffect(() => {
+    let t: NodeJS.Timeout
+    const cur = LIGHT_SENTENCES[lightIndex]
+    if (lightPaused) {
+      t = setTimeout(() => { setLightPaused(false); setLightDeleting(true) }, 3000)
+      return () => clearTimeout(t)
+    }
+    if (lightDeleting) {
+      if (lightText.length === 0) { setLightDeleting(false); setLightIndex(i => (i + 1) % LIGHT_SENTENCES.length); return }
+      t = setTimeout(() => setLightText(s => s.slice(0, -1)), 35)
+    } else {
+      if (lightText.length === cur.length) { setLightPaused(true); return }
+      t = setTimeout(() => setLightText(cur.slice(0, lightText.length + 1)), 55)
+    }
+    return () => clearTimeout(t)
+  }, [lightText, lightDeleting, lightPaused, lightIndex])
 
   useEffect(() => {
     setMounted(true)
@@ -200,9 +229,9 @@ export default function StartPage() {
           padding: 100px 0 72px;
         }
         .start-hero-inner {
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 0 80px;
+          padding: 0 120px;
           display: grid;
           grid-template-columns: 1fr 1.6fr;
           gap: 60px;
@@ -891,38 +920,55 @@ export default function StartPage() {
         </section>
 
         {/* LUCIFERA LIGHT SEKCE */}
-        <section style={{ background: '#f5f3ee', padding: '100px 80px' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
+        <section style={{ background: '#f5f3ee', padding: '100px 120px' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
 
             {/* Levý text */}
-            <div>
+            <div style={{ maxWidth: '680px' }}>
               <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: '16px', fontWeight: 600 }}>
                 Lucifera Light
               </p>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.4rem, 3.5vw, 3.2rem)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: '24px' }}>
-                Světlo v tvorbě.
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.4rem, 3.5vw, 3.2rem)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: '32px', minHeight: '80px' }}>
+                {lightText}<span style={{ opacity: lightPaused ? 0 : 1, transition: 'opacity 0.3s' }}>|</span>
               </h2>
-              <div style={{ marginBottom: '40px' }}>
-                <p style={{ fontSize: '17px', color: '#444', lineHeight: 1.9, marginBottom: '20px' }}>
-                  Někdy víš, co chceš říct.<br />Jen se ti nechce znovu začínat od nuly.
+
+              <div style={{ fontSize: '17px', color: '#444', lineHeight: 1.9, marginBottom: '32px' }}>
+                <p style={{ marginBottom: '20px' }}>
+                  Někdy víš, co chceš říct.<br />
+                  <em style={{ color: '#888', fontStyle: 'italic' }}>Jen se ti nechce znovu začínat od nuly.</em>
                 </p>
-                <p style={{ fontSize: '17px', color: '#444', lineHeight: 1.9, marginBottom: '20px' }}>
-                  Nechceš přemýšlet nad každým postem.<br />Nechceš ladit každý detail.<br />Chceš, aby to šlo.
+                <p style={{ marginBottom: '20px' }}>
+                  Nechceš přemýšlet nad každým postem.<br />
+                  Nechceš ladit každý detail.<br />
+                  <strong style={{ fontWeight: 600 }}>Chceš, aby to šlo.</strong>
                 </p>
-                <p style={{ fontSize: '17px', color: '#444', lineHeight: 1.9 }}>
-                  Tady si vybereš. A jedeš.<br />Bez zdržování. Bez chaosu. S výsledkem, který drží směr.
+                <p style={{ marginBottom: '20px', paddingLeft: '20px', borderLeft: '3px solid #b7e94c', fontStyle: 'italic', color: '#555' }}>
+                  Tady si vybereš. A jedeš.<br />
+                  Bez zdržování. Bez chaosu.<br />
+                  S výsledkem, který drží směr.
                 </p>
               </div>
+
               <button
                 onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                style={{ background: '#111', color: 'white', padding: '14px 28px', borderRadius: '10px', fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer', marginTop: '40px' }}
+                style={{ background: '#111', color: 'white', padding: '14px 28px', borderRadius: '10px', fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer' }}
               >
                 Otevřít Lucifera Light →
               </button>
+
+              <p style={{ marginTop: '24px', fontSize: '13px', color: '#aaa' }}>
+                Nejsi si jistá, jestli je to ono?<br />
+                <span
+                  onClick={() => document.getElementById('brand-scan-widget')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{ color: '#888', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  Začni tím, že uvidíš, co z tvého obsahu čtou ostatní. →
+                </span>
+              </p>
             </div>
 
-            {/* Pravý widget — StartAnalyzer */}
-            <div id="brand-scan-widget">
+            {/* Diagnostika — pod textem */}
+            <div id="brand-scan-widget" style={{ marginTop: '48px', maxWidth: '600px' }}>
               <div style={{ marginBottom: '24px' }}>
                 <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.3rem, 2vw, 1.7rem)', fontWeight: 700, color: '#111', lineHeight: 1.3, marginBottom: '8px' }}>
                   Máš pocit, že to, co dáváš ven, neodpovídá tomu, co umíš?
