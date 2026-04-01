@@ -925,7 +925,7 @@ export default function StartPage() {
             <div id="brand-scan-widget">
               <div style={{ marginBottom: '24px' }}>
                 <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.3rem, 2vw, 1.7rem)', fontWeight: 700, color: '#111', lineHeight: 1.3, marginBottom: '8px' }}>
-                  Nejsi si jistá, jestli je to ono?
+                  Máš pocit, že to, co dáváš ven, neodpovídá tomu, co umíš?
                 </p>
                 <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>
                   Začni tím, že uvidíš, co z tvého obsahu čtou ostatní.
