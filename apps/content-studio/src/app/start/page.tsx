@@ -20,7 +20,7 @@ const ROTATING_SENTENCES = [
   "Web máš.\nVýsledky chybí.",
   "Nechceš řešit strategii.\nChceš výsledek.",
   "Vypadá to dobře.\nAle něco nesedí.",
-  "Obsah potřebuješ teď.\nNe za týden.",
+  "Obsah potřebuješ\nteď. Ne za týden.",
 ]
 
 const K04_PHOTOS = [
