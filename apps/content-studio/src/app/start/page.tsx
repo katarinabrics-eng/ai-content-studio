@@ -19,7 +19,7 @@ const HERO_VARIANTS = [
     h1a: 'Vypadá to dobře.',
     h1b: 'Ale něco nesedí.',
     sub: 'Z toho co dáváš ven není jasné co děláš, pro koho to je a proč by si tě měl někdo vybrat.',
-    cta: null, // zobrazí input kartu
+    cta: null,
   },
   {
     h1a: 'Nechceš to řešit.',
@@ -27,27 +27,39 @@ const HERO_VARIANTS = [
     sub: 'Tady máš obsah který můžeš vzít a použít. Bez přemýšlení. Bez začátků od nuly.',
     cta: 'Přejít do vizuální knihovny →',
   },
+  {
+    h1a: 'Tady je tvůj stock.',
+    h1b: 'Připravený k použití.',
+    sub: '247 vizuálů v 7 kolekcích. Vyber styl — a začni tvořit rovnou.',
+    cta: 'Přejít do vizuální knihovny →',
+  },
+  {
+    h1a: 'Naplánováno.',
+    h1b: 'Celý měsíc.',
+    sub: 'Obsah rozmístěný na týdny dopředu. Ty jen schvaluješ a jdeš dál.',
+    cta: 'Přejít do vizuální knihovny →',
+  },
+  {
+    h1a: 'Obsah je hotový.',
+    h1b: 'Stačí ho vzít.',
+    sub: 'Text, vizuál, hashtagy. Připraveno pro Instagram, Reels i Stories.',
+    cta: 'Přejít do vizuální knihovny →',
+  },
+  {
+    h1a: 'Tvoje značka',
+    h1b: 'má směr.',
+    sub: 'Brand DNA, skóre 74/100, 5 pilířů. Víš co funguje a co opravit.',
+    cta: 'Spustit diagnostiku →',
+  },
 ]
 
 const SLIDES = [
-  {
-    step: '01',
-    title: 'Zadáte web',
-    desc: 'AI přečte vizuální identitu, texty a brand DNA',
-    visual: 'diagnostika',
-  },
-  {
-    step: '02',
-    title: 'Vybereš variantu',
-    desc: 'Schválíš. Jdeš dál.',
-    visual: 'approval',
-  },
-  {
-    step: '03',
-    title: 'Obsah je připravený',
-    desc: 'Stáhneš nebo naplánuješ publikaci',
-    visual: 'ready',
-  },
+  { visual: 'diagnostika' },
+  { visual: 'approval' },
+  { visual: 'library' },
+  { visual: 'calendar' },
+  { visual: 'post' },
+  { visual: 'brand' },
 ]
 
 export default function StartPage() {
@@ -67,8 +79,8 @@ export default function StartPage() {
   const [textVisible, setTextVisible] = useState(true)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // heroVariant: slide 0 → variant 0, slides 1+2 → variant 1
-  const heroVariant = slideIndex === 0 ? 0 : 1
+  // heroVariant mapuje slideIndex na text variantu (6 slidů, 6 variant)
+  const heroVariant = slideIndex
   const variant = HERO_VARIANTS[heroVariant]
 
   function startInterval() {
@@ -76,7 +88,7 @@ export default function StartPage() {
     intervalRef.current = setInterval(() => {
       setTextVisible(false)
       setTimeout(() => {
-        setSlideIndex(i => (i + 1) % 3)
+        setSlideIndex(i => (i + 1) % 6)
         setTextVisible(true)
       }, 300)
     }, 4000)
@@ -574,10 +586,15 @@ export default function StartPage() {
                 </div>
               )}
 
-              {/* Varianta 1: CTA do knihovny */}
-              {heroVariant === 1 && (
+              {/* Varianty 1–4: CTA do knihovny, varianta 5: diagnostika */}
+              {heroVariant >= 1 && heroVariant <= 4 && (
                 <button className="start-library-cta" onClick={scrollToLibrary}>
                   Přejít do vizuální knihovny →
+                </button>
+              )}
+              {heroVariant === 5 && (
+                <button className="start-library-cta" onClick={handleAnalyze}>
+                  Spustit diagnostiku →
                 </button>
               )}
             </div>
@@ -620,26 +637,139 @@ export default function StartPage() {
                   </div>
                 )}
 
-                {/* Slide 2: Ready banner */}
+                {/* Slide 2: Vizuální knihovna preview */}
                 {slideIndex === 2 && (
-                  <div className="ready-banner">
-                    <div className="ready-banner-icon">✅</div>
-                    <div className="ready-banner-title">Obsah je připraven ke stažení</div>
-                    <div className="ready-banner-sub">
-                      4 posty · 2 Reels · 1 Carousel<br />
-                      Schváleno 14. dubna 2026
+                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 500 }}>Vizuální knihovna</span>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        {['#E8B4B8', '#E8E4DC', '#4A9B8E', '#2C2C2C', '#8B7355'].map(c => (
+                          <div key={c} style={{ width: '16px', height: '16px', borderRadius: '50%', background: c, border: '1px solid rgba(0,0,0,0.06)' }} />
+                        ))}
+                      </div>
                     </div>
-                    <button
-                      className="ready-banner-btn"
-                      onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                    >
-                      Stáhnout obsah →
-                    </button>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '4px' }}>
+                      {[
+                        '/images/demo/demo-grafika-a.jpg', '/images/demo/demo-grafika-b.jpg',
+                        '/images/demo/demo-video-a.jpg', '/images/demo/demo-video-b.jpg',
+                        '/images/demo/demo-grafika-a.jpg', '/images/demo/demo-grafika-b.jpg',
+                        '/images/demo/demo-video-a.jpg', '/images/demo/demo-video-b.jpg',
+                      ].map((src, i) => (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img key={i} src={src} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '4px' }} />
+                      ))}
+                    </div>
+                    <p style={{ fontSize: '11px', color: '#888', marginTop: '8px', textAlign: 'center' }}>
+                      247 vizuálů · 7 kolekcí · Tvůj stock
+                    </p>
+                  </div>
+                )}
+
+                {/* Slide 3: Kalendář */}
+                {slideIndex === 3 && (
+                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 500 }}>Duben 2026</span>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: '#e8f4f8', color: '#2d7dd2' }}>Instagram</span>
+                        <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: '#e8f0e8', color: '#2d7d2d' }}>Facebook</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', fontSize: '10px' }}>
+                      {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
+                        <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '4px 0', fontWeight: 500 }}>{d}</div>
+                      ))}
+                      {[
+                        { d: 1, e: null }, { d: 2, e: 'Reels' }, { d: 3, e: null }, { d: 4, e: 'Grafika' }, { d: 5, e: null }, { d: 6, e: null }, { d: 7, e: 'Stories' },
+                        { d: 8, e: null }, { d: 9, e: 'Newsletter' }, { d: 10, e: null }, { d: 11, e: 'Reels' }, { d: 12, e: null }, { d: 13, e: null }, { d: 14, e: 'Carousel' },
+                        { d: 15, e: 'Grafika' }, { d: 16, e: null }, { d: 17, e: null }, { d: 18, e: 'Reels' }, { d: 19, e: null }, { d: 20, e: null }, { d: 21, e: 'Stories' },
+                      ].map((item, i) => (
+                        <div key={i} style={{
+                          textAlign: 'center', padding: '3px 1px', borderRadius: '4px',
+                          background: item.e ? '#f3fbdc' : 'transparent',
+                          border: item.e ? '0.5px solid rgba(183,233,76,0.4)' : 'none',
+                        }}>
+                          <div style={{ color: '#111', fontWeight: item.e ? 500 : 400 }}>{item.d}</div>
+                          {item.e && <div style={{ fontSize: '8px', color: '#5a7a00', marginTop: '1px' }}>{item.e}</div>}
+                        </div>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: '11px', color: '#888', marginTop: '8px', textAlign: 'center' }}>
+                      12 příspěvků naplánováno · 3 ke schválení
+                    </p>
+                  </div>
+                )}
+
+                {/* Slide 4: Hotový příspěvek */}
+                {slideIndex === 4 && (
+                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '10px', color: '#b7e94c', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>
+                          GRAFIKA · INSTAGRAM
+                        </div>
+                        <p style={{ fontSize: '12px', fontWeight: 500, color: '#111', marginBottom: '6px', lineHeight: 1.4 }}>
+                          &ldquo;Ráno. Okno. Ticho před dnem.&rdquo;
+                        </p>
+                        <p style={{ fontSize: '11px', color: '#666', lineHeight: 1.5, marginBottom: '8px' }}>
+                          Každé ráno si říkám — dneska to zvládnu. A pak přijde ten moment, kdy všechno zpomalí.
+                        </p>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#b7e94c', border: 'none', fontWeight: 500, cursor: 'pointer' }}>
+                            Použít →
+                          </button>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '6px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>
+                            Upravit
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: '12px', padding: '8px 12px', background: '#f5f3ee', borderRadius: '8px', fontSize: '11px', color: '#888' }}>
+                      #osobnirozvoj #mindset #rannirutina #zivotniStyl
+                    </div>
+                  </div>
+                )}
+
+                {/* Slide 5: Brand DNA */}
+                {slideIndex === 5 && (
+                  <div style={{ background: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e8e4dc' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                      <div>
+                        <div style={{ fontSize: '10px', color: '#888', marginBottom: '4px' }}>INDEX ZNAČKY</div>
+                        <div style={{ fontSize: '36px', fontWeight: 700, color: '#111', lineHeight: 1 }}>74</div>
+                        <div style={{ fontSize: '11px', color: '#5a7a00' }}>↑ Nad průměrem oboru</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '10px', color: '#888', marginBottom: '6px' }}>BRAND DNA</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'flex-end' }}>
+                          {['Soft feminine', 'Klidná', 'Pečující', 'Estetická'].map(t => (
+                            <span key={t} style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: '#f3fbdc', border: '0.5px solid rgba(183,233,76,0.4)', color: '#5a7a00' }}>{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    {[
+                      { name: 'Hodnota', score: 8, color: '#b7e94c' },
+                      { name: 'Pozice', score: 7, color: '#b7e94c' },
+                      { name: 'Architektura', score: 8, color: '#b7e94c' },
+                      { name: 'Identita', score: 9, color: '#b7e94c' },
+                      { name: 'Důvěra', score: 4, color: '#e05a5a' },
+                    ].map(p => (
+                      <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                        <div style={{ width: '80px', fontSize: '11px', color: '#555' }}>{p.name}</div>
+                        <div style={{ flex: 1, height: '4px', background: '#f0ece4', borderRadius: '2px' }}>
+                          <div style={{ width: `${p.score * 10}%`, height: '4px', background: p.color, borderRadius: '2px' }} />
+                        </div>
+                        <div style={{ fontSize: '11px', color: p.color, fontWeight: 500, width: '28px' }}>{p.score}/10</div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
 
-              {/* DOTS */}
+              {/* DOTS — 6 slides */}
               <div className="slide-dots">
                 {SLIDES.map((_, i) => (
                   <button
