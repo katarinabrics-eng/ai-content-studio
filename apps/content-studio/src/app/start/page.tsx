@@ -416,17 +416,19 @@ export default function StartPage() {
           padding: 0 48px;
         }
         .start-section-title {
-          font-family: 'DM Sans', sans-serif;
-          font-size: clamp(1.8rem, 2.5vw, 2.4rem);
-          font-weight: 600;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(2.4rem, 4vw, 3.6rem);
+          font-weight: 700;
           color: #111;
           text-align: center;
+          line-height: 1.2;
         }
         .start-section-sub {
-          font-size: 14px;
+          font-size: 16px;
           color: #888;
-          margin-top: 8px;
+          margin-top: 12px;
           text-align: center;
+          line-height: 1.6;
         }
 
         /* PALETTE */
@@ -811,8 +813,10 @@ export default function StartPage() {
           style={{ backgroundColor: bgColor }}
         >
           <div className="start-gallery-inner">
-            <h2 className="start-section-title">Vyber styl. Začni tvořit.</h2>
-            <p className="start-section-sub">Klikni na barvu — uvidíš obsah který sedí tvé náladě.</p>
+            <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 48 }}>
+              <h2 className="start-section-title">Vyber styl. Začni tvořit.</h2>
+              <p className="start-section-sub">Klikni na barvu — uvidíš obsah který sedí tvé náladě.</p>
+            </div>
           </div>
 
           {/* Kroužky */}
