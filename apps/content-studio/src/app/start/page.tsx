@@ -1,18 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import DiagnostikaDemo from '@/components/DiagnostikaDemo'
 
-const COLLECTIONS = [
-  { hex: '#4A6FA5', label: 'Byznys',      style: 'K02' },
-  { hex: '#E8E4DC', label: 'Minimální',   style: 'K03' },
-  { hex: '#E8B4B8', label: 'Jemná',       style: 'K04' },
-  { hex: '#2C2C2C', label: 'Výrazná',     style: 'K05' },
-  { hex: '#8B7355', label: 'Přirozená',   style: 'K06' },
-  { hex: '#4A9B8E', label: 'Lifestyle',   style: 'K09' },
+const PALETTE = [
+  '#F5F0E8', '#E8E0D0', '#D4C4A8', '#C8B49C', '#B8A090',
+  '#A8C4D4', '#7BAFC4', '#4A9B8E', '#6BAF9E', '#8DC4A8',
+  '#E8B4B8', '#D4889C', '#C46880', '#E8C4A0', '#D4A870',
+  '#C49050', '#A87840', '#2C2C2C', '#4A4A4A', '#888880',
+  '#B7E94C', '#8BC43C', '#F0E84C', '#E8C43C',
 ]
-
 
 type Photo = {
   id: string
@@ -24,42 +22,42 @@ type Photo = {
 
 export default function StartPage() {
   const router = useRouter()
-  const [selectedStyle, setSelectedStyle] = useState<string>('K04')
   const [webUrl, setWebUrl] = useState('')
   const [mounted, setMounted] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [gridPhotos, setGridPhotos] = useState<Photo[]>([])
-  const [gridLoading, setGridLoading] = useState(false)
-  const [collectionThumbs, setCollectionThumbs] = useState<Record<string, string>>({})
+  const [gridOpacity, setGridOpacity] = useState(1)
+  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+  const [bgTint, setBgTint] = useState<string>('transparent')
+  const fetchRef = useRef(0)
 
   useEffect(() => {
     setMounted(true)
-    loadCollection('K04', COLLECTIONS[2].hex)
-    COLLECTIONS.forEach((c) => {
-      fetch(`/api/client/visual-bank?limit=1&style=${c.style}`)
-        .then((r) => r.json())
-        .then((data) => {
-          const first = data?.files?.[0]
-          if (first?.thumbnailUrl) {
-            setCollectionThumbs((prev) => ({ ...prev, [c.style]: first.thumbnailUrl }))
-          }
-        })
-        .catch(() => {})
-    })
+    loadPhotos()
   }, [])
 
-  async function loadCollection(style: string, hex: string) {
-    setGridLoading(true)
-    setSelectedStyle(style)
+  async function loadPhotos() {
+    const id = ++fetchRef.current
+    setGridOpacity(0)
     try {
-      const res = await fetch(`/api/client/visual-bank?limit=6&style=${style}`)
+      const res = await fetch('/api/client/visual-bank?limit=12')
       const data = await res.json()
+      if (id !== fetchRef.current) return
       setGridPhotos(data?.files ?? [])
     } catch {
-      setGridPhotos([])
+      if (id === fetchRef.current) setGridPhotos([])
     } finally {
-      setGridLoading(false)
+      if (id === fetchRef.current) setGridOpacity(1)
     }
+  }
+
+  function handleColorClick(hex: string) {
+    setSelectedColor(hex)
+    // Velmi jemný tint pozadí sekce
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    setBgTint(`rgba(${r},${g},${b},0.08)`)
   }
 
   function handleAnalyze() {
@@ -72,8 +70,6 @@ export default function StartPage() {
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter') handleAnalyze()
   }
-
-  const activeCollection = COLLECTIONS.find((c) => c.style === selectedStyle)
 
   return (
     <div>
@@ -240,163 +236,16 @@ export default function StartPage() {
         /* PRAVÝ SLOUPEC */
         .start-hero-right { position: relative; }
 
-        /* MOCK BROWSER */
-        .start-browser-mock {
-          border-radius: 14px;
-          border: 1px solid #e8e4dc;
-          overflow: hidden;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-          background: #ffffff;
-        }
-
-        .start-browser-bar {
-          background: #f5f5f5;
-          padding: 10px 16px;
-          border-bottom: 1px solid #e8e4dc;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .start-browser-dots { display: flex; gap: 6px; }
-
-        .start-browser-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-        }
-
-        .start-browser-url {
-          font-size: 12px;
-          color: #888;
-          font-family: 'DM Sans', sans-serif;
-        }
-
-        /* OBSAH MOCK BROWSERU */
-        .start-mock-content {
-          background: #ffffff;
-          padding: 22px 24px 20px;
-        }
-
-        /* Score karta */
-        .start-mock-score-row {
-          display: flex;
-          align-items: flex-end;
-          gap: 10px;
-          margin-bottom: 20px;
-        }
-
-        .start-mock-score-num {
-          font-family: 'Playfair Display', serif;
-          font-size: 44px;
-          font-weight: 600;
-          color: #111;
-          line-height: 1;
-        }
-
-        .start-mock-score-right {
-          padding-bottom: 4px;
-        }
-
-        .start-mock-score-label {
-          font-size: 11px;
-          color: #888;
-          margin-bottom: 2px;
-        }
-
-        .start-mock-score-sub {
-          font-size: 12px;
-          color: #5a7a00;
-          font-weight: 500;
-        }
-
-        /* Pilíře */
-        .start-mock-pillars {
-          display: flex;
-          flex-direction: column;
-          gap: 9px;
-          margin-bottom: 18px;
-        }
-
-        .start-mock-pillar-row {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .start-mock-pillar-label {
-          font-size: 11px;
-          color: #555;
-          width: 96px;
-          flex-shrink: 0;
-        }
-
-        .start-mock-pillar-bar-bg {
-          flex: 1;
-          height: 6px;
-          background: #f0ede8;
-          border-radius: 3px;
-          overflow: hidden;
-        }
-
-        .start-mock-pillar-bar-fill {
-          height: 100%;
-          border-radius: 3px;
-          transition: width 600ms ease;
-        }
-
-        .start-mock-pillar-score {
-          font-size: 11px;
-          font-weight: 600;
-          width: 28px;
-          text-align: right;
-          flex-shrink: 0;
-        }
-
-        /* Brand DNA */
-        .start-mock-dna {
-          border-top: 0.5px solid #e8e4dc;
-          padding-top: 14px;
-          font-size: 11px;
-          color: #888;
-        }
-
-        .start-mock-dna-value {
-          font-size: 12px;
-          color: #111;
-          font-weight: 500;
-          margin-top: 3px;
-        }
-
-        /* LEVITUJÍCÍ KARTY */
-        @keyframes float {
-          0%   { transform: translateY(0px); }
-          50%  { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
-        }
-
-        .start-float-card {
-          position: absolute;
-          background: white;
-          border-radius: 10px;
-          padding: 8px 14px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-          font-family: 'DM Sans', sans-serif;
-          animation: float 3s ease-in-out infinite;
-          pointer-events: none;
-          z-index: 10;
-          white-space: nowrap;
-        }
-
-        .start-float-card-label { font-size: 10px; color: #aaa; margin-bottom: 2px; }
-        .start-float-card-value { font-size: 15px; font-weight: 600; color: #111; line-height: 1.2; }
-
-        /* PALETA */
-        .start-palette-section {
+        /* PALETA + GRID SEKCE */
+        .start-gallery-section {
           width: 100%;
-          padding: 64px 48px 32px;
-          text-align: center;
-          background: #ffffff;
+          padding: 64px 48px 80px;
+          transition: background-color 800ms ease;
+        }
+
+        .start-gallery-inner {
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
         .start-section-title {
@@ -407,133 +256,73 @@ export default function StartPage() {
           text-align: center;
         }
 
-        .start-section-sub { font-size: 14px; color: #888; margin-top: 8px; }
+        .start-section-sub {
+          font-size: 14px;
+          color: #888;
+          margin-top: 8px;
+          text-align: center;
+        }
 
-        .start-color-row {
+        /* PALETTE ROW */
+        .start-palette-row {
           display: flex;
-          justify-content: center;
-          gap: 20px;
-          margin-top: 28px;
-          flex-wrap: wrap;
-        }
-
-        .start-color-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 7px;
-          cursor: pointer;
-        }
-
-        .start-color-dot {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          transition: box-shadow 150ms, transform 150ms;
-        }
-        .start-color-dot:hover { transform: scale(1.1); }
-        .start-color-label { font-size: 10px; color: #888; white-space: nowrap; }
-
-        /* KOLOTOČ */
-        .start-carousel-wrap {
-          width: 100%;
-          padding: 24px 48px 0;
-          overflow: hidden;
-          background: #ffffff;
-        }
-
-        .start-carousel {
-          display: flex;
-          gap: 12px;
+          gap: 8px;
           overflow-x: auto;
-          scroll-behavior: smooth;
-          padding-bottom: 8px;
           scrollbar-width: none;
           -ms-overflow-style: none;
+          margin-top: 28px;
+          padding-bottom: 4px;
         }
-        .start-carousel::-webkit-scrollbar { display: none; }
+        .start-palette-row::-webkit-scrollbar { display: none; }
 
-        .start-carousel-card {
+        .start-palette-dot {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
           flex-shrink: 0;
-          width: 120px;
-          height: 60px;
-          border-radius: 8px;
-          overflow: hidden;
           cursor: pointer;
-          position: relative;
-          transition: transform 150ms;
-          border: 2px solid transparent;
+          transition: box-shadow 150ms, transform 150ms;
+          border: 1px solid rgba(0,0,0,0.06);
         }
-        .start-carousel-card:hover { transform: scale(1.03); }
-        .start-carousel-card.active { border-color: #111; }
-
-        .start-carousel-bg {
-          position: absolute;
-          inset: 0;
-          background-size: cover;
-          background-position: center;
-        }
-
-        .start-carousel-label {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          padding: 4px 8px;
-          font-size: 10px;
-          font-weight: 500;
-          color: white;
-          background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%);
-          font-family: 'DM Sans', sans-serif;
+        .start-palette-dot:hover { transform: scale(1.15); }
+        .start-palette-dot.active {
+          box-shadow: 0 0 0 2px white, 0 0 0 4px #111;
         }
 
         /* GRID */
-        .start-grid-section {
-          width: 100%;
-          padding: 24px 48px 80px;
-          background: #ffffff;
-        }
-
         .start-visual-grid {
-          display: grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap: 12px;
-          transition: opacity 200ms ease;
+          margin-top: 24px;
+          columns: 5;
+          column-gap: 6px;
+          transition: opacity 300ms ease;
         }
 
         .start-grid-card {
           position: relative;
-          border-radius: 12px;
+          border-radius: 6px;
           overflow: hidden;
           cursor: pointer;
-          aspect-ratio: 4/5;
-          transition: transform 200ms;
+          break-inside: avoid;
+          margin-bottom: 6px;
           background: #f0ede8;
         }
-        .start-grid-card:hover { transform: scale(1.02); }
 
-        .start-grid-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-        .start-grid-label {
-          position: absolute;
-          bottom: 10px;
-          left: 10px;
-          font-size: 10px;
-          background: rgba(255,255,255,0.85);
-          padding: 3px 8px;
-          border-radius: 5px;
-          color: #333;
-          font-family: 'DM Sans', sans-serif;
+        .start-grid-img {
+          width: 100%;
+          height: auto;
+          display: block;
+          border-radius: 6px;
         }
 
         .start-grid-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(0,0,0,0.4);
+          background: rgba(0,0,0,0.38);
           display: flex;
           align-items: center;
           justify-content: center;
           transition: opacity 200ms;
+          border-radius: 6px;
         }
 
         .start-grid-overlay-btn {
@@ -550,13 +339,15 @@ export default function StartPage() {
 
         .start-grid-placeholder {
           width: 100%;
-          height: 100%;
-          position: absolute;
-          inset: 0;
+          aspect-ratio: 4/5;
+          border-radius: 6px;
           background: linear-gradient(90deg, #f0ede8 25%, #e8e4dc 50%, #f0ede8 75%);
           background-size: 200% 100%;
           animation: shimmer 1.2s infinite;
+          break-inside: avoid;
+          margin-bottom: 6px;
         }
+
         @keyframes shimmer {
           0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }
@@ -565,6 +356,7 @@ export default function StartPage() {
         @media (max-width: 1024px) {
           .start-hero { padding: 80px 48px 60px; }
           .start-hero-inner { gap: 48px; }
+          .start-visual-grid { columns: 4; }
         }
 
         @media (max-width: 768px) {
@@ -575,11 +367,8 @@ export default function StartPage() {
             gap: 40px;
           }
           .start-hero-left { max-width: 100%; }
-          .start-float-card { display: none; }
-          .start-palette-section { padding: 40px 20px 20px; }
-          .start-carousel-wrap { padding: 16px 20px 0; }
-          .start-grid-section { padding: 16px 20px 60px; }
-          .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
+          .start-gallery-section { padding: 40px 20px 60px; }
+          .start-visual-grid { columns: 2; }
         }
       `}</style>
 
@@ -604,154 +393,120 @@ export default function StartPage() {
         {/* HERO */}
         <section className="start-hero">
           <div className="start-hero-inner">
-          {/* Levý sloupec */}
-          <div className="start-hero-left">
-            <h1 className="start-h1">
-              Poznej svou značku<br />
-              během minut.
-            </h1>
-            <p className="start-subtitle">
-              Zadej web — nebo začni tvořit rovnou.<br />
-              Ukážeme ti, co funguje. A co tě brzdí.
-            </p>
-
-            <div className="start-glass-card">
-              <div className="start-input-row">
-                <input
-                  type="url"
-                  className="start-url-input"
-                  placeholder="např. lucifera.cz"
-                  value={webUrl}
-                  onChange={(e) => setWebUrl(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-                <button className="start-analyze-btn" onClick={handleAnalyze}>
-                  Spustit analýzu →
-                </button>
-              </div>
-
-              <div className="start-checklist">
-                <span>✓ Screenshot webu</span>
-                <span>✓ Analýza textu</span>
-                <span>✓ Brand DNA</span>
-                <span>✓ Skóre značky</span>
-              </div>
-
-              <p className="start-microcopy">
-                Zdarma · Bez registrace · Výsledek během minuty
+            {/* Levý sloupec */}
+            <div className="start-hero-left">
+              <h1 className="start-h1">
+                Poznej svou značku<br />
+                během minut.
+              </h1>
+              <p className="start-subtitle">
+                Zadej web — nebo začni tvořit rovnou.<br />
+                Ukážeme ti, co funguje. A co tě brzdí.
               </p>
 
-              <button
-                className="start-secondary-link"
-                onClick={() => router.push('/client/magnet/rtg/onboarding')}
-              >
-                nebo začni bez analýzy →
-              </button>
+              <div className="start-glass-card">
+                <div className="start-input-row">
+                  <input
+                    type="url"
+                    className="start-url-input"
+                    placeholder="např. lucifera.cz"
+                    value={webUrl}
+                    onChange={(e) => setWebUrl(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <button className="start-analyze-btn" onClick={handleAnalyze}>
+                    Spustit analýzu →
+                  </button>
+                </div>
+
+                <div className="start-checklist">
+                  <span>✓ Screenshot webu</span>
+                  <span>✓ Analýza textu</span>
+                  <span>✓ Brand DNA</span>
+                  <span>✓ Skóre značky</span>
+                </div>
+
+                <p className="start-microcopy">
+                  Zdarma · Bez registrace · Výsledek během minuty
+                </p>
+
+                <button
+                  className="start-secondary-link"
+                  onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                >
+                  nebo začni bez analýzy →
+                </button>
+              </div>
+            </div>
+
+            {/* Pravý sloupec — DiagnostikaDemo */}
+            <div className="start-hero-right">
+              <DiagnostikaDemo hideHeader hideFooter />
             </div>
           </div>
-
-          {/* Pravý sloupec — DiagnostikaDemo */}
-          <div className="start-hero-right">
-            <DiagnostikaDemo hideHeader hideFooter />
-          </div>
-          </div>
         </section>
 
-        {/* BAREVNÁ PALETA — nadpis + kroužky + carousel v jedné sekci */}
-        <section className="start-palette-section">
-          <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
-          <p className="start-section-sub">
-            Vyber styl — a uvidíš reálné fotky z dané kolekce
-          </p>
+        {/* PALETA + GRID */}
+        <section
+          className="start-gallery-section"
+          style={{ backgroundColor: bgTint }}
+        >
+          <div className="start-gallery-inner">
+            <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
+            <p className="start-section-sub">
+              Vyber barvu — a nech se inspirovat
+            </p>
 
-          <div className="start-color-row">
-            {COLLECTIONS.map((c) => (
-              <div
-                key={c.style}
-                className="start-color-item"
-                onClick={() => loadCollection(c.style, c.hex)}
-              >
+            {/* Palette row */}
+            <div className="start-palette-row">
+              {PALETTE.map((hex) => (
                 <div
-                  className="start-color-dot"
-                  style={{
-                    background: c.hex,
-                    border: c.hex === '#E8E4DC' ? '1px solid #d0ccc4' : 'none',
-                    boxShadow: selectedStyle === c.style
-                      ? '0 0 0 3px white, 0 0 0 5px #111'
-                      : 'none',
-                  }}
+                  key={hex}
+                  className={`start-palette-dot${selectedColor === hex ? ' active' : ''}`}
+                  style={{ background: hex }}
+                  onClick={() => handleColorClick(hex)}
                 />
-                <span className="start-color-label">{c.label}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
 
-        {/* KOLOTOČ KOLEKCÍ — miniatury s fotkami */}
-        <div className="start-carousel-wrap">
-          <div className="start-carousel">
-            {COLLECTIONS.map((c) => {
-              const thumb = collectionThumbs[c.style]
-              return (
-                <div
-                  key={c.style}
-                  className={`start-carousel-card${selectedStyle === c.style ? ' active' : ''}`}
-                  onClick={() => loadCollection(c.style, c.hex)}
-                >
-                  <div
-                    className="start-carousel-bg"
-                    style={{
-                      backgroundColor: c.hex,
-                      backgroundImage: thumb ? `url(${thumb})` : undefined,
-                    }}
-                  />
-                  <span className="start-carousel-label">{c.label}</span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* VIZUÁLNÍ GRID */}
-        <section className="start-grid-section">
-          <div
-            className="start-visual-grid"
-            style={{ opacity: gridLoading ? 0.5 : 1 }}
-          >
-            {gridPhotos.length > 0
-              ? gridPhotos.map((photo, i) => (
-                  <div
-                    key={photo.id}
-                    className="start-grid-card"
-                    onMouseEnter={() => setHoveredCard(i)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                  >
-                    {photo.thumbnailUrl ? (
-                      <img
-                        src={photo.thumbnailUrl}
-                        alt={photo.subfolder ?? activeCollection?.label ?? ''}
-                        className="start-grid-img"
-                      />
-                    ) : (
-                      <div style={{ position: 'absolute', inset: 0, background: activeCollection?.hex ?? '#e8e4dc' }} />
-                    )}
-                    <span className="start-grid-label">{activeCollection?.label ?? ''}</span>
+            {/* Foto grid */}
+            <div
+              className="start-visual-grid"
+              style={{ opacity: gridOpacity }}
+            >
+              {gridPhotos.length > 0
+                ? gridPhotos.map((photo, i) => (
                     <div
-                      className="start-grid-overlay"
-                      style={{ opacity: hoveredCard === i ? 1 : 0 }}
+                      key={photo.id}
+                      className="start-grid-card"
+                      onMouseEnter={() => setHoveredCard(i)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                      onClick={() => router.push('/client/magnet/rtg/onboarding')}
                     >
-                      <button className="start-grid-overlay-btn">
-                        Vytvořit příspěvek →
-                      </button>
+                      {photo.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={photo.thumbnailUrl}
+                          alt=""
+                          className="start-grid-img"
+                        />
+                      ) : (
+                        <div style={{ width: '100%', aspectRatio: '4/5', background: '#e8e4dc' }} />
+                      )}
+                      <div
+                        className="start-grid-overlay"
+                        style={{ opacity: hoveredCard === i ? 1 : 0 }}
+                      >
+                        <button className="start-grid-overlay-btn">
+                          Vytvořit příspěvek →
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
-              : Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="start-grid-card">
-                    <div className="start-grid-placeholder" />
-                  </div>
-                ))}
+                  ))
+                : Array.from({ length: 12 }).map((_, i) => (
+                    <div key={i} className="start-grid-placeholder" />
+                  ))}
+            </div>
           </div>
         </section>
       </div>
