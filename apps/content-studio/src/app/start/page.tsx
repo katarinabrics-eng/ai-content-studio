@@ -69,12 +69,10 @@ export default function StartPage() {
 
   // Typewriter effect
   useEffect(() => {
-    if (isPaused) return
-    const current = ROTATING_SENTENCES[sentenceIndex]
-    let timeout: ReturnType<typeof setTimeout>
+    let timeout: NodeJS.Timeout
+    const currentSentence = ROTATING_SENTENCES[sentenceIndex]
 
-    if (!isDeleting && displayText === current) {
-      setIsPaused(true)
+    if (isPaused) {
       timeout = setTimeout(() => {
         setIsPaused(false)
         setIsDeleting(true)
@@ -82,23 +80,27 @@ export default function StartPage() {
       return () => clearTimeout(timeout)
     }
 
-    if (isDeleting && displayText === '') {
-      setIsDeleting(false)
-      setSentenceIndex(i => (i + 1) % ROTATING_SENTENCES.length)
-      return
+    if (isDeleting) {
+      if (displayText.length === 0) {
+        setIsDeleting(false)
+        setSentenceIndex(i => (i + 1) % ROTATING_SENTENCES.length)
+        return
+      }
+      timeout = setTimeout(() => {
+        setDisplayText(t => t.slice(0, -1))
+      }, 30)
+    } else {
+      if (displayText.length === currentSentence.length) {
+        setIsPaused(true)
+        return
+      }
+      timeout = setTimeout(() => {
+        setDisplayText(currentSentence.slice(0, displayText.length + 1))
+      }, 50)
     }
 
-    const speed = isDeleting ? 30 : 50
-    timeout = setTimeout(() => {
-      if (isDeleting) {
-        setDisplayText(prev => prev.slice(0, -1))
-      } else {
-        setDisplayText(current.slice(0, displayText.length + 1))
-      }
-    }, speed)
-
     return () => clearTimeout(timeout)
-  }, [displayText, sentenceIndex, isDeleting, isPaused])
+  }, [displayText, isDeleting, isPaused, sentenceIndex])
 
   useEffect(() => {
     setMounted(true)
@@ -588,22 +590,57 @@ export default function StartPage() {
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>ready-to-go · klientský portál</span>
                       <span style={{ fontSize: '11px', color: '#888' }}>Veronika Novotná</span>
                     </div>
-                    <div className="browser-content">
-                      <div className="ab-cards">
-                        <div className="ab-card">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="/images/demo/demo-video-a.jpg" alt="Varianta A" className="ab-card-img" />
-                          <div className="ab-card-label">VIDEO · REELS</div>
-                          <div style={{ padding: '0 10px 8px', fontSize: '11px', color: '#555', lineHeight: 1.3 }}>&ldquo;Ráno. Okno. Ticho.&rdquo;</div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px', overflow: 'hidden' }}>
+                      <div style={{ fontSize: '11px', color: '#9a9a90', marginBottom: '10px' }}>KE SCHVÁLENÍ · VARIANTA A vs B</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flex: 1, minHeight: 0 }}>
+
+                        {/* Karta A */}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '2px solid #111', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
+                          <div style={{ flexShrink: 0, width: '80px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                            <video autoPlay muted loop playsInline poster="/images/demo/demo-video-a.jpg"
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+                              <source src="/images/demo/demo-video-a.mp4" type="video/mp4" />
+                            </video>
+                            <div style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '8px', padding: '1px 5px', borderRadius: '10px' }}>▶ 15s · Reels</div>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '9px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>VIDEO · Reels</div>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '4px' }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
+                            <p style={{ fontSize: '10px', color: '#888', marginBottom: '6px' }}>Storytelling · přirozený moment</p>
+                            <div style={{ fontSize: '10px', color: '#555', background: '#f5f3ee', borderRadius: '4px', padding: '5px 7px', lineHeight: 1.5 }}>Každé ráno si říkám – dneska to zvládnu...</div>
+                            <div style={{ marginTop: '6px', display: 'flex', gap: '4px' }}>
+                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Varianta A</span>
+                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="ab-card">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="/images/demo/demo-video-b.jpg" alt="Varianta B" className="ab-card-img" />
-                          <div className="ab-card-label">VIDEO · REELS</div>
-                          <div style={{ padding: '0 10px 8px', fontSize: '11px', color: '#555', lineHeight: 1.3 }}>&ldquo;Tohle ti nikdo neřekne.&rdquo;</div>
+
+                        {/* Karta B */}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '1px solid #e8e4dc', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
+                          <div style={{ flexShrink: 0, width: '80px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                            <video autoPlay muted loop playsInline poster="/images/demo/demo-video-b.jpg"
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+                              <source src="/images/demo/demo-video-b.mp4" type="video/mp4" />
+                            </video>
+                            <div style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '8px', padding: '1px 5px', borderRadius: '10px' }}>▶ 12s · Reels</div>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '9px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>VIDEO · Reels</div>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '4px' }}>&ldquo;Tohle ti nikdo neřekne.&rdquo;</p>
+                            <p style={{ fontSize: '10px', color: '#888', marginBottom: '6px' }}>Hook přímý · osobní tón</p>
+                            <div style={{ fontSize: '10px', color: '#555', background: '#f5f3ee', borderRadius: '4px', padding: '5px 7px', lineHeight: 1.5 }}>Strávila jsem hodiny přemýšlením co postovat...</div>
+                            <div style={{ marginTop: '6px', display: 'flex', gap: '4px' }}>
+                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Varianta B</span>
+                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
+                            </div>
+                          </div>
                         </div>
+
                       </div>
-                      <button className="ab-approve-btn">Schválit vybranou →</button>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e8e8e4', flexShrink: 0 }}>
+                        <div style={{ fontSize: '11px', color: '#9a9a90' }}>Klikni na variantu → schval</div>
+                        <button style={{ background: '#b7e94c', color: '#111', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Schválit vybranou →</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -615,22 +652,22 @@ export default function StartPage() {
                       <span className="browser-dot" style={{ background: '#ff5f57' }} />
                       <span className="browser-dot" style={{ background: '#ffbd2e' }} />
                       <span className="browser-dot" style={{ background: '#28ca41' }} />
-                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Vizuální knihovna · 247 médií</span>
-                    </div>
-                    <div className="browser-content" style={{ padding: '12px' }}>
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
-                        {['#E8B4B8', '#D4889C', '#F0C8CC', '#EDD5C0'].map(hex => (
-                          <div key={hex} style={{ width: 20, height: 20, borderRadius: '50%', background: hex, border: '1px solid rgba(0,0,0,0.08)', flexShrink: 0 }} />
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>Vizuální knihovna</span>
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        {['#E8B4B8', '#E8E4DC', '#4A9B8E', '#2C2C2C', '#8B7355'].map(hex => (
+                          <div key={hex} style={{ width: 14, height: 14, borderRadius: '50%', background: hex, border: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }} />
                         ))}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
+                    </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '12px', overflow: 'hidden' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', flex: 1, minHeight: 0 }}>
                         {K04_PHOTOS.map((src, i) => (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img key={i} src={src} alt="" style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', borderRadius: '4px', display: 'block' }} />
+                          <img key={i} src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', display: 'block' }} />
                         ))}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#888', textAlign: 'center' }}>
-                        247 vizuálů · 7 kolekcí · AI + profesionální fotografie
+                      <div style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '10px', flexShrink: 0 }}>
+                        247 vizuálů · AI + profesionální fotografie · tvůj výběr
                       </div>
                     </div>
                   </div>
@@ -646,15 +683,15 @@ export default function StartPage() {
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>Duben 2026</span>
                       <span style={{ fontSize: '11px', color: '#5a7a00', fontWeight: 500 }}>+ Naplánovat</span>
                     </div>
-                    <div className="browser-content">
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                    <div style={{ flex: 1, padding: '14px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexShrink: 0 }}>
                         {['Instagram', 'Facebook', 'LinkedIn'].map((s, i) => (
-                          <span key={s} style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: i === 0 ? '#f3fbdc' : '#f5f5f5', color: i === 0 ? '#5a7a00' : '#888', border: i === 0 ? '0.5px solid rgba(183,233,76,0.4)' : '0.5px solid #e8e4dc' }}>{s}</span>
+                          <span key={s} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '10px', background: i === 0 ? '#f3fbdc' : '#f5f5f5', color: i === 0 ? '#5a7a00' : '#888', border: i === 0 ? '0.5px solid rgba(183,233,76,0.4)' : '0.5px solid #e8e4dc' }}>{s}</span>
                         ))}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', fontSize: '10px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '3px', fontSize: '11px', flex: 1 }}>
                         {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
-                          <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '4px 0', fontWeight: 500 }}>{d}</div>
+                          <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '5px 0', fontWeight: 500 }}>{d}</div>
                         ))}
                         {[
                           { d: 1, e: null }, { d: 2, e: 'Reels' }, { d: 3, e: null }, { d: 4, e: 'Grafika' }, { d: 5, e: null }, { d: 6, e: null }, { d: 7, e: 'Stories' },
@@ -662,12 +699,12 @@ export default function StartPage() {
                           { d: 15, e: 'Grafika' }, { d: 16, e: null }, { d: 17, e: null }, { d: 18, e: 'Reels' }, { d: 19, e: null }, { d: 20, e: null }, { d: 21, e: 'Stories' },
                         ].map((item, i) => (
                           <div key={i} style={{
-                            textAlign: 'center', padding: '3px 1px', borderRadius: '4px',
+                            textAlign: 'center', padding: '4px 2px', borderRadius: '5px',
                             background: item.e ? '#f3fbdc' : 'transparent',
                             border: item.e ? '0.5px solid rgba(183,233,76,0.4)' : 'none',
                           }}>
-                            <div style={{ color: '#111', fontWeight: item.e ? 500 : 400 }}>{item.d}</div>
-                            {item.e && <div style={{ fontSize: '8px', color: '#5a7a00', marginTop: '1px' }}>{item.e}</div>}
+                            <div style={{ color: '#111', fontWeight: item.e ? 600 : 400, fontSize: '11px' }}>{item.d}</div>
+                            {item.e && <div style={{ fontSize: '9px', color: '#5a7a00', marginTop: '2px' }}>{item.e}</div>}
                           </div>
                         ))}
                       </div>
@@ -684,22 +721,26 @@ export default function StartPage() {
                       <span className="browser-dot" style={{ background: '#28ca41' }} />
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Hotový příspěvek</span>
                     </div>
-                    <div className="browser-content">
-                      <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '16px', overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', gap: '16px', flex: 1, minHeight: 0 }}>
+                        <div style={{ width: '180px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden' }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '10px', color: '#b7e94c', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>GRAFIKA · INSTAGRAM</div>
-                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#111', marginBottom: '6px', lineHeight: 1.4 }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
-                          <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.5, marginBottom: '10px' }}>Každé ráno si říkám — dneska to zvládnu.</p>
-                          <div style={{ display: 'flex', gap: '6px' }}>
-                            <button style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '6px', background: '#b7e94c', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Použít →</button>
-                            <button style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '6px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>Upravit</button>
+                          <div style={{ fontSize: '10px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>GRAFIKA · INSTAGRAM</div>
+                          <p style={{ fontSize: '16px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '8px' }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
+                          <p style={{ fontSize: '13px', color: '#666', lineHeight: 1.6, marginBottom: '12px' }}>
+                            Každé ráno si říkám — dneska to zvládnu. A pak přijde ten moment, kdy všechno zpomalí.
+                          </p>
+                          <div style={{ fontSize: '12px', color: '#888', marginBottom: '16px' }}>
+                            #osobnirozvoj #mindset #rannirutina #zivotniStyl
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button style={{ fontSize: '12px', padding: '8px 16px', borderRadius: '8px', background: '#b7e94c', border: 'none', fontWeight: 500, cursor: 'pointer' }}>Použít →</button>
+                            <button style={{ fontSize: '12px', padding: '8px 16px', borderRadius: '8px', background: '#f5f5f5', border: 'none', cursor: 'pointer' }}>Upravit</button>
                           </div>
                         </div>
-                      </div>
-                      <div style={{ padding: '8px 12px', background: '#f5f3ee', borderRadius: '8px', fontSize: '11px', color: '#888' }}>
-                        #osobnirozvoj #mindset #rannirutina #zivotniStyl
                       </div>
                     </div>
                   </div>
@@ -714,16 +755,16 @@ export default function StartPage() {
                       <span className="browser-dot" style={{ background: '#28ca41' }} />
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Brand DNA · diagnostika</span>
                     </div>
-                    <div className="browser-content">
+                    <div style={{ flex: 1, padding: '16px', overflow: 'hidden' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                         <div>
                           <div style={{ fontSize: '48px', fontWeight: 700, color: '#111', lineHeight: 1 }}>74</div>
-                          <div style={{ fontSize: '12px', color: '#888', margin: '4px 0 2px' }}>Index značky</div>
-                          <div style={{ fontSize: '12px', color: '#5a7a00', fontWeight: 500 }}>↑ Nad průměrem oboru</div>
+                          <div style={{ fontSize: '13px', color: '#888', margin: '5px 0 3px' }}>Index značky</div>
+                          <div style={{ fontSize: '13px', color: '#5a7a00', fontWeight: 500 }}>↑ Nad průměrem oboru</div>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'flex-end' }}>
                           {['Soft feminine', 'Klidná', 'Pečující', 'Estetická'].map(t => (
-                            <span key={t} style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '10px', background: '#f3fbdc', border: '0.5px solid rgba(183,233,76,0.4)', color: '#5a7a00' }}>{t}</span>
+                            <span key={t} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '10px', background: '#f3fbdc', border: '0.5px solid rgba(183,233,76,0.4)', color: '#5a7a00' }}>{t}</span>
                           ))}
                         </div>
                       </div>
@@ -734,12 +775,12 @@ export default function StartPage() {
                         { name: 'Identita', score: 9, color: '#b7e94c' },
                         { name: 'Důvěra', score: 4, color: '#e05a5a' },
                       ].map(p => (
-                        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                          <div style={{ width: '80px', fontSize: '12px', color: '#555' }}>{p.name}</div>
-                          <div style={{ flex: 1, height: '5px', background: '#f0ece4', borderRadius: '3px' }}>
-                            <div style={{ width: `${p.score * 10}%`, height: '5px', background: p.color, borderRadius: '3px' }} />
+                        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                          <div style={{ width: '90px', fontSize: '13px', color: '#555' }}>{p.name}</div>
+                          <div style={{ flex: 1, height: '6px', background: '#f0ece4', borderRadius: '3px' }}>
+                            <div style={{ width: `${p.score * 10}%`, height: '6px', background: p.color, borderRadius: '3px' }} />
                           </div>
-                          <div style={{ fontSize: '11px', color: p.color === '#e05a5a' ? '#e05a5a' : '#5a7a00', fontWeight: 500, width: '28px' }}>{p.score}/10</div>
+                          <div style={{ fontSize: '12px', color: p.color === '#e05a5a' ? '#e05a5a' : '#5a7a00', fontWeight: 600, width: '32px' }}>{p.score}/10</div>
                         </div>
                       ))}
                     </div>
