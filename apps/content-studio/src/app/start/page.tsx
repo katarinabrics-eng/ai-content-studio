@@ -2,23 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import DiagnostikaDemo from '@/components/DiagnostikaDemo'
 
 const COLLECTIONS = [
-  { hex: '#4A6FA5', label: 'Cool Business', style: 'K02' },
-  { hex: '#E8E4DC', label: 'Clean Minimal', style: 'K03' },
-  { hex: '#E8B4B8', label: 'Soft Feminine', style: 'K04' },
-  { hex: '#2C2C2C', label: 'Edgy Feminine', style: 'K05' },
-  { hex: '#8B7355', label: 'Raw Feminine',  style: 'K06' },
-  { hex: '#4A9B8E', label: 'Teal Lifestyle', style: 'K09' },
+  { hex: '#4A6FA5', label: 'Byznys',      style: 'K02' },
+  { hex: '#E8E4DC', label: 'Minimální',   style: 'K03' },
+  { hex: '#E8B4B8', label: 'Jemná',       style: 'K04' },
+  { hex: '#2C2C2C', label: 'Výrazná',     style: 'K05' },
+  { hex: '#8B7355', label: 'Přirozená',   style: 'K06' },
+  { hex: '#4A9B8E', label: 'Lifestyle',   style: 'K09' },
 ]
 
-const PILLARS = [
-  { label: 'Hodnota',       score: 8, color: '#111' },
-  { label: 'Pozice',        score: 7, color: '#111' },
-  { label: 'Architektura',  score: 8, color: '#111' },
-  { label: 'Identita',      score: 9, color: '#111' },
-  { label: 'Důvěra',        score: 4, color: '#e05a5a' },
-]
 
 type Photo = {
   id: string
@@ -450,9 +444,9 @@ export default function StartPage() {
 
         .start-carousel-card {
           flex-shrink: 0;
-          width: 140px;
-          height: 90px;
-          border-radius: 12px;
+          width: 120px;
+          height: 60px;
+          border-radius: 8px;
           overflow: hidden;
           cursor: pointer;
           position: relative;
@@ -474,7 +468,7 @@ export default function StartPage() {
           bottom: 0;
           left: 0;
           right: 0;
-          padding: 6px 10px;
+          padding: 4px 8px;
           font-size: 10px;
           font-weight: 500;
           color: white;
@@ -644,84 +638,13 @@ export default function StartPage() {
             </div>
           </div>
 
-          {/* Pravý sloupec */}
+          {/* Pravý sloupec — DiagnostikaDemo */}
           <div className="start-hero-right">
-
-            {/* Levitující karta 1 — Brand Score */}
-            <div className="start-float-card" style={{ top: -20, right: -24, animationDelay: '0s' }}>
-              <div className="start-float-card-label">Brand Score</div>
-              <div className="start-float-card-value">74 / 100</div>
-            </div>
-
-            {/* Levitující karta 2 — Důvěra */}
-            <div className="start-float-card" style={{ bottom: 40, left: -28, animationDelay: '1s' }}>
-              <div className="start-float-card-label">Nejslabší místo</div>
-              <div className="start-float-card-value" style={{ color: '#e05a5a' }}>Důvěra · 8/10</div>
-            </div>
-
-            {/* Levitující karta 3 — DNA */}
-            <div className="start-float-card" style={{ bottom: -16, right: -20, animationDelay: '2s' }}>
-              <div className="start-float-card-value" style={{ color: '#5a7a00', fontSize: 13 }}>✓ DNA nalezena</div>
-            </div>
-
-            {/* Mock browser */}
-            <div className="start-browser-mock">
-              <div className="start-browser-bar">
-                <div className="start-browser-dots">
-                  <div className="start-browser-dot" style={{ background: '#FF5F57' }} />
-                  <div className="start-browser-dot" style={{ background: '#FFBD2E' }} />
-                  <div className="start-browser-dot" style={{ background: '#28C840' }} />
-                </div>
-                <span className="start-browser-url">studiolucifera.cz</span>
-              </div>
-
-              <div className="start-mock-content">
-                {/* Score */}
-                <div className="start-mock-score-row">
-                  <div className="start-mock-score-num">74</div>
-                  <div className="start-mock-score-right">
-                    <div className="start-mock-score-label">Index značky</div>
-                    <div className="start-mock-score-sub">↑ Nad průměrem oboru</div>
-                  </div>
-                </div>
-
-                {/* Pilíře */}
-                <div className="start-mock-pillars">
-                  {PILLARS.map((p) => (
-                    <div key={p.label} className="start-mock-pillar-row">
-                      <div className="start-mock-pillar-label">{p.label}</div>
-                      <div className="start-mock-pillar-bar-bg">
-                        <div
-                          className="start-mock-pillar-bar-fill"
-                          style={{
-                            width: `${p.score * 10}%`,
-                            background: p.color,
-                          }}
-                        />
-                      </div>
-                      <div
-                        className="start-mock-pillar-score"
-                        style={{ color: p.color }}
-                      >
-                        {p.score}/10
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Brand DNA */}
-                <div className="start-mock-dna">
-                  <div>Brand DNA</div>
-                  <div className="start-mock-dna-value">
-                    Soft feminine · Klidná · Pečující
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DiagnostikaDemo />
           </div>
         </section>
 
-        {/* BAREVNÁ PALETA */}
+        {/* BAREVNÁ PALETA — nadpis + kroužky + carousel v jedné sekci */}
         <section className="start-palette-section">
           <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
           <p className="start-section-sub">
@@ -751,7 +674,7 @@ export default function StartPage() {
           </div>
         </section>
 
-        {/* KOLOTOČ KOLEKCÍ */}
+        {/* KOLOTOČ KOLEKCÍ — miniatury s fotkami */}
         <div className="start-carousel-wrap">
           <div className="start-carousel">
             {COLLECTIONS.map((c) => {
