@@ -15,12 +15,12 @@ type Collection = {
 }
 
 const ROTATING_SENTENCES = [
-  "Tvoříš. Ale zákazník neví proč jít za tebou.",
-  "Máš jasno. Chceš rovnou tvořit.",
-  "Web máš. Výsledky chybí.",
-  "Nechceš řešit strategii. Chceš výsledek.",
-  "Vypadá to dobře. Ale něco nesedí.",
-  "Obsah potřebuješ teď. Ne za týden.",
+  "Tvoříš. Ale zákazník\nneví proč jít za tebou.",
+  "Máš jasno.\nChceš rovnou tvořit.",
+  "Web máš.\nVýsledky chybí.",
+  "Nechceš řešit strategii.\nChceš výsledek.",
+  "Vypadá to dobře.\nAle něco nesedí.",
+  "Obsah potřebuješ teď.\nNe za týden.",
 ]
 
 const K04_PHOTOS = [
@@ -543,7 +543,7 @@ export default function StartPage() {
 
               {/* 1. Typewriter */}
               <div className="typewriter-block">
-                <span className="typewriter-text">
+                <span className="typewriter-text" style={{ whiteSpace: 'pre-line' }}>
                   {displayText}
                   <span className="typewriter-cursor" />
                 </span>
