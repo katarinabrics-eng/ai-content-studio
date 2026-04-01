@@ -284,12 +284,27 @@ export default function StartPage() {
           align-items: center;
         }
 
+        /* GLASS FRAME — obal okna */
+        .hero-slide-frame {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.45);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.78);
+          border-radius: 18px;
+          box-shadow:
+            0 16px 48px rgba(0, 0, 0, 0.08),
+            0 1px 0 rgba(255, 255, 255, 0.95) inset;
+          padding: 10px;
+        }
+
         /* SLIDES WRAPPER */
         .slides-outer {
           position: relative;
           width: 100%;
-          height: 360px;
+          height: 300px;
           overflow: hidden;
+          border-radius: 10px;
         }
         .slide-item {
           position: absolute;
@@ -306,32 +321,32 @@ export default function StartPage() {
 
         /* BROWSER WINDOW */
         .browser-window {
-          background: white;
-          border-radius: 12px;
-          border: 1px solid #e8e4dc;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+          background: rgba(250, 249, 247, 0.97);
+          border-radius: 10px;
+          border: 1px solid rgba(232, 228, 220, 0.6);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.04);
           overflow: hidden;
           height: 100%;
           display: flex;
           flex-direction: column;
         }
         .browser-bar {
-          background: #f5f5f5;
-          padding: 10px 16px;
-          border-bottom: 1px solid #e8e4dc;
+          background: rgba(245, 244, 242, 0.9);
+          padding: 8px 14px;
+          border-bottom: 1px solid rgba(232, 228, 220, 0.5);
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 7px;
           flex-shrink: 0;
         }
         .browser-dot {
-          width: 10px; height: 10px; border-radius: 50%;
+          width: 9px; height: 9px; border-radius: 50%;
           display: inline-block; flex-shrink: 0;
         }
         .browser-content {
           flex: 1;
           overflow: hidden;
-          padding: 14px;
+          padding: 12px;
         }
 
         /* AB KARTY */
@@ -501,7 +516,7 @@ export default function StartPage() {
 
         @media (max-width: 1024px) {
           .start-hero-inner { grid-template-columns: 1fr 1.4fr; gap: 40px; padding: 0 48px; }
-          .slides-outer { height: 300px; }
+          .slides-outer { height: 260px; }
           .start-visual-grid { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 768px) {
@@ -509,7 +524,8 @@ export default function StartPage() {
           .start-hero { min-height: auto; padding: 60px 0 40px; }
           .start-hero-inner { grid-template-columns: 1fr; gap: 40px; padding: 0 20px; }
           .start-hero-left { max-width: 100%; }
-          .slides-outer { height: 360px; }
+          .hero-slide-frame { padding: 8px; border-radius: 14px; }
+          .slides-outer { height: 280px; border-radius: 8px; }
           .start-gallery-section { padding: 40px 0 60px; }
           .start-gallery-inner { padding: 0 20px; }
           .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
@@ -575,6 +591,7 @@ export default function StartPage() {
 
             {/* PRAVÝ SLOUPEC */}
             <div className="start-hero-right">
+              <div className="hero-slide-frame">
               <div className="slides-outer">
 
                 {/* Slide 0: DiagnostikaDemo */}
@@ -790,6 +807,7 @@ export default function StartPage() {
                 </div>
 
               </div>{/* /slides-outer */}
+              </div>{/* /hero-slide-frame */}
 
               {/* DOTS */}
               <div className="slide-dots">
