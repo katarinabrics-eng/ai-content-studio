@@ -12,6 +12,11 @@ const PALETTE = [
   '#B7E94C', '#8BC43C', '#F0E84C', '#E8C43C',
 ]
 
+const HEX_TO_STYLE: Record<string, string> = {
+  '#A8C4D4': 'K02', '#4A9B8E': 'K09', '#E8B4B8': 'K04',
+  '#2C2C2C': 'K05', '#A87840': 'K06', '#E8E0D0': 'K03',
+}
+
 type Photo = {
   id: string
   name: string
@@ -53,11 +58,29 @@ export default function StartPage() {
 
   function handleColorClick(hex: string) {
     setSelectedColor(hex)
-    // Velmi jemný tint pozadí sekce
     const r = parseInt(hex.slice(1, 3), 16)
     const g = parseInt(hex.slice(3, 5), 16)
     const b = parseInt(hex.slice(5, 7), 16)
     setBgTint(`rgba(${r},${g},${b},0.08)`)
+
+    const style = HEX_TO_STYLE[hex] || ''
+    const url = style
+      ? `/api/client/visual-bank?limit=12&style=${style}`
+      : '/api/client/visual-bank?limit=12'
+    const id = ++fetchRef.current
+    setGridOpacity(0)
+    fetch(url)
+      .then((r) => r.json())
+      .then((data) => {
+        if (id !== fetchRef.current) return
+        setTimeout(() => {
+          setGridPhotos(data?.files ?? [])
+          setGridOpacity(1)
+        }, 300)
+      })
+      .catch(() => {
+        if (id === fetchRef.current) setGridOpacity(1)
+      })
   }
 
   function handleAnalyze() {
@@ -239,13 +262,14 @@ export default function StartPage() {
         /* PALETA + GRID SEKCE */
         .start-gallery-section {
           width: 100%;
-          padding: 64px 48px 80px;
+          padding: 64px 0 80px;
           transition: background-color 800ms ease;
         }
 
         .start-gallery-inner {
           max-width: 1200px;
           margin: 0 auto;
+          padding: 0 48px;
         }
 
         .start-section-title {
@@ -291,9 +315,10 @@ export default function StartPage() {
 
         /* GRID */
         .start-visual-grid {
-          margin-top: 24px;
+          width: 100%;
+          padding: 24px 48px 0;
           columns: 5;
-          column-gap: 6px;
+          column-gap: 8px;
           transition: opacity 300ms ease;
         }
 
@@ -356,7 +381,7 @@ export default function StartPage() {
         @media (max-width: 1024px) {
           .start-hero { padding: 80px 48px 60px; }
           .start-hero-inner { gap: 48px; }
-          .start-visual-grid { columns: 4; }
+          .start-visual-grid { columns: 3; }
         }
 
         @media (max-width: 768px) {
@@ -367,8 +392,9 @@ export default function StartPage() {
             gap: 40px;
           }
           .start-hero-left { max-width: 100%; }
-          .start-gallery-section { padding: 40px 20px 60px; }
-          .start-visual-grid { columns: 2; }
+          .start-gallery-section { padding: 40px 0 60px; }
+          .start-gallery-inner { padding: 0 20px; }
+          .start-visual-grid { columns: 2; padding: 16px 20px 0; }
         }
       `}</style>
 
@@ -468,45 +494,45 @@ export default function StartPage() {
                 />
               ))}
             </div>
+          </div>
 
-            {/* Foto grid */}
-            <div
-              className="start-visual-grid"
-              style={{ opacity: gridOpacity }}
-            >
-              {gridPhotos.length > 0
-                ? gridPhotos.map((photo, i) => (
+          {/* Foto grid — celá šířka sekce */}
+          <div
+            className="start-visual-grid"
+            style={{ opacity: gridOpacity }}
+          >
+            {gridPhotos.length > 0
+              ? gridPhotos.map((photo, i) => (
+                  <div
+                    key={photo.id}
+                    className="start-grid-card"
+                    onMouseEnter={() => setHoveredCard(i)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                  >
+                    {photo.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={photo.thumbnailUrl}
+                        alt=""
+                        className="start-grid-img"
+                      />
+                    ) : (
+                      <div style={{ width: '100%', aspectRatio: '4/5', background: '#e8e4dc' }} />
+                    )}
                     <div
-                      key={photo.id}
-                      className="start-grid-card"
-                      onMouseEnter={() => setHoveredCard(i)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                      onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                      className="start-grid-overlay"
+                      style={{ opacity: hoveredCard === i ? 1 : 0 }}
                     >
-                      {photo.thumbnailUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={photo.thumbnailUrl}
-                          alt=""
-                          className="start-grid-img"
-                        />
-                      ) : (
-                        <div style={{ width: '100%', aspectRatio: '4/5', background: '#e8e4dc' }} />
-                      )}
-                      <div
-                        className="start-grid-overlay"
-                        style={{ opacity: hoveredCard === i ? 1 : 0 }}
-                      >
-                        <button className="start-grid-overlay-btn">
-                          Vytvořit příspěvek →
-                        </button>
-                      </div>
+                      <button className="start-grid-overlay-btn">
+                        Vytvořit příspěvek →
+                      </button>
                     </div>
-                  ))
-                : Array.from({ length: 12 }).map((_, i) => (
-                    <div key={i} className="start-grid-placeholder" />
-                  ))}
-            </div>
+                  </div>
+                ))
+              : Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className="start-grid-placeholder" />
+                ))}
           </div>
         </section>
       </div>
