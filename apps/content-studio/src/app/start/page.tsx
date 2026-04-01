@@ -407,12 +407,13 @@ export default function StartPage() {
           <div className="start-hero-inner">
             <div className="start-hero-left">
               <h1 className="start-h1">
-                Poznej svou značku<br />
-                <span style={{ color: '#b7e94c' }}>během minut.</span>
+                Vypadá to dobře.<br />
+                Ale něco nesedí.
               </h1>
               <p className="start-subtitle">
-                Zadej web — nebo začni tvořit rovnou.<br />
-                Ukážeme ti, co funguje. A co tě brzdí.
+                Z toho, co dáváš ven, není úplně jasné co děláš,
+                pro koho to je a proč by si tě měl někdo vybrat.
+                Zadej svůj web — uvidíš to očima klienta.
               </p>
 
               <div className="start-glass-card">
@@ -456,11 +457,25 @@ export default function StartPage() {
           </div>
         </section>
 
+        {/* MOST MEZI HERO A KNIHOVNOU */}
+        <div style={{ textAlign: 'center', padding: '48px 0 0', maxWidth: '600px', margin: '0 auto' }}>
+          <p style={{ fontSize: '13px', color: '#888', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>
+            nebo
+          </p>
+          <p style={{ fontSize: '20px', fontFamily: 'Playfair Display, serif', color: '#111', marginBottom: '8px' }}>
+            Nechceš to řešit. Chceš rovnou tvořit.
+          </p>
+          <p style={{ fontSize: '15px', color: '#666', lineHeight: '1.6' }}>
+            Tady máš obsah, který můžeš vzít a použít.<br />
+            Bez přemýšlení. Bez začátků od nuly.
+          </p>
+        </div>
+
         {/* PALETA + GRID */}
         <section className="start-gallery-section" style={{ backgroundColor: bgColor }}>
           <div className="start-gallery-inner">
-            <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
-            <p className="start-section-sub">Vyber styl — a nech se inspirovat</p>
+            <h2 className="start-section-title">Vyber styl. Začni tvořit.</h2>
+            <p className="start-section-sub">Klikni na barvu — uvidíš obsah který sedí tvé náladě.</p>
           </div>
 
           {/* Kroužky ze všech kolekcí */}
