@@ -17,7 +17,7 @@ const POST_TEXT =
 const LIME = "#b7e94c";
 const CIRC = 2 * Math.PI * 54;
 
-export default function DiagnostikaDemo() {
+export default function DiagnostikaDemo({ hideHeader, hideFooter }: { hideHeader?: boolean; hideFooter?: boolean } = {}) {
   const [stage, setStage]           = useState(0);
   const [visible, setVisible]       = useState(true);
   const [ringVal, setRingVal]       = useState(0);
@@ -99,12 +99,14 @@ export default function DiagnostikaDemo() {
         @keyframes diagPulse  { 0%,100%{opacity:.6} 50%{opacity:1} }
         @keyframes hexSpin    { to{transform:rotate(360deg)} }
       `}</style>
+      {!hideHeader && <>
       <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8fb82e", textAlign: "center", margin: "0 0 10px" }}>
         Jak diagnostika funguje
       </p>
       <h3 style={{ fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 800, color: "#111", textAlign: "center", margin: "0 0 40px", lineHeight: 1.2 }}>
         Za 2 minuty víte, kde vaše značka stojí.
       </h3>
+      </>}
 
       <div style={{
         maxWidth: 760, margin: "0 auto", minHeight: 360,
@@ -325,12 +327,14 @@ export default function DiagnostikaDemo() {
       </div>
 
       {/* CTA */}
+      {!hideFooter && (
       <div style={{ textAlign: "center", marginTop: 32 }}>
         <a href="/diagnostika" style={{ display: "inline-block", background: LIME, color: "#111", fontWeight: 800, fontSize: 15, padding: "14px 36px", borderRadius: 12, textDecoration: "none", letterSpacing: "-0.01em" }}>
           Spustit vlastní diagnostiku →
         </a>
         <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", marginTop: 10 }}>Zdarma · Bez registrace · Výsledky za 2 minuty</p>
       </div>
+      )}
     </section>
   );
 }

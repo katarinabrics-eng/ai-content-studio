@@ -51,12 +51,17 @@ export async function GET(req: NextRequest) {
     );
 
     // Filter by style if requested
+    // Supports both K-code prefix (e.g. "K04") and full style name (e.g. "Soft Feminine")
     const filtered = styleFilter
-      ? allFiles.filter(
-          (f) =>
-            f.subfolder &&
-            parseStyleName(f.subfolder).toLowerCase() === styleFilter.toLowerCase()
-        )
+      ? allFiles.filter((f) => {
+          if (!f.subfolder) return false;
+          const kCode = f.subfolder.match(/^(K\d+)/)?.[1] ?? "";
+          const styleName = parseStyleName(f.subfolder).toLowerCase();
+          return (
+            kCode.toLowerCase() === styleFilter.toLowerCase() ||
+            styleName === styleFilter.toLowerCase()
+          );
+        })
       : allFiles;
 
     // Only images and videos

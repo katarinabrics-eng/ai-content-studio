@@ -652,7 +652,7 @@ export default function StartPage() {
 
           {/* Pravý sloupec — DiagnostikaDemo */}
           <div className="start-hero-right">
-            <DiagnostikaDemo />
+            <DiagnostikaDemo hideHeader hideFooter />
           </div>
           </div>
         </section>
