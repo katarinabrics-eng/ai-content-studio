@@ -31,9 +31,9 @@ export default function StartPage() {
   const [mounted, setMounted] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [gridPhotos, setGridPhotos] = useState<Photo[]>([])
-  const [gridOpacity, setGridOpacity] = useState(1)
+  const [gridLoading, setGridLoading] = useState(false)
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
-  const [bgTint, setBgTint] = useState<string>('transparent')
+  const [bgColor, setBgColor] = useState('transparent')
   const fetchRef = useRef(0)
 
   useEffect(() => {
@@ -43,43 +43,38 @@ export default function StartPage() {
 
   async function loadPhotos() {
     const id = ++fetchRef.current
-    setGridOpacity(0)
+    setGridLoading(true)
     try {
-      const res = await fetch('/api/client/visual-bank?limit=12')
+      const res = await fetch('/api/client/visual-bank?limit=16')
       const data = await res.json()
       if (id !== fetchRef.current) return
       setGridPhotos(data?.files ?? [])
     } catch {
       if (id === fetchRef.current) setGridPhotos([])
     } finally {
-      if (id === fetchRef.current) setGridOpacity(1)
+      if (id === fetchRef.current) setGridLoading(false)
     }
   }
 
   function handleColorClick(hex: string) {
     setSelectedColor(hex)
-    const r = parseInt(hex.slice(1, 3), 16)
-    const g = parseInt(hex.slice(3, 5), 16)
-    const b = parseInt(hex.slice(5, 7), 16)
-    setBgTint(`rgba(${r},${g},${b},0.08)`)
+    setBgColor(hex + '10')
 
     const style = HEX_TO_STYLE[hex] || ''
     const url = style
-      ? `/api/client/visual-bank?limit=12&style=${style}`
-      : '/api/client/visual-bank?limit=12'
+      ? `/api/client/visual-bank?limit=16&style=${style}`
+      : '/api/client/visual-bank?limit=16'
     const id = ++fetchRef.current
-    setGridOpacity(0)
+    setGridLoading(true)
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (id !== fetchRef.current) return
-        setTimeout(() => {
-          setGridPhotos(data?.files ?? [])
-          setGridOpacity(1)
-        }, 300)
+        setGridPhotos(data?.files ?? [])
+        setGridLoading(false)
       })
       .catch(() => {
-        if (id === fetchRef.current) setGridOpacity(1)
+        if (id === fetchRef.current) setGridLoading(false)
       })
   }
 
@@ -106,6 +101,7 @@ export default function StartPage() {
           background: #ffffff;
           font-family: 'DM Sans', system-ui, sans-serif;
           color: #111;
+          overflow-x: hidden;
         }
 
         /* HEADER */
@@ -157,7 +153,7 @@ export default function StartPage() {
         .start-hero {
           width: 100%;
           padding: 120px 80px 80px;
-          background: #ffffff;
+          transition: background-color 0.8s ease;
         }
 
         .start-hero-inner {
@@ -263,7 +259,7 @@ export default function StartPage() {
         .start-gallery-section {
           width: 100%;
           padding: 64px 0 80px;
-          transition: background-color 800ms ease;
+          transition: background-color 0.8s ease;
         }
 
         .start-gallery-inner {
@@ -287,7 +283,7 @@ export default function StartPage() {
           text-align: center;
         }
 
-        /* PALETTE ROW */
+        /* PALETTE ROW — celá šířka, zalomení do více řad */
         .start-palette-row {
           display: flex;
           gap: 8px;
@@ -295,7 +291,11 @@ export default function StartPage() {
           scrollbar-width: none;
           -ms-overflow-style: none;
           margin-top: 28px;
-          padding-bottom: 4px;
+          padding: 4px 24px;
+          justify-content: center;
+          flex-wrap: wrap;
+          width: 100vw;
+          margin-left: calc(-50vw + 50%);
         }
         .start-palette-row::-webkit-scrollbar { display: none; }
 
@@ -313,30 +313,31 @@ export default function StartPage() {
           box-shadow: 0 0 0 2px white, 0 0 0 4px #111;
         }
 
-        /* GRID */
+        /* GRID — 8 sloupců, 2 řádky, celá šířka */
         .start-visual-grid {
-          width: 100%;
-          padding: 24px 48px 0;
-          columns: 5;
-          column-gap: 8px;
-          transition: opacity 300ms ease;
+          display: grid;
+          grid-template-columns: repeat(8, 1fr);
+          gap: 6px;
+          width: 100vw;
+          margin-left: calc(-50vw + 50%);
+          padding: 24px 0 0;
+          transition: opacity 0.5s ease;
         }
 
         .start-grid-card {
           position: relative;
-          border-radius: 6px;
+          border-radius: 4px;
           overflow: hidden;
           cursor: pointer;
-          break-inside: avoid;
-          margin-bottom: 6px;
           background: #f0ede8;
         }
 
         .start-grid-img {
           width: 100%;
-          height: auto;
+          aspect-ratio: 3/4;
+          object-fit: cover;
           display: block;
-          border-radius: 6px;
+          border-radius: 4px;
         }
 
         .start-grid-overlay {
@@ -347,7 +348,7 @@ export default function StartPage() {
           align-items: center;
           justify-content: center;
           transition: opacity 200ms;
-          border-radius: 6px;
+          border-radius: 4px;
         }
 
         .start-grid-overlay-btn {
@@ -364,13 +365,11 @@ export default function StartPage() {
 
         .start-grid-placeholder {
           width: 100%;
-          aspect-ratio: 4/5;
-          border-radius: 6px;
+          aspect-ratio: 3/4;
+          border-radius: 4px;
           background: linear-gradient(90deg, #f0ede8 25%, #e8e4dc 50%, #f0ede8 75%);
           background-size: 200% 100%;
           animation: shimmer 1.2s infinite;
-          break-inside: avoid;
-          margin-bottom: 6px;
         }
 
         @keyframes shimmer {
@@ -381,7 +380,7 @@ export default function StartPage() {
         @media (max-width: 1024px) {
           .start-hero { padding: 80px 48px 60px; }
           .start-hero-inner { gap: 48px; }
-          .start-visual-grid { columns: 3; }
+          .start-visual-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
         @media (max-width: 768px) {
@@ -394,7 +393,7 @@ export default function StartPage() {
           .start-hero-left { max-width: 100%; }
           .start-gallery-section { padding: 40px 0 60px; }
           .start-gallery-inner { padding: 0 20px; }
-          .start-visual-grid { columns: 2; padding: 16px 20px 0; }
+          .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
 
@@ -416,8 +415,11 @@ export default function StartPage() {
           </nav>
         </header>
 
-        {/* HERO */}
-        <section className="start-hero">
+        {/* HERO — pozadí se mění s výběrem barvy */}
+        <section
+          className="start-hero"
+          style={{ backgroundColor: bgColor }}
+        >
           <div className="start-hero-inner">
             {/* Levý sloupec */}
             <div className="start-hero-left">
@@ -475,34 +477,34 @@ export default function StartPage() {
         {/* PALETA + GRID */}
         <section
           className="start-gallery-section"
-          style={{ backgroundColor: bgTint }}
+          style={{ backgroundColor: bgColor }}
         >
           <div className="start-gallery-inner">
             <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
             <p className="start-section-sub">
               Vyber barvu — a nech se inspirovat
             </p>
-
-            {/* Palette row */}
-            <div className="start-palette-row">
-              {PALETTE.map((hex) => (
-                <div
-                  key={hex}
-                  className={`start-palette-dot${selectedColor === hex ? ' active' : ''}`}
-                  style={{ background: hex }}
-                  onClick={() => handleColorClick(hex)}
-                />
-              ))}
-            </div>
           </div>
 
-          {/* Foto grid — celá šířka sekce */}
+          {/* Palette row — celá šířka, zalamuje */}
+          <div className="start-palette-row">
+            {PALETTE.map((hex) => (
+              <div
+                key={hex}
+                className={`start-palette-dot${selectedColor === hex ? ' active' : ''}`}
+                style={{ background: hex }}
+                onClick={() => handleColorClick(hex)}
+              />
+            ))}
+          </div>
+
+          {/* Foto grid — 8 sloupců, 2 řádky, celá šířka */}
           <div
             className="start-visual-grid"
-            style={{ opacity: gridOpacity }}
+            style={{ opacity: gridLoading ? 0.4 : 1 }}
           >
             {gridPhotos.length > 0
-              ? gridPhotos.map((photo, i) => (
+              ? gridPhotos.slice(0, 16).map((photo, i) => (
                   <div
                     key={photo.id}
                     className="start-grid-card"
@@ -518,7 +520,7 @@ export default function StartPage() {
                         className="start-grid-img"
                       />
                     ) : (
-                      <div style={{ width: '100%', aspectRatio: '4/5', background: '#e8e4dc' }} />
+                      <div style={{ width: '100%', aspectRatio: '3/4', background: '#e8e4dc' }} />
                     )}
                     <div
                       className="start-grid-overlay"
@@ -530,7 +532,7 @@ export default function StartPage() {
                     </div>
                   </div>
                 ))
-              : Array.from({ length: 12 }).map((_, i) => (
+              : Array.from({ length: 16 }).map((_, i) => (
                   <div key={i} className="start-grid-placeholder" />
                 ))}
           </div>
