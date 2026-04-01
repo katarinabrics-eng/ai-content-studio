@@ -4,25 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import DiagnostikaDemo from '@/components/DiagnostikaDemo'
 
-const PALETTE = [
-  '#F5F0E8', '#E8E0D0', '#D4C4A8', '#C8B49C', '#B8A090',
-  '#A8C4D4', '#7BAFC4', '#4A9B8E', '#6BAF9E', '#8DC4A8',
-  '#E8B4B8', '#D4889C', '#C46880', '#E8C4A0', '#D4A870',
-  '#C49050', '#A87840', '#2C2C2C', '#4A4A4A', '#888880',
-  '#B7E94C', '#8BC43C', '#F0E84C', '#E8C43C',
-]
-
-const HEX_TO_STYLE: Record<string, string> = {
-  '#A8C4D4': 'K02', '#4A9B8E': 'K09', '#E8B4B8': 'K04',
-  '#2C2C2C': 'K05', '#A87840': 'K06', '#E8E0D0': 'K03',
-}
-
-type Photo = {
+type Collection = {
   id: string
-  name: string
-  thumbnailUrl: string | null
-  webViewLink: string | null
-  subfolder: string | null
+  label: string
+  hex: string[]
+  mood: string[]
+  idealFor: string[]
+  photos: string[]
+  folder: string
 }
 
 export default function StartPage() {
@@ -30,52 +19,46 @@ export default function StartPage() {
   const [webUrl, setWebUrl] = useState('')
   const [mounted, setMounted] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
-  const [gridPhotos, setGridPhotos] = useState<Photo[]>([])
-  const [gridLoading, setGridLoading] = useState(false)
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+  const [collections, setCollections] = useState<Collection[]>([])
+  const [activePhotos, setActivePhotos] = useState<string[]>([])
+  const [gridLoading, setGridLoading] = useState(true)
+  const [selectedHex, setSelectedHex] = useState<string | null>(null)
   const [bgColor, setBgColor] = useState('transparent')
   const fetchRef = useRef(0)
 
   useEffect(() => {
     setMounted(true)
-    loadPhotos()
+    loadCollections()
   }, [])
 
-  async function loadPhotos() {
+  async function loadCollections() {
     const id = ++fetchRef.current
     setGridLoading(true)
     try {
-      const res = await fetch('/api/client/visual-bank?limit=16')
+      const res = await fetch('/api/landing/collections')
       const data = await res.json()
       if (id !== fetchRef.current) return
-      setGridPhotos(data?.files ?? [])
+      const cols: Collection[] = data.collections ?? []
+      setCollections(cols)
+      // Zobraz fotky ze všech kolekcí dohromady (max 16)
+      const all = cols.flatMap(c => c.photos).slice(0, 16)
+      setActivePhotos(all)
     } catch {
-      if (id === fetchRef.current) setGridPhotos([])
+      if (id === fetchRef.current) setActivePhotos([])
     } finally {
       if (id === fetchRef.current) setGridLoading(false)
     }
   }
 
-  function handleColorClick(hex: string) {
-    setSelectedColor(hex)
-    setBgColor(hex + '10')
-
-    const style = HEX_TO_STYLE[hex] || ''
-    const url = style
-      ? `/api/client/visual-bank?limit=16&style=${style}`
-      : '/api/client/visual-bank?limit=16'
-    const id = ++fetchRef.current
+  function handleDotClick(hex: string, col: Collection) {
+    setSelectedHex(hex)
+    setBgColor(hex + '18')
     setGridLoading(true)
-    fetch(url)
-      .then((r) => r.json())
-      .then((data) => {
-        if (id !== fetchRef.current) return
-        setGridPhotos(data?.files ?? [])
-        setGridLoading(false)
-      })
-      .catch(() => {
-        if (id === fetchRef.current) setGridLoading(false)
-      })
+    // Krátký fade — pak nové fotky
+    setTimeout(() => {
+      setActivePhotos(col.photos.slice(0, 16))
+      setGridLoading(false)
+    }, 250)
   }
 
   function handleAnalyze() {
@@ -165,9 +148,7 @@ export default function StartPage() {
           align-items: center;
         }
 
-        .start-hero-left {
-          max-width: 520px;
-        }
+        .start-hero-left { max-width: 520px; }
 
         .start-h1 {
           font-family: 'Playfair Display', serif;
@@ -252,7 +233,6 @@ export default function StartPage() {
         }
         .start-secondary-link:hover { color: #5a7a00; }
 
-        /* PRAVÝ SLOUPEC */
         .start-hero-right { position: relative; }
 
         /* PALETA + GRID SEKCE */
@@ -283,7 +263,7 @@ export default function StartPage() {
           text-align: center;
         }
 
-        /* PALETTE ROW — celá šířka, zalomení do více řad */
+        /* PALETTE — všechny hex ze všech kolekcí, celá šířka */
         .start-palette-row {
           display: flex;
           gap: 8px;
@@ -313,7 +293,17 @@ export default function StartPage() {
           box-shadow: 0 0 0 2px white, 0 0 0 4px #111;
         }
 
-        /* GRID — 8 sloupců, 2 řádky, celá šířka */
+        /* Kolekce label pod paletou */
+        .start-collection-label {
+          text-align: center;
+          margin-top: 12px;
+          font-size: 13px;
+          color: #888;
+          min-height: 20px;
+          transition: opacity 300ms;
+        }
+
+        /* GRID — 8 sloupců, celá šířka */
         .start-visual-grid {
           display: grid;
           grid-template-columns: repeat(8, 1fr);
@@ -321,7 +311,7 @@ export default function StartPage() {
           width: 100vw;
           margin-left: calc(-50vw + 50%);
           padding: 24px 0 0;
-          transition: opacity 0.5s ease;
+          transition: opacity 0.4s ease;
         }
 
         .start-grid-card {
@@ -386,10 +376,7 @@ export default function StartPage() {
         @media (max-width: 768px) {
           .start-header { padding: 14px 20px; }
           .start-hero { padding: 60px 20px 40px; }
-          .start-hero-inner {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
+          .start-hero-inner { grid-template-columns: 1fr; gap: 40px; }
           .start-hero-left { max-width: 100%; }
           .start-gallery-section { padding: 40px 0 60px; }
           .start-gallery-inner { padding: 0 20px; }
@@ -415,13 +402,9 @@ export default function StartPage() {
           </nav>
         </header>
 
-        {/* HERO — pozadí se mění s výběrem barvy */}
-        <section
-          className="start-hero"
-          style={{ backgroundColor: bgColor }}
-        >
+        {/* HERO */}
+        <section className="start-hero" style={{ backgroundColor: bgColor }}>
           <div className="start-hero-inner">
-            {/* Levý sloupec */}
             <div className="start-hero-left">
               <h1 className="start-h1">
                 Poznej svou značku<br />
@@ -467,7 +450,6 @@ export default function StartPage() {
               </div>
             </div>
 
-            {/* Pravý sloupec — DiagnostikaDemo */}
             <div className="start-hero-right">
               <DiagnostikaDemo hideHeader hideFooter />
             </div>
@@ -475,53 +457,50 @@ export default function StartPage() {
         </section>
 
         {/* PALETA + GRID */}
-        <section
-          className="start-gallery-section"
-          style={{ backgroundColor: bgColor }}
-        >
+        <section className="start-gallery-section" style={{ backgroundColor: bgColor }}>
           <div className="start-gallery-inner">
             <h2 className="start-section-title">Takhle může tvoje značka působit</h2>
-            <p className="start-section-sub">
-              Vyber barvu — a nech se inspirovat
-            </p>
+            <p className="start-section-sub">Vyber styl — a nech se inspirovat</p>
           </div>
 
-          {/* Palette row — celá šířka, zalamuje */}
+          {/* Kroužky ze všech kolekcí */}
           <div className="start-palette-row">
-            {PALETTE.map((hex) => (
-              <div
-                key={hex}
-                className={`start-palette-dot${selectedColor === hex ? ' active' : ''}`}
-                style={{ background: hex }}
-                onClick={() => handleColorClick(hex)}
-              />
-            ))}
+            {collections.map(col =>
+              col.hex.map(hex => (
+                <div
+                  key={`${col.id}-${hex}`}
+                  className={`start-palette-dot${selectedHex === hex ? ' active' : ''}`}
+                  style={{ background: hex }}
+                  title={col.label}
+                  onClick={() => handleDotClick(hex, col)}
+                />
+              ))
+            )}
           </div>
 
-          {/* Foto grid — 8 sloupců, 2 řádky, celá šířka */}
+          {/* Aktivní kolekce label */}
+          <div className="start-collection-label">
+            {selectedHex
+              ? collections.find(c => c.hex.includes(selectedHex))?.label ?? ''
+              : 'Všechny styly'}
+          </div>
+
+          {/* Foto grid */}
           <div
             className="start-visual-grid"
-            style={{ opacity: gridLoading ? 0.4 : 1 }}
+            style={{ opacity: gridLoading ? 0.3 : 1 }}
           >
-            {gridPhotos.length > 0
-              ? gridPhotos.slice(0, 16).map((photo, i) => (
+            {activePhotos.length > 0
+              ? activePhotos.slice(0, 16).map((src, i) => (
                   <div
-                    key={photo.id}
+                    key={src}
                     className="start-grid-card"
                     onMouseEnter={() => setHoveredCard(i)}
                     onMouseLeave={() => setHoveredCard(null)}
                     onClick={() => router.push('/client/magnet/rtg/onboarding')}
                   >
-                    {photo.thumbnailUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={photo.thumbnailUrl}
-                        alt=""
-                        className="start-grid-img"
-                      />
-                    ) : (
-                      <div style={{ width: '100%', aspectRatio: '3/4', background: '#e8e4dc' }} />
-                    )}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt="" className="start-grid-img" />
                     <div
                       className="start-grid-overlay"
                       style={{ opacity: hoveredCard === i ? 1 : 0 }}
