@@ -252,21 +252,19 @@ export default function StartPage() {
 
         .start-browser-content {
           background: white;
-          padding: 20px;
-          min-height: 280px;
           position: relative;
+          overflow: hidden;
+          height: 300px;
         }
 
-        .start-browser-lines {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .start-browser-line {
-          height: 10px;
-          border-radius: 4px;
-          background: #f0f0f0;
+        .start-browser-iframe {
+          width: 167%;
+          height: 500px;
+          border: none;
+          pointer-events: none;
+          transform: scale(0.6);
+          transform-origin: top left;
+          display: block;
         }
 
         .start-overlay-card {
@@ -300,8 +298,7 @@ export default function StartPage() {
         }
 
         .start-palette-section {
-          max-width: 1100px;
-          margin: 0 auto;
+          width: 100%;
           padding: 64px 48px;
           text-align: center;
         }
@@ -350,14 +347,13 @@ export default function StartPage() {
         }
 
         .start-grid-section {
-          max-width: 1100px;
-          margin: 0 auto;
+          width: 100%;
           padding: 0 48px 80px;
         }
 
         .start-visual-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(6, 1fr);
           gap: 16px;
         }
 
@@ -425,6 +421,7 @@ export default function StartPage() {
           .start-palette-section { padding: 40px 20px; }
           .start-grid-section { padding: 0 20px 60px; }
           .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
+          .start-palette-section { padding: 40px 20px; }
         }
       `}</style>
 
@@ -510,25 +507,12 @@ export default function StartPage() {
             </div>
 
             <div className="start-browser-content">
-              <div className="start-browser-lines">
-                {/* Simulace hero sekce */}
-                <div className="start-browser-line" style={{ width: '60%', height: 14, background: '#e8e4dc' }} />
-                <div className="start-browser-line" style={{ width: '80%' }} />
-                <div className="start-browser-line" style={{ width: '70%' }} />
-                <div style={{ height: 12 }} />
-                <div className="start-browser-line" style={{ width: '45%' }} />
-                <div className="start-browser-line" style={{ width: '55%' }} />
-                <div style={{ height: 12 }} />
-                {/* Simulace obrázků */}
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <div style={{ flex: 1, height: 80, borderRadius: 6, background: '#f0ede8' }} />
-                  <div style={{ flex: 1, height: 80, borderRadius: 6, background: '#ebe8e2' }} />
-                  <div style={{ flex: 1, height: 80, borderRadius: 6, background: '#f5f2ed' }} />
-                </div>
-                <div style={{ height: 12 }} />
-                <div className="start-browser-line" style={{ width: '50%' }} />
-                <div className="start-browser-line" style={{ width: '65%' }} />
-              </div>
+              <iframe
+                src="/premiova-vizualni-identita#how"
+                className="start-browser-iframe"
+                title="Lucifera PVI preview"
+                scrolling="no"
+              />
 
               {/* Overlay karta */}
               <div className="start-overlay-card">
