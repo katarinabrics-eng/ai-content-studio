@@ -193,19 +193,18 @@ export default function StartPage() {
 
         /* HERO */
         .start-hero {
-          min-height: 100vh;
           display: flex;
           align-items: center;
           width: 100%;
-          padding: 80px 0;
+          padding: 100px 0 72px;
         }
         .start-hero-inner {
           max-width: 1200px;
           margin: 0 auto;
           padding: 0 80px;
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 80px;
+          grid-template-columns: 1fr 1.6fr;
+          gap: 60px;
           align-items: center;
           width: 100%;
         }
@@ -289,7 +288,7 @@ export default function StartPage() {
         .slides-outer {
           position: relative;
           width: 100%;
-          height: 480px;
+          height: 360px;
           overflow: hidden;
         }
         .slide-item {
@@ -501,7 +500,8 @@ export default function StartPage() {
         }
 
         @media (max-width: 1024px) {
-          .start-hero-inner { gap: 48px; padding: 0 48px; }
+          .start-hero-inner { grid-template-columns: 1fr 1.4fr; gap: 40px; padding: 0 48px; }
+          .slides-outer { height: 300px; }
           .start-visual-grid { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 768px) {
