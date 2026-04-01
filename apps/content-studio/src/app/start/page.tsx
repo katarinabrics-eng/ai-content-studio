@@ -12,6 +12,14 @@ const COLLECTIONS = [
   { hex: '#4A9B8E', label: 'Teal Lifestyle', style: 'K09' },
 ]
 
+const PILLARS = [
+  { label: 'Hodnota',       score: 8, color: '#111' },
+  { label: 'Pozice',        score: 7, color: '#111' },
+  { label: 'Architektura',  score: 8, color: '#111' },
+  { label: 'Identita',      score: 9, color: '#111' },
+  { label: 'Důvěra',        score: 4, color: '#e05a5a' },
+]
+
 type Photo = {
   id: string
   name: string
@@ -23,7 +31,6 @@ type Photo = {
 export default function StartPage() {
   const router = useRouter()
   const [selectedStyle, setSelectedStyle] = useState<string>('K04')
-  const [bgTint, setBgTint] = useState<string>(COLLECTIONS[2].hex + '0f')
   const [webUrl, setWebUrl] = useState('')
   const [mounted, setMounted] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
@@ -49,7 +56,6 @@ export default function StartPage() {
 
   async function loadCollection(style: string, hex: string) {
     setGridLoading(true)
-    setBgTint(hex + '0f')
     setSelectedStyle(style)
     try {
       const res = await fetch(`/api/client/visual-bank?limit=6&style=${style}`)
@@ -84,7 +90,9 @@ export default function StartPage() {
 
         .start-page {
           min-height: 100vh;
+          background: #ffffff;
           font-family: 'DM Sans', system-ui, sans-serif;
+          color: #111;
         }
 
         /* HEADER */
@@ -132,7 +140,7 @@ export default function StartPage() {
           font-family: 'DM Sans', sans-serif;
         }
 
-        /* HERO — celá šířka */
+        /* HERO */
         .start-hero {
           width: 100%;
           padding: 80px 80px 72px;
@@ -140,6 +148,7 @@ export default function StartPage() {
           grid-template-columns: 1fr 1fr;
           gap: 72px;
           align-items: center;
+          background: #ffffff;
         }
 
         .start-h1 {
@@ -224,123 +233,135 @@ export default function StartPage() {
         }
         .start-secondary-link:hover { color: #555; }
 
-        /* PRAVÝ SLOUPEC — wrapper pro relativní pozicování levitujících karet */
-        .start-hero-right {
-          position: relative;
+        /* PRAVÝ SLOUPEC */
+        .start-hero-right { position: relative; }
+
+        /* MOCK BROWSER */
+        .start-browser-mock {
+          border-radius: 14px;
+          border: 1px solid #e8e4dc;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+          background: #ffffff;
         }
 
-        /* DARK PVI BLOK */
-        .start-pvi-block {
-          background: #111;
-          border-radius: 16px;
-          padding: 36px 32px;
-          color: white;
-          width: 100%;
-        }
-
-        .start-pvi-eyebrow {
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.14em;
-          color: rgba(255,255,255,0.45);
-          margin-bottom: 14px;
-          font-family: 'DM Sans', sans-serif;
-        }
-
-        .start-pvi-h3 {
-          font-family: 'Playfair Display', serif;
-          font-size: 24px;
-          font-weight: 600;
-          line-height: 1.25;
-          color: white;
-          margin-bottom: 24px;
-        }
-
-        .start-pvi-steps {
+        .start-browser-bar {
+          background: #f5f5f5;
+          padding: 10px 16px;
+          border-bottom: 1px solid #e8e4dc;
           display: flex;
-          flex-direction: column;
-          gap: 14px;
-          margin-bottom: 24px;
-        }
-
-        .start-pvi-step {
-          display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: 12px;
         }
 
-        .start-pvi-step-num {
-          width: 24px;
-          height: 24px;
+        .start-browser-dots { display: flex; gap: 6px; }
+
+        .start-browser-dot {
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .start-browser-url {
+          font-size: 12px;
+          color: #888;
+          font-family: 'DM Sans', sans-serif;
+        }
+
+        /* OBSAH MOCK BROWSERU */
+        .start-mock-content {
+          background: #ffffff;
+          padding: 22px 24px 20px;
+        }
+
+        /* Score karta */
+        .start-mock-score-row {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 11px;
+          align-items: flex-end;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+
+        .start-mock-score-num {
+          font-family: 'Playfair Display', serif;
+          font-size: 44px;
           font-weight: 600;
-          color: rgba(255,255,255,0.7);
-          flex-shrink: 0;
-          margin-top: 1px;
+          color: #111;
+          line-height: 1;
         }
 
-        .start-pvi-step-text {
-          font-size: 13px;
-          color: rgba(255,255,255,0.75);
-          line-height: 1.5;
+        .start-mock-score-right {
+          padding-bottom: 4px;
         }
 
-        .start-pvi-step-text strong {
-          color: white;
+        .start-mock-score-label {
+          font-size: 11px;
+          color: #888;
+          margin-bottom: 2px;
+        }
+
+        .start-mock-score-sub {
+          font-size: 12px;
+          color: #5a7a00;
           font-weight: 500;
         }
 
-        /* mini preview uvnitř dark bloku */
-        .start-pvi-preview {
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 10px;
-          padding: 14px 16px;
-          margin-bottom: 20px;
+        /* Pilíře */
+        .start-mock-pillars {
+          display: flex;
+          flex-direction: column;
+          gap: 9px;
+          margin-bottom: 18px;
+        }
+
+        .start-mock-pillar-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .start-mock-pillar-label {
           font-size: 11px;
-          color: rgba(255,255,255,0.4);
-          letter-spacing: 0.06em;
-          font-weight: 600;
-          text-align: center;
-          font-family: 'DM Sans', sans-serif;
+          color: #555;
+          width: 96px;
+          flex-shrink: 0;
         }
 
-        .start-pvi-preview-title {
-          font-size: 13px;
-          font-weight: 600;
-          color: rgba(255,255,255,0.85);
-          letter-spacing: 0.02em;
-          margin-top: 6px;
+        .start-mock-pillar-bar-bg {
+          flex: 1;
+          height: 6px;
+          background: #f0ede8;
+          border-radius: 3px;
+          overflow: hidden;
         }
 
-        .start-pvi-cta {
-          display: block;
-          width: 100%;
-          background: #b7e94c;
+        .start-mock-pillar-bar-fill {
+          height: 100%;
+          border-radius: 3px;
+          transition: width 600ms ease;
+        }
+
+        .start-mock-pillar-score {
+          font-size: 11px;
+          font-weight: 600;
+          width: 28px;
+          text-align: right;
+          flex-shrink: 0;
+        }
+
+        /* Brand DNA */
+        .start-mock-dna {
+          border-top: 0.5px solid #e8e4dc;
+          padding-top: 14px;
+          font-size: 11px;
+          color: #888;
+        }
+
+        .start-mock-dna-value {
+          font-size: 12px;
           color: #111;
-          border: none;
-          border-radius: 10px;
-          padding: 12px 20px;
-          font-size: 14px;
-          font-weight: 600;
-          font-family: 'DM Sans', sans-serif;
-          cursor: pointer;
-          text-align: center;
-          transition: background 150ms;
-          margin-bottom: 10px;
-        }
-        .start-pvi-cta:hover { background: #a0d940; }
-
-        .start-pvi-micro {
-          text-align: center;
-          font-size: 11px;
-          color: rgba(255,255,255,0.3);
+          font-weight: 500;
+          margin-top: 3px;
         }
 
         /* LEVITUJÍCÍ KARTY */
@@ -356,7 +377,6 @@ export default function StartPage() {
           border-radius: 10px;
           padding: 8px 14px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-          font-size: 12px;
           font-family: 'DM Sans', sans-serif;
           animation: float 3s ease-in-out infinite;
           pointer-events: none;
@@ -364,24 +384,15 @@ export default function StartPage() {
           white-space: nowrap;
         }
 
-        .start-float-card-label {
-          font-size: 10px;
-          color: #aaa;
-          margin-bottom: 2px;
-        }
+        .start-float-card-label { font-size: 10px; color: #aaa; margin-bottom: 2px; }
+        .start-float-card-value { font-size: 15px; font-weight: 600; color: #111; line-height: 1.2; }
 
-        .start-float-card-value {
-          font-size: 15px;
-          font-weight: 600;
-          color: #111;
-          line-height: 1.2;
-        }
-
-        /* PALETA SEKCE */
+        /* PALETA */
         .start-palette-section {
           width: 100%;
           padding: 64px 48px 32px;
           text-align: center;
+          background: #ffffff;
         }
 
         .start-section-title {
@@ -416,7 +427,6 @@ export default function StartPage() {
           transition: box-shadow 150ms, transform 150ms;
         }
         .start-color-dot:hover { transform: scale(1.1); }
-
         .start-color-label { font-size: 10px; color: #888; white-space: nowrap; }
 
         /* KOLOTOČ */
@@ -424,6 +434,7 @@ export default function StartPage() {
           width: 100%;
           padding: 24px 48px 0;
           overflow: hidden;
+          background: #ffffff;
         }
 
         .start-carousel {
@@ -472,7 +483,11 @@ export default function StartPage() {
         }
 
         /* GRID */
-        .start-grid-section { width: 100%; padding: 24px 48px 80px; }
+        .start-grid-section {
+          width: 100%;
+          padding: 24px 48px 80px;
+          background: #ffffff;
+        }
 
         .start-visual-grid {
           display: grid;
@@ -565,11 +580,7 @@ export default function StartPage() {
 
       <div
         className="start-page"
-        style={{
-          backgroundColor: bgTint,
-          transition: 'background-color 300ms ease, opacity 400ms ease',
-          opacity: mounted ? 1 : 0,
-        }}
+        style={{ opacity: mounted ? 1 : 0, transition: 'opacity 400ms ease' }}
       >
         {/* HEADER */}
         <header className="start-header">
@@ -633,95 +644,78 @@ export default function StartPage() {
             </div>
           </div>
 
-          {/* Pravý sloupec — dark PVI blok + levitující karty */}
+          {/* Pravý sloupec */}
           <div className="start-hero-right">
 
-            {/* Levitující karta 1 — Brand Score (vpravo nahoře) */}
-            <div
-              className="start-float-card"
-              style={{
-                top: -20,
-                right: -24,
-                animationDelay: '0s',
-              }}
-            >
+            {/* Levitující karta 1 — Brand Score */}
+            <div className="start-float-card" style={{ top: -20, right: -24, animationDelay: '0s' }}>
               <div className="start-float-card-label">Brand Score</div>
               <div className="start-float-card-value">74 / 100</div>
             </div>
 
-            {/* Levitující karta 2 — Důvěra (vlevo dole) */}
-            <div
-              className="start-float-card"
-              style={{
-                bottom: 40,
-                left: -28,
-                animationDelay: '1s',
-              }}
-            >
+            {/* Levitující karta 2 — Důvěra */}
+            <div className="start-float-card" style={{ bottom: 40, left: -28, animationDelay: '1s' }}>
               <div className="start-float-card-label">Nejslabší místo</div>
-              <div className="start-float-card-value" style={{ color: '#e05a5a' }}>
-                Důvěra · 8/10
-              </div>
+              <div className="start-float-card-value" style={{ color: '#e05a5a' }}>Důvěra · 8/10</div>
             </div>
 
-            {/* Levitující karta 3 — DNA (vpravo dole) */}
-            <div
-              className="start-float-card"
-              style={{
-                bottom: -16,
-                right: -20,
-                animationDelay: '2s',
-              }}
-            >
-              <div
-                className="start-float-card-value"
-                style={{ color: '#5a7a00', fontSize: 13 }}
-              >
-                ✓ DNA nalezena
-              </div>
+            {/* Levitující karta 3 — DNA */}
+            <div className="start-float-card" style={{ bottom: -16, right: -20, animationDelay: '2s' }}>
+              <div className="start-float-card-value" style={{ color: '#5a7a00', fontSize: 13 }}>✓ DNA nalezena</div>
             </div>
 
-            {/* Dark PVI blok */}
-            <div className="start-pvi-block">
-              <div className="start-pvi-eyebrow">JAK DIAGNOSTIKA FUNGUJE</div>
-              <h3 className="start-pvi-h3">
-                Za 2 minuty víte,<br />kde vaše značka stojí.
-              </h3>
-
-              <div className="start-pvi-steps">
-                <div className="start-pvi-step">
-                  <div className="start-pvi-step-num">1</div>
-                  <div className="start-pvi-step-text">
-                    <strong>Zadáte web</strong> — nebo začnete rovnou bez něj
-                  </div>
+            {/* Mock browser */}
+            <div className="start-browser-mock">
+              <div className="start-browser-bar">
+                <div className="start-browser-dots">
+                  <div className="start-browser-dot" style={{ background: '#FF5F57' }} />
+                  <div className="start-browser-dot" style={{ background: '#FFBD2E' }} />
+                  <div className="start-browser-dot" style={{ background: '#28C840' }} />
                 </div>
-                <div className="start-pvi-step">
-                  <div className="start-pvi-step-num">2</div>
-                  <div className="start-pvi-step-text">
-                    <strong>Analyzujeme</strong> text, vizuál, tón a konzistenci značky
-                  </div>
-                </div>
-                <div className="start-pvi-step">
-                  <div className="start-pvi-step-num">3</div>
-                  <div className="start-pvi-step-text">
-                    <strong>Vidíte výsledky</strong> — skóre, slabá místa, doporučení
-                  </div>
-                </div>
+                <span className="start-browser-url">studiolucifera.cz</span>
               </div>
 
-              <div className="start-pvi-preview">
-                UKÁZKA VÝSLEDKU
-                <div className="start-pvi-preview-title">VAŠE TVÁŘ JE VAŠE ZNAČKA</div>
-              </div>
+              <div className="start-mock-content">
+                {/* Score */}
+                <div className="start-mock-score-row">
+                  <div className="start-mock-score-num">74</div>
+                  <div className="start-mock-score-right">
+                    <div className="start-mock-score-label">Index značky</div>
+                    <div className="start-mock-score-sub">↑ Nad průměrem oboru</div>
+                  </div>
+                </div>
 
-              <button
-                className="start-pvi-cta"
-                onClick={handleAnalyze}
-              >
-                Spustit vlastní diagnostiku →
-              </button>
-              <div className="start-pvi-micro">
-                Zdarma · Bez registrace · Výsledky za 2 minuty
+                {/* Pilíře */}
+                <div className="start-mock-pillars">
+                  {PILLARS.map((p) => (
+                    <div key={p.label} className="start-mock-pillar-row">
+                      <div className="start-mock-pillar-label">{p.label}</div>
+                      <div className="start-mock-pillar-bar-bg">
+                        <div
+                          className="start-mock-pillar-bar-fill"
+                          style={{
+                            width: `${p.score * 10}%`,
+                            background: p.color,
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="start-mock-pillar-score"
+                        style={{ color: p.color }}
+                      >
+                        {p.score}/10
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Brand DNA */}
+                <div className="start-mock-dna">
+                  <div>Brand DNA</div>
+                  <div className="start-mock-dna-value">
+                    Soft feminine · Klidná · Pečující
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -804,17 +798,9 @@ export default function StartPage() {
                         className="start-grid-img"
                       />
                     ) : (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: activeCollection?.hex ?? '#e8e4dc',
-                        }}
-                      />
+                      <div style={{ position: 'absolute', inset: 0, background: activeCollection?.hex ?? '#e8e4dc' }} />
                     )}
-                    <span className="start-grid-label">
-                      {activeCollection?.label ?? ''}
-                    </span>
+                    <span className="start-grid-label">{activeCollection?.label ?? ''}</span>
                     <div
                       className="start-grid-overlay"
                       style={{ opacity: hoveredCard === i ? 1 : 0 }}
