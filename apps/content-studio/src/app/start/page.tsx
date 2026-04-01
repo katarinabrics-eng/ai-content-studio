@@ -17,11 +17,11 @@ type Collection = {
 
 const ROTATING_SENTENCES = [
   "Nechceš řešit strategii.\nChceš výsledek.",
-  "Tvoříš.\nAle zákazník neví proč jít za tebou.",
+  "Tvoříš. Ale zákazník\nneví proč jít za tebou.",
   "Máš jasno.\nChceš rovnou tvořit.",
   "Web máš.\nVýsledky chybí.",
   "Vypadá to dobře.\nAle něco nesedí.",
-  "Obsah potřebuješ teď.\nNe za týden.",
+  "Obsah potřebuješ\nteď. Ne za týden.",
 ]
 
 const LIGHT_SENTENCES = [
