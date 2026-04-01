@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
+import { HexColorPicker } from 'react-colorful'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -209,6 +210,20 @@ export default function MediaLibraryPage() {
   const [vbLoading, setVbLoading] = useState(false)
   const [vbError, setVbError] = useState<string | null>(null)
   const [vbColumns, setVbColumns] = useState(8)
+  const [showColorPicker, setShowColorPicker] = useState(false)
+  const [selectedHexColor, setSelectedHexColor] = useState('')
+  const colorPickerRef = useRef<HTMLDivElement>(null)
+
+  // Zavři color picker při kliknutí mimo
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setShowColorPicker(false)
+      }
+    }
+    if (showColorPicker) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showColorPicker])
 
   useEffect(() => {
     fetchMedia('all')
@@ -237,11 +252,11 @@ export default function MediaLibraryPage() {
     }
   }
 
-  async function fetchVB(style: string) {
+  async function fetchVB(style: string, hexColor: string = '') {
     setVbLoading(true)
     setVbError(null)
     try {
-      const url = `/api/client/visual-bank?limit=48${style ? `&style=${encodeURIComponent(style)}` : ''}`
+      const url = `/api/client/visual-bank?limit=48${style ? `&style=${encodeURIComponent(style)}` : ''}${hexColor ? `&color=${encodeURIComponent(hexColor)}` : ''}`
       const res = await fetch(url)
       const data = await res.json()
       setVbFiles(data.files ?? [])
@@ -257,7 +272,15 @@ export default function MediaLibraryPage() {
   function switchStyle(style: string, color: string = '') {
     setVbStyle(style)
     setVbColor(color)
+    setSelectedHexColor('')
     fetchVB(style)
+  }
+
+  function applyHexColor(hex: string) {
+    setSelectedHexColor(hex)
+    setVbStyle('')
+    setVbColor('')
+    fetchVB('', hex)
   }
 
   function switchType(type: string) {
@@ -462,6 +485,49 @@ export default function MediaLibraryPage() {
                 onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'}
               />
             ))}
+
+            {/* Rainbow color picker kroužek */}
+            <div style={{ position: 'relative', flexShrink: 0 }} ref={colorPickerRef}>
+              <div
+                title="Vlastní barva"
+                onClick={() => setShowColorPicker(prev => !prev)}
+                style={{
+                  width: 28, height: 28, borderRadius: '50%', cursor: 'pointer',
+                  background: selectedHexColor || 'linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #c77dff)',
+                  border: selectedHexColor ? '2.5px solid #111' : '2px solid transparent',
+                  boxShadow: selectedHexColor ? '0 0 0 2px #fff inset' : 'none',
+                  flexShrink: 0,
+                  transition: 'transform 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.15)'}
+                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'}
+              />
+              {showColorPicker && (
+                <div style={{
+                  position: 'absolute', top: 40, left: 0,
+                  background: '#fff',
+                  border: '0.5px solid #e8e4dc',
+                  borderRadius: 12,
+                  padding: 12,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+                  zIndex: 100,
+                }}>
+                  <HexColorPicker
+                    color={selectedHexColor || '#4A9B8E'}
+                    onChange={(hex) => setSelectedHexColor(hex)}
+                  />
+                  <div style={{ marginTop: 10, display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, color: '#888', fontFamily: 'monospace' }}>{selectedHexColor || '#------'}</span>
+                    <button
+                      onClick={() => { applyHexColor(selectedHexColor); setShowColorPicker(false) }}
+                      style={{ marginLeft: 'auto', padding: '5px 14px', borderRadius: 7, border: 'none', background: '#111', color: '#fff', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}
+                    >
+                      Použít
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Style text pills z API */}
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginLeft: 8, borderLeft: '0.5px solid #e8e8e4', paddingLeft: 12 }}>
