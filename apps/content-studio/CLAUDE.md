@@ -273,6 +273,67 @@ NEXT_PUBLIC_SITE_URL=https://ai-content-studio-omega.vercel.app
 
 ---
 
+## PRODUKT ARCHITEKTURA
+
+### Jeden unifikovaný onboarding
+Všechny vstupní body směřují na JEDEN onboarding.
+Nejlepší diagnostika je na: `/brand-scan` nebo `/diagnostika`
+Po onboardingu se klient třídí dle tarifu.
+Data z diagnostiky se ukládají k projektu v `project_brief`.
+
+### Vizuální knihovna — finální struktura
+Tabs v pořadí: **Inspirace** (Vizuální banka) → Moje fotky → Oblíbené ❤️
+Header: „Vyber vizuál pro svůj obsah"
+Sub: „Ulož si co se ti líbí nebo rovnou tvoř příspěvek"
+
+**Hover na fotce:**
+- bílé overlay (ne limetkové)
+- gradient zdola: `rgba(0,0,0,0.6)` → transparent
+- velké tlačítko „Vytvořit příspěvek" uprostřed
+- ukázka textu pod ním (hook příklad)
+- srdíčko vpravo nahoře jako kulatá ikona
+
+**Labely na fotkách:** Reels vibe / Carousel BG / Quote post / Story moment / Feed lifestyle
+Label „Použita v kampani" pokud foto bylo použito
+
+**Vyhledávání:** fulltext search nad galerií
+**Color picker:** výběr vlastní barvy + kroužky dle složek K02–K09
+**Kredit:** vpravo nahoře „Zbývá X kreditů"
+
+**Flows:**
+- Klik ➕ Použít → loading „Tvořím příspěvek..." → preview hook+caption+hashtagy → „Použiješ 200 kreditů"
+- Klik ❤️ Uložit → přidá do Oblíbené → „Uloženo do tvého stylu"
+- Dojde kredit → „Dochází ti kredit" → Dobít / Upgrade
+
+### AI komunikace (nikdy „AI generovalo")
+Vždy: „Tvořím pro tebe" / „Na základě tvého stylu"
+
+### Kredit systém
+Zobrazit vpravo nahoře v headeru: „Zbývá X kreditů"
+Při nízkém stavu (<200): „Zbývá posledních X kreditů" červeně
+Odečet: 200 kreditů za příspěvek z knihovny
+
+### Stav implementace media-library (2026-04-01)
+✅ Hotovo:
+- Vizuální banka s fotkama z Drive
+- Hover overlay — gradient, bílá tlačítka, srdíčko jako ikona
+- Labely na fotkách (Reels vibe / Carousel BG…)
+- Tab Oblíbené (prázdný stav)
+- Color picker (HexColorPicker + kroužky K02–K09)
+- Masonry columns, přepínač 2–8 sloupců
+- Podmíněný Sidebar dle produktu
+
+❌ TODO:
+- Pořadí tabů — Inspirace jako první tab
+- Hover — ukázka textu (hook) pod tlačítkem
+- Fulltext search nad VB galerií
+- Kredit systém (zobrazení, odečet, varování)
+- Label „Použita v kampani"
+- ➕ Použít → reálný flow (teď alert)
+- ❤️ Uložit → reálné ukládání do DB
+
+---
+
 ## Vibe
 
 Lucifera není generický SaaS.
