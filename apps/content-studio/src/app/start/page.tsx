@@ -15,12 +15,12 @@ type Collection = {
 }
 
 const ROTATING_SENTENCES = [
-  "Tvoříš. Ale zákazník\nneví proč jít za tebou.",
+  "Nechceš řešit strategii.\nChceš výsledek.",
+  "Tvoříš.\nAle zákazník neví proč jít za tebou.",
   "Máš jasno.\nChceš rovnou tvořit.",
   "Web máš.\nVýsledky chybí.",
-  "Nechceš řešit strategii.\nChceš výsledek.",
   "Vypadá to dobře.\nAle něco nesedí.",
-  "Obsah potřebuješ\nteď. Ne za týden.",
+  "Obsah potřebuješ teď.\nNe za týden.",
 ]
 
 const K04_PHOTOS = [
@@ -566,10 +566,9 @@ export default function StartPage() {
               </div>
 
               {/* 2. Pevný podtext */}
-              <p className="hero-subtitle">
-                Hybridní tvorba pod lidským dohledem.<br />
-                AI + profesionální fotografie + tvůj výběr.<br />
-                Vizuální obsah na míru tvé značce.
+              <p style={{ fontSize: '14px', color: '#888', lineHeight: 1.7, marginTop: '20px' }}>
+                Generativní obsah + profesionální fotografie + tvůj výběr.<br />
+                Vizuální obsah, který dává smysl. Bez zbytečného vymýšlení.
               </p>
 
               {/* 3. CTA blok */}
@@ -889,6 +888,83 @@ export default function StartPage() {
                 ))}
           </div>
         </section>
+
+        {/* LUCIFERA LIGHT SEKCE */}
+        <section style={{ background: '#f5f3ee', padding: '100px 80px' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+
+            {/* Levý text */}
+            <div>
+              <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: '16px', fontWeight: 600 }}>
+                Lucifera Light
+              </p>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 3vw, 2.8rem)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: '24px' }}>
+                Světlo v tvorbě.
+              </h2>
+              <div style={{ fontSize: '16px', color: '#555', lineHeight: 1.8, marginBottom: '32px' }}>
+                <p style={{ marginBottom: '16px' }}>Někdy víš, co chceš říct.<br />Jen se ti nechce znovu začínat od nuly.</p>
+                <p style={{ marginBottom: '16px' }}>Nechceš přemýšlet nad každým postem.<br />Nechceš ladit každý detail.<br />Chceš, aby to šlo.</p>
+                <p>Tady si vybereš. A jedeš.<br />Bez zdržování. Bez chaosu. S výsledkem, který drží směr.</p>
+              </div>
+              <button
+                onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                style={{ background: '#111', color: 'white', padding: '14px 28px', borderRadius: '10px', fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer' }}
+              >
+                Otevřít Lucifera Light →
+              </button>
+              <p style={{ marginTop: '32px', fontSize: '13px', color: '#aaa' }}>
+                Nejsi si jistá, jestli je to ono?<br />
+                <span
+                  onClick={() => document.getElementById('brand-scan-widget')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{ color: '#888', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  Začni tím, že uvidíš, co z tvého obsahu čtou ostatní. →
+                </span>
+              </p>
+            </div>
+
+            {/* Pravý widget — brand scan */}
+            <div id="brand-scan-widget">
+              <div style={{ background: 'white', borderRadius: '16px', padding: '32px', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', border: '1px solid #e8e4dc' }}>
+                <p style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '8px' }}>
+                  Brand diagnostika
+                </p>
+                <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', color: '#111', marginBottom: '4px' }}>
+                  Zadejte web.
+                </h3>
+                <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
+                  Zbytek uděláme za vás.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                  <input
+                    type="url"
+                    placeholder="např. lucifera.cz"
+                    id="section3-url"
+                    style={{ flex: 1, padding: '12px 16px', border: '1px solid #e8e4dc', borderRadius: '10px', fontSize: '14px', outline: 'none' }}
+                  />
+                  <button
+                    onClick={() => {
+                      const el = document.getElementById('section3-url') as HTMLInputElement | null
+                      const url = el?.value?.trim() ?? ''
+                      router.push('/brand-scan' + (url ? '?url=' + encodeURIComponent(url) : ''))
+                    }}
+                    style={{ background: '#b7e94c', color: '#111', padding: '12px 20px', borderRadius: '10px', fontSize: '14px', fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    Spustit →
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', fontSize: '12px', color: '#aaa' }}>
+                  <span>✓ Screenshot webu</span>
+                  <span>✓ Brand DNA</span>
+                  <span>✓ Skóre značky</span>
+                  <span>✓ Zdarma</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
       </div>
     </div>
   )
