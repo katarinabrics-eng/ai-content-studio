@@ -660,7 +660,7 @@ export default function StartPage() {
             >
               <div className="start-float-card-label">Nejslabší místo</div>
               <div className="start-float-card-value" style={{ color: '#e05a5a' }}>
-                Důvěra · 4/10
+                Důvěra · 8/10
               </div>
             </div>
 
