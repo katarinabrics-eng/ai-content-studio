@@ -928,7 +928,7 @@ export default function StartPage() {
                   Máš pocit, že to, co dáváš ven, neodpovídá tomu, co umíš?
                 </p>
                 <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>
-                  Začni tím, že uvidíš, co z tvého obsahu čtou ostatní.
+                  Zjistíš, proč to nefunguje.
                 </p>
               </div>
               <div style={{ background: 'white', borderRadius: '16px', padding: '40px', border: '1px solid #e8e4dc', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
