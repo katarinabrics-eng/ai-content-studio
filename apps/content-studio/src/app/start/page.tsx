@@ -922,8 +922,18 @@ export default function StartPage() {
             </div>
 
             {/* Pravý widget — StartAnalyzer */}
-            <div id="brand-scan-widget" style={{ background: 'white', borderRadius: '16px', padding: '40px', border: '1px solid #e8e4dc', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
-              <StartAnalyzer diagnostika hideIntro />
+            <div id="brand-scan-widget">
+              <div style={{ marginBottom: '24px' }}>
+                <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.3rem, 2vw, 1.7rem)', fontWeight: 700, color: '#111', lineHeight: 1.3, marginBottom: '8px' }}>
+                  Nejsi si jistá, jestli je to ono?
+                </p>
+                <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>
+                  Začni tím, že uvidíš, co z tvého obsahu čtou ostatní.
+                </p>
+              </div>
+              <div style={{ background: 'white', borderRadius: '16px', padding: '40px', border: '1px solid #e8e4dc', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
+                <StartAnalyzer diagnostika hideIntro />
+              </div>
             </div>
 
           </div>
