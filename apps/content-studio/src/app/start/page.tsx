@@ -1008,7 +1008,6 @@ export default function StartPage() {
               </div>
             </div>
 
-          </div>
         </section>
 
       </div>
