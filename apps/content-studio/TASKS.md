@@ -188,6 +188,12 @@ ALTER TABLE client_projects
 - [ ] Uložení Brand DNA do Supabase po analýze
 - [ ] Průvodce pro slabé weby (skóre < 60%) — otázky výběrem
 
+### Start page
+- [ ] Sekce "Takhle může vypadat tvůj příspěvek" pod gridem kolekcí
+  - 3–4 ukázky s grafikou + hook textem + caption
+  - Obsah připravit postupně (reálné příspěvky z produkce)
+  - Klik → /client/magnet/rtg/onboarding
+
 ### Klientský portál
 - [ ] Media Library — nahrávání fotek pro AI
 - [ ] Google Drive integrace — sync fotek ze složky
@@ -242,25 +248,6 @@ ALTER TABLE client_projects
 ---
 
 ## 📝 POZNÁMKY ze session
-### 2026-03-30
-- Pracovaly jsme na RTG dashboard prototypu a nasazení
-- Sidebar měl duplikáty a chyběl RTG odkaz — opraveno
-- `rtg/page.tsx` měl `alert` místo download — opraveno
-- Inline edit textu se neukládal do DB — přidán `useAutoSave` hook
-- Pricing stránka `/rtg/plans` je nová, neexistovala
-- CLAUDE.md vytvořen pro Claude Code context
-- Web Analyzer: Firecrawl API řeší CORS — musí běžet server-side
-- Design: světlý (#f5f3ee krémová + #b7e94c limetka), NIKDY tmavý sidebar
-
-### 2026-03-31
-- RTG onboarding přepracován — 4 kroky: URL, styl agenta (5 možností), platformy (grid), témata (pills + custom, max 5)
-- API `onboarding/complete` rozšířeno o `agent_style` a `platforms`
-- Download: Drive URL (ne ZIP) — `google_drive_folder_id` z `client_projects`
-
-### 2026-03-30
-- RTG dashboard, Sidebar, autosave, download, RTG banner + badge na hlavním dashboardu
-- Post-commit hook pro čištění TASKS.md přidán do `.git/hooks/post-commit`
-
 ### Otevřené otázky
 - Kdy napojit Stripe pro upgrade plánů?
 - Má mít `/admin/rtg` přehled pending schválení?
