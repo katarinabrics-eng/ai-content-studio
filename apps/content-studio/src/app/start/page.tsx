@@ -30,6 +30,16 @@ const LIGHT_SENTENCES = [
   "Posvítíme na tvůj vizuál.",
 ]
 
+const LIGHT_SLIDES = [
+  { src: '/placeholders/CO DOSTANETE/vizualni-banka.jpg', label: 'Vizuální banka' },
+  { src: '/placeholders/CO DOSTANETE/reels.jpg', label: 'Reels' },
+  { src: '/placeholders/CO DOSTANETE/prispevky.jpg', label: 'Příspěvky' },
+  { src: '/placeholders/CO DOSTANETE/canva-sablony.jpg', label: 'Canva šablony' },
+  { src: '/placeholders/CO DOSTANETE/vizual-board.jpg', label: 'Vizuální board' },
+  { src: '/placeholders/CO DOSTANETE/brand-dna.jpg', label: 'Brand DNA' },
+  { src: '/placeholders/CO DOSTANETE/strategie.jpg', label: 'Strategie' },
+]
+
 const K04_PHOTOS = [
   '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg',
   '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg',
@@ -67,6 +77,9 @@ export default function StartPage() {
   // Slides
   const [activeSlide, setActiveSlide] = useState(0)
   const slideIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Light kolotoč
+  const [lightSlide, setLightSlide] = useState(0)
 
   function startSlideInterval() {
     if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
@@ -141,6 +154,11 @@ export default function StartPage() {
       if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    const t = setInterval(() => setLightSlide(i => (i + 1) % LIGHT_SLIDES.length), 3000)
+    return () => clearInterval(t)
   }, [])
 
   async function loadCollections() {
@@ -923,10 +941,10 @@ export default function StartPage() {
 
         {/* LUCIFERA LIGHT SEKCE */}
         <section style={{ background: '#f5f3ee', padding: '100px 80px' }}>
-          <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
 
-            {/* Text blok */}
-            <div style={{ maxWidth: '680px', margin: '0 auto', textAlign: 'left' }}>
+            {/* Levý text blok */}
+            <div>
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.4rem, 3.5vw, 3.2rem)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: '32px', minHeight: '80px' }}>
                 {lightText}<span style={{ opacity: lightPaused ? 0 : 1, transition: 'opacity 0.3s' }}>|</span>
               </h2>
@@ -955,6 +973,25 @@ export default function StartPage() {
                 Otevřít Lucifera Light →
               </button>
             </div>
+
+            {/* Pravý kolotoč obrázků */}
+            <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', aspectRatio: '4/3' }}>
+              {LIGHT_SLIDES.map((slide, i) => (
+                <div key={i} style={{ position: 'absolute', inset: 0, opacity: lightSlide === i ? 1 : 0, transition: 'opacity 0.8s ease' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={slide.src} alt={slide.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.5))', padding: '24px 20px 16px' }}>
+                    <span style={{ color: 'white', fontSize: '13px', fontWeight: 500 }}>{slide.label}</span>
+                  </div>
+                </div>
+              ))}
+              <div style={{ position: 'absolute', bottom: '12px', right: '16px', display: 'flex', gap: '4px', zIndex: 2 }}>
+                {LIGHT_SLIDES.map((_, i) => (
+                  <div key={i} onClick={() => setLightSlide(i)} style={{ width: lightSlide === i ? '20px' : '6px', height: '6px', borderRadius: '3px', background: lightSlide === i ? '#b7e94c' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s ease', cursor: 'pointer' }} />
+                ))}
+              </div>
+            </div>
+          </div>
 
             {/* Diagnostika — pod textem, na střed */}
             <div id="brand-scan-widget" style={{ marginTop: '64px', maxWidth: '700px', margin: '64px auto 0' }}>
