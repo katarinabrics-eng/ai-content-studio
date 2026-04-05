@@ -25,6 +25,7 @@ const ROTATING_SENTENCES = [
 ]
 
 const LIGHT_SENTENCES = [
+  "Lucifera Light.",
   "Světlo v tvorbě.",
   "Posvítíme na tvůj vizuál.",
 ]
@@ -482,10 +483,11 @@ export default function StartPage() {
           overflow-x: auto;
           scrollbar-width: none;
           -ms-overflow-style: none;
+          -webkit-overflow-scrolling: touch;
           margin-top: 28px;
           padding: 4px 24px;
           justify-content: center;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
           width: 100vw;
           margin-left: calc(-50vw + 50%);
         }
@@ -920,14 +922,11 @@ export default function StartPage() {
         </section>
 
         {/* LUCIFERA LIGHT SEKCE */}
-        <section style={{ background: '#f5f3ee', padding: '100px 120px' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <section style={{ background: '#f5f3ee', padding: '100px 80px' }}>
+          <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
 
-            {/* Levý text */}
-            <div style={{ maxWidth: '680px' }}>
-              <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: '16px', fontWeight: 600 }}>
-                Lucifera Light
-              </p>
+            {/* Text blok */}
+            <div style={{ maxWidth: '680px', margin: '0 auto', textAlign: 'left' }}>
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.4rem, 3.5vw, 3.2rem)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: '32px', minHeight: '80px' }}>
                 {lightText}<span style={{ opacity: lightPaused ? 0 : 1, transition: 'opacity 0.3s' }}>|</span>
               </h2>
@@ -955,29 +954,19 @@ export default function StartPage() {
               >
                 Otevřít Lucifera Light →
               </button>
-
-              <p style={{ marginTop: '24px', fontSize: '13px', color: '#aaa' }}>
-                Nejsi si jistá, jestli je to ono?<br />
-                <span
-                  onClick={() => document.getElementById('brand-scan-widget')?.scrollIntoView({ behavior: 'smooth' })}
-                  style={{ color: '#888', textDecoration: 'underline', cursor: 'pointer' }}
-                >
-                  Začni tím, že uvidíš, co z tvého obsahu čtou ostatní. →
-                </span>
-              </p>
             </div>
 
-            {/* Diagnostika — pod textem */}
-            <div id="brand-scan-widget" style={{ marginTop: '48px', maxWidth: '600px' }}>
-              <div style={{ marginBottom: '24px' }}>
-                <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.3rem, 2vw, 1.7rem)', fontWeight: 700, color: '#111', lineHeight: 1.3, marginBottom: '8px' }}>
-                  Máš pocit, že to, co dáváš ven, neodpovídá tomu, co umíš?
+            {/* Diagnostika — pod textem, na střed */}
+            <div id="brand-scan-widget" style={{ marginTop: '64px', maxWidth: '700px', margin: '64px auto 0' }}>
+              <div style={{ marginBottom: '28px', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#111', lineHeight: 1.3, marginBottom: '10px' }}>
+                  Máš pocit, že to, co dáváš ven,<br />neodpovídá tomu, co umíš?
                 </p>
-                <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>
+                <p style={{ fontSize: '16px', color: '#666', lineHeight: 1.7 }}>
                   Zjistíš, proč to nefunguje.
                 </p>
               </div>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '40px', border: '1px solid #e8e4dc', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
+              <div style={{ background: 'white', borderRadius: '16px', padding: '40px 48px', border: '1px solid #e8e4dc', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
                 <StartAnalyzer diagnostika hideIntro />
               </div>
             </div>
