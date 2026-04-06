@@ -26,14 +26,14 @@ const ROTATING_SENTENCES = [
 
 
 const K04_PHOTOS = [
-  '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg',
-  '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg',
-  '/placeholders/stock-vizualni knihovna/K04/k04-003.png',
-  '/placeholders/stock-vizualni knihovna/K04/k04-004.jpeg',
-  '/placeholders/stock-vizualni knihovna/K04/k04-005.png',
-  '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
-  '/placeholders/stock-vizualni knihovna/K04/k04-007.jpeg',
-  '/placeholders/stock-vizualni knihovna/K04/k04-008.png',
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg', label: 'Reels vibe',    liked: true  },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg', label: 'Feed lifestyle', liked: false },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-003.png',  label: 'Story moment',  liked: true  },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-004.jpeg', label: 'Carousel BG',   liked: false },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-005.png',  label: 'Quote post',    liked: false },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',  label: 'Reels vibe',    liked: true  },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-007.jpeg', label: 'Feed lifestyle', liked: false },
+  { src: '/placeholders/stock-vizualni knihovna/K04/k04-008.png',  label: 'Story moment',  liked: true  },
 ]
 
 export default function StartPage() {
@@ -833,20 +833,28 @@ export default function StartPage() {
                       <span className="browser-dot" style={{ background: '#ffbd2e' }} />
                       <span className="browser-dot" style={{ background: '#28ca41' }} />
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>Vizuální knihovna</span>
-                      <div style={{ display: 'flex', gap: '5px' }}>
-                        {['#E8B4B8', '#E8E4DC', '#4A9B8E', '#2C2C2C', '#8B7355'].map(hex => (
-                          <div key={hex} style={{ width: 14, height: 14, borderRadius: '50%', background: hex, border: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }} />
+                      <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                        {['#1a1a1a','#3a5fa0','#d0cdc7','#e08080','#6a5a48','#4a7a70','#b7e94c'].map((c, i) => (
+                          <div key={c} style={{ width: 14, height: 14, borderRadius: '50%', background: c, border: i === 6 ? '1.5px solid #b7e94c' : '1.5px solid transparent', cursor: 'pointer' }} />
                         ))}
                       </div>
                     </div>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '12px', overflow: 'hidden' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', flex: 1, minHeight: 0 }}>
-                        {K04_PHOTOS.map((src, i) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img key={i} src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', display: 'block' }} />
+                    <div style={{ flex: 1, padding: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gridTemplateRows: 'repeat(3, 1fr)', gap: '5px', flex: 1, overflow: 'hidden' }}>
+                        {K04_PHOTOS.slice(0, 24).map((photo, i) => (
+                          <div key={i} style={{ borderRadius: '7px', overflow: 'hidden', position: 'relative', cursor: 'pointer' }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={photo.src} alt={photo.label ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                            {photo.liked && (
+                              <div style={{ position: 'absolute', top: 4, right: 4, width: 16, height: 16, borderRadius: '50%', background: 'rgba(215,45,45,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', lineHeight: 1 }}>♥</div>
+                            )}
+                            {photo.label && (
+                              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.58))', padding: '12px 5px 4px', fontSize: 7, color: '#fff' }}>{photo.label}</div>
+                            )}
+                          </div>
                         ))}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#888', textAlign: 'center', marginTop: '10px', flexShrink: 0 }}>
+                      <div style={{ fontSize: '10px', color: '#aaa', textAlign: 'center', flexShrink: 0 }}>
                         247 vizuálů · AI + profesionální fotografie · tvůj výběr
                       </div>
                     </div>
