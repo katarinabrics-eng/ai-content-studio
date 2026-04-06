@@ -585,7 +585,8 @@ export default function StartPage() {
       >
         {/* HEADER */}
         <header className="start-header">
-          <span className="start-header-logo">LUCIFERA</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: '32px', width: 'auto' }} />
           <nav className="start-header-nav">
             <button className="start-header-link">Jak to funguje</button>
             <button
