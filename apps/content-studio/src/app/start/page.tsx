@@ -864,27 +864,66 @@ export default function StartPage() {
                       <span style={{ fontSize: '11px', color: '#5a7a00', fontWeight: 500 }}>+ Naplánovat</span>
                     </div>
                     <div style={{ flex: 1, padding: '14px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexShrink: 0 }}>
                         {['Instagram', 'Facebook', 'LinkedIn'].map((s, i) => (
                           <span key={s} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '10px', background: i === 0 ? '#f3fbdc' : '#f5f5f5', color: i === 0 ? '#5a7a00' : '#888', border: i === 0 ? '0.5px solid rgba(183,233,76,0.4)' : '0.5px solid #e8e4dc' }}>{s}</span>
                         ))}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '3px', fontSize: '11px', flex: 1 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '4px', marginBottom: '4px', flexShrink: 0 }}>
                         {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
-                          <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '5px 0', fontWeight: 500 }}>{d}</div>
+                          <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '3px 0', fontWeight: 500, fontSize: '10px' }}>{d}</div>
                         ))}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gridAutoRows: '88px', gap: '4px', flex: 1, overflow: 'hidden' }}>
                         {[
-                          { d: 1, e: null }, { d: 2, e: 'Reels' }, { d: 3, e: null }, { d: 4, e: 'Grafika' }, { d: 5, e: null }, { d: 6, e: null }, { d: 7, e: 'Stories' },
-                          { d: 8, e: null }, { d: 9, e: 'Newsletter' }, { d: 10, e: null }, { d: 11, e: 'Reels' }, { d: 12, e: null }, { d: 13, e: null }, { d: 14, e: 'Carousel' },
-                          { d: 15, e: 'Grafika' }, { d: 16, e: null }, { d: 17, e: null }, { d: 18, e: 'Reels' }, { d: 19, e: null }, { d: 20, e: null }, { d: 21, e: 'Stories' },
+                          { d: 1,  e: null },
+                          { d: 2,  e: 'Reels',      src: '/images/demo/demo-video-a.jpg',   v: '2.1k', l: '184' },
+                          { d: 3,  e: null },
+                          { d: 4,  e: 'Grafika',    src: '/images/demo/demo-grafika-a.jpg',  v: '1.8k', l: '231' },
+                          { d: 5,  e: null },
+                          { d: 6,  e: null },
+                          { d: 7,  e: 'Stories',    src: '/images/demo/demo-video-b.jpg',    v: '987',  l: '112' },
+                          { d: 8,  e: null },
+                          { d: 9,  e: 'Newsletter', src: '/images/demo/demo-grafika-a.jpg',  v: '640',  l: '88'  },
+                          { d: 10, e: null },
+                          { d: 11, e: 'Reels',      src: '/images/demo/demo-video-a.jpg',    v: '3.4k', l: '302' },
+                          { d: 12, e: null },
+                          { d: 13, e: null },
+                          { d: 14, e: 'Carousel',   src: '/images/demo/demo-grafika-a.jpg',  v: '1.1k', l: '159' },
+                          { d: 15, e: 'Grafika',    src: '/images/demo/demo-grafika-a.jpg',  v: '2.6k', l: '288' },
+                          { d: 16, e: null },
+                          { d: 17, e: null },
+                          { d: 18, e: 'Reels',      src: '/images/demo/demo-video-b.jpg',    v: '4.0k', l: '411' },
+                          { d: 19, e: null },
+                          { d: 20, e: null },
+                          { d: 21, e: 'Stories',    src: '/images/demo/demo-video-a.jpg',    v: '750',  l: '94'  },
                         ].map((item, i) => (
                           <div key={i} style={{
-                            textAlign: 'center', padding: '4px 2px', borderRadius: '5px',
-                            background: item.e ? '#f3fbdc' : 'transparent',
-                            border: item.e ? '0.5px solid rgba(183,233,76,0.4)' : 'none',
+                            borderRadius: '7px',
+                            overflow: 'hidden',
+                            background: item.e ? '#fff' : 'transparent',
+                            border: item.e ? '0.5px solid #e8e4dc' : 'none',
                           }}>
-                            <div style={{ color: '#111', fontWeight: item.e ? 600 : 400, fontSize: '11px' }}>{item.d}</div>
-                            {item.e && <div style={{ fontSize: '9px', color: '#5a7a00', marginTop: '2px' }}>{item.e}</div>}
+                            {item.e && item.src ? (
+                              <>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={item.src} alt="" style={{ width: '100%', height: '52px', objectFit: 'cover', display: 'block' }} />
+                                <div style={{ padding: '4px 5px' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#111' }}>{item.d}</span>
+                                    <span style={{ fontSize: '8px', color: '#5a7a00', fontWeight: 500 }}>{item.e}</span>
+                                  </div>
+                                  <div style={{ fontSize: '8px', color: '#bbb', marginTop: '2px', display: 'flex', gap: '5px' }}>
+                                    <span>{item.v} views</span>
+                                    <span>{item.l} likes</span>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <div style={{ padding: '6px 4px', textAlign: 'center' }}>
+                                <span style={{ fontSize: '11px', color: '#ccc' }}>{item.d}</span>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
