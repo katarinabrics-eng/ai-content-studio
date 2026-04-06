@@ -242,19 +242,20 @@ export default function StartPage() {
           display: flex;
           align-items: center;
           width: 100%;
-          padding: 100px 0 72px;
+          padding: 120px 0 100px;
+          min-height: 90vh;
         }
         .start-hero-inner {
-          max-width: 1400px;
+          max-width: 1600px;
           margin: 0 auto;
-          padding: 0 120px;
+          padding: 0 80px;
           display: grid;
-          grid-template-columns: 1fr 1.6fr;
-          gap: 60px;
+          grid-template-columns: 1fr 1.8fr;
+          gap: 80px;
           align-items: center;
           width: 100%;
         }
-        .start-hero-left { max-width: 480px; }
+        .start-hero-left { max-width: 560px; }
 
         /* TYPEWRITER */
         .typewriter-block {
