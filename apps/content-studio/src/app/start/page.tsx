@@ -942,7 +942,7 @@ export default function StartPage() {
                     </div>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '16px', overflow: 'hidden' }}>
                       <div style={{ display: 'flex', gap: '16px', flex: 1, minHeight: 0 }}>
-                        <div style={{ width: '180px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden' }}>
+                        <div style={{ width: '220px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden' }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                         </div>
