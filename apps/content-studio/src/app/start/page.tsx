@@ -57,6 +57,10 @@ export default function StartPage() {
   const [activeSlide, setActiveSlide] = useState(0)
   const slideIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // Auto-rotate barev a fotek
+  const [autoColorIndex, setAutoColorIndex] = useState(0)
+  const autoColorRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   function startSlideInterval() {
     if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
     slideIntervalRef.current = setInterval(() => {
@@ -114,6 +118,32 @@ export default function StartPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Auto-rotate spustit jakmile jsou načteny kolekce
+  useEffect(() => {
+    if (collections.length === 0) return
+    autoColorRef.current = setInterval(() => {
+      setAutoColorIndex(i => (i + 1) % collections.length)
+    }, 3000)
+    return () => { if (autoColorRef.current) clearInterval(autoColorRef.current) }
+  }, [collections])
+
+  // Reagovat na změnu autoColorIndex — přepnout barvu + fotky
+  useEffect(() => {
+    if (collections.length === 0) return
+    const col = collections[autoColorIndex]
+    if (!col) return
+    const hex = col.hex?.[0]
+    if (hex) {
+      setSelectedHex(hex)
+      setBgColor(hex + '18')
+    }
+    setGridLoading(true)
+    setTimeout(() => {
+      setActivePhotos(col.photos.slice(0, 16))
+      setGridLoading(false)
+    }, 250)
+  }, [autoColorIndex, collections])
+
   async function loadCollections() {
     const id = ++fetchRef.current
     setGridLoading(true)
@@ -133,6 +163,10 @@ export default function StartPage() {
   }
 
   function handleDotClick(hex: string, col: Collection) {
+    // Zastav auto-rotate při manuálním výběru
+    if (autoColorRef.current) clearInterval(autoColorRef.current)
+    const idx = collections.indexOf(col)
+    if (idx !== -1) setAutoColorIndex(idx)
     setSelectedHex(hex)
     setBgColor(hex + '18')
     setGridLoading(true)
@@ -955,7 +989,7 @@ export default function StartPage() {
         <section
           id="vizualni-knihovna"
           className="start-gallery-section"
-          style={{ backgroundColor: bgColor }}
+          style={{ backgroundColor: bgColor || '#fff', transition: 'background-color 1s ease' }}
         >
           <div className="start-gallery-inner">
             <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 48 }}>
