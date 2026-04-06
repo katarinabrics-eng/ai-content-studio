@@ -776,7 +776,7 @@ export default function StartPage() {
 
                         {/* Karta A */}
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '2px solid #111', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
-                          <div style={{ flexShrink: 0, width: '80px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                          <div style={{ flexShrink: 0, width: '110px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
                             <video autoPlay muted loop playsInline poster="/images/demo/demo-video-a.jpg"
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
                               <source src="/images/demo/demo-video-a.mp4" type="video/mp4" />
@@ -797,7 +797,7 @@ export default function StartPage() {
 
                         {/* Karta B */}
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '1px solid #e8e4dc', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
-                          <div style={{ flexShrink: 0, width: '80px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                          <div style={{ flexShrink: 0, width: '110px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
                             <video autoPlay muted loop playsInline poster="/images/demo/demo-video-b.jpg"
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
                               <source src="/images/demo/demo-video-b.mp4" type="video/mp4" />
