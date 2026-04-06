@@ -1094,7 +1094,7 @@ export default function StartPage() {
                       <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ffbd2e' }} />
                       <div style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#28c840' }} />
                     </div>
-                    <div style={{ fontSize: '11px', color: '#9a9a90', letterSpacing: '.02em' }}>ready-to-go · klientský portál</div>
+                    <div style={{ fontSize: '11px', color: '#9a9a90', letterSpacing: '.02em' }}>Lucifera Light · klientský portál</div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#9a9a90' }}>Veronika Novotná</div>
                 </div>
@@ -1192,7 +1192,7 @@ export default function StartPage() {
           <div className="rtg-quote-mark">&ldquo;</div>
           <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
             <div className="rtg-testimonial-text">Poprvé jsem měla pocit, že obsah skutečně mluví za mě — bez toho, abych u toho trávila hodiny.</div>
-            <div className="rtg-testimonial-author">Veronika N. · wellness terapeutka · Praha · Ready to Go Start plán</div>
+            <div className="rtg-testimonial-author">Veronika N. · wellness terapeutka · Praha · Lucifera Light Start plán</div>
           </div>
         </div>
 
@@ -1226,10 +1226,10 @@ export default function StartPage() {
           </div>
         </section>
 
-        {/* 05 · PROČ READY TO GO — BENTO */}
+        {/* 05 · PROČ LUCIFERA LIGHT — BENTO */}
         <section className="rtg-section-light">
           <div className="rtg-container">
-            <div className="rtg-eyebrow">05 · proč ready to go</div>
+            <div className="rtg-eyebrow">05 · proč Lucifera Light</div>
             <h2 className="rtg-h2">Systém který<br /><em>pracuje za tebe.</em></h2>
             <div className="rtg-bento">
               <div className="rtg-bento-card featured">
@@ -1295,7 +1295,7 @@ export default function StartPage() {
                   <li><span className="rtg-pl">+</span>Dokoupení extra grafik nebo videí kdykoli</li>
                 </ul>
                 <div style={{ padding: '14px 24px 18px' }}>
-                  <button onClick={() => router.push('/ready-to-go/register')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít se Start →</button>
+                  <button onClick={() => router.push('/client/magnet/rtg/onboarding')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít se Start →</button>
                   <div style={{ fontSize: '10px', color: '#c0c0b8', textAlign: 'center', marginTop: '5px' }}>Bez závazku · zrušení kdykoli</div>
                 </div>
               </div>
@@ -1325,7 +1325,7 @@ export default function StartPage() {
                   <li><span className="rtg-pl">+</span>Dokoupení extra kreativy kdykoli</li>
                 </ul>
                 <div style={{ padding: '14px 24px 18px' }}>
-                  <button onClick={() => router.push('/ready-to-go/register')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#d0ec78', color: '#111', border: 'none', cursor: 'pointer' }}>Začít s Plus →</button>
+                  <button onClick={() => router.push('/client/magnet/rtg/onboarding')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#d0ec78', color: '#111', border: 'none', cursor: 'pointer' }}>Začít s Plus →</button>
                   <div style={{ fontSize: '10px', color: '#c0c0b8', textAlign: 'center', marginTop: '5px' }}>Bez závazku · zrušení kdykoli</div>
                 </div>
               </div>
@@ -1356,7 +1356,7 @@ export default function StartPage() {
                   <li><span className="rtg-pl">+</span>UGC video — brzy <span style={{ fontSize: '11px', color: '#9a9a90' }}>+790 Kč</span></li>
                 </ul>
                 <div style={{ padding: '14px 24px 18px' }}>
-                  <button onClick={() => router.push('/ready-to-go/register')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít s Pro →</button>
+                  <button onClick={() => router.push('/client/magnet/rtg/onboarding')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít s Pro →</button>
                   <div style={{ fontSize: '10px', color: '#c0c0b8', textAlign: 'center', marginTop: '5px' }}>Bez závazku · zrušení kdykoli</div>
                 </div>
               </div>
