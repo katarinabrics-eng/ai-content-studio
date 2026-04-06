@@ -215,15 +215,15 @@ export default function StartPage() {
 
         /* TYPEWRITER */
         .typewriter-block {
-          min-height: 120px;
+          min-height: 160px;
           overflow: hidden;
         }
         .typewriter-text {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+          font-size: clamp(2.4rem, 3.6vw, 3.4rem);
           font-weight: 700;
           color: #111;
-          line-height: 1.3;
+          line-height: 1.25;
         }
         .typewriter-cursor {
           display: inline-block;
@@ -305,7 +305,7 @@ export default function StartPage() {
         .slides-outer {
           position: relative;
           width: 100%;
-          height: 300px;
+          height: 520px;
           overflow: hidden;
           border-radius: 10px;
         }
@@ -694,7 +694,7 @@ export default function StartPage() {
               </div>
 
               {/* 2. Pevný podtext */}
-              <p style={{ fontSize: '14px', color: '#888', lineHeight: 1.7, marginTop: '20px' }}>
+              <p style={{ fontSize: '17px', color: '#666', lineHeight: 1.7, marginTop: '24px' }}>
                 Generativní obsah + profesionální fotografie + tvůj výběr.<br />
                 Vizuální obsah, který dává smysl. Bez zbytečného vymýšlení.
               </p>
