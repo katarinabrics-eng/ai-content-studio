@@ -31,13 +31,13 @@ const LIGHT_SENTENCES = [
 ]
 
 const LIGHT_SLIDES = [
-  { src: '/placeholders/CO DOSTANETE/vizualni-banka.jpg', label: 'Vizuální banka' },
-  { src: '/placeholders/CO DOSTANETE/reels.jpg', label: 'Reels' },
-  { src: '/placeholders/CO DOSTANETE/prispevky.jpg', label: 'Příspěvky' },
-  { src: '/placeholders/CO DOSTANETE/canva-sablony.jpg', label: 'Canva šablony' },
-  { src: '/placeholders/CO DOSTANETE/vizual-board.jpg', label: 'Vizuální board' },
-  { src: '/placeholders/CO DOSTANETE/brand-dna.jpg', label: 'Brand DNA' },
-  { src: '/placeholders/CO DOSTANETE/strategie.jpg', label: 'Strategie' },
+  { src: '/placeholders/CO%20DOSTANETE/vizualni-banka.jpg', label: 'Vizuální banka' },
+  { src: '/placeholders/CO%20DOSTANETE/reels.jpg', label: 'Reels' },
+  { src: '/placeholders/CO%20DOSTANETE/prispevky.jpg', label: 'Příspěvky' },
+  { src: '/placeholders/CO%20DOSTANETE/canva-sablony.jpg', label: 'Canva šablony' },
+  { src: '/placeholders/CO%20DOSTANETE/vizual-board.jpg', label: 'Vizuální board' },
+  { src: '/placeholders/CO%20DOSTANETE/brand-dna.jpg', label: 'Brand DNA' },
+  { src: '/placeholders/CO%20DOSTANETE/strategie.jpg', label: 'Strategie' },
 ]
 
 const K04_PHOTOS = [
