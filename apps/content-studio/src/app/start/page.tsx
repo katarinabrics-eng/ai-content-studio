@@ -101,6 +101,7 @@ export default function StartPage() {
   // Auto-rotate barev a fotek
   const [autoColorIndex, setAutoColorIndex] = useState(0)
   const autoColorRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -164,6 +165,14 @@ export default function StartPage() {
       if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // isMobile sledovanie
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
   }, [])
 
   // Auto-rotate cez colorGroups
@@ -658,10 +667,20 @@ export default function StartPage() {
           .start-hero-inner { grid-template-columns: 1fr; gap: 40px; padding: 0 20px; }
           .start-hero-left { max-width: 100%; }
           .hero-slide-frame { padding: 8px; border-radius: 14px; }
-          .slides-outer { height: 280px; border-radius: 8px; }
+          .slides-outer { height: 380px; border-radius: 8px; }
           .start-gallery-section { padding: 40px 0 60px; }
           .start-gallery-inner { padding: 0 20px; }
           .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
+          .ab-grid { grid-template-columns: 1fr !important; }
+          .gallery-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .start-palette-row { flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; padding: 0 20px !important; }
+          .start-section-title { font-size: 32px !important; padding: 0 20px !important; text-align: center !important; }
+          .slide-dots { bottom: -32px !important; }
+        }
+        @media (max-width: 480px) {
+          .slides-outer { height: 320px; }
+          .gallery-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          .hero-typewriter { font-size: 36px !important; }
         }
         /* ===== RTG SEKCE ===== */
         .rtg-section-light { background: #fafaf7; padding: 96px 40px; }
@@ -867,7 +886,7 @@ export default function StartPage() {
                     </div>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px', overflow: 'hidden' }}>
                       <div style={{ fontSize: '11px', color: '#9a9a90', marginBottom: '10px' }}>KE SCHVÁLENÍ · VARIANTA A vs B</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flex: 1, minHeight: 0 }}>
+                      <div className="ab-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flex: 1, minHeight: 0 }}>
 
                         {/* Karta A */}
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '2px solid #111', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
@@ -935,8 +954,8 @@ export default function StartPage() {
                       </div>
                     </div>
                     <div style={{ flex: 1, padding: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gridTemplateRows: 'repeat(3, 1fr)', gap: '5px', flex: 1, overflow: 'hidden' }}>
-                        {visualPhotos.slice(0, 24).map((photo, i) => (
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(8, 1fr)', gridTemplateRows: 'repeat(3, 1fr)', gap: '5px', flex: 1, overflow: 'hidden' }}>
+                        {visualPhotos.slice(0, isMobile ? 12 : 24).map((photo, i) => (
                           <div key={i} style={{ borderRadius: '7px', overflow: 'hidden', position: 'relative', cursor: 'pointer' }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={photo.src} alt={photo.label ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -972,12 +991,12 @@ export default function StartPage() {
                           <span key={s} style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '10px', background: i === 0 ? '#f3fbdc' : '#f5f5f5', color: i === 0 ? '#5a7a00' : '#888', border: i === 0 ? '0.5px solid rgba(183,233,76,0.4)' : '0.5px solid #e8e4dc' }}>{s}</span>
                         ))}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '4px', marginBottom: '4px', flexShrink: 0 }}>
-                        {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(4,1fr)' : 'repeat(7,1fr)', gap: '4px', marginBottom: '4px', flexShrink: 0 }}>
+                        {(isMobile ? ['Po', 'Út', 'St', 'Čt'] : ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne']).map(d => (
                           <div key={d} style={{ textAlign: 'center', color: '#aaa', padding: '3px 0', fontWeight: 500, fontSize: '10px' }}>{d}</div>
                         ))}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gridAutoRows: '88px', gap: '4px', flex: 1, overflow: 'hidden' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(4,1fr)' : 'repeat(7,1fr)', gridAutoRows: '88px', gap: '4px', flex: 1, overflow: 'hidden' }}>
                         {[
                           { d: 1,  e: null },
                           { d: 2,  e: 'Reels',      src: '/images/demo/demo-grafika-a.jpg', v: '2.1k', l: '184' },
@@ -1000,7 +1019,7 @@ export default function StartPage() {
                           { d: 19, e: null },
                           { d: 20, e: null },
                           { d: 21, e: 'Stories',    src: '/images/demo/demo-grafika-a.jpg', v: '750',  l: '94'  },
-                        ].map((item, i) => (
+                        ].slice(0, isMobile ? 8 : 21).map((item, i) => (
                           <div key={i} style={{
                             borderRadius: '7px',
                             overflow: 'hidden',
@@ -1163,7 +1182,7 @@ export default function StartPage() {
           <div style={{ position: 'relative', width: '100%' }}>
 
             {/* Neviditeľný spacer — drží výšku stránky vždy */}
-            <div style={{
+            <div className="gallery-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(8, 1fr)',
               gap: '3px',
@@ -1177,7 +1196,7 @@ export default function StartPage() {
 
             {/* Outgoing — staré fotky */}
             {prevPhotos.length > 0 && (
-              <div style={{
+              <div className="gallery-grid" style={{
                 position: 'absolute',
                 inset: 0,
                 zIndex: 1,
@@ -1198,7 +1217,7 @@ export default function StartPage() {
             )}
 
             {/* Incoming — nové fotky */}
-            <div style={{
+            <div className="gallery-grid" style={{
               position: 'absolute',
               inset: 0,
               zIndex: 2,
