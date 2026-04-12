@@ -64,6 +64,19 @@ const colorGroups = [
   { name: 'Jemná béžová',     hex: '#c8b8a0', folder: 'K10', offset: 2 },
 ]
 
+const K10_PHOTOS = [
+  '/placeholders/stock-vizualni knihovna/K10/k11-001.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-002.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-003.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-004.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-005.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-006.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-007.jpeg',
+  '/placeholders/stock-vizualni knihovna/K10/k11-008.jpeg',
+]
+
+const K10_PALETTE = ['#d8c4ad', '#e7dfd2', '#c1aa94', '#b4a592', '#98806d']
+
 const K04_PHOTOS = [
   { src: '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg', label: 'Reels vibe',    liked: true  },
   { src: '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg', label: 'Feed lifestyle', liked: false },
@@ -1562,24 +1575,16 @@ export default function StartPage() {
                       </div>
                       <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '10px' }}>
                         <span style={{ fontSize: '10px', color: '#c0c0b8', letterSpacing: '.06em', textTransform: 'uppercase', marginRight: '4px' }}>Paleta</span>
-                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#6E9898', cursor: 'pointer', border: '2px solid #111' }} title="Dusty teal" />
-                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#F2EDE6', cursor: 'pointer', border: '1.5px solid transparent' }} title="Krémová bílá" />
-                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#C8B49A', cursor: 'pointer', border: '1.5px solid transparent' }} title="Teplá béžová" />
-                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#B4B0AA', cursor: 'pointer', border: '1.5px solid transparent' }} title="Teplá šedá" />
-                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#DDD9D4', cursor: 'pointer', border: '1px solid #ccc' }} title="Světle šedá" />
+                        {K10_PALETTE.map((hex, i) => (
+                          <div key={i} style={{ width: '18px', height: '18px', borderRadius: '50%', background: hex, cursor: 'pointer', border: i === 0 ? '2px solid #111' : '1.5px solid transparent' }} />
+                        ))}
                       </div>
                       <div style={{ columns: '4', columnGap: '6px' }}>
-                        {[
-                          { ratio: '4/5', delay: undefined },
-                          { ratio: '1/1', delay: '.1s' },
-                          { ratio: '3/4', delay: '.2s' },
-                          { ratio: '1/1', delay: '.3s' },
-                          { ratio: '4/5', delay: '.15s' },
-                          { ratio: '1/1', delay: '.25s' },
-                          { ratio: '3/4', delay: '.35s' },
-                          { ratio: '1/1', delay: '.4s' },
-                        ].map((item, i) => (
-                          <div key={i} style={{ breakInside: 'avoid', marginBottom: '6px', borderRadius: '8px', aspectRatio: item.ratio, background: '#f0f0ec', animation: 'shimmer 1.4s infinite', animationDelay: item.delay }} />
+                        {K10_PHOTOS.map((src, i) => (
+                          <div key={i} style={{ breakInside: 'avoid', marginBottom: '6px', borderRadius: '8px', overflow: 'hidden', aspectRatio: '9/16', background: '#f0ede6' }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                          </div>
                         ))}
                       </div>
                       <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
