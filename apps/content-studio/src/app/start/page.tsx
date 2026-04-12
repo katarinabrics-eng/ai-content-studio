@@ -1160,7 +1160,7 @@ export default function StartPage() {
           </div>
 
           {/* Foto grid */}
-          <div style={{ position: 'relative', minHeight: '500px' }}>
+          <div style={{ position: 'relative', minHeight: 'auto' }}>
 
             {/* Outgoing — staré fotky */}
             {prevPhotos.length > 0 && (
@@ -1170,15 +1170,15 @@ export default function StartPage() {
                 zIndex: 1,
                 display: 'grid',
                 gridTemplateColumns: 'repeat(8, 1fr)',
-                gridTemplateRows: 'repeat(2, 1fr)',
                 gap: '3px',
+                alignItems: 'start',
                 opacity: fading ? 0 : 1,
                 transition: 'opacity 0.8s ease',
               }}>
                 {prevPhotos.map((src, i) => (
-                  <div key={i} style={{ overflow: 'hidden', borderRadius: '2px' }}>
+                  <div key={i} style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }} />
                   </div>
                 ))}
               </div>
@@ -1191,8 +1191,8 @@ export default function StartPage() {
               zIndex: 2,
               display: 'grid',
               gridTemplateColumns: 'repeat(8, 1fr)',
-              gridTemplateRows: 'repeat(2, 1fr)',
               gap: '3px',
+              alignItems: 'start',
               opacity: fading ? 0 : 1,
               transition: 'opacity 0.8s ease 0.1s',
             }}>
@@ -1200,20 +1200,20 @@ export default function StartPage() {
                 ? activePhotos.slice(0, 16).map((src, i) => (
                     <div
                       key={i}
-                      style={{ overflow: 'hidden', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}
+                      style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative', cursor: 'pointer' }}
                       onMouseEnter={() => setHoveredCard(i)}
                       onMouseLeave={() => setHoveredCard(null)}
                       onClick={() => router.push('/client/magnet/rtg/onboarding')}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }} />
                       <div className="start-grid-overlay" style={{ opacity: hoveredCard === i ? 1 : 0 }}>
                         <button className="start-grid-overlay-btn">Vytvořit příspěvek →</button>
                       </div>
                     </div>
                   ))
                 : Array.from({ length: 16 }).map((_, i) => (
-                    <div key={i} className="start-grid-placeholder" style={{ aspectRatio: '3/4' }} />
+                    <div key={i} className="start-grid-placeholder" style={{ aspectRatio: '9/16' }} />
                   ))}
             </div>
 
