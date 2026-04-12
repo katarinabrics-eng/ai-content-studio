@@ -26,6 +26,18 @@ const ROTATING_SENTENCES = [
 ]
 
 
+const colorGroups = [
+  { name: 'Teplá zemitá',      colors: ['#8B6F47','#A0845C','#C4A882','#6B4F35'] },
+  { name: 'Chladná modrá',     colors: ['#4A6FA5','#5B7FBE','#3D5A8A','#6B9FD4'] },
+  { name: 'Světlá neutrální',  colors: ['#D4C5B0','#E8DDD0','#F0E8DC','#BDB0A0'] },
+  { name: 'Růžová',            colors: ['#E8A0A0','#D4787A','#F0C0C0','#C89090'] },
+  { name: 'Černá a grafitová', colors: ['#1C1C1C','#2D2D2D','#404040','#555555'] },
+  { name: 'Červená',           colors: ['#8B1A1A','#C0392B','#E74C3C','#922B21'] },
+  { name: 'Zelená',            colors: ['#1B4D3E','#2E7D5E','#3DAA7D','#52C49A'] },
+  { name: 'Tyrkysová',         colors: ['#0097A7','#00BCD4','#26C6DA','#4DD0E1'] },
+  { name: 'Světlá bílá',       colors: ['#F5F2EC','#EDE8E0','#E5DFD5','#D8D0C5'] },
+]
+
 const K04_PHOTOS = [
   { src: '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg', label: 'Reels vibe',    liked: true  },
   { src: '/placeholders/stock-vizualni knihovna/K04/k04-002.jpeg', label: 'Feed lifestyle', liked: false },
@@ -1055,14 +1067,18 @@ export default function StartPage() {
 
           {/* Kroužky */}
           <div className="start-palette-row">
-            {collections.map(col =>
-              col.hex.map(hex => (
+            {colorGroups.map(group =>
+              group.colors.map(hex => (
                 <div
-                  key={`${col.id}-${hex}`}
+                  key={`${group.name}-${hex}`}
                   className={`start-palette-dot${selectedHex === hex ? ' active' : ''}`}
                   style={{ background: hex }}
-                  title={col.label}
-                  onClick={() => handleDotClick(hex, col)}
+                  title={group.name}
+                  onClick={() => {
+                    if (autoColorRef.current) clearInterval(autoColorRef.current)
+                    setSelectedHex(hex)
+                    setBgColor(hex + '18')
+                  }}
                 />
               ))
             )}
@@ -1070,7 +1086,7 @@ export default function StartPage() {
 
           <div className="start-collection-label">
             {selectedHex
-              ? collections.find(c => c.hex.includes(selectedHex))?.label ?? ''
+              ? colorGroups.find(g => g.colors.includes(selectedHex))?.name ?? ''
               : 'Všechny styly'}
           </div>
 

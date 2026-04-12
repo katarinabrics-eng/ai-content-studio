@@ -13,13 +13,15 @@ const LABELS: Record<string, string> = {
   K03: 'Reels portrait',
   K04: 'Food lifestyle',
   K05: 'Story moment',
+  K07: 'Reels portrait',
+  K08: 'Story moment',
   K09: 'Quote post',
   K10: 'Carousel BG',
 }
 
 const IMG_EXTS = ['.jpg', '.jpeg', '.png', '.webp']
 
-export function getVisualLibraryImages(limit = 24): VisualPhoto[] {
+export function getVisualLibraryImages(limit = 48): VisualPhoto[] {
   const baseDir = path.join(process.cwd(), 'public', 'placeholders', 'stock-vizualni knihovna')
   const result: VisualPhoto[] = []
 
