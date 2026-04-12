@@ -1,6 +1,6 @@
 {
   "id": "k07", "label": "Luxury vibe",
-  "hex": ["#1A1410", "#3D2B1F", "#6B4F35", "#9B7B5B"],
-  "mood": ["luxusní", "tmavý", "výrazný", "sofistikovaný"],
+  "hex": ["#0D0D0D", "#1A0000", "#8B0000", "#C0392B"],
+  "mood": ["luxusní", "odvážný", "dramatický", "výrazný"],
   "idealFor": ["luxury značky", "premium služby", "high-end lifestyle"]
 }
