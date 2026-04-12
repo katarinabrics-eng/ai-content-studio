@@ -161,7 +161,7 @@ export default function StartPage() {
     setTimeout(() => {
       setActivePhotos(col.photos.slice(0, 16))
       setGridLoading(false)
-    }, 250)
+    }, 380)
   }, [autoColorIndex, collections])
 
   async function loadCollections() {
@@ -193,7 +193,7 @@ export default function StartPage() {
     setTimeout(() => {
       setActivePhotos(col.photos.slice(0, 16))
       setGridLoading(false)
-    }, 250)
+    }, 380)
   }
 
   function scrollToLibrary() {
@@ -540,7 +540,7 @@ export default function StartPage() {
           width: 100vw;
           margin-left: calc(-50vw + 50%);
           padding: 24px 0 0;
-          transition: opacity 0.4s ease;
+          transition: opacity 0.35s ease;
         }
         .start-grid-card {
           position: relative; border-radius: 4px;
@@ -1089,7 +1089,7 @@ export default function StartPage() {
           {/* Foto grid */}
           <div
             className="start-visual-grid"
-            style={{ opacity: gridLoading ? 0.3 : 1 }}
+            style={{ opacity: gridLoading ? 0 : 1, transition: 'opacity 0.35s ease' }}
           >
             {activePhotos.length > 0
               ? activePhotos.slice(0, 16).map((src, i) => (

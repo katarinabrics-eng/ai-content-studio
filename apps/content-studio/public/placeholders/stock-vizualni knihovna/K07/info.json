@@ -1,6 +1,6 @@
 {
-  "id": "k07", "label": "Portréty",
-  "hex": ["#C4917A", "#A0705A", "#D4A88E", "#8A5A48"],
-  "mood": ["osobní", "autentický", "výrazný"],
-  "idealFor": ["fotografky", "koučky", "osobní značky"]
+  "id": "k07", "label": "Luxury vibe",
+  "hex": ["#1A1410", "#3D2B1F", "#6B4F35", "#9B7B5B"],
+  "mood": ["luxusní", "tmavý", "výrazný", "sofistikovaný"],
+  "idealFor": ["luxury značky", "premium služby", "high-end lifestyle"]
 }
