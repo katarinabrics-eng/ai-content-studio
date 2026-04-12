@@ -953,56 +953,39 @@ export default function StartPage() {
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>Lucifera Light · klientský portál</span>
                       <span style={{ fontSize: '11px', color: '#888' }}>Veronika Novotná</span>
                     </div>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px', overflow: 'hidden' }}>
-                      <div style={{ fontSize: '11px', color: '#9a9a90', marginBottom: '10px' }}>KE SCHVÁLENÍ · VARIANTA A vs B</div>
-                      <div className="ab-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', flex: 1, minHeight: 0 }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px', overflow: 'hidden', gap: '12px' }}>
+                      <div style={{ fontSize: '11px', color: '#9a9a90' }}>KE SCHVÁLENÍ · VARIANTA A vs B</div>
 
-                        {/* Karta A */}
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '2px solid #111', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
-                          <div style={{ flexShrink: 0, width: '110px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-                            <video autoPlay muted loop playsInline poster="/images/demo/demo-video-a.jpg"
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
-                              <source src="/images/demo/demo-video-a.mp4" type="video/mp4" />
-                            </video>
-                            <div style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '8px', padding: '1px 5px', borderRadius: '10px' }}>▶ 15s · Reels</div>
+                      {/* Jedna karta — celá šírka */}
+                      <div style={{ display: 'flex', gap: '14px', background: '#fff', border: '2px solid #111', borderRadius: '12px', padding: '14px', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                        {/* Video 9:16 */}
+                        <div style={{ flexShrink: 0, width: '130px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative', background: '#e8e4dc' }}>
+                          <video autoPlay muted loop playsInline poster="/images/demo/demo-video-a.jpg"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+                            <source src="/images/demo/demo-video-a.mp4" type="video/mp4" />
+                          </video>
+                          <div style={{ position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: '9px', padding: '2px 7px', borderRadius: '10px' }}>▶ 15s · Reels</div>
+                        </div>
+                        {/* Text */}
+                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ fontSize: '9px', fontWeight: 700, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase' }}>VIDEO · Reels</div>
+                          <p style={{ fontSize: '13px', fontWeight: 600, color: '#111', lineHeight: 1.4 }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
+                          <p style={{ fontSize: '11px', color: '#888' }}>Storytelling · přirozený moment</p>
+                          <div style={{ fontSize: '11px', color: '#555', background: '#f5f3ee', borderRadius: '6px', padding: '8px 10px', lineHeight: 1.6 }}>
+                            Každé ráno si říkám – dneska to zvládnu. A pak přijde ten moment, kdy všechno zpomalí.
                           </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '9px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>VIDEO · Reels</div>
-                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '4px' }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
-                            <p style={{ fontSize: '10px', color: '#888', marginBottom: '6px' }}>Storytelling · přirozený moment</p>
-                            <div style={{ fontSize: '10px', color: '#555', background: '#f5f3ee', borderRadius: '4px', padding: '5px 7px', lineHeight: 1.5 }}>Každé ráno si říkám – dneska to zvládnu...</div>
-                            <div style={{ marginTop: '6px', display: 'flex', gap: '4px' }}>
-                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Varianta A</span>
-                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
-                            </div>
+                          <div style={{ fontSize: '11px', color: '#aaa' }}>#osobnirozvoj #mindset #rannirutina</div>
+                          <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
+                            <span style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '10px', background: '#b7e94c', color: '#1a2a00', fontWeight: 600 }}>Varianta A</span>
+                            <span style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
                           </div>
                         </div>
-
-                        {/* Karta B */}
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#fff', border: '1px solid #e8e4dc', borderRadius: '12px', padding: '12px', overflow: 'hidden' }}>
-                          <div style={{ flexShrink: 0, width: '110px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-                            <video autoPlay muted loop playsInline poster="/images/demo/demo-video-b.jpg"
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
-                              <source src="/images/demo/demo-video-b.mp4" type="video/mp4" />
-                            </video>
-                            <div style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '8px', padding: '1px 5px', borderRadius: '10px' }}>▶ 12s · Reels</div>
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '9px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>VIDEO · Reels</div>
-                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '4px' }}>&ldquo;Tohle ti nikdo neřekne.&rdquo;</p>
-                            <p style={{ fontSize: '10px', color: '#888', marginBottom: '6px' }}>Hook přímý · osobní tón</p>
-                            <div style={{ fontSize: '10px', color: '#555', background: '#f5f3ee', borderRadius: '4px', padding: '5px 7px', lineHeight: 1.5 }}>Strávila jsem hodiny přemýšlením co postovat...</div>
-                            <div style={{ marginTop: '6px', display: 'flex', gap: '4px' }}>
-                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Varianta B</span>
-                              <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '10px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
-                            </div>
-                          </div>
-                        </div>
-
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e8e8e4', flexShrink: 0 }}>
+
+                      {/* Footer */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid #e8e8e4', flexShrink: 0 }}>
                         <div style={{ fontSize: '11px', color: '#9a9a90' }}>Klikni na variantu → schval</div>
-                        <button style={{ background: '#b7e94c', color: '#111', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Schválit vybranou →</button>
+                        <button style={{ background: '#b7e94c', color: '#111', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>Schválit vybranou →</button>
                       </div>
                     </div>
                   </div>
