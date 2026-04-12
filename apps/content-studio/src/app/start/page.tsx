@@ -1067,14 +1067,18 @@ export default function StartPage() {
 
           {/* Kroužky */}
           <div className="start-palette-row">
-            {collections.map(col =>
-              col.hex.map((hex: string) => (
+            {colorGroups.map(group =>
+              group.colors.map(hex => (
                 <div
-                  key={`${col.id}-${hex}`}
+                  key={`${group.name}-${hex}`}
                   className={`start-palette-dot${selectedHex === hex ? ' active' : ''}`}
                   style={{ background: hex }}
-                  title={col.label}
-                  onClick={() => handleDotClick(hex, col)}
+                  title={group.name}
+                  onClick={() => {
+                    if (autoColorRef.current) clearInterval(autoColorRef.current)
+                    setSelectedHex(hex)
+                    setBgColor(hex + '18')
+                  }}
                 />
               ))
             )}
@@ -1082,7 +1086,7 @@ export default function StartPage() {
 
           <div className="start-collection-label">
             {selectedHex
-              ? collections.find((c: Collection) => c.hex.includes(selectedHex))?.label ?? ''
+              ? colorGroups.find(g => g.colors.includes(selectedHex))?.name ?? ''
               : 'Všechny styly'}
           </div>
 
