@@ -1060,8 +1060,8 @@ export default function StartPage() {
         >
           <div className="start-gallery-inner">
             <div style={{ maxWidth: 720, margin: '0 auto', paddingBottom: 48 }}>
-              <h2 className="start-section-title">Vyber styl. Začni tvořit.</h2>
-              <p className="start-section-sub">Klikni na barvu — uvidíš obsah který sedí tvé náladě.</p>
+              <h2 className="start-section-title">Inspirace seřazená podle pocitu.</h2>
+              <p className="start-section-sub">Ukládej co tě baví — AI se naučí tvůj styl a tvoří obsah který můžeš hned použít.</p>
             </div>
           </div>
 
