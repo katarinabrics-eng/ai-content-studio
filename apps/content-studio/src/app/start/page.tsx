@@ -27,41 +27,41 @@ const ROTATING_SENTENCES = [
 
 
 const colorGroups = [
-  { name: 'Zemitá zelená',    hex: '#2d3d1e', folder: 'K01' },
-  { name: 'Lesní oliva',      hex: '#4a5c2a', folder: 'K01' },
-  { name: 'Mechová',          hex: '#6b7d3a', folder: 'K01' },
+  { name: 'Zemitá zelená',    hex: '#2d3d1e', folder: 'K01', offset: 0 },
+  { name: 'Lesní oliva',      hex: '#4a5c2a', folder: 'K01', offset: 1 },
+  { name: 'Mechová',          hex: '#6b7d3a', folder: 'K01', offset: 2 },
 
-  { name: 'Ocelová modrá',    hex: '#3a4d5e', folder: 'K02' },
-  { name: 'Chladná šedá',     hex: '#5a6d7e', folder: 'K02' },
-  { name: 'Světlá břidlice',  hex: '#8a9db0', folder: 'K02' },
+  { name: 'Ocelová modrá',    hex: '#3a4d5e', folder: 'K02', offset: 0 },
+  { name: 'Chladná šedá',     hex: '#5a6d7e', folder: 'K02', offset: 1 },
+  { name: 'Světlá břidlice',  hex: '#8a9db0', folder: 'K02', offset: 2 },
 
-  { name: 'Čistá bílá',       hex: '#e8e8e4', folder: 'K03' },
-  { name: 'Minimální šedá',   hex: '#d0d0cc', folder: 'K03' },
-  { name: 'Vzdušná',          hex: '#f2f2f0', folder: 'K03' },
+  { name: 'Čistá bílá',       hex: '#e8e8e4', folder: 'K03', offset: 0 },
+  { name: 'Minimální šedá',   hex: '#d0d0cc', folder: 'K03', offset: 1 },
+  { name: 'Vzdušná',          hex: '#f2f2f0', folder: 'K03', offset: 2 },
 
-  { name: 'Pudrovka',         hex: '#e8b4c0', folder: 'K04' },
-  { name: 'Blush růžová',     hex: '#d4909c', folder: 'K04' },
-  { name: 'Levandulová',      hex: '#c4a8d0', folder: 'K04' },
+  { name: 'Pudrovka',         hex: '#e8b4c0', folder: 'K04', offset: 0 },
+  { name: 'Blush růžová',     hex: '#d4909c', folder: 'K04', offset: 1 },
+  { name: 'Levandulová',      hex: '#c4a8d0', folder: 'K04', offset: 2 },
 
-  { name: 'Zlatý jantar',     hex: '#c47820', folder: 'K05' },
-  { name: 'Teplé zlato',      hex: '#d4942a', folder: 'K05' },
-  { name: 'Tmavý bronz',      hex: '#8b5010', folder: 'K05' },
+  { name: 'Zlatý jantar',     hex: '#c47820', folder: 'K05', offset: 0 },
+  { name: 'Teplé zlato',      hex: '#d4942a', folder: 'K05', offset: 1 },
+  { name: 'Tmavý bronz',      hex: '#8b5010', folder: 'K05', offset: 2 },
 
-  { name: 'Karmínová',        hex: '#8b0a14', folder: 'K07' },
-  { name: 'Burgundy',         hex: '#5c0810', folder: 'K07' },
-  { name: 'Tmavá třešeň',     hex: '#a01828', folder: 'K07' },
+  { name: 'Karmínová',        hex: '#8b0a14', folder: 'K07', offset: 0 },
+  { name: 'Burgundy',         hex: '#5c0810', folder: 'K07', offset: 1 },
+  { name: 'Tmavá třešeň',     hex: '#a01828', folder: 'K07', offset: 2 },
 
-  { name: 'Teplá slonovina',  hex: '#c8b89a', folder: 'K08' },
-  { name: 'Krémová béžová',   hex: '#d8c8a8', folder: 'K08' },
-  { name: 'Světlý karamel',   hex: '#e0ceb0', folder: 'K08' },
+  { name: 'Teplá slonovina',  hex: '#c8b89a', folder: 'K08', offset: 0 },
+  { name: 'Krémová béžová',   hex: '#d8c8a8', folder: 'K08', offset: 1 },
+  { name: 'Světlý karamel',   hex: '#e0ceb0', folder: 'K08', offset: 2 },
 
-  { name: 'Šalvějová',        hex: '#4a8a80', folder: 'K09' },
-  { name: 'Tyrkysová tichá',  hex: '#5aa090', folder: 'K09' },
-  { name: 'Mlhavá modrá',     hex: '#7ab0b0', folder: 'K09' },
+  { name: 'Šalvějová',        hex: '#4a8a80', folder: 'K09', offset: 0 },
+  { name: 'Tyrkysová tichá',  hex: '#5aa090', folder: 'K09', offset: 1 },
+  { name: 'Mlhavá modrá',     hex: '#7ab0b0', folder: 'K09', offset: 2 },
 
-  { name: 'Teplá bílá',       hex: '#e8e0d0', folder: 'K10' },
-  { name: 'Mandlová',         hex: '#d8cbb8', folder: 'K10' },
-  { name: 'Jemná béžová',     hex: '#c8b8a0', folder: 'K10' },
+  { name: 'Teplá bílá',       hex: '#e8e0d0', folder: 'K10', offset: 0 },
+  { name: 'Mandlová',         hex: '#d8cbb8', folder: 'K10', offset: 1 },
+  { name: 'Jemná béžová',     hex: '#c8b8a0', folder: 'K10', offset: 2 },
 ]
 
 const K04_PHOTOS = [
@@ -173,7 +173,7 @@ export default function StartPage() {
     return () => { if (autoColorRef.current) clearInterval(autoColorRef.current) }
   }, [])
 
-  // Reagovat na změnu autoColorIndex — přepnout barvu + folder + fotky
+  // Reagovat na změnu autoColorIndex — přepnout barvu + folder + fotky s offsetom
   useEffect(() => {
     const group = colorGroups[autoColorIndex]
     if (!group) return
@@ -182,10 +182,15 @@ export default function StartPage() {
     setBgColor(group.hex + '22')
     setGridLoading(true)
     setTimeout(() => {
-      const filtered = collections
+      const folderPhotos = collections
         .flatMap(c => c.photos)
         .filter(src => src.includes('/' + group.folder + '/'))
-      setActivePhotos(filtered.length > 0 ? filtered : collections.flatMap(c => c.photos))
+      const PAGE_SIZE = 16
+      const start = group.offset * PAGE_SIZE
+      const paged = folderPhotos.length > start
+        ? folderPhotos.slice(start, start + PAGE_SIZE)
+        : folderPhotos.slice(-PAGE_SIZE)
+      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, PAGE_SIZE))
       setGridLoading(false)
     }, 400)
   }, [autoColorIndex, collections])
@@ -208,7 +213,7 @@ export default function StartPage() {
     }
   }
 
-  function handleDotClick(group: { name: string; hex: string; folder: string }) {
+  function handleDotClick(group: { name: string; hex: string; folder: string; offset: number }) {
     if (autoColorRef.current) clearInterval(autoColorRef.current)
     const idx = colorGroups.findIndex(g => g.hex === group.hex)
     if (idx !== -1) setAutoColorIndex(idx)
@@ -217,10 +222,15 @@ export default function StartPage() {
     setBgColor(group.hex + '22')
     setGridLoading(true)
     setTimeout(() => {
-      const filtered = collections
+      const folderPhotos = collections
         .flatMap(c => c.photos)
         .filter(src => src.includes('/' + group.folder + '/'))
-      setActivePhotos(filtered.length > 0 ? filtered : collections.flatMap(c => c.photos))
+      const PAGE_SIZE = 16
+      const start = group.offset * PAGE_SIZE
+      const paged = folderPhotos.length > start
+        ? folderPhotos.slice(start, start + PAGE_SIZE)
+        : folderPhotos.slice(-PAGE_SIZE)
+      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, PAGE_SIZE))
       setGridLoading(false)
     }, 400)
   }
