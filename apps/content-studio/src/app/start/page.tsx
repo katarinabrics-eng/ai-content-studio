@@ -863,7 +863,7 @@ export default function StartPage() {
                         ))}
                       </div>
                       <div style={{ fontSize: '10px', color: '#aaa', textAlign: 'center', flexShrink: 0 }}>
-                        247 vizuálů · AI + profesionální fotografie · tvůj výběr
+                        +500 vizuálů · AI + profesionální fotografie · tvůj výběr
                       </div>
                     </div>
                   </div>
@@ -893,26 +893,26 @@ export default function StartPage() {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gridAutoRows: '88px', gap: '4px', flex: 1, overflow: 'hidden' }}>
                         {[
                           { d: 1,  e: null },
-                          { d: 2,  e: 'Reels',      src: '/images/demo/demo-video-a.jpg',   v: '2.1k', l: '184' },
+                          { d: 2,  e: 'Reels',      src: '/images/demo/demo-grafika-a.jpg', v: '2.1k', l: '184' },
                           { d: 3,  e: null },
-                          { d: 4,  e: 'Grafika',    src: '/images/demo/demo-grafika-a.jpg',  v: '1.8k', l: '231' },
+                          { d: 4,  e: 'Grafika',    src: '/images/demo/demo-video-a.jpg',   v: '1.8k', l: '231' },
                           { d: 5,  e: null },
                           { d: 6,  e: null },
-                          { d: 7,  e: 'Stories',    src: '/images/demo/demo-video-b.jpg',    v: '987',  l: '112' },
+                          { d: 7,  e: 'Stories',    src: '/images/demo/demo-grafika-a.jpg', v: '987',  l: '112' },
                           { d: 8,  e: null },
-                          { d: 9,  e: 'Newsletter', src: '/images/demo/demo-grafika-a.jpg',  v: '640',  l: '88'  },
+                          { d: 9,  e: 'Newsletter', src: '/images/demo/demo-video-a.jpg',   v: '640',  l: '88'  },
                           { d: 10, e: null },
-                          { d: 11, e: 'Reels',      src: '/images/demo/demo-video-a.jpg',    v: '3.4k', l: '302' },
+                          { d: 11, e: 'Reels',      src: '/images/demo/demo-grafika-a.jpg', v: '3.4k', l: '302' },
                           { d: 12, e: null },
                           { d: 13, e: null },
-                          { d: 14, e: 'Carousel',   src: '/images/demo/demo-grafika-a.jpg',  v: '1.1k', l: '159' },
-                          { d: 15, e: 'Grafika',    src: '/images/demo/demo-grafika-a.jpg',  v: '2.6k', l: '288' },
+                          { d: 14, e: 'Carousel',   src: '/images/demo/demo-video-a.jpg',   v: '1.1k', l: '159' },
+                          { d: 15, e: 'Grafika',    src: '/images/demo/demo-grafika-a.jpg', v: '2.6k', l: '288' },
                           { d: 16, e: null },
                           { d: 17, e: null },
-                          { d: 18, e: 'Reels',      src: '/images/demo/demo-video-b.jpg',    v: '4.0k', l: '411' },
+                          { d: 18, e: 'Reels',      src: '/images/demo/demo-video-a.jpg',   v: '4.0k', l: '411' },
                           { d: 19, e: null },
                           { d: 20, e: null },
-                          { d: 21, e: 'Stories',    src: '/images/demo/demo-video-a.jpg',    v: '750',  l: '94'  },
+                          { d: 21, e: 'Stories',    src: '/images/demo/demo-grafika-a.jpg', v: '750',  l: '94'  },
                         ].map((item, i) => (
                           <div key={i} style={{
                             borderRadius: '7px',
