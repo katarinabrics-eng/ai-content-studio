@@ -27,16 +27,41 @@ const ROTATING_SENTENCES = [
 
 
 const colorGroups = [
-  { name: 'Teplá zemitá',      hex: '#A0845C', folder: 'K01' },
-  { name: 'Zlatá & slonovina', hex: '#C4A882', folder: 'K02' },
-  { name: 'Chladná modrá',     hex: '#4A6FA5', folder: 'K03' },
-  { name: 'Světlá neutrální',  hex: '#D4C5B0', folder: 'K04' },
-  { name: 'Růžová',            hex: '#D4787A', folder: 'K05' },
-  { name: 'Grafitová',         hex: '#2D2D2D', folder: 'K07' },
-  { name: 'Červená',           hex: '#C0392B', folder: 'K07' },
-  { name: 'Zelená',            hex: '#1B4D3E', folder: 'K09' },
-  { name: 'Tyrkysová',         hex: '#0097A7', folder: 'K10' },
-  { name: 'Krémová bílá',      hex: '#EDE8E0', folder: 'K04' },
+  { name: 'Tmavá zemitá',      hex: '#4b3e2d', folder: 'K01' },
+  { name: 'Zemitá střední',    hex: '#584835', folder: 'K01' },
+  { name: 'Teplá hnědá',       hex: '#634d2b', folder: 'K01' },
+
+  { name: 'Šedá & oceán',      hex: '#8c918f', folder: 'K02' },
+  { name: 'Modrosivá',         hex: '#9ea2a3', folder: 'K02' },
+  { name: 'Světlá oceánová',   hex: '#a7b7bf', folder: 'K02' },
+
+  { name: 'Béžovosivá',        hex: '#9a8e85', folder: 'K03' },
+  { name: 'Neutrální béž',     hex: '#b7b2aa', folder: 'K03' },
+  { name: 'Světlá šedá',       hex: '#d8d9d7', folder: 'K03' },
+
+  { name: 'Teplá krémová',     hex: '#bda587', folder: 'K04' },
+  { name: 'Krémová',           hex: '#c0af99', folder: 'K04' },
+  { name: 'Světlá krémová',    hex: '#d8bfac', folder: 'K04' },
+
+  { name: 'Tmavá hnědá',       hex: '#5a3b24', folder: 'K05' },
+  { name: 'Střední hnědá',     hex: '#705e4b', folder: 'K05' },
+  { name: 'Teplá zemitá',      hex: '#6b5c47', folder: 'K05' },
+
+  { name: 'Bordó',             hex: '#500c12', folder: 'K07' },
+  { name: 'Tmavočervená',      hex: '#3e1f1f', folder: 'K07' },
+  { name: 'Terakota',          hex: '#93684a', folder: 'K07' },
+
+  { name: 'Zlatobéžová tmavá', hex: '#69624d', folder: 'K08' },
+  { name: 'Zlatobéžová',       hex: '#bc9d82', folder: 'K08' },
+  { name: 'Světlá zlatá',      hex: '#c4b8a2', folder: 'K08' },
+
+  { name: 'Růžovosivá',        hex: '#c9beb8', folder: 'K09' },
+  { name: 'Sivobéžová',        hex: '#b0b4b1', folder: 'K09' },
+  { name: 'Světlá sivá',       hex: '#9ca3a7', folder: 'K09' },
+
+  { name: 'Teplá béžová',      hex: '#c1aa94', folder: 'K10' },
+  { name: 'Terakotová béž',    hex: '#b4a592', folder: 'K10' },
+  { name: 'Tmavá terakota',    hex: '#98806d', folder: 'K10' },
 ]
 
 const K04_PHOTOS = [
