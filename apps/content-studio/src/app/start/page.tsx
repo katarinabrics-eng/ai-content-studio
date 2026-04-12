@@ -185,12 +185,8 @@ export default function StartPage() {
       const folderPhotos = collections
         .flatMap(c => c.photos)
         .filter(src => src.includes('/' + group.folder + '/'))
-      const PAGE_SIZE = 16
-      const start = group.offset * PAGE_SIZE
-      const paged = folderPhotos.length > start
-        ? folderPhotos.slice(start, start + PAGE_SIZE)
-        : folderPhotos.slice(-PAGE_SIZE)
-      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, PAGE_SIZE))
+      const paged = getPagedPhotos(folderPhotos, group.offset)
+      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, 16))
       setGridLoading(false)
     }, 400)
   }, [autoColorIndex, collections])
@@ -213,6 +209,18 @@ export default function StartPage() {
     }
   }
 
+  function getPagedPhotos(allFolderPhotos: string[], offset: number, pageSize = 16): string[] {
+    if (allFolderPhotos.length === 0) return []
+    const start = offset * pageSize
+    const end = start + pageSize
+    const page = allFolderPhotos.slice(start, end)
+    if (page.length === pageSize) return page
+    const shuffled = [...allFolderPhotos].sort(() => Math.random() - 0.5)
+    const combined = [...page, ...shuffled]
+    const unique = combined.filter((src, i, arr) => arr.indexOf(src) === i)
+    return unique.slice(0, pageSize)
+  }
+
   function handleDotClick(group: { name: string; hex: string; folder: string; offset: number }) {
     if (autoColorRef.current) clearInterval(autoColorRef.current)
     const idx = colorGroups.findIndex(g => g.hex === group.hex)
@@ -225,12 +233,8 @@ export default function StartPage() {
       const folderPhotos = collections
         .flatMap(c => c.photos)
         .filter(src => src.includes('/' + group.folder + '/'))
-      const PAGE_SIZE = 16
-      const start = group.offset * PAGE_SIZE
-      const paged = folderPhotos.length > start
-        ? folderPhotos.slice(start, start + PAGE_SIZE)
-        : folderPhotos.slice(-PAGE_SIZE)
-      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, PAGE_SIZE))
+      const paged = getPagedPhotos(folderPhotos, group.offset)
+      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, 16))
       setGridLoading(false)
     }, 400)
   }
