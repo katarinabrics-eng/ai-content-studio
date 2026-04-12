@@ -1160,7 +1160,20 @@ export default function StartPage() {
           </div>
 
           {/* Foto grid */}
-          <div style={{ position: 'relative', minHeight: 'auto' }}>
+          <div style={{ position: 'relative', width: '100%' }}>
+
+            {/* Neviditeľný spacer — drží výšku stránky vždy */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(8, 1fr)',
+              gap: '3px',
+              visibility: 'hidden',
+              pointerEvents: 'none',
+            }}>
+              {Array.from({ length: 16 }).map((_, i) => (
+                <div key={i} style={{ aspectRatio: '9/16', width: '100%' }} />
+              ))}
+            </div>
 
             {/* Outgoing — staré fotky */}
             {prevPhotos.length > 0 && (
@@ -1178,7 +1191,7 @@ export default function StartPage() {
                 {prevPhotos.map((src, i) => (
                   <div key={i} style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }} />
+                    <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
                 ))}
               </div>
@@ -1186,7 +1199,7 @@ export default function StartPage() {
 
             {/* Incoming — nové fotky */}
             <div style={{
-              position: prevPhotos.length > 0 ? 'absolute' : 'relative',
+              position: 'absolute',
               inset: 0,
               zIndex: 2,
               display: 'grid',
@@ -1196,25 +1209,21 @@ export default function StartPage() {
               opacity: fading ? 0 : 1,
               transition: 'opacity 0.8s ease 0.1s',
             }}>
-              {activePhotos.length > 0
-                ? activePhotos.slice(0, 16).map((src, i) => (
-                    <div
-                      key={i}
-                      style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative', cursor: 'pointer' }}
-                      onMouseEnter={() => setHoveredCard(i)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                      onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }} />
-                      <div className="start-grid-overlay" style={{ opacity: hoveredCard === i ? 1 : 0 }}>
-                        <button className="start-grid-overlay-btn">Vytvořit příspěvek →</button>
-                      </div>
-                    </div>
-                  ))
-                : Array.from({ length: 16 }).map((_, i) => (
-                    <div key={i} className="start-grid-placeholder" style={{ aspectRatio: '9/16' }} />
-                  ))}
+              {activePhotos.map((src, i) => (
+                <div
+                  key={i}
+                  style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative', cursor: 'pointer' }}
+                  onMouseEnter={() => setHoveredCard(i)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  <div className="start-grid-overlay" style={{ opacity: hoveredCard === i ? 1 : 0 }}>
+                    <button className="start-grid-overlay-btn">Vytvořit příspěvek →</button>
+                  </div>
+                </div>
+              ))}
             </div>
 
           </div>
