@@ -1488,37 +1488,145 @@ export default function StartPage() {
 
                   {/* TAB: Plánování */}
                   {rtgActiveTab === 'planovani' && (
-                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
-                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Plánovač příspěvků</div>
-                      <div>Přehled naplánovaného obsahu na tento měsíc.</div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <button style={{ width: '26px', height: '26px', borderRadius: '50%', border: '1px solid #e8e8e4', background: '#fff', color: '#9a9a90', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit' }}>‹</button>
+                          <div style={{ fontSize: '14px', fontWeight: 500, color: '#111' }}>Březen 2026</div>
+                          <button style={{ width: '26px', height: '26px', borderRadius: '50%', border: '1px solid #e8e8e4', background: '#fff', color: '#9a9a90', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit' }}>›</button>
+                        </div>
+                        <button style={{ background: '#111', color: '#fff', padding: '6px 14px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>+ Naplánovat</button>
+                      </div>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '8px', border: '1px solid #111', background: '#fafaf7', cursor: 'pointer' }}><div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#1d4ed8' }} /><span style={{ fontSize: '11px', color: '#555' }}>Instagram</span></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '8px', border: '1px solid #111', background: '#fafaf7', cursor: 'pointer' }}><div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#15803d' }} /><span style={{ fontSize: '11px', color: '#555' }}>Facebook</span></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '8px', border: '1px solid #111', background: '#fafaf7', cursor: 'pointer' }}><div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#6b7c2e' }} /><span style={{ fontSize: '11px', color: '#555' }}>LinkedIn</span></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '8px', border: '1px solid #e8e8e4', cursor: 'pointer' }}><div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#993556' }} /><span style={{ fontSize: '11px', color: '#9a9a90' }}>Newsletter</span></div>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px' }}>
+                        {['Po','Út','St','Čt','Pá','So','Ne'].map(d => <div key={d} style={{ textAlign: 'center', fontSize: '10px', color: '#9a9a90', padding: '6px 0' }}>{d}</div>)}
+                        <div style={{ opacity: .4, minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>24</div></div>
+                        <div style={{ opacity: .4, minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>25</div></div>
+                        <div style={{ minHeight: '52px', background: '#f5f9f0', borderRadius: '6px', padding: '4px', border: '1px solid #b5d45c' }}><div style={{ fontSize: '11px', color: '#6b7c2e', fontWeight: 600 }}>26</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#fbeaf0', color: '#993556', marginTop: '2px' }}>Stories</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>27</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>28</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#dbeafe', color: '#1d4ed8', marginTop: '2px' }}>▶ Reels</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>29</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>30</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>31</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#dcfce7', color: '#15803d', marginTop: '2px' }}>Grafika</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>1</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#f0f7e0', color: '#6b7c2e', marginTop: '2px' }}>Newsletter</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>2</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>3</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#dbeafe', color: '#1d4ed8', marginTop: '2px' }}>▶ Reels</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>4</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>5</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>6</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>7</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#dcfce7', color: '#15803d', marginTop: '1px' }}>Carousel</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#fbeaf0', color: '#993556', marginTop: '1px' }}>Stories</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>8</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>9</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>10</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#dbeafe', color: '#1d4ed8', marginTop: '2px' }}>▶ Reels</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>11</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>12</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>13</div></div>
+                        <div style={{ minHeight: '52px', background: '#fafaf7', borderRadius: '6px', padding: '4px', border: '1px solid #f0f0ec' }}><div style={{ fontSize: '11px', color: '#9a9a90' }}>14</div><div style={{ fontSize: '8px', padding: '1px 3px', borderRadius: '3px', background: '#f0f7e0', color: '#6b7c2e', marginTop: '2px' }}>Newsletter</div></div>
+                      </div>
                     </div>
                   )}
 
                   {/* TAB: Vizuální knihovna */}
                   {rtgActiveTab === 'knihovna' && (
-                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>🖼</div>
-                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Vizuální knihovna</div>
-                      <div>Tvoje fotky a vizuály připravené k použití.</div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 500, color: '#111' }}>Vizuální knihovna</div>
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '100px', border: '1px solid #111', background: '#111', color: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>Vše</button>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '100px', border: '1px solid #e8e8e4', background: 'transparent', color: '#9a9a90', cursor: 'pointer', fontFamily: 'inherit' }}>Fotky</button>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '100px', border: '1px solid #e8e8e4', background: 'transparent', color: '#9a9a90', cursor: 'pointer', fontFamily: 'inherit' }}>Videa</button>
+                          <button style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '100px', border: '1px solid #e8e8e4', background: 'transparent', color: '#9a9a90', cursor: 'pointer', fontFamily: 'inherit' }}>B-roll</button>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '10px', color: '#c0c0b8', letterSpacing: '.06em', textTransform: 'uppercase', marginRight: '4px' }}>Paleta</span>
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#6E9898', cursor: 'pointer', border: '2px solid #111' }} title="Dusty teal" />
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#F2EDE6', cursor: 'pointer', border: '1.5px solid transparent' }} title="Krémová bílá" />
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#C8B49A', cursor: 'pointer', border: '1.5px solid transparent' }} title="Teplá béžová" />
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#B4B0AA', cursor: 'pointer', border: '1.5px solid transparent' }} title="Teplá šedá" />
+                        <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#DDD9D4', cursor: 'pointer', border: '1px solid #ccc' }} title="Světle šedá" />
+                      </div>
+                      <div style={{ columns: '4', columnGap: '6px' }}>
+                        {[
+                          { ratio: '4/5', delay: undefined },
+                          { ratio: '1/1', delay: '.1s' },
+                          { ratio: '3/4', delay: '.2s' },
+                          { ratio: '1/1', delay: '.3s' },
+                          { ratio: '4/5', delay: '.15s' },
+                          { ratio: '1/1', delay: '.25s' },
+                          { ratio: '3/4', delay: '.35s' },
+                          { ratio: '1/1', delay: '.4s' },
+                        ].map((item, i) => (
+                          <div key={i} style={{ breakInside: 'avoid', marginBottom: '6px', borderRadius: '8px', aspectRatio: item.ratio, background: '#f0f0ec', animation: 'shimmer 1.4s infinite', animationDelay: item.delay }} />
+                        ))}
+                      </div>
+                      <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                        <button style={{ fontSize: '11px', padding: '6px 14px', borderRadius: '6px', border: '1px solid #e8e8e4', background: 'transparent', color: '#7a7a70', cursor: 'pointer', fontFamily: 'inherit' }}>+ Nahrát vlastní</button>
+                        <button style={{ background: '#111', color: '#fff', padding: '6px 14px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>+ Do kolekce</button>
+                      </div>
                     </div>
                   )}
 
                   {/* TAB: Texty */}
                   {rtgActiveTab === 'texty' && (
-                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>✍️</div>
-                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Textová knihovna</div>
-                      <div>Hooky, popisy a CTA texty připravené k použití.</div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Textová knihovna</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        {[
+                          { label: 'Hook · Reels',        text: '"Tohle mi trvalo 2 hodiny. Teď to zvládnu za 5 minut."' },
+                          { label: 'Popisek · Instagram', text: '"Každé ráno si dávám 10 minut pro sebe. Ne pro email — jen pro sebe."' },
+                          { label: 'Mail · Newsletter',   text: '"Ahoj, v tomto týdnu jsem pro tebe připravila jednu věc, která mi pomohla z přetížení..."' },
+                          { label: 'CTA · Stories',       text: '"Uložit na później? Tap na hvězdičku. Zítra se ti to bude hodit."' },
+                          { label: 'Hook · Carousel',     text: '"5 věcí které mě nikdo nenaučil o energii. Slide →"' },
+                        ].map((item, i) => (
+                          <div key={i} style={{ background: '#fafaf7', border: '1px solid #e8e8e4', borderRadius: '8px', padding: '9px 12px', cursor: 'pointer' }}>
+                            <div style={{ fontSize: '9px', letterSpacing: '.08em', textTransform: 'uppercase', color: '#c0c0b8', marginBottom: '2px' }}>{item.label}</div>
+                            <div style={{ fontSize: '11px', color: '#555', lineHeight: 1.45 }}>{item.text}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
                   {/* TAB: Statistiky */}
                   {rtgActiveTab === 'statistiky' && (
-                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
-                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Statistiky</div>
-                      <div>Přehled výkonu tvého obsahu za poslední měsíc.</div>
+                    <div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '8px', marginBottom: '14px' }}>
+                        {[
+                          { val: '2 340', label: 'Celkový dosah' },
+                          { val: '4.2%',  label: 'Engagement' },
+                          { val: '28',    label: 'Schválených výstupů' },
+                          { val: '3',     label: 'Aktivní měsíce' },
+                        ].map((item, i) => (
+                          <div key={i} style={{ background: '#fafaf7', border: '1px solid #e8e8e4', borderRadius: '8px', padding: '10px 12px' }}>
+                            <div style={{ fontSize: '20px', fontWeight: 500, color: '#111' }}>{item.val}</div>
+                            <div style={{ fontSize: '10px', color: '#9a9a90', marginTop: '2px' }}>{item.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        {[
+                          { dot: '#6b7c2e', title: '"Tohle mi trvalo 2 hodiny..." · Reels', sub: 'Únor 2026 · video',    pct: '6.8 %' },
+                          { dot: '#6b7c2e', title: 'Carousel · 5 věcí o energii',           sub: 'Leden 2026',          pct: '5.3 %' },
+                          { dot: '#15803d', title: 'Stories · ranní rituál',                 sub: 'Prosinec 2025',       pct: '4.9 %' },
+                        ].map((item, i) => (
+                          <div key={i} style={{ background: '#fafaf7', border: '1px solid #e8e8e4', borderRadius: '8px', padding: '9px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: item.dot, flexShrink: 0 }} />
+                              <div>
+                                <div style={{ fontSize: '11px', color: '#111' }}>{item.title}</div>
+                                <div style={{ fontSize: '10px', color: '#9a9a90', marginTop: '1px' }}>{item.sub}</div>
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#6b7c2e', flexShrink: 0 }}>{item.pct}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
