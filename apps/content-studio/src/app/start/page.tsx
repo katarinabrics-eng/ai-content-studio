@@ -208,6 +208,7 @@ export default function StartPage() {
     const paged = getPagedPhotos(folderPhotos, group.offset)
     const next = paged.length > 0 ? paged : folderPhotos.slice(0, 16)
     if (next.length > 0) transitionToPhotos(next)
+    setTimeout(scrollPaletteToActive, 50)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoColorIndex, collections])
 
@@ -248,6 +249,16 @@ export default function StartPage() {
     }, 800)
   }
 
+  function scrollPaletteToActive() {
+    const paletteRow = document.querySelector('.start-palette-row')
+    const activeDot = paletteRow?.querySelector('.start-palette-dot.active')
+    if (paletteRow && activeDot) {
+      const dotLeft = (activeDot as HTMLElement).offsetLeft
+      const rowWidth = paletteRow.clientWidth
+      paletteRow.scrollTo({ left: dotLeft - rowWidth / 2 + 14, behavior: 'smooth' })
+    }
+  }
+
   function handleDotClick(group: { name: string; hex: string; folder: string; offset: number }) {
     if (autoColorRef.current) clearInterval(autoColorRef.current)
     const idx = colorGroups.findIndex(g => g.hex === group.hex)
@@ -261,6 +272,7 @@ export default function StartPage() {
     const paged = getPagedPhotos(folderPhotos, group.offset)
     const next = paged.length > 0 ? paged : folderPhotos.slice(0, 16)
     if (next.length > 0) transitionToPhotos(next)
+    setTimeout(scrollPaletteToActive, 50)
   }
 
   function scrollToLibrary() {
@@ -705,7 +717,7 @@ export default function StartPage() {
             border-radius: 8px !important;
           }
           .ab-grid { grid-template-columns: 1fr !important; }
-          .gallery-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .gallery-grid { grid-template-columns: repeat(6, 1fr) !important; grid-template-rows: repeat(3, 1fr) !important; }
           .gallery-grid-wrap { margin: 0 !important; }
           .start-header-link-how { display: none !important; }
           .start-hero-left { text-align: center !important; align-items: center !important; }
@@ -714,6 +726,20 @@ export default function StartPage() {
           .hero-cta-secondary { text-align: center !important; }
           .hotovy-prispevek-layout { flex-direction: column !important; }
           .hotovy-prispevek-layout .foto { width: 100% !important; height: 200px !important; }
+          .start-palette-row {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+            justify-content: flex-start !important;
+            padding: 8px 20px !important;
+            gap: 10px !important;
+            scrollbar-width: none !important;
+          }
+          .start-palette-row::-webkit-scrollbar { display: none !important; }
+          .start-palette-dot { flex-shrink: 0 !important; }
+          .palette-label { display: none !important; }
         }
         @media (max-width: 480px) {
           .slides-outer { height: 340px !important; }
@@ -1215,7 +1241,7 @@ export default function StartPage() {
             ))}
           </div>
 
-          <div className="start-collection-label">
+          <div className="start-collection-label palette-label">
             {selectedHex
               ? colorGroups.find(g => g.hex === selectedHex)?.name ?? ''
               : 'Všechny styly'}
@@ -1232,7 +1258,7 @@ export default function StartPage() {
               visibility: 'hidden',
               pointerEvents: 'none',
             }}>
-              {Array.from({ length: 16 }).map((_, i) => (
+              {Array.from({ length: 18 }).map((_, i) => (
                 <div key={i} style={{ aspectRatio: '9/16', width: '100%' }} />
               ))}
             </div>
@@ -1250,7 +1276,7 @@ export default function StartPage() {
                 opacity: fading ? 0 : 1,
                 transition: 'opacity 0.8s ease',
               }}>
-                {prevPhotos.map((src, i) => (
+                {prevPhotos.slice(0, 18).map((src, i) => (
                   <div key={i} style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -1271,7 +1297,7 @@ export default function StartPage() {
               opacity: fading ? 0 : 1,
               transition: 'opacity 0.8s ease 0.1s',
             }}>
-              {activePhotos.map((src, i) => (
+              {activePhotos.slice(0, 18).map((src, i) => (
                 <div
                   key={i}
                   style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative', cursor: 'pointer' }}
