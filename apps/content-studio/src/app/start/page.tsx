@@ -27,41 +27,41 @@ const ROTATING_SENTENCES = [
 
 
 const colorGroups = [
-  { name: 'Tmavá zemitá',      hex: '#4b3e2d', folder: 'K01' },
-  { name: 'Zemitá střední',    hex: '#584835', folder: 'K01' },
-  { name: 'Teplá hnědá',       hex: '#634d2b', folder: 'K01' },
+  { name: 'Tmavá zemitá',      hex: '#5e4d36', folder: 'K01' },
+  { name: 'Hluboka hnědá',     hex: '#40321e', folder: 'K01' },
+  { name: 'Teplá mahagon',     hex: '#744024', folder: 'K01' },
 
-  { name: 'Šedá & oceán',      hex: '#8c918f', folder: 'K02' },
-  { name: 'Modrosivá',         hex: '#9ea2a3', folder: 'K02' },
-  { name: 'Světlá oceánová',   hex: '#a7b7bf', folder: 'K02' },
+  { name: 'Světlá šedá',       hex: '#d7dde1', folder: 'K02' },
+  { name: 'Oceánová šedá',     hex: '#647179', folder: 'K02' },
+  { name: 'Tmavá břidlice',    hex: '#48545b', folder: 'K02' },
 
-  { name: 'Béžovosivá',        hex: '#9a8e85', folder: 'K03' },
-  { name: 'Neutrální béž',     hex: '#b7b2aa', folder: 'K03' },
-  { name: 'Světlá šedá',       hex: '#d8d9d7', folder: 'K03' },
+  { name: 'Teplá taupe',       hex: '#837665', folder: 'K03' },
+  { name: 'Béžová střední',    hex: '#ae9484', folder: 'K03' },
+  { name: 'Světlá béžová',     hex: '#c4bfb4', folder: 'K03' },
 
-  { name: 'Teplá krémová',     hex: '#bda587', folder: 'K04' },
-  { name: 'Krémová',           hex: '#c0af99', folder: 'K04' },
-  { name: 'Světlá krémová',    hex: '#d8bfac', folder: 'K04' },
+  { name: 'Krémová teplá',     hex: '#d2c4af', folder: 'K04' },
+  { name: 'Béžová zlatá',      hex: '#b4a186', folder: 'K04' },
+  { name: 'Růžová krémová',    hex: '#d9b2a1', folder: 'K04' },
 
-  { name: 'Tmavá hnědá',       hex: '#5a3b24', folder: 'K05' },
-  { name: 'Střední hnědá',     hex: '#705e4b', folder: 'K05' },
-  { name: 'Teplá zemitá',      hex: '#6b5c47', folder: 'K05' },
+  { name: 'Jantarová',         hex: '#a76e42', folder: 'K05' },
+  { name: 'Tmavá terakota',    hex: '#6e4526', folder: 'K05' },
+  { name: 'Světlá karamelová', hex: '#cd8e56', folder: 'K05' },
 
-  { name: 'Bordó',             hex: '#500c12', folder: 'K07' },
-  { name: 'Tmavočervená',      hex: '#3e1f1f', folder: 'K07' },
-  { name: 'Terakota',          hex: '#93684a', folder: 'K07' },
+  { name: 'Bordó',             hex: '#87141d', folder: 'K07' },
+  { name: 'Tmavé bordó',       hex: '#4d0f16', folder: 'K07' },
+  { name: 'Terakota růžová',   hex: '#b59483', folder: 'K07' },
 
-  { name: 'Zlatobéžová tmavá', hex: '#69624d', folder: 'K08' },
-  { name: 'Zlatobéžová',       hex: '#bc9d82', folder: 'K08' },
-  { name: 'Světlá zlatá',      hex: '#c4b8a2', folder: 'K08' },
+  { name: 'Zlatobéžová',       hex: '#c6c6b9', folder: 'K08' },
+  { name: 'Teplá zlatá',       hex: '#e4c7a8', folder: 'K08' },
+  { name: 'Světlá slonovína',  hex: '#ecd8c1', folder: 'K08' },
 
-  { name: 'Růžovosivá',        hex: '#c9beb8', folder: 'K09' },
-  { name: 'Sivobéžová',        hex: '#b0b4b1', folder: 'K09' },
-  { name: 'Světlá sivá',       hex: '#9ca3a7', folder: 'K09' },
+  { name: 'Růžovohnědá',       hex: '#8c6755', folder: 'K09' },
+  { name: 'Světlá růžová',     hex: '#d1b1a4', folder: 'K09' },
+  { name: 'Teplá nude',        hex: '#b28f7d', folder: 'K09' },
 
-  { name: 'Teplá béžová',      hex: '#c1aa94', folder: 'K10' },
-  { name: 'Terakotová béž',    hex: '#b4a592', folder: 'K10' },
-  { name: 'Tmavá terakota',    hex: '#98806d', folder: 'K10' },
+  { name: 'Písková',           hex: '#d8c4ad', folder: 'K10' },
+  { name: 'Světlá slonovina',  hex: '#e7dfd2', folder: 'K10' },
+  { name: 'Tmavá terakota',    hex: '#946d52', folder: 'K10' },
 ]
 
 const K04_PHOTOS = [
@@ -84,7 +84,7 @@ export default function StartPage() {
   const [gridLoading, setGridLoading] = useState(true)
   const [selectedHex, setSelectedHex] = useState<string | null>(colorGroups[0].hex)
   const [activeFolder, setActiveFolder] = useState(colorGroups[0].folder)
-  const [bgColor, setBgColor] = useState(colorGroups[0].hex + '18')
+  const [bgColor, setBgColor] = useState(colorGroups[0].hex + '22')
   const fetchRef = useRef(0)
 
   // Typewriter — hero
@@ -179,7 +179,7 @@ export default function StartPage() {
     if (!group) return
     setSelectedHex(group.hex)
     setActiveFolder(group.folder)
-    setBgColor(group.hex + '18')
+    setBgColor(group.hex + '22')
     setGridLoading(true)
     setTimeout(() => {
       setGridLoading(false)
@@ -1099,7 +1099,7 @@ export default function StartPage() {
                   if (autoColorRef.current) clearInterval(autoColorRef.current)
                   setSelectedHex(group.hex)
                   setActiveFolder(group.folder)
-                  setBgColor(group.hex + '18')
+                  setBgColor(group.hex + '22')
                   setGridLoading(true)
                   setTimeout(() => setGridLoading(false), 380)
                 }}
