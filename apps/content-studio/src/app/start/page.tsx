@@ -707,6 +707,13 @@ export default function StartPage() {
           .ab-grid { grid-template-columns: 1fr !important; }
           .gallery-grid { grid-template-columns: repeat(4, 1fr) !important; }
           .gallery-grid-wrap { margin: 0 !important; }
+          .start-header-link-how { display: none !important; }
+          .start-hero-left { text-align: center !important; align-items: center !important; }
+          .hero-cta-block { align-items: center !important; width: 100% !important; }
+          .hero-cta-primary { width: 100% !important; text-align: center !important; justify-content: center !important; }
+          .hero-cta-secondary { text-align: center !important; }
+          .hotovy-prispevek-layout { flex-direction: column !important; }
+          .hotovy-prispevek-layout .foto { width: 100% !important; height: 200px !important; }
         }
         @media (max-width: 480px) {
           .slides-outer { height: 340px !important; }
@@ -851,10 +858,11 @@ export default function StartPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: '32px', width: 'auto' }} />
           <nav className="start-header-nav">
-            <button className="start-header-link">Jak to funguje</button>
+            <button className="start-header-link start-header-link-how">Jak to funguje</button>
             <button
               className="start-header-cta"
               onClick={() => router.push('/client/pristup')}
+              style={{ whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
               Přihlásit se →
             </button>
@@ -916,7 +924,7 @@ export default function StartPage() {
                       <span className="browser-dot" style={{ background: '#ff5f57' }} />
                       <span className="browser-dot" style={{ background: '#ffbd2e' }} />
                       <span className="browser-dot" style={{ background: '#28ca41' }} />
-                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>ready-to-go · klientský portál</span>
+                      <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px', flex: 1 }}>Lucifera Light · klientský portál</span>
                       <span style={{ fontSize: '11px', color: '#888' }}>Veronika Novotná</span>
                     </div>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px', overflow: 'hidden' }}>
@@ -1098,8 +1106,8 @@ export default function StartPage() {
                       <span style={{ fontSize: '11px', color: '#888', marginLeft: '8px' }}>Hotový příspěvek</span>
                     </div>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '16px', overflow: 'hidden' }}>
-                      <div style={{ display: 'flex', gap: '16px', flex: 1, minHeight: 0 }}>
-                        <div style={{ width: '220px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden' }}>
+                      <div className="hotovy-prispevek-layout" style={{ display: 'flex', gap: '16px', flex: 1, minHeight: 0 }}>
+                        <div className="foto" style={{ width: '220px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden' }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/images/demo/demo-grafika-a.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                         </div>
