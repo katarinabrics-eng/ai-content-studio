@@ -175,10 +175,19 @@ export default function StartPage() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Auto-rotate cez colorGroups
+  // Auto-rotate — len offset:0 skupiny (K01, K02, K03...)
   useEffect(() => {
+    const autoIndexes = colorGroups
+      .map((g, i) => ({ g, i }))
+      .filter(({ g }) => g.offset === 0)
+      .map(({ i }) => i)
+
     autoColorRef.current = setInterval(() => {
-      setAutoColorIndex(i => (i + 1) % colorGroups.length)
+      setAutoColorIndex(prev => {
+        const currentPos = autoIndexes.indexOf(prev)
+        const nextPos = (currentPos + 1) % autoIndexes.length
+        return autoIndexes[nextPos] ?? autoIndexes[0]
+      })
     }, 6000)
     return () => { if (autoColorRef.current) clearInterval(autoColorRef.current) }
   }, [])
