@@ -694,6 +694,10 @@ export default function StartPage() {
           .gallery-grid { grid-template-columns: repeat(3, 1fr) !important; }
           .hero-typewriter { font-size: 36px !important; }
         }
+        /* ===== RTG DEMO FRAME ===== */
+        .rtg-demo-frame * {
+          transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
         /* ===== RTG SEKCE ===== */
         .rtg-section-light { background: #fafaf7; padding: 96px 40px; }
         .rtg-section-light.alt { background: #fff; }
@@ -1328,8 +1332,8 @@ export default function StartPage() {
             <div className="rtg-eyebrow" style={{ marginBottom: '24px' }}>03 · co vidíš v dashboardu</div>
             <h2 className="rtg-h2" style={{ marginBottom: '40px' }}>Vybereš variantu.<br /><em>Schválíš. Jdeš dál.</em></h2>
 
-            <div style={{ maxWidth: '100%', margin: 0 }}>
-              <div style={{ background: '#fff', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e8e8e4' }}>
+            <div className="rtg-demo-frame" style={{ maxWidth: '100%', margin: 0 }}>
+              <div style={{ background: '#fff', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e8e8e4', cursor: 'default' }}>
                 <div style={{ background: '#fafaf7', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e8e8e4' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ display: 'flex', gap: '6px' }}>
@@ -1353,6 +1357,8 @@ export default function StartPage() {
                     <div
                       key={tab.key}
                       onClick={() => setRtgActiveTab(tab.key)}
+                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.color = '#111' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.color = rtgActiveTab === tab.key ? '#111' : '#888' }}
                       style={{
                         fontSize: '11px', padding: '9px 16px', whiteSpace: 'nowrap',
                         background: 'transparent', cursor: 'pointer',
@@ -1388,6 +1394,8 @@ export default function StartPage() {
                         <div
                           key={card.idx}
                           onClick={() => setRtgActiveCard(card.idx)}
+                          onMouseEnter={e => { if (rtgActiveCard !== card.idx) (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.005)' }}
+                          onMouseLeave={e => { if (rtgActiveCard !== card.idx) (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)' }}
                           style={{
                             display: 'flex', gap: '16px', alignItems: 'flex-start',
                             background: '#fff', borderRadius: '12px', padding: '14px',
@@ -1425,6 +1433,8 @@ export default function StartPage() {
                         <div
                           key={card.idx}
                           onClick={() => setRtgActiveCard(card.idx)}
+                          onMouseEnter={e => { if (rtgActiveCard !== card.idx) (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.005)' }}
+                          onMouseLeave={e => { if (rtgActiveCard !== card.idx) (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)' }}
                           style={{
                             background: '#fafaf7', borderRadius: '10px', padding: '12px',
                             cursor: 'pointer', transition: 'all 0.2s ease',
@@ -1450,8 +1460,10 @@ export default function StartPage() {
                       </div>
                       <button
                         onClick={() => { if (rtgActiveCard !== null) setRtgApproved(true) }}
-                        style={{ background: rtgApproved ? '#15803d' : '#111', color: '#fff', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s ease' }}
-                      >{rtgApproved ? 'Schváleno ✓' : 'Schválit →'}</button>
+                        onMouseEnter={e => { if (!rtgApproved) { (e.currentTarget as HTMLButtonElement).style.background = '#a0d940'; (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.03)' } }}
+                        onMouseLeave={e => { if (!rtgApproved) { (e.currentTarget as HTMLButtonElement).style.background = '#b7e94c'; (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)' } }}
+                        style={{ background: rtgApproved ? '#15803d' : '#b7e94c', color: rtgApproved ? '#fff' : '#111', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s ease' }}
+                      >{rtgApproved ? 'Schváleno ✓' : 'Schválit vybranou →'}</button>
                     </div>
                   </>)}
 
