@@ -678,19 +678,38 @@ export default function StartPage() {
           .start-hero { min-height: auto; padding: 60px 0 40px; }
           .start-hero-inner { grid-template-columns: 1fr; gap: 40px; padding: 0 20px; }
           .start-hero-left { max-width: 100%; }
-          .hero-slide-frame { padding: 8px; border-radius: 14px; }
-          .slides-outer { height: 380px; border-radius: 8px; }
           .start-gallery-section { padding: 40px 0 60px; }
           .start-gallery-inner { padding: 0 20px; }
           .start-visual-grid { grid-template-columns: repeat(2, 1fr); }
-          .ab-grid { grid-template-columns: 1fr !important; }
-          .gallery-grid { grid-template-columns: repeat(4, 1fr) !important; }
           .start-palette-row { flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; padding: 0 20px !important; }
           .start-section-title { font-size: 32px !important; padding: 0 20px !important; text-align: center !important; }
           .slide-dots { bottom: -32px !important; }
+          .hero-section {
+            flex-direction: column !important;
+            padding: 40px 20px 24px !important;
+            gap: 24px !important;
+            align-items: center !important;
+          }
+          .hero-section .hero-text {
+            max-width: 100% !important;
+            text-align: center !important;
+          }
+          .hero-slide-frame {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 8px !important;
+            border-radius: 14px !important;
+          }
+          .slides-outer {
+            height: 400px !important;
+            border-radius: 8px !important;
+          }
+          .ab-grid { grid-template-columns: 1fr !important; }
+          .gallery-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .gallery-grid-wrap { margin: 0 !important; }
         }
         @media (max-width: 480px) {
-          .slides-outer { height: 320px; }
+          .slides-outer { height: 340px !important; }
           .gallery-grid { grid-template-columns: repeat(3, 1fr) !important; }
           .hero-typewriter { font-size: 36px !important; }
         }
@@ -844,7 +863,7 @@ export default function StartPage() {
 
         {/* HERO */}
         <section className="start-hero">
-          <div className="start-hero-inner">
+          <div className="start-hero-inner hero-section">
 
             {/* LEVÝ SLOUPEC */}
             <div className="start-hero-left">
@@ -1195,7 +1214,7 @@ export default function StartPage() {
           </div>
 
           {/* Foto grid */}
-          <div style={{ position: 'relative', width: '100%' }}>
+          <div className="gallery-grid-wrap" style={{ position: 'relative', width: '100%' }}>
 
             {/* Neviditeľný spacer — drží výšku stránky vždy */}
             <div className="gallery-grid" style={{
