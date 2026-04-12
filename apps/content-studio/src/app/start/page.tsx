@@ -102,6 +102,9 @@ export default function StartPage() {
   const [autoColorIndex, setAutoColorIndex] = useState(0)
   const autoColorRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [rtgActiveTab, setRtgActiveTab] = useState('obsah')
+  const [rtgActiveCard, setRtgActiveCard] = useState<number | null>(0)
+  const [rtgApproved, setRtgApproved] = useState(false)
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -1340,87 +1343,154 @@ export default function StartPage() {
                 </div>
 
                 <div style={{ background: '#fafaf7', borderBottom: '1px solid #e8e8e4', display: 'flex', overflowX: 'auto' }}>
-                  {['Ke schválení', 'Plánování', 'Vizuální knihovna', 'Texty', 'Archiv', 'Statistiky'].map((tab, i) => (
-                    <div key={i} style={{ fontSize: '11px', padding: '9px 16px', color: i === 0 ? '#111' : '#9a9a90', cursor: 'pointer', borderBottom: i === 0 ? '2px solid #111' : '2px solid transparent', whiteSpace: 'nowrap', background: 'transparent' }}>{tab}</div>
+                  {[
+                    { label: 'Ke schválení',     key: 'obsah'      },
+                    { label: 'Plánování',         key: 'planovani'  },
+                    { label: 'Vizuální knihovna', key: 'knihovna'   },
+                    { label: 'Texty',             key: 'texty'      },
+                    { label: 'Statistiky',        key: 'statistiky' },
+                  ].map(tab => (
+                    <div
+                      key={tab.key}
+                      onClick={() => setRtgActiveTab(tab.key)}
+                      style={{
+                        fontSize: '11px', padding: '9px 16px', whiteSpace: 'nowrap',
+                        background: 'transparent', cursor: 'pointer',
+                        borderBottom: rtgActiveTab === tab.key ? '2px solid #b7e94c' : '2px solid transparent',
+                        color: rtgActiveTab === tab.key ? '#111' : '#888',
+                        fontWeight: rtgActiveTab === tab.key ? 600 : 400,
+                        fontFamily: 'inherit',
+                      }}
+                    >{tab.label}</div>
                   ))}
                 </div>
 
                 <div style={{ background: '#fff', padding: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: 500, color: '#111' }}>Ke schválení tento týden</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ height: '3px', width: '80px', background: '#e8e8e4', borderRadius: '2px' }}>
-                        <div style={{ height: '3px', width: '20%', background: '#111', borderRadius: '2px' }} />
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#9a9a90' }}>2 / 10</div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', width: '100%', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', background: '#fff', border: '1px solid #111', borderRadius: '12px', padding: '14px' }}>
-                      <div style={{ flexShrink: 0, width: '140px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-                        <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} poster="/images/demo/demo-video-a.jpg">
-                          <source src="/images/demo/demo-video-a.mp4" type="video/mp4" />
-                        </video>
-                        <div style={{ position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '9px', padding: '2px 7px', borderRadius: '20px', backdropFilter: 'blur(4px)' }}>▶ 15s · Reels</div>
-                      </div>
-                      <div style={{ flex: 1, paddingTop: '4px' }}>
-                        <div style={{ fontSize: '10px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>VIDEO · Reels</div>
-                        <p style={{ fontSize: '14px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '6px' }}>&ldquo;Ráno. Okno. Ticho před dnem.&rdquo;</p>
-                        <p style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>Storytelling · přirozený moment</p>
-                        <div style={{ fontSize: '11px', color: '#555', background: '#f5f3ee', borderRadius: '6px', padding: '8px 10px', lineHeight: 1.6 }}>
-                          Každé ráno si říkám – dneska to zvládnu.<br />A pak přijde ten moment, kdy všechno zpomalí.<br />Okno. Světlo. Ticho.<br /><br />To je tvůj obsah. Každý týden. Bez námahy.
+
+                  {/* TAB: Ke schválení */}
+                  {rtgActiveTab === 'obsah' && (<>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#111' }}>Ke schválení tento týden</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ height: '3px', width: '80px', background: '#e8e8e4', borderRadius: '2px' }}>
+                          <div style={{ height: '3px', width: '20%', background: '#111', borderRadius: '2px' }} />
                         </div>
-                        <div style={{ marginTop: '10px', display: 'flex', gap: '6px' }}>
-                          <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '20px', background: '#f0f0f0', color: '#666' }}>Varianta A</span>
-                          <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '20px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
+                        <div style={{ fontSize: '11px', color: '#9a9a90' }}>2 / 10</div>
+                      </div>
+                    </div>
+
+                    {/* Video karty A/B */}
+                    <div className="ab-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', width: '100%', marginBottom: '12px' }}>
+                      {[
+                        { idx: 0, variant: 'A', hook: '"Ráno. Okno. Ticho před dnem."', sub: 'Storytelling · přirozený moment', body: <>Každé ráno si říkám – dneska to zvládnu.<br />A pak přijde ten moment, kdy všechno zpomalí.<br />Okno. Světlo. Ticho.<br /><br />To je tvůj obsah. Každý týden. Bez námahy.</>, poster: '/images/demo/demo-video-a.jpg', src: '/images/demo/demo-video-a.mp4', dur: '15s' },
+                        { idx: 1, variant: 'B', hook: '"Tohle ti nikdo neřekne."',       sub: 'Hook přímý · osobní tón',       body: <>Strávila jsem hodiny přemýšlením co postovat.<br />Pak jsem to vzdala.<br />A nechala systém pracovat za mě.<br /><br />3 posty týdně. Hotovo za 5 minut.</>,                   poster: '/images/demo/demo-video-b.jpg', src: '/images/demo/demo-video-b.mp4', dur: '12s' },
+                      ].map(card => (
+                        <div
+                          key={card.idx}
+                          onClick={() => setRtgActiveCard(card.idx)}
+                          style={{
+                            display: 'flex', gap: '16px', alignItems: 'flex-start',
+                            background: '#fff', borderRadius: '12px', padding: '14px',
+                            cursor: 'pointer', transition: 'all 0.2s ease',
+                            border: rtgActiveCard === card.idx ? '2px solid #111' : '1px solid #e8e4dc',
+                            transform: rtgActiveCard === card.idx ? 'scale(1.01)' : 'scale(1)',
+                          }}
+                        >
+                          <div style={{ flexShrink: 0, width: '140px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                            <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} poster={card.poster}>
+                              <source src={card.src} type="video/mp4" />
+                            </video>
+                            <div style={{ position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '9px', padding: '2px 7px', borderRadius: '20px', backdropFilter: 'blur(4px)' }}>▶ {card.dur} · Reels</div>
+                          </div>
+                          <div style={{ flex: 1, paddingTop: '4px' }}>
+                            <div style={{ fontSize: '10px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>VIDEO · Reels</div>
+                            <p style={{ fontSize: '14px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '6px' }}>{card.hook}</p>
+                            <p style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>{card.sub}</p>
+                            <div style={{ fontSize: '11px', color: '#555', background: '#f5f3ee', borderRadius: '6px', padding: '8px 10px', lineHeight: 1.6 }}>{card.body}</div>
+                            <div style={{ marginTop: '10px', display: 'flex', gap: '6px' }}>
+                              <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '20px', background: rtgActiveCard === card.idx ? '#111' : '#f0f0f0', color: rtgActiveCard === card.idx ? '#fff' : '#666' }}>Varianta {card.variant}</span>
+                              <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '20px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', background: '#fff', border: '1px solid #e8e4dc', borderRadius: '12px', padding: '14px' }}>
-                      <div style={{ flexShrink: 0, width: '140px', aspectRatio: '9/16', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-                        <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} poster="/images/demo/demo-video-b.jpg">
-                          <source src="/images/demo/demo-video-b.mp4" type="video/mp4" />
-                        </video>
-                        <div style={{ position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '9px', padding: '2px 7px', borderRadius: '20px', backdropFilter: 'blur(4px)' }}>▶ 12s · Reels</div>
-                      </div>
-                      <div style={{ flex: 1, paddingTop: '4px' }}>
-                        <div style={{ fontSize: '10px', fontWeight: 600, color: '#b7e94c', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>VIDEO · Reels</div>
-                        <p style={{ fontSize: '14px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '6px' }}>&ldquo;Tohle ti nikdo neřekne.&rdquo;</p>
-                        <p style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>Hook přímý · osobní tón</p>
-                        <div style={{ fontSize: '11px', color: '#555', background: '#f5f3ee', borderRadius: '6px', padding: '8px 10px', lineHeight: 1.6 }}>
-                          Strávila jsem hodiny přemýšlením co postovat.<br />Pak jsem to vzdala.<br />A nechala systém pracovat za mě.<br /><br />3 posty týdně. Hotovo za 5 minut.
+
+                    {/* Grafiky */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
+                      {[
+                        { idx: 2, src: '/images/demo/demo-grafika-a.jpg', pos: 'center top', text: '"Kdy jsi naposledy stála a jen... byla?"', sub: 'Soft feminine · lifestyle' },
+                        { idx: 3, src: '/images/demo/demo-grafika-b.jpg', pos: 'center',     text: '"Volnost má svůj rytmus."',              sub: 'Editorial · atmosféra' },
+                      ].map(card => (
+                        <div
+                          key={card.idx}
+                          onClick={() => setRtgActiveCard(card.idx)}
+                          style={{
+                            background: '#fafaf7', borderRadius: '10px', padding: '12px',
+                            cursor: 'pointer', transition: 'all 0.2s ease',
+                            border: rtgActiveCard === card.idx ? '2px solid #111' : '1px solid #e8e8e4',
+                            transform: rtgActiveCard === card.idx ? 'scale(1.01)' : 'scale(1)',
+                          }}
+                        >
+                          <div style={{ display: 'inline-flex', fontSize: '9px', fontWeight: 600, padding: '2px 8px', borderRadius: '100px', background: '#dcfce7', color: '#15803d', letterSpacing: '.06em', marginBottom: '8px' }}>◻ GRAFIKA</div>
+                          <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden', borderRadius: '10px', marginBottom: '8px' }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={card.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: card.pos }} />
+                          </div>
+                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '2px' }}>{card.text}</div>
+                          <div style={{ fontSize: '10px', color: '#9a9a90' }}>{card.sub}</div>
                         </div>
-                        <div style={{ marginTop: '10px', display: 'flex', gap: '6px' }}>
-                          <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '20px', background: '#f0f0f0', color: '#666' }}>Varianta B</span>
-                          <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '20px', background: '#f0f0f0', color: '#666' }}>Instagram</span>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
-                    <div style={{ background: '#fafaf7', border: '1px solid #e8e8e4', borderRadius: '10px', padding: '12px' }}>
-                      <div style={{ display: 'inline-flex', fontSize: '9px', fontWeight: 600, padding: '2px 8px', borderRadius: '100px', background: '#dcfce7', color: '#15803d', letterSpacing: '.06em', marginBottom: '8px' }}>◻ GRAFIKA</div>
-                      <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden', borderRadius: '10px', marginBottom: '8px' }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/images/demo/demo-grafika-a.jpg" alt="Grafika A" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
+
+                    {/* Footer */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e8e8e4' }}>
+                      <div style={{ fontSize: '11px', color: rtgApproved ? '#15803d' : '#9a9a90' }}>
+                        {rtgApproved ? '✓ Varianta schválena' : 'Klikni na variantu → schval'}
                       </div>
-                      <div style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '2px' }}>&ldquo;Kdy jsi naposledy stála a jen... byla?&rdquo;</div>
-                      <div style={{ fontSize: '10px', color: '#9a9a90' }}>Soft feminine · lifestyle</div>
+                      <button
+                        onClick={() => { if (rtgActiveCard !== null) setRtgApproved(true) }}
+                        style={{ background: rtgApproved ? '#15803d' : '#111', color: '#fff', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s ease' }}
+                      >{rtgApproved ? 'Schváleno ✓' : 'Schválit →'}</button>
                     </div>
-                    <div style={{ background: '#fafaf7', border: '1px solid #e8e8e4', borderRadius: '10px', padding: '12px' }}>
-                      <div style={{ display: 'inline-flex', fontSize: '9px', fontWeight: 600, padding: '2px 8px', borderRadius: '100px', background: '#dcfce7', color: '#15803d', letterSpacing: '.06em', marginBottom: '8px' }}>◻ GRAFIKA</div>
-                      <div style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden', borderRadius: '10px', marginBottom: '8px' }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/images/demo/demo-grafika-b.jpg" alt="Grafika B" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
-                      </div>
-                      <div style={{ fontSize: '11px', fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: '2px' }}>&ldquo;Volnost má svůj rytmus.&rdquo;</div>
-                      <div style={{ fontSize: '10px', color: '#9a9a90' }}>Editorial · atmosféra</div>
+                  </>)}
+
+                  {/* TAB: Plánování */}
+                  {rtgActiveTab === 'planovani' && (
+                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
+                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Plánovač příspěvků</div>
+                      <div>Přehled naplánovaného obsahu na tento měsíc.</div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e8e8e4' }}>
-                    <div style={{ fontSize: '11px', color: '#9a9a90' }}>Klikni na variantu → schval</div>
-                    <button style={{ background: '#111', color: '#fff', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Schválit →</button>
-                  </div>
+                  )}
+
+                  {/* TAB: Vizuální knihovna */}
+                  {rtgActiveTab === 'knihovna' && (
+                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>🖼</div>
+                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Vizuální knihovna</div>
+                      <div>Tvoje fotky a vizuály připravené k použití.</div>
+                    </div>
+                  )}
+
+                  {/* TAB: Texty */}
+                  {rtgActiveTab === 'texty' && (
+                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>✍️</div>
+                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Textová knihovna</div>
+                      <div>Hooky, popisy a CTA texty připravené k použití.</div>
+                    </div>
+                  )}
+
+                  {/* TAB: Statistiky */}
+                  {rtgActiveTab === 'statistiky' && (
+                    <div style={{ padding: '20px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
+                      <div style={{ fontWeight: 600, color: '#333', marginBottom: '6px' }}>Statistiky</div>
+                      <div>Přehled výkonu tvého obsahu za poslední měsíc.</div>
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
