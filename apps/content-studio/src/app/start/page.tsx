@@ -82,7 +82,7 @@ export default function StartPage() {
   const [collections, setCollections] = useState<Collection[]>([])
   const [activePhotos, setActivePhotos] = useState<string[]>([])
   const [prevPhotos, setPrevPhotos] = useState<string[]>([])
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [fading, setFading] = useState(false)
   const [selectedHex, setSelectedHex] = useState<string | null>(colorGroups[0].hex)
   const [activeFolder, setActiveFolder] = useState(colorGroups[0].folder)
   const [bgColor, setBgColor] = useState(colorGroups[0].hex + '22')
@@ -219,14 +219,12 @@ export default function StartPage() {
 
   function transitionToPhotos(newPhotos: string[]) {
     setPrevPhotos(activePhotos)
-    setIsTransitioning(true)
+    setFading(true)
     setTimeout(() => {
       setActivePhotos(newPhotos)
-      setTimeout(() => {
-        setIsTransitioning(false)
-        setPrevPhotos([])
-      }, 750)
-    }, 150)
+      setFading(false)
+      setPrevPhotos([])
+    }, 800)
   }
 
   function handleDotClick(group: { name: string; hex: string; folder: string; offset: number }) {
@@ -1162,13 +1160,23 @@ export default function StartPage() {
           </div>
 
           {/* Foto grid */}
-          <div className="gallery-grid-wrap">
+          <div style={{ position: 'relative', minHeight: '500px' }}>
 
-            {/* Outgoing layer — staré fotky */}
-            {isTransitioning && prevPhotos.length > 0 && (
-              <div className="gallery-layer outgoing">
+            {/* Outgoing — staré fotky */}
+            {prevPhotos.length > 0 && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 1,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(8, 1fr)',
+                gridTemplateRows: 'repeat(2, 1fr)',
+                gap: '3px',
+                opacity: fading ? 0 : 1,
+                transition: 'opacity 0.8s ease',
+              }}>
                 {prevPhotos.map((src, i) => (
-                  <div key={i} style={{ overflow: 'hidden', borderRadius: '2px', aspectRatio: '3/4' }}>
+                  <div key={i} style={{ overflow: 'hidden', borderRadius: '2px' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
@@ -1176,20 +1184,23 @@ export default function StartPage() {
               </div>
             )}
 
-            {/* Incoming layer — nové fotky */}
-            <div
-              className={`gallery-layer${isTransitioning ? ' incoming' : ''}`}
-              style={{
-                position: isTransitioning ? 'absolute' : 'relative',
-                inset: 0,
-                opacity: isTransitioning ? undefined : 1,
-              }}
-            >
+            {/* Incoming — nové fotky */}
+            <div style={{
+              position: prevPhotos.length > 0 ? 'absolute' : 'relative',
+              inset: 0,
+              zIndex: 2,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(8, 1fr)',
+              gridTemplateRows: 'repeat(2, 1fr)',
+              gap: '3px',
+              opacity: fading ? 0 : 1,
+              transition: 'opacity 0.8s ease 0.1s',
+            }}>
               {activePhotos.length > 0
                 ? activePhotos.slice(0, 16).map((src, i) => (
                     <div
                       key={i}
-                      style={{ overflow: 'hidden', borderRadius: '2px', aspectRatio: '3/4', cursor: 'pointer', position: 'relative' }}
+                      style={{ overflow: 'hidden', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}
                       onMouseEnter={() => setHoveredCard(i)}
                       onMouseLeave={() => setHoveredCard(null)}
                       onClick={() => router.push('/client/magnet/rtg/onboarding')}
