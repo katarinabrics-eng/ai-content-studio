@@ -81,7 +81,8 @@ export default function StartPage() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [collections, setCollections] = useState<Collection[]>([])
   const [activePhotos, setActivePhotos] = useState<string[]>([])
-  const [gridLoading, setGridLoading] = useState(true)
+  const [prevPhotos, setPrevPhotos] = useState<string[]>([])
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const [selectedHex, setSelectedHex] = useState<string | null>(colorGroups[0].hex)
   const [activeFolder, setActiveFolder] = useState(colorGroups[0].folder)
   const [bgColor, setBgColor] = useState(colorGroups[0].hex + '22')
@@ -180,20 +181,17 @@ export default function StartPage() {
     setSelectedHex(group.hex)
     setActiveFolder(group.folder)
     setBgColor(group.hex + '22')
-    setGridLoading(true)
-    setTimeout(() => {
-      const folderPhotos = collections
-        .flatMap(c => c.photos)
-        .filter(src => src.includes('/' + group.folder + '/'))
-      const paged = getPagedPhotos(folderPhotos, group.offset)
-      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, 16))
-      requestAnimationFrame(() => requestAnimationFrame(() => setGridLoading(false)))
-    }, 280)
+    const folderPhotos = collections
+      .flatMap(c => c.photos)
+      .filter(src => src.includes('/' + group.folder + '/'))
+    const paged = getPagedPhotos(folderPhotos, group.offset)
+    const next = paged.length > 0 ? paged : folderPhotos.slice(0, 16)
+    if (next.length > 0) transitionToPhotos(next)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoColorIndex, collections])
 
   async function loadCollections() {
     const id = ++fetchRef.current
-    setGridLoading(true)
     try {
       const res = await fetch('/api/landing/collections')
       const data = await res.json()
@@ -204,8 +202,6 @@ export default function StartPage() {
       setActivePhotos(all)
     } catch {
       if (id === fetchRef.current) setActivePhotos([])
-    } finally {
-      if (id === fetchRef.current) setGridLoading(false)
     }
   }
 
@@ -221,6 +217,18 @@ export default function StartPage() {
     return unique.slice(0, pageSize)
   }
 
+  function transitionToPhotos(newPhotos: string[]) {
+    setPrevPhotos(activePhotos)
+    setIsTransitioning(true)
+    setTimeout(() => {
+      setActivePhotos(newPhotos)
+      setTimeout(() => {
+        setIsTransitioning(false)
+        setPrevPhotos([])
+      }, 750)
+    }, 150)
+  }
+
   function handleDotClick(group: { name: string; hex: string; folder: string; offset: number }) {
     if (autoColorRef.current) clearInterval(autoColorRef.current)
     const idx = colorGroups.findIndex(g => g.hex === group.hex)
@@ -228,15 +236,12 @@ export default function StartPage() {
     setSelectedHex(group.hex)
     setActiveFolder(group.folder)
     setBgColor(group.hex + '22')
-    setGridLoading(true)
-    setTimeout(() => {
-      const folderPhotos = collections
-        .flatMap(c => c.photos)
-        .filter(src => src.includes('/' + group.folder + '/'))
-      const paged = getPagedPhotos(folderPhotos, group.offset)
-      setActivePhotos(paged.length > 0 ? paged : folderPhotos.slice(0, 16))
-      requestAnimationFrame(() => requestAnimationFrame(() => setGridLoading(false)))
-    }, 280)
+    const folderPhotos = collections
+      .flatMap(c => c.photos)
+      .filter(src => src.includes('/' + group.folder + '/'))
+    const paged = getPagedPhotos(folderPhotos, group.offset)
+    const next = paged.length > 0 ? paged : folderPhotos.slice(0, 16)
+    if (next.length > 0) transitionToPhotos(next)
   }
 
   function scrollToLibrary() {
@@ -583,7 +588,36 @@ export default function StartPage() {
           width: 100vw;
           margin-left: calc(-50vw + 50%);
           padding: 24px 0 0;
-          transition: opacity 0.25s ease;
+        }
+        .gallery-grid-wrap {
+          position: relative;
+          width: 100vw;
+          margin-left: calc(-50vw + 50%);
+          padding: 24px 0 0;
+        }
+        .gallery-layer {
+          display: grid;
+          grid-template-columns: repeat(8, 1fr);
+          gap: 6px;
+        }
+        .gallery-layer.outgoing {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          animation: gallery-fade-out 0.7s ease forwards;
+        }
+        .gallery-layer.incoming {
+          opacity: 0;
+          z-index: 2;
+          animation: gallery-fade-in 0.7s ease 0.15s forwards;
+        }
+        @keyframes gallery-fade-out {
+          0%   { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1.02); }
+        }
+        @keyframes gallery-fade-in {
+          0%   { opacity: 0; transform: scale(0.98); }
+          100% { opacity: 1; transform: scale(1); }
         }
         .start-grid-card {
           position: relative; border-radius: 4px;
@@ -1128,34 +1162,50 @@ export default function StartPage() {
           </div>
 
           {/* Foto grid */}
-          <div
-            className="start-visual-grid"
-            style={{ opacity: gridLoading ? 0 : 1 }}
-          >
-            {activePhotos.length > 0
-              ? activePhotos.filter(src => src.includes('/' + activeFolder + '/')).slice(0, 16).map((src, i) => (
-                  <div
-                    key={src}
-                    className="start-grid-card"
-                    onMouseEnter={() => setHoveredCard(i)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                  >
+          <div className="gallery-grid-wrap">
+
+            {/* Outgoing layer — staré fotky */}
+            {isTransitioning && prevPhotos.length > 0 && (
+              <div className="gallery-layer outgoing">
+                {prevPhotos.map((src, i) => (
+                  <div key={i} style={{ overflow: 'hidden', borderRadius: '2px', aspectRatio: '3/4' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" className="start-grid-img" />
-                    <div
-                      className="start-grid-overlay"
-                      style={{ opacity: hoveredCard === i ? 1 : 0 }}
-                    >
-                      <button className="start-grid-overlay-btn">
-                        Vytvořit příspěvek →
-                      </button>
-                    </div>
+                    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
-                ))
-              : Array.from({ length: 16 }).map((_, i) => (
-                  <div key={i} className="start-grid-placeholder" />
                 ))}
+              </div>
+            )}
+
+            {/* Incoming layer — nové fotky */}
+            <div
+              className={`gallery-layer${isTransitioning ? ' incoming' : ''}`}
+              style={{
+                position: isTransitioning ? 'absolute' : 'relative',
+                inset: 0,
+                opacity: isTransitioning ? undefined : 1,
+              }}
+            >
+              {activePhotos.length > 0
+                ? activePhotos.slice(0, 16).map((src, i) => (
+                    <div
+                      key={i}
+                      style={{ overflow: 'hidden', borderRadius: '2px', aspectRatio: '3/4', cursor: 'pointer', position: 'relative' }}
+                      onMouseEnter={() => setHoveredCard(i)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                      onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <div className="start-grid-overlay" style={{ opacity: hoveredCard === i ? 1 : 0 }}>
+                        <button className="start-grid-overlay-btn">Vytvořit příspěvek →</button>
+                      </div>
+                    </div>
+                  ))
+                : Array.from({ length: 16 }).map((_, i) => (
+                    <div key={i} className="start-grid-placeholder" style={{ aspectRatio: '3/4' }} />
+                  ))}
+            </div>
+
           </div>
         </section>
 

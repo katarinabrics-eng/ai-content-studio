@@ -1,0 +1,12 @@
+{
+  "id": "k02",
+  "slug": "k02-bizny",
+  "label": "Byznys",
+  "driveFolder": "K02 — COOL BUSINESS",
+  "hex": ["#4A6FA5", "#6B8EB5", "#2C4A72", "#8AAAC8"],
+  "mood": ["profesionální", "moderní", "čistý", "sebevědomý"],
+  "vibe": "Cool Business / Modern Office",
+  "idealFor": ["koučky", "konzultantky", "lídry", "byznys značky"],
+  "contentTypes": ["LinkedIn", "Facebook", "Brand foto"],
+  "description": "Moderní kancelářské prostředí, čisté linie, profesionální atmosféra."
+}
