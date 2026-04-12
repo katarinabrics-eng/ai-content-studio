@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import DiagnostikaDemo from '@/components/DiagnostikaDemo'
 import { StartAnalyzer } from './StartAnalyzer'
+import type { VisualPhoto } from '@/lib/getVisualLibraryImages'
 
 type Collection = {
   id: string
@@ -61,6 +62,9 @@ export default function StartPage() {
   const [autoColorIndex, setAutoColorIndex] = useState(0)
   const autoColorRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // Vizuální knihovna — slide 2
+  const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
+
   function startSlideInterval() {
     if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
     slideIntervalRef.current = setInterval(() => {
@@ -112,6 +116,10 @@ export default function StartPage() {
     setMounted(true)
     loadCollections()
     startSlideInterval()
+    fetch('/api/landing/visual-library')
+      .then(r => r.json())
+      .then(d => { if (d.photos?.length) setVisualPhotos(d.photos) })
+      .catch(() => {})
     return () => {
       if (slideIntervalRef.current) clearInterval(slideIntervalRef.current)
     }
@@ -841,7 +849,7 @@ export default function StartPage() {
                     </div>
                     <div style={{ flex: 1, padding: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gridTemplateRows: 'repeat(3, 1fr)', gap: '5px', flex: 1, overflow: 'hidden' }}>
-                        {K04_PHOTOS.slice(0, 24).map((photo, i) => (
+                        {visualPhotos.slice(0, 24).map((photo, i) => (
                           <div key={i} style={{ borderRadius: '7px', overflow: 'hidden', position: 'relative', cursor: 'pointer' }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={photo.src} alt={photo.label ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
