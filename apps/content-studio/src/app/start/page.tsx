@@ -169,11 +169,11 @@ export default function StartPage() {
   useEffect(() => {
     autoColorRef.current = setInterval(() => {
       setAutoColorIndex(i => (i + 1) % colorGroups.length)
-    }, 3000)
+    }, 6000)
     return () => { if (autoColorRef.current) clearInterval(autoColorRef.current) }
   }, [])
 
-  // Reagovat na změnu autoColorIndex — přepnout barvu + folder
+  // Reagovat na změnu autoColorIndex — přepnout barvu + folder + fotky
   useEffect(() => {
     const group = colorGroups[autoColorIndex]
     if (!group) return
@@ -182,9 +182,13 @@ export default function StartPage() {
     setBgColor(group.hex + '22')
     setGridLoading(true)
     setTimeout(() => {
+      const filtered = collections
+        .flatMap(c => c.photos)
+        .filter(src => src.includes('/' + group.folder + '/'))
+      setActivePhotos(filtered.length > 0 ? filtered : collections.flatMap(c => c.photos))
       setGridLoading(false)
-    }, 380)
-  }, [autoColorIndex])
+    }, 400)
+  }, [autoColorIndex, collections])
 
   async function loadCollections() {
     const id = ++fetchRef.current
@@ -204,18 +208,21 @@ export default function StartPage() {
     }
   }
 
-  function handleDotClick(hex: string, col: Collection) {
-    // Zastav auto-rotate při manuálním výběru
+  function handleDotClick(group: { name: string; hex: string; folder: string }) {
     if (autoColorRef.current) clearInterval(autoColorRef.current)
-    const idx = collections.indexOf(col)
+    const idx = colorGroups.findIndex(g => g.hex === group.hex)
     if (idx !== -1) setAutoColorIndex(idx)
-    setSelectedHex(hex)
-    setBgColor(hex + '18')
+    setSelectedHex(group.hex)
+    setActiveFolder(group.folder)
+    setBgColor(group.hex + '22')
     setGridLoading(true)
     setTimeout(() => {
-      setActivePhotos(col.photos.slice(0, 16))
+      const filtered = collections
+        .flatMap(c => c.photos)
+        .filter(src => src.includes('/' + group.folder + '/'))
+      setActivePhotos(filtered.length > 0 ? filtered : collections.flatMap(c => c.photos))
       setGridLoading(false)
-    }, 380)
+    }, 400)
   }
 
   function scrollToLibrary() {
@@ -1095,14 +1102,7 @@ export default function StartPage() {
                 className={`start-palette-dot${selectedHex === group.hex ? ' active' : ''}`}
                 style={{ background: group.hex }}
                 title={group.name}
-                onClick={() => {
-                  if (autoColorRef.current) clearInterval(autoColorRef.current)
-                  setSelectedHex(group.hex)
-                  setActiveFolder(group.folder)
-                  setBgColor(group.hex + '22')
-                  setGridLoading(true)
-                  setTimeout(() => setGridLoading(false), 380)
-                }}
+                onClick={() => handleDotClick(group)}
               />
             ))}
           </div>
@@ -1116,7 +1116,7 @@ export default function StartPage() {
           {/* Foto grid */}
           <div
             className="start-visual-grid"
-            style={{ opacity: gridLoading ? 0 : 1, transition: 'opacity 0.35s ease' }}
+            style={{ opacity: gridLoading ? 0 : 1, transition: 'opacity 0.4s ease' }}
           >
             {activePhotos.length > 0
               ? activePhotos.filter(src => src.includes('/' + activeFolder + '/')).slice(0, 16).map((src, i) => (
