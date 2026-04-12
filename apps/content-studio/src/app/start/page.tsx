@@ -27,15 +27,16 @@ const ROTATING_SENTENCES = [
 
 
 const colorGroups = [
-  { name: 'Teplá zemitá',      colors: ['#8B6F47','#A0845C','#C4A882','#6B4F35'] },
-  { name: 'Chladná modrá',     colors: ['#4A6FA5','#5B7FBE','#3D5A8A','#6B9FD4'] },
-  { name: 'Světlá neutrální',  colors: ['#D4C5B0','#E8DDD0','#F0E8DC','#BDB0A0'] },
-  { name: 'Růžová',            colors: ['#E8A0A0','#D4787A','#F0C0C0','#C89090'] },
-  { name: 'Černá a grafitová', colors: ['#1C1C1C','#2D2D2D','#404040','#555555'] },
-  { name: 'Červená',           colors: ['#8B1A1A','#C0392B','#E74C3C','#922B21'] },
-  { name: 'Zelená',            colors: ['#1B4D3E','#2E7D5E','#3DAA7D','#52C49A'] },
-  { name: 'Tyrkysová',         colors: ['#0097A7','#00BCD4','#26C6DA','#4DD0E1'] },
-  { name: 'Světlá bílá',       colors: ['#F5F2EC','#EDE8E0','#E5DFD5','#D8D0C5'] },
+  { name: 'Teplá zemitá',      hex: '#A0845C', folder: 'K01' },
+  { name: 'Zlatá & slonovina', hex: '#C4A882', folder: 'K02' },
+  { name: 'Chladná modrá',     hex: '#4A6FA5', folder: 'K03' },
+  { name: 'Světlá neutrální',  hex: '#D4C5B0', folder: 'K04' },
+  { name: 'Růžová',            hex: '#D4787A', folder: 'K05' },
+  { name: 'Grafitová',         hex: '#2D2D2D', folder: 'K07' },
+  { name: 'Červená',           hex: '#C0392B', folder: 'K07' },
+  { name: 'Zelená',            hex: '#1B4D3E', folder: 'K09' },
+  { name: 'Tyrkysová',         hex: '#0097A7', folder: 'K10' },
+  { name: 'Krémová bílá',      hex: '#EDE8E0', folder: 'K04' },
 ]
 
 const K04_PHOTOS = [
@@ -56,8 +57,9 @@ export default function StartPage() {
   const [collections, setCollections] = useState<Collection[]>([])
   const [activePhotos, setActivePhotos] = useState<string[]>([])
   const [gridLoading, setGridLoading] = useState(true)
-  const [selectedHex, setSelectedHex] = useState<string | null>(null)
-  const [bgColor, setBgColor] = useState('transparent')
+  const [selectedHex, setSelectedHex] = useState<string | null>(colorGroups[0].hex)
+  const [activeFolder, setActiveFolder] = useState(colorGroups[0].folder)
+  const [bgColor, setBgColor] = useState(colorGroups[0].hex + '18')
   const fetchRef = useRef(0)
 
   // Typewriter — hero
@@ -138,31 +140,26 @@ export default function StartPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Auto-rotate spustit jakmile jsou načteny kolekce
+  // Auto-rotate cez colorGroups
   useEffect(() => {
-    if (collections.length === 0) return
     autoColorRef.current = setInterval(() => {
-      setAutoColorIndex(i => (i + 1) % collections.length)
+      setAutoColorIndex(i => (i + 1) % colorGroups.length)
     }, 3000)
     return () => { if (autoColorRef.current) clearInterval(autoColorRef.current) }
-  }, [collections])
+  }, [])
 
-  // Reagovat na změnu autoColorIndex — přepnout barvu + fotky
+  // Reagovat na změnu autoColorIndex — přepnout barvu + folder
   useEffect(() => {
-    if (collections.length === 0) return
-    const col = collections[autoColorIndex]
-    if (!col) return
-    const hex = col.hex?.[0]
-    if (hex) {
-      setSelectedHex(hex)
-      setBgColor(hex + '18')
-    }
+    const group = colorGroups[autoColorIndex]
+    if (!group) return
+    setSelectedHex(group.hex)
+    setActiveFolder(group.folder)
+    setBgColor(group.hex + '18')
     setGridLoading(true)
     setTimeout(() => {
-      setActivePhotos(col.photos.slice(0, 16))
       setGridLoading(false)
     }, 380)
-  }, [autoColorIndex, collections])
+  }, [autoColorIndex])
 
   async function loadCollections() {
     const id = ++fetchRef.current
@@ -173,7 +170,7 @@ export default function StartPage() {
       if (id !== fetchRef.current) return
       const cols: Collection[] = data.collections ?? []
       setCollections(cols)
-      const all = cols.flatMap(c => c.photos).slice(0, 16)
+      const all = cols.flatMap(c => c.photos)
       setActivePhotos(all)
     } catch {
       if (id === fetchRef.current) setActivePhotos([])
@@ -1067,26 +1064,27 @@ export default function StartPage() {
 
           {/* Kroužky */}
           <div className="start-palette-row">
-            {colorGroups.map(group =>
-              group.colors.map(hex => (
-                <div
-                  key={`${group.name}-${hex}`}
-                  className={`start-palette-dot${selectedHex === hex ? ' active' : ''}`}
-                  style={{ background: hex }}
-                  title={group.name}
-                  onClick={() => {
-                    if (autoColorRef.current) clearInterval(autoColorRef.current)
-                    setSelectedHex(hex)
-                    setBgColor(hex + '18')
-                  }}
-                />
-              ))
-            )}
+            {colorGroups.map(group => (
+              <div
+                key={group.hex}
+                className={`start-palette-dot${selectedHex === group.hex ? ' active' : ''}`}
+                style={{ background: group.hex }}
+                title={group.name}
+                onClick={() => {
+                  if (autoColorRef.current) clearInterval(autoColorRef.current)
+                  setSelectedHex(group.hex)
+                  setActiveFolder(group.folder)
+                  setBgColor(group.hex + '18')
+                  setGridLoading(true)
+                  setTimeout(() => setGridLoading(false), 380)
+                }}
+              />
+            ))}
           </div>
 
           <div className="start-collection-label">
             {selectedHex
-              ? colorGroups.find(g => g.colors.includes(selectedHex))?.name ?? ''
+              ? colorGroups.find(g => g.hex === selectedHex)?.name ?? ''
               : 'Všechny styly'}
           </div>
 
@@ -1096,7 +1094,7 @@ export default function StartPage() {
             style={{ opacity: gridLoading ? 0 : 1, transition: 'opacity 0.35s ease' }}
           >
             {activePhotos.length > 0
-              ? activePhotos.slice(0, 16).map((src, i) => (
+              ? activePhotos.filter(src => src.includes('/' + activeFolder + '/')).slice(0, 16).map((src, i) => (
                   <div
                     key={src}
                     className="start-grid-card"
