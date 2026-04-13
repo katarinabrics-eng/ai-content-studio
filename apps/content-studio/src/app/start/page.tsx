@@ -1245,71 +1245,74 @@ export default function StartPage() {
 
           {/* Foto grid */}
           <div className="gallery-grid-wrap" style={{ position: 'relative', width: '100%' }}>
+            <div style={{ position: 'relative' }}>
 
-            {/* Neviditeľný spacer — drží výšku stránky vždy */}
-            <div className="gallery-grid" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(8, 1fr)',
-              gap: '3px',
-              visibility: 'hidden',
-              pointerEvents: 'none',
-            }}>
-              {Array.from({ length: 18 }).map((_, i) => (
-                <div key={i} style={{ aspectRatio: '9/16', width: '100%' }} />
-              ))}
-            </div>
-
-            {/* Outgoing — staré fotky */}
-            {prevPhotos.length > 0 && (
-              <div className="gallery-grid" style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 1,
+              {/* Spacer — drží výšku, nikdy nemizne */}
+              <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(8, 1fr)',
                 gap: '3px',
-                alignItems: 'start',
-                opacity: fading ? 0 : 1,
-                transition: 'opacity 0.8s ease',
+                visibility: 'hidden',
+                pointerEvents: 'none',
+                userSelect: 'none',
               }}>
-                {prevPhotos.slice(0, 18).map((src, i) => (
-                  <div key={i} style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative' }}>
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div key={i} style={{ aspectRatio: '9/16', width: '100%' }} />
+                ))}
+              </div>
+
+              {/* Outgoing layer */}
+              {prevPhotos.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: 1,
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(8, 1fr)',
+                  gap: '3px',
+                  alignContent: 'start',
+                  opacity: fading ? 0 : 1,
+                  transition: 'opacity 0.8s ease',
+                }}>
+                  {prevPhotos.slice(0, 16).map((src, i) => (
+                    <div key={i} style={{ aspectRatio: '9/16', width: '100%', overflow: 'hidden', borderRadius: '4px', position: 'relative' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Incoming layer */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 2,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(8, 1fr)',
+                gap: '3px',
+                alignContent: 'start',
+                opacity: fading ? 0 : 1,
+                transition: 'opacity 0.8s ease 0.1s',
+              }}>
+                {activePhotos.slice(0, 16).map((src, i) => (
+                  <div
+                    key={i}
+                    style={{ aspectRatio: '9/16', width: '100%', overflow: 'hidden', borderRadius: '4px', position: 'relative', cursor: 'pointer' }}
+                    onMouseEnter={() => setHoveredCard(i)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <div className="start-grid-overlay" style={{ opacity: hoveredCard === i ? 1 : 0 }}>
+                      <button className="start-grid-overlay-btn">Vytvořit příspěvek →</button>
+                    </div>
                   </div>
                 ))}
               </div>
-            )}
 
-            {/* Incoming — nové fotky */}
-            <div className="gallery-grid" style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 2,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(8, 1fr)',
-              gap: '3px',
-              alignItems: 'start',
-              opacity: fading ? 0 : 1,
-              transition: 'opacity 0.8s ease 0.1s',
-            }}>
-              {activePhotos.slice(0, 18).map((src, i) => (
-                <div
-                  key={i}
-                  style={{ overflow: 'hidden', borderRadius: '4px', aspectRatio: '9/16', width: '100%', position: 'relative', cursor: 'pointer' }}
-                  onMouseEnter={() => setHoveredCard(i)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                  onClick={() => router.push('/client/magnet/rtg/onboarding')}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  <div className="start-grid-overlay" style={{ opacity: hoveredCard === i ? 1 : 0 }}>
-                    <button className="start-grid-overlay-btn">Vytvořit příspěvek →</button>
-                  </div>
-                </div>
-              ))}
             </div>
-
           </div>
         </section>
 
