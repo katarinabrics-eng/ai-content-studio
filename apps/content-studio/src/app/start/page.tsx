@@ -935,13 +935,13 @@ export default function StartPage() {
               <div className="hero-cta-block">
                 <button
                   className="hero-cta-primary"
-                  onClick={() => router.push('/brand-scan')}
+                  onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Zjisti, kde ti unikají klienti →
                 </button>
                 <button
                   className="hero-cta-secondary"
-                  onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                  onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   nebo začni tvořit rovnou →
                 </button>
@@ -1303,7 +1303,7 @@ export default function StartPage() {
                     style={{ aspectRatio: '9/16', width: '100%', overflow: 'hidden', borderRadius: '4px', position: 'relative', cursor: 'pointer' }}
                     onMouseEnter={() => setHoveredCard(i)}
                     onMouseLeave={() => setHoveredCard(null)}
-                    onClick={() => router.push('/client/magnet/rtg/onboarding')}
+                    onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -1347,7 +1347,7 @@ export default function StartPage() {
         </section>
 
         {/* MAGNET INPUT */}
-        <section style={{ padding: '80px 40px', background: '#f5f3ee' }}>
+        <section id="vyzkousej" style={{ padding: '80px 40px', background: '#f5f3ee' }}>
           <div style={{ maxWidth: '860px', margin: '0 auto' }}>
             {!startEntryType ? (
               <div>
@@ -1791,7 +1791,7 @@ export default function StartPage() {
                   <li><span className="rtg-pl">+</span>Dokoupení extra grafik nebo videí kdykoli</li>
                 </ul>
                 <div style={{ padding: '14px 24px 18px' }}>
-                  <button onClick={() => router.push('/client/magnet/rtg/onboarding')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít se Start →</button>
+                  <button onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít se Start →</button>
                   <div style={{ fontSize: '10px', color: '#c0c0b8', textAlign: 'center', marginTop: '5px' }}>Bez závazku · zrušení kdykoli</div>
                 </div>
               </div>
@@ -1821,7 +1821,7 @@ export default function StartPage() {
                   <li><span className="rtg-pl">+</span>Dokoupení extra kreativy kdykoli</li>
                 </ul>
                 <div style={{ padding: '14px 24px 18px' }}>
-                  <button onClick={() => router.push('/client/magnet/rtg/onboarding')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#d0ec78', color: '#111', border: 'none', cursor: 'pointer' }}>Začít s Plus →</button>
+                  <button onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#d0ec78', color: '#111', border: 'none', cursor: 'pointer' }}>Začít s Plus →</button>
                   <div style={{ fontSize: '10px', color: '#c0c0b8', textAlign: 'center', marginTop: '5px' }}>Bez závazku · zrušení kdykoli</div>
                 </div>
               </div>
@@ -1852,7 +1852,7 @@ export default function StartPage() {
                   <li><span className="rtg-pl">+</span>UGC video — brzy <span style={{ fontSize: '11px', color: '#9a9a90' }}>+790 Kč</span></li>
                 </ul>
                 <div style={{ padding: '14px 24px 18px' }}>
-                  <button onClick={() => router.push('/client/magnet/rtg/onboarding')} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít s Pro →</button>
+                  <button onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'block', width: '100%', padding: '11px', borderRadius: '8px', fontSize: '13px', fontWeight: 500, textAlign: 'center', background: '#111', color: '#fff', border: 'none', cursor: 'pointer' }}>Začít s Pro →</button>
                   <div style={{ fontSize: '10px', color: '#c0c0b8', textAlign: 'center', marginTop: '5px' }}>Bez závazku · zrušení kdykoli</div>
                 </div>
               </div>
@@ -1878,7 +1878,7 @@ export default function StartPage() {
             <h2 className="rtg-cta-h2">Začni tvořit<br /><em>jednodušeji.</em></h2>
             <p className="rtg-cta-p">Bez chaosu. Bez složitého procesu. Bez hodin práce. Zadáš jednou — dostáváš každý týden.</p>
             <div className="rtg-cta-actions">
-              <button className="rtg-btn-lime" onClick={() => router.push('/client/magnet/rtg/onboarding')}>Chci to vyzkoušet</button>
+              <button className="rtg-btn-lime" onClick={() => document.getElementById('vyzkousej')?.scrollIntoView({ behavior: 'smooth' })}>Chci to vyzkoušet</button>
               <button className="rtg-btn-ghost" onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}>Jak to funguje →</button>
             </div>
             <div className="rtg-cta-note">Žádný závazek · Ozveme se do 24 hodin</div>
