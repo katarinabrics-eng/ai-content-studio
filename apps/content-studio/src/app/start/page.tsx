@@ -119,6 +119,9 @@ export default function StartPage() {
   const [rtgActiveCard, setRtgActiveCard] = useState<number | null>(0)
   const [rtgApproved, setRtgApproved] = useState(false)
   const [startEntryType, setStartEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null)
+  const [startInputValue, setStartInputValue] = useState('')
+  const [startAnalyzerReady, setStartAnalyzerReady] = useState(false)
+  const [startManualChoice, setStartManualChoice] = useState<string | null>(null)
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -693,6 +696,10 @@ export default function StartPage() {
           0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
+        @keyframes entryFadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
 
         @media (max-width: 1024px) {
           .start-hero-inner { grid-template-columns: 1fr 1.4fr; gap: 40px; padding: 0 48px; }
@@ -760,6 +767,7 @@ export default function StartPage() {
           .gallery-grid { grid-template-columns: repeat(3, 1fr) !important; }
           .hero-typewriter { font-size: 36px !important; }
           .start-entry-grid { grid-template-columns: 1fr !important; }
+          .start-manual-grid { grid-template-columns: 1fr !important; }
         }
         /* ===== RTG DEMO FRAME ===== */
         .rtg-demo-frame * {
@@ -1350,7 +1358,8 @@ export default function StartPage() {
         <section id="vyzkousej" style={{ padding: '80px 40px', background: '#f5f3ee' }}>
           <div style={{ maxWidth: '860px', margin: '0 auto' }}>
             {!startEntryType ? (
-              <div>
+              /* ── KROK 0: 3 dlaždice ── */
+              <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
                 <div style={{ textAlign: 'center', marginBottom: 40 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: '#5a7a00', marginBottom: 10 }}>
                     Vyzkoušej si Lucifera AI Light
@@ -1362,7 +1371,6 @@ export default function StartPage() {
                     Zjisti jak je na tom tvá značka — za pár minut.
                   </p>
                 </div>
-
                 <div className="start-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
                   {[
                     { type: 'web' as const, emoji: '🌐', title: 'Mám web', desc: 'Zadej URL — analyzujeme ho za 60 sekund.', img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg' },
@@ -1371,7 +1379,7 @@ export default function StartPage() {
                   ].map(item => (
                     <div
                       key={item.type}
-                      onClick={() => { setStartEntryType(item.type); }}
+                      onClick={() => { setStartEntryType(item.type); setStartInputValue(''); setStartManualChoice(null); setStartAnalyzerReady(false); }}
                       style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', transition: 'all .2s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#b7e94c'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#e8e4dc'; e.currentTarget.style.transform = 'translateY(0)'; }}
@@ -1391,20 +1399,128 @@ export default function StartPage() {
                     </div>
                   ))}
                 </div>
-
                 <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 16 }}>
                   Zdarma · Bez registrace · Výsledky během minut
                 </p>
               </div>
-            ) : (
-              <div>
+
+            ) : !startAnalyzerReady ? (
+              /* ── KROK 1: Input karta ── */
+              <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
                 <button
-                  onClick={() => setStartEntryType(null)}
+                  onClick={() => { setStartEntryType(null); setStartInputValue(''); setStartManualChoice(null); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 28, padding: 0 }}
+                >
+                  ← Zpět
+                </button>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0fce0', border: '1px solid rgba(183,233,76,0.4)', borderRadius: 20, padding: '6px 14px', fontSize: 12, color: '#5a7a00', fontWeight: 600, marginBottom: 28 }}>
+                  {startEntryType === 'web' && '🌐 Analýza webu'}
+                  {startEntryType === 'instagram' && '📱 Analýza Instagramu'}
+                  {startEntryType === 'manual' && '✨ Začínám od nuly'}
+                </div>
+                <div style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 20, padding: '36px 40px' }}>
+
+                  {/* sec-web */}
+                  {startEntryType === 'web' && (
+                    <div>
+                      <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: 24, fontWeight: 700, color: '#111', marginBottom: 8, marginTop: 0 }}>Zadej URL svého webu</h3>
+                      <p style={{ fontSize: 14, color: '#777', marginBottom: 24, lineHeight: 1.6 }}>Stačí adresa — AI udělá screenshot, přečte texty a analyzuje značku za ~60 sekund.</p>
+                      <input
+                        type="url"
+                        value={startInputValue}
+                        onChange={e => setStartInputValue(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartAnalyzerReady(true); }}
+                        placeholder="https://vaseweb.cz"
+                        style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => { if (startInputValue.trim()) setStartAnalyzerReady(true); }}
+                        disabled={!startInputValue.trim()}
+                        style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
+                      >Analyzovat →</button>
+                      <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 12 }}>Analýza trvá ~60 sekund · Zdarma</p>
+                    </div>
+                  )}
+
+                  {/* sec-instagram */}
+                  {startEntryType === 'instagram' && (
+                    <div>
+                      <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: 24, fontWeight: 700, color: '#111', marginBottom: 8, marginTop: 0 }}>Zadej svůj Instagram</h3>
+                      <p style={{ fontSize: 14, color: '#777', marginBottom: 24, lineHeight: 1.6 }}>Přečteme tvůj profil, styl a vizuální identitu — do pár minut máš přehled.</p>
+                      <div style={{ position: 'relative', marginBottom: 16 }}>
+                        <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#bbb', fontSize: 15, pointerEvents: 'none' as const }}>@</span>
+                        <input
+                          type="text"
+                          value={startInputValue}
+                          onChange={e => setStartInputValue(e.target.value.replace(/^@/, ''))}
+                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartAnalyzerReady(true); }}
+                          placeholder="vashandle"
+                          style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const }}
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        onClick={() => { if (startInputValue.trim()) setStartAnalyzerReady(true); }}
+                        disabled={!startInputValue.trim()}
+                        style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
+                      >Analyzovat →</button>
+                      <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 12 }}>Přečteme tvůj styl a vizuální identitu · Zdarma</p>
+                    </div>
+                  )}
+
+                  {/* sec-manual */}
+                  {startEntryType === 'manual' && (
+                    <div>
+                      <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: 24, fontWeight: 700, color: '#111', marginBottom: 8, marginTop: 0 }}>Čemu se věnuješ?</h3>
+                      <p style={{ fontSize: 14, color: '#777', marginBottom: 24, lineHeight: 1.6 }}>Vyber nejbližší kategorii — upravíme analýzu pro tvůj typ podnikání.</p>
+                      <div className="start-manual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 24 }}>
+                        {[
+                          { key: 'konzultant', emoji: '🧘', label: 'Konzultant / Kouč' },
+                          { key: 'kreativa',   emoji: '🎨', label: 'Kreativní studio' },
+                          { key: 'eshop',      emoji: '🛍', label: 'E-shop / Produkt' },
+                          { key: 'osobni',     emoji: '✍️', label: 'Osobní značka' },
+                        ].map(opt => (
+                          <div
+                            key={opt.key}
+                            onClick={() => setStartManualChoice(opt.key)}
+                            style={{ padding: '14px 18px', borderRadius: 12, border: `1.5px solid ${startManualChoice === opt.key ? '#b7e94c' : '#e8e4dc'}`, background: startManualChoice === opt.key ? '#f6fde8' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all .15s', fontWeight: startManualChoice === opt.key ? 600 : 400, color: '#111', fontSize: 14 }}
+                          >
+                            <span style={{ fontSize: 20 }}>{opt.emoji}</span>{opt.label}
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setStartAnalyzerReady(true)}
+                        style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: '#b7e94c', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer', transition: 'background .2s' }}
+                      >Spustit analýzu ✨</button>
+                      <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 12 }}>Zdarma · Bez webu · Výsledky během minut</p>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+            ) : (
+              /* ── KROK 2: StartAnalyzer ── */
+              <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
+                <button
+                  onClick={() => { setStartAnalyzerReady(false); setStartInputValue(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 24, padding: 0 }}
                 >
                   ← Zpět
                 </button>
-                <StartAnalyzer diagnostika hideIntro />
+                <StartAnalyzer
+                  diagnostika
+                  hideIntro
+                  initialUrl={
+                    startEntryType === 'web'
+                      ? startInputValue
+                      : startEntryType === 'instagram'
+                      ? `https://www.instagram.com/${startInputValue.replace(/^@/, '')}`
+                      : undefined
+                  }
+                />
               </div>
             )}
           </div>

@@ -85,7 +85,10 @@ const analyzerWrapperStyle: React.CSSProperties = {
 
 export default function BrandScanPage() {
   const stepsSectionRef = useRef<HTMLElement | null>(null);
-  const [entryType, setEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null);
+  const [bsEntryType, setBsEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null);
+  const [bsInputValue, setBsInputValue] = useState('');
+  const [bsAnalyzerReady, setBsAnalyzerReady] = useState(false);
+  const [bsManualChoice, setBsManualChoice] = useState<string | null>(null);
 
   useEffect(() => {
     const el = stepsSectionRef.current;
@@ -155,7 +158,8 @@ export default function BrandScanPage() {
         .steps-section.steps-inview .steps-card-reveal:nth-child(5) .step-num-reveal { transition-delay: 0.45s; }
         .step-connector { display: flex; align-items: center; justify-content: center; color: rgba(183,233,76,0.6); font-size: 18px; font-weight: 300; }
         @media (max-width: 768px) { .step-connector { display: none !important; } .steps-cards-grid { grid-template-columns: 1fr !important; } }
-        @media (max-width: 768px) { .bs-entry-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 768px) { .bs-entry-grid { grid-template-columns: 1fr !important; } .bs-manual-grid { grid-template-columns: 1fr !important; } }
+        @keyframes bsFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
       {/* NAV */}
@@ -497,9 +501,9 @@ export default function BrandScanPage() {
       <section id="analyzer" style={{ padding: '80px 24px', background: '#f5f2ec' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
 
-          {!entryType ? (
-            /* ── KROK 0 — Kde začínáš? ── */
-            <div>
+          {!bsEntryType ? (
+            /* ── KROK 0: 3 dlaždice ── */
+            <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
               <div style={{ textAlign: 'center', marginBottom: 48 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: LIME_DARK, marginBottom: 12 }}>
                   Vyzkoušej si Lucifera AI Light
@@ -511,90 +515,157 @@ export default function BrandScanPage() {
                   Zjisti jak je na tom tvá značka — za pár minut.
                 </p>
               </div>
-
-              {/* 3 dlaždice */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }} className="bs-entry-grid">
+              <div className="bs-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
                 {[
-                  {
-                    type: 'web' as const,
-                    emoji: '🌐',
-                    title: 'Mám web',
-                    desc: 'Zadej URL — analyzujeme ho za 60 sekund.',
-                    img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg',
-                  },
-                  {
-                    type: 'instagram' as const,
-                    emoji: '📱',
-                    title: 'Mám Instagram',
-                    desc: 'Zadej @handle — přečteme tvůj styl.',
-                    img: '/placeholders/stock-vizualni knihovna/K09/k09-001.png',
-                  },
-                  {
-                    type: 'manual' as const,
-                    emoji: '✨',
-                    title: 'Začínám od nuly',
-                    desc: 'Vyber z možností — jsme tu pro tebe.',
-                    img: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg',
-                  },
+                  { type: 'web' as const, emoji: '🌐', title: 'Mám web', desc: 'Zadej URL — analyzujeme ho za 60 sekund.', img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg' },
+                  { type: 'instagram' as const, emoji: '📱', title: 'Mám Instagram', desc: 'Zadej @handle — přečteme tvůj styl.', img: '/placeholders/stock-vizualni knihovna/K09/k09-001.png' },
+                  { type: 'manual' as const, emoji: '✨', title: 'Začínám od nuly', desc: 'Vyber z možností — jsme tu pro tebe.', img: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg' },
                 ].map((item) => (
                   <div
                     key={item.type}
-                    onClick={() => setEntryType(item.type)}
+                    onClick={() => { setBsEntryType(item.type); setBsInputValue(''); setBsManualChoice(null); setBsAnalyzerReady(false); }}
                     style={{ background: '#ffffff', border: '1.5px solid #e8e4dc', borderRadius: 20, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column' as const }}
                     onMouseEnter={e => { const el = e.currentTarget; el.style.border = '1.5px solid #b7e94c'; el.style.transform = 'translateY(-4px)'; el.style.boxShadow = '0 12px 40px rgba(183,233,76,0.15)'; }}
                     onMouseLeave={e => { const el = e.currentTarget; el.style.border = '1.5px solid #e8e4dc'; el.style.transform = 'translateY(0)'; el.style.boxShadow = 'none'; }}
                   >
-                    {/* Obrázok */}
                     <div style={{ height: 180, overflow: 'hidden', position: 'relative' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.img}
-                        alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }}
-                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.05)')}
-                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                      />
+                      <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} />
                       <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.9)', borderRadius: 10, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                         {item.emoji}
                       </div>
                     </div>
-                    {/* Text */}
                     <div style={{ padding: '20px 24px 24px' }}>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
-                        {item.title}
-                      </div>
-                      <div style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
-                        {item.desc}
-                      </div>
-                      <div style={{ background: '#111', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600, textAlign: 'center' as const, transition: 'background 0.2s' }}>
-                        Začít →
-                      </div>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>{item.title}</div>
+                      <div style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>{item.desc}</div>
+                      <div style={{ background: '#111', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600, textAlign: 'center' as const }}>Začít →</div>
                     </div>
                   </div>
                 ))}
               </div>
-
               <p style={{ textAlign: 'center', fontSize: 12, color: '#aaa' }}>
                 Zdarma · Bez registrace · Výsledky během minut
               </p>
             </div>
 
-          ) : (
-            /* ── KROK 1+ — StartAnalyzer ── */
-            <div>
+          ) : !bsAnalyzerReady ? (
+            /* ── KROK 1: Input karta ── */
+            <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
               <button
-                onClick={() => setEntryType(null)}
+                onClick={() => { setBsEntryType(null); setBsInputValue(''); setBsManualChoice(null); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 28, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+              >
+                ← Zpět
+              </button>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0fce0', border: '1px solid rgba(183,233,76,0.4)', borderRadius: 20, padding: '6px 14px', fontSize: 12, color: LIME_DARK, fontWeight: 600, marginBottom: 28 }}>
+                {bsEntryType === 'web' && '🌐 Analýza webu'}
+                {bsEntryType === 'instagram' && '📱 Analýza Instagramu'}
+                {bsEntryType === 'manual' && '✨ Začínám od nuly'}
+              </div>
+              <div style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 20, padding: '36px 40px' }}>
+
+                {/* sec-web */}
+                {bsEntryType === 'web' && (
+                  <div>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: TEXT, marginBottom: 8, marginTop: 0 }}>Zadej URL svého webu</h3>
+                    <p style={{ fontSize: 14, color: MUTED, marginBottom: 24, lineHeight: 1.6 }}>Stačí adresa — AI udělá screenshot, přečte texty a analyzuje značku za ~60 sekund.</p>
+                    <input
+                      type="url"
+                      value={bsInputValue}
+                      onChange={e => setBsInputValue(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                      placeholder="https://vaseweb.cz"
+                      style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: TEXT, outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => { if (bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                      disabled={!bsInputValue.trim()}
+                      style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: bsInputValue.trim() ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: bsInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
+                    >Analyzovat →</button>
+                    <p style={{ textAlign: 'center', fontSize: 11, color: FAINT, marginTop: 12 }}>Analýza trvá ~60 sekund · Zdarma</p>
+                  </div>
+                )}
+
+                {/* sec-instagram */}
+                {bsEntryType === 'instagram' && (
+                  <div>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: TEXT, marginBottom: 8, marginTop: 0 }}>Zadej svůj Instagram</h3>
+                    <p style={{ fontSize: 14, color: MUTED, marginBottom: 24, lineHeight: 1.6 }}>Přečteme tvůj profil, styl a vizuální identitu — do pár minut máš přehled.</p>
+                    <div style={{ position: 'relative', marginBottom: 16 }}>
+                      <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#bbb', fontSize: 15, pointerEvents: 'none' as const }}>@</span>
+                      <input
+                        type="text"
+                        value={bsInputValue}
+                        onChange={e => setBsInputValue(e.target.value.replace(/^@/, ''))}
+                        onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                        placeholder="vashandle"
+                        style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: TEXT, outline: 'none', boxSizing: 'border-box' as const }}
+                        autoFocus
+                      />
+                    </div>
+                    <button
+                      onClick={() => { if (bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                      disabled={!bsInputValue.trim()}
+                      style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: bsInputValue.trim() ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: bsInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
+                    >Analyzovat →</button>
+                    <p style={{ textAlign: 'center', fontSize: 11, color: FAINT, marginTop: 12 }}>Přečteme tvůj styl a vizuální identitu · Zdarma</p>
+                  </div>
+                )}
+
+                {/* sec-manual */}
+                {bsEntryType === 'manual' && (
+                  <div>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: TEXT, marginBottom: 8, marginTop: 0 }}>Čemu se věnuješ?</h3>
+                    <p style={{ fontSize: 14, color: MUTED, marginBottom: 24, lineHeight: 1.6 }}>Vyber nejbližší kategorii — upravíme analýzu pro tvůj typ podnikání.</p>
+                    <div className="bs-manual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
+                      {[
+                        { key: 'konzultant', emoji: '🧘', label: 'Konzultant / Kouč' },
+                        { key: 'kreativa',   emoji: '🎨', label: 'Kreativní studio' },
+                        { key: 'eshop',      emoji: '🛍', label: 'E-shop / Produkt' },
+                        { key: 'osobni',     emoji: '✍️', label: 'Osobní značka' },
+                      ].map(opt => (
+                        <div
+                          key={opt.key}
+                          onClick={() => setBsManualChoice(opt.key)}
+                          style={{ padding: '14px 18px', borderRadius: 12, border: `1.5px solid ${bsManualChoice === opt.key ? LIME : '#e8e4dc'}`, background: bsManualChoice === opt.key ? '#f6fde8' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all .15s', fontWeight: bsManualChoice === opt.key ? 600 : 400, color: TEXT, fontSize: 14 }}
+                        >
+                          <span style={{ fontSize: 20 }}>{opt.emoji}</span>{opt.label}
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setBsAnalyzerReady(true)}
+                      style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: LIME, color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: 'pointer', transition: 'background .2s' }}
+                    >Spustit analýzu ✨</button>
+                    <p style={{ textAlign: 'center', fontSize: 11, color: FAINT, marginTop: 12 }}>Zdarma · Bez webu · Výsledky během minut</p>
+                  </div>
+                )}
+
+              </div>
+            </div>
+
+          ) : (
+            /* ── KROK 2: StartAnalyzer ── */
+            <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
+              <button
+                onClick={() => { setBsAnalyzerReady(false); setBsInputValue(''); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
               >
                 ← Zpět
               </button>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0fce0', border: '1px solid rgba(183,233,76,0.4)', borderRadius: 20, padding: '6px 14px', fontSize: 12, color: LIME_DARK, fontWeight: 600, marginBottom: 24 }}>
-                {entryType === 'web' && '🌐 Analýza webu'}
-                {entryType === 'instagram' && '📱 Analýza Instagramu'}
-                {entryType === 'manual' && '✨ Manuální zadání'}
-              </div>
               <div style={analyzerWrapperStyle} className="brand-scan-analyzer-card">
-                <StartAnalyzer diagnostika hideIntro />
+                <StartAnalyzer
+                  diagnostika
+                  hideIntro
+                  initialUrl={
+                    bsEntryType === 'web'
+                      ? bsInputValue
+                      : bsEntryType === 'instagram'
+                      ? `https://www.instagram.com/${bsInputValue.replace(/^@/, '')}`
+                      : undefined
+                  }
+                />
               </div>
             </div>
           )}
