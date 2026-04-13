@@ -1353,20 +1353,20 @@ export default function StartPage() {
               <div>
                 <div style={{ textAlign: 'center', marginBottom: 40 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: '#5a7a00', marginBottom: 10 }}>
-                    Vyzkoušej pro svou značku
+                    Vyzkoušej si Lucifera AI Light
                   </div>
                   <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: 12 }}>
                     Kde začínáš?
                   </h2>
                   <p style={{ fontSize: 15, color: '#777', maxWidth: 420, margin: '0 auto', lineHeight: 1.6 }}>
-                    Vyber odkud začneme — zbytek uděláme za tebe.
+                    Zjisti jak je na tom tvá značka — za pár minut.
                   </p>
                 </div>
 
                 <div className="start-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
                   {[
                     { type: 'web' as const, emoji: '🌐', title: 'Mám web', desc: 'Zadej URL — analyzujeme ho za 60 sekund.', img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg' },
-                    { type: 'instagram' as const, emoji: '📱', title: 'Mám Instagram', desc: 'Zadej @handle — přečteme tvůj styl.', img: '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg' },
+                    { type: 'instagram' as const, emoji: '📱', title: 'Mám Instagram', desc: 'Zadej @handle — přečteme tvůj styl.', img: '/placeholders/stock-vizualni knihovna/K09/k09-001.png' },
                     { type: 'manual' as const, emoji: '✨', title: 'Začínám od nuly', desc: 'Vyber z možností — jsme tu pro tebe.', img: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg' },
                   ].map(item => (
                     <div

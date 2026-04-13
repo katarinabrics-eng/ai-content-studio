@@ -502,13 +502,13 @@ export default function BrandScanPage() {
             <div>
               <div style={{ textAlign: 'center', marginBottom: 48 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: LIME_DARK, marginBottom: 12 }}>
-                  Spustit analýzu
+                  Vyzkoušej si Lucifera AI Light
                 </div>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, color: TEXT, lineHeight: 1.2, marginBottom: 16 }}>
                   Kde začínáš?
                 </h2>
                 <p style={{ fontSize: 16, color: MUTED, maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
-                  Vyber odkud začneme — zbytek uděláme za tebe.
+                  Zjisti jak je na tom tvá značka — za pár minut.
                 </p>
               </div>
 
@@ -527,7 +527,7 @@ export default function BrandScanPage() {
                     emoji: '📱',
                     title: 'Mám Instagram',
                     desc: 'Zadej @handle — přečteme tvůj styl.',
-                    img: '/placeholders/stock-vizualni knihovna/K04/k04-001.png',
+                    img: '/placeholders/stock-vizualni knihovna/K09/k09-001.png',
                   },
                   {
                     type: 'manual' as const,
