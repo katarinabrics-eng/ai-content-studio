@@ -1371,7 +1371,7 @@ export default function StartPage() {
                   ].map(item => (
                     <div
                       key={item.type}
-                      onClick={() => { setStartEntryType(item.type); window.location.href = '/brand-scan#analyzer'; }}
+                      onClick={() => { setStartEntryType(item.type); }}
                       style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', transition: 'all .2s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#b7e94c'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#e8e4dc'; e.currentTarget.style.transform = 'translateY(0)'; }}
@@ -1396,7 +1396,17 @@ export default function StartPage() {
                   Zdarma · Bez registrace · Výsledky během minut
                 </p>
               </div>
-            ) : null}
+            ) : (
+              <div>
+                <button
+                  onClick={() => setStartEntryType(null)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 24, padding: 0 }}
+                >
+                  ← Zpět
+                </button>
+                <StartAnalyzer diagnostika hideIntro />
+              </div>
+            )}
           </div>
         </section>
 
