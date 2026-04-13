@@ -118,6 +118,7 @@ export default function StartPage() {
   const [rtgActiveTab, setRtgActiveTab] = useState('obsah')
   const [rtgActiveCard, setRtgActiveCard] = useState<number | null>(0)
   const [rtgApproved, setRtgApproved] = useState(false)
+  const [startEntryType, setStartEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null)
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -758,6 +759,7 @@ export default function StartPage() {
           .slides-outer { height: 340px !important; }
           .gallery-grid { grid-template-columns: repeat(3, 1fr) !important; }
           .hero-typewriter { font-size: 36px !important; }
+          .start-entry-grid { grid-template-columns: 1fr !important; }
         }
         /* ===== RTG DEMO FRAME ===== */
         .rtg-demo-frame * {
@@ -1345,36 +1347,56 @@ export default function StartPage() {
         </section>
 
         {/* MAGNET INPUT */}
-        <section style={{ padding: '80px 40px', textAlign: 'center', background: '#f5f3ee' }}>
-          <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
-              Vyzkoušej pro svou značku
-            </p>
-            <h2 className="rtg-h2" style={{ marginBottom: '8px' }}>
-              Zadej svůj web.<br />
-              <em style={{ fontWeight: 400, color: '#555' }}>Ukážeme ti jak bude vypadat tvůj obsah.</em>
-            </h2>
-            <p style={{ fontSize: '14px', color: '#888', marginBottom: '28px' }}>
-              Níže vidíš demo. Zadej svůj web a vygenerujeme 3 reálné posty pro tvou značku.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', maxWidth: '720px', margin: '0 auto' }}>
-              <input
-                type="url"
-                placeholder="vas-web.cz nebo instagram.com/vas-profil"
-                style={{ flex: 1, padding: '18px 24px', border: '1.5px solid #e8e4dc', borderRadius: '10px', fontSize: '16px', outline: 'none', background: '#fff', color: '#111' }}
-                onFocus={e => (e.target.style.borderColor = '#b7e94c')}
-                onBlur={e => (e.target.style.borderColor = '#e8e4dc')}
-              />
-              <button
-                onClick={() => router.push('/brand-scan')}
-                style={{ padding: '18px 32px', background: '#b7e94c', color: '#111', fontWeight: 700, fontSize: '16px', border: 'none', borderRadius: '10px', cursor: 'pointer', whiteSpace: 'nowrap' }}
-              >
-                Vygenerovat →
-              </button>
-            </div>
-            <p style={{ fontSize: '14px', color: '#bbb', marginTop: '12px' }}>
-              Zdarma · 3 posty · náhled okamžitě
-            </p>
+        <section style={{ padding: '80px 40px', background: '#f5f3ee' }}>
+          <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+            {!startEntryType ? (
+              <div>
+                <div style={{ textAlign: 'center', marginBottom: 40 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: '#5a7a00', marginBottom: 10 }}>
+                    Vyzkoušej pro svou značku
+                  </div>
+                  <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: 12 }}>
+                    Kde začínáš?
+                  </h2>
+                  <p style={{ fontSize: 15, color: '#777', maxWidth: 420, margin: '0 auto', lineHeight: 1.6 }}>
+                    Vyber odkud začneme — zbytek uděláme za tebe.
+                  </p>
+                </div>
+
+                <div className="start-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+                  {[
+                    { type: 'web' as const, emoji: '🌐', title: 'Mám web', desc: 'Zadej URL — analyzujeme ho za 60 sekund.', img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg' },
+                    { type: 'instagram' as const, emoji: '📱', title: 'Mám Instagram', desc: 'Zadej @handle — přečteme tvůj styl.', img: '/placeholders/stock-vizualni knihovna/K04/k04-001.png' },
+                    { type: 'manual' as const, emoji: '✨', title: 'Začínám od nuly', desc: 'Vyber z možností — jsme tu pro tebe.', img: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg' },
+                  ].map(item => (
+                    <div
+                      key={item.type}
+                      onClick={() => { setStartEntryType(item.type); window.location.href = '/brand-scan#analyzer'; }}
+                      style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', transition: 'all .2s' }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#b7e94c'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#e8e4dc'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
+                      <div style={{ height: 160, overflow: 'hidden', position: 'relative' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+                          {item.emoji}
+                        </div>
+                      </div>
+                      <div style={{ padding: '16px 18px 20px' }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 6, fontFamily: "'Playfair Display',serif" }}>{item.title}</div>
+                        <div style={{ fontSize: 13, color: '#777', lineHeight: 1.55, marginBottom: 14 }}>{item.desc}</div>
+                        <div style={{ background: '#111', color: '#fff', padding: '9px 0', borderRadius: 9, fontSize: 12, fontWeight: 600, textAlign: 'center' as const }}>Začít →</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 16 }}>
+                  Zdarma · Bez registrace · Výsledky během minut
+                </p>
+              </div>
+            ) : null}
           </div>
         </section>
 
