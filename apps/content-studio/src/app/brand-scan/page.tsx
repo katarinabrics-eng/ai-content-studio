@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { StartAnalyzer } from "../start/StartAnalyzer";
 
@@ -85,6 +85,7 @@ const analyzerWrapperStyle: React.CSSProperties = {
 
 export default function BrandScanPage() {
   const stepsSectionRef = useRef<HTMLElement | null>(null);
+  const [entryType, setEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null);
 
   useEffect(() => {
     const el = stepsSectionRef.current;
@@ -154,6 +155,7 @@ export default function BrandScanPage() {
         .steps-section.steps-inview .steps-card-reveal:nth-child(5) .step-num-reveal { transition-delay: 0.45s; }
         .step-connector { display: flex; align-items: center; justify-content: center; color: rgba(183,233,76,0.6); font-size: 18px; font-weight: 300; }
         @media (max-width: 768px) { .step-connector { display: none !important; } .steps-cards-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 768px) { .bs-entry-grid { grid-template-columns: 1fr !important; } }
       `}</style>
 
       {/* NAV */}
@@ -492,28 +494,111 @@ export default function BrandScanPage() {
       </section>
 
       {/* FORMULÁŘ — Spustit analýzu */}
-      <section
-        id="analyzer"
-        className="bs-section"
-        style={{
-          background: BG1,
-          borderTop: `1px solid ${BORDER}`,
-          borderBottom: `1px solid ${BORDER}`,
-          padding: "80px 40px",
-        }}
-      >
-        <div style={{ maxWidth: 860, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: LIME_DARK, marginBottom: 12 }}>
-            Spustit analýzu
-          </p>
-          <h2 style={{ fontFamily: "var(--font-playfair), serif", fontSize: 38, fontWeight: 900, color: TEXT, marginBottom: 12, letterSpacing: "-0.02em" }}>
-            Zadejte web.
-          </h2>
-          <p style={{ fontSize: 16, color: MUTED, marginBottom: 32, lineHeight: 1.6 }}>Zbytek uděláme za vás.</p>
-          <div style={analyzerWrapperStyle} className="brand-scan-analyzer-card">
-            <StartAnalyzer diagnostika hideIntro />
-          </div>
-          <p style={{ fontSize: 12, color: "#ccc", marginTop: 12 }}>Zdarma · Bez registrace · Výsledky během minut</p>
+      <section id="analyzer" style={{ padding: '80px 24px', background: '#f5f2ec' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+
+          {!entryType ? (
+            /* ── KROK 0 — Kde začínáš? ── */
+            <div>
+              <div style={{ textAlign: 'center', marginBottom: 48 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: LIME_DARK, marginBottom: 12 }}>
+                  Spustit analýzu
+                </div>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, color: TEXT, lineHeight: 1.2, marginBottom: 16 }}>
+                  Kde začínáš?
+                </h2>
+                <p style={{ fontSize: 16, color: MUTED, maxWidth: 480, margin: '0 auto', lineHeight: 1.6 }}>
+                  Vyber odkud začneme — zbytek uděláme za tebe.
+                </p>
+              </div>
+
+              {/* 3 dlaždice */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }} className="bs-entry-grid">
+                {[
+                  {
+                    type: 'web' as const,
+                    emoji: '🌐',
+                    title: 'Mám web',
+                    desc: 'Zadej URL — analyzujeme ho za 60 sekund.',
+                    img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg',
+                  },
+                  {
+                    type: 'instagram' as const,
+                    emoji: '📱',
+                    title: 'Mám Instagram',
+                    desc: 'Zadej @handle — přečteme tvůj styl.',
+                    img: '/placeholders/stock-vizualni knihovna/K04/k04-001.png',
+                  },
+                  {
+                    type: 'manual' as const,
+                    emoji: '✨',
+                    title: 'Začínám od nuly',
+                    desc: 'Vyber z možností — jsme tu pro tebe.',
+                    img: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.type}
+                    onClick={() => setEntryType(item.type)}
+                    style={{ background: '#ffffff', border: '1.5px solid #e8e4dc', borderRadius: 20, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column' as const }}
+                    onMouseEnter={e => { const el = e.currentTarget; el.style.border = '1.5px solid #b7e94c'; el.style.transform = 'translateY(-4px)'; el.style.boxShadow = '0 12px 40px rgba(183,233,76,0.15)'; }}
+                    onMouseLeave={e => { const el = e.currentTarget; el.style.border = '1.5px solid #e8e4dc'; el.style.transform = 'translateY(0)'; el.style.boxShadow = 'none'; }}
+                  >
+                    {/* Obrázok */}
+                    <div style={{ height: 180, overflow: 'hidden', position: 'relative' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.img}
+                        alt={item.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }}
+                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.05)')}
+                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                      />
+                      <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.9)', borderRadius: 10, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                        {item.emoji}
+                      </div>
+                    </div>
+                    {/* Text */}
+                    <div style={{ padding: '20px 24px 24px' }}>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
+                        {item.title}
+                      </div>
+                      <div style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
+                        {item.desc}
+                      </div>
+                      <div style={{ background: '#111', color: '#fff', padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600, textAlign: 'center' as const, transition: 'background 0.2s' }}>
+                        Začít →
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p style={{ textAlign: 'center', fontSize: 12, color: '#aaa' }}>
+                Zdarma · Bez registrace · Výsledky během minut
+              </p>
+            </div>
+
+          ) : (
+            /* ── KROK 1+ — StartAnalyzer ── */
+            <div>
+              <button
+                onClick={() => setEntryType(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+              >
+                ← Zpět
+              </button>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f0fce0', border: '1px solid rgba(183,233,76,0.4)', borderRadius: 20, padding: '6px 14px', fontSize: 12, color: LIME_DARK, fontWeight: 600, marginBottom: 24 }}>
+                {entryType === 'web' && '🌐 Analýza webu'}
+                {entryType === 'instagram' && '📱 Analýza Instagramu'}
+                {entryType === 'manual' && '✨ Manuální zadání'}
+              </div>
+              <div style={analyzerWrapperStyle} className="brand-scan-analyzer-card">
+                <StartAnalyzer diagnostika hideIntro />
+              </div>
+            </div>
+          )}
+
         </div>
       </section>
 
