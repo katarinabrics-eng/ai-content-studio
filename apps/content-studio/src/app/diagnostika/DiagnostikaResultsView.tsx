@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ScanResult, PillarAnalysisItem, SuggestedStrategistItem } from "@/app/start/ScanResultScrollExperience";
-import DiagnostikaCTA from "@/components/DiagnostikaCTA";
 
 const C = {
   bg: "#f5f4ef",
@@ -604,9 +603,101 @@ export function DiagnostikaResultsView({
 
         {/* 9. CTA */}
         {!hideCta && (
-          <section style={{ marginBottom: 40 }}>
-            <DiagnostikaCTA />
-          </section>
+          <div style={{ marginTop: 48 }}>
+
+            {/* ── 3 príspevky ── */}
+            <div style={{ marginBottom: 12, fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#5a7a00' }}>
+              Tvůj obsah připravený k použití
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 40 }}>
+              {[
+                { label: 'GRAFIKA · INSTAGRAM', title: '"Každé ráno si říkám — dneska to zvládnu."', body: 'A pak přijde ten moment, kdy všechno zpomalí. Tohle je pro tebe.', tags: '#osobnirozvoj #mindset', src: '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg' },
+                { label: 'VIDEO · REELS', title: '"Tohle ti nikdo neřekne."', body: 'Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala. A nechala systém pracovat za mě.', tags: '#podnikani #brand #marketing', src: '/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg' },
+                { label: 'CAROUSEL · INSTAGRAM', title: '"5 věcí které mě nikdo nenaučil o značce. Slide →"', body: 'Každý snímek ti řekne něco, co konkurence tají. Připraveno za 3 minuty.', tags: '#znacka #strategie #instagram', src: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg' },
+              ].map((post, i) => (
+                <div key={i} style={{ background: '#fff', border: '1px solid #e8e4dc', borderRadius: 14, overflow: 'hidden', display: 'flex', gap: 0 }}>
+                  <div style={{ width: 100, flexShrink: 0, overflow: 'hidden' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={post.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                  <div style={{ padding: '14px 18px', flex: 1 }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.1em', color: '#b7e94c', textTransform: 'uppercase', marginBottom: 5 }}>{post.label}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111', marginBottom: 5 }}>{post.title}</div>
+                    <div style={{ fontSize: 12, color: '#666', lineHeight: 1.6, marginBottom: 8 }}>{post.body}</div>
+                    <div style={{ fontSize: 11, color: '#aaa' }}>{post.tags}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Brand DNA preview → fade → zámok ── */}
+            <div style={{ marginBottom: 12, fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#5a7a00' }}>
+              Tvá Brand DNA strategie
+            </div>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 14, border: '1px solid #e8e4dc', background: '#fff' }}>
+              <div style={{ padding: '24px 24px 0' }}>
+                <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8, marginBottom: 8 }}>
+                  <strong style={{ color: '#111' }}>Pozicinování:</strong> {result.brandDna?.positioning ?? 'Tvá značka komunikuje z pozice důvěry a osobního přístupu.'}
+                </div>
+                <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8, marginBottom: 8 }}>
+                  <strong style={{ color: '#111' }}>Tón komunikace:</strong> {result.brandDna?.tone ?? 'Klidný, autentický, s osobním příběhem.'}
+                </div>
+                <div style={{ fontSize: 14, color: '#555', lineHeight: 1.8 }}>
+                  <strong style={{ color: '#111' }}>Cílová skupina:</strong> {result.brandDna?.targetAudience ?? 'Ženy 28–45, budující osobní nebo profesní značku.'}
+                </div>
+              </div>
+
+              {/* Fade overlay */}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0, height: 140,
+                background: 'linear-gradient(to bottom, transparent, #fff)',
+                display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+                paddingBottom: 24,
+              }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%',
+                    background: '#1a1a1a', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', margin: '0 auto 10px',
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 4 }}>
+                    Odemkni plnou Brand DNA strategii
+                  </div>
+                  <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
+                    Pozicinování · Pilíře obsahu · Archetyp · Doporučení stratéga
+                  </div>
+                </div>
+              </div>
+
+              {/* Spacer pre výšku fade */}
+              <div style={{ height: 160 }} />
+            </div>
+
+            {/* ── CTA ── */}
+            <div style={{ marginTop: 24, background: '#f5f2ec', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 4 }}>
+                  Ulož výsledky zdarma
+                </div>
+                <div style={{ fontSize: 13, color: '#777', lineHeight: 1.5 }}>
+                  Získáš přístup k plné Brand DNA, 3 příspěvkům ke stažení<br />a vizuální knihovně.
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+                <button style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 24px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  Vytvořit účet zdarma →
+                </button>
+                <button style={{ background: 'none', border: 'none', fontSize: 12, color: '#aaa', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Pokračovat bez účtu
+                </button>
+              </div>
+            </div>
+
+          </div>
         )}
       </div>
     </div>
