@@ -129,9 +129,10 @@ export default function StartPage() {
   const [rtgApproved, setRtgApproved] = useState(false)
   const [startEntryType, setStartEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null)
   const [startInputValue, setStartInputValue] = useState('')
-  const [startStep, setStartStep] = useState<'entry' | 'input' | 'mood' | 'analyzer'>('entry')
+  const [startStep, setStartStep] = useState<'entry' | 'input' | 'mood' | 'formats' | 'analyzer'>('entry')
   const [startManualChoice, setStartManualChoice] = useState<string | null>(null)
   const [startMoodSelected, setStartMoodSelected] = useState<string[]>([])
+  const [startFormats, setStartFormats] = useState<string[]>([])
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -1641,22 +1642,104 @@ export default function StartPage() {
                   })}
                 </div>
                 <button
-                  onClick={() => { if (startMoodSelected.length > 0) setStartStep('analyzer'); }}
+                  onClick={() => { if (startMoodSelected.length > 0) setStartStep('formats'); }}
                   style={{ width: '100%', padding: '14px 0', borderRadius: 12, background: startMoodSelected.length > 0 ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startMoodSelected.length > 0 ? 'pointer' : 'not-allowed', transition: 'background .2s', fontFamily: 'inherit' }}
                 >
                   {startMoodSelected.length > 0 ? 'Pokračovat →' : 'Vyber aspoň jednu náladu'}
                 </button>
                 <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 10 }}>
                   Nebo{' '}
-                  <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setStartStep('analyzer')}>přeskočit</span>
+                  <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setStartStep('formats')}>přeskočit</span>
                 </p>
               </div>
 
-            ) : (
-              /* ── KROK 3: StartAnalyzer ── */
-              <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
+            ) : startStep === 'formats' ? (
+              /* ── KROK 4: Formáty obsahu ── */
+              <div style={{ animation: 'entryFadeIn .3s ease' }}>
                 <button
                   onClick={() => setStartStep('mood')}
+                  style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'#888', marginBottom:20, display:'flex', alignItems:'center', gap:6, padding:0, fontFamily:'inherit' }}
+                >← Zpět</button>
+
+                <div style={{ display:'flex', gap:6, marginBottom:28 }}>
+                  {[0,1,2,3,4].map(i => (
+                    <div key={i} style={{ height:4, flex:1, borderRadius:4, background: i===3 ? '#b7e94c' : i<3 ? '#5a7a00' : '#e8e4dc' }} />
+                  ))}
+                </div>
+
+                <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>
+                  Krok 4 z 5 — Formát obsahu
+                </div>
+                <div style={{ fontFamily:"'Playfair Display',serif", fontSize:26, fontWeight:700, color:'#111', marginBottom:6, lineHeight:1.25 }}>
+                  Co chceš dostávat?
+                </div>
+                <div style={{ fontSize:14, color:'#aaa', marginBottom:24 }}>
+                  Vyber formáty — AI připraví obsah přesně pro tebe.
+                </div>
+
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                  {[
+                    { id:'instagram', emoji:'📸', name:'Instagram post', desc:'Fotka + caption + hashtagy' },
+                    { id:'reels',     emoji:'🎬', name:'Reels / Video',  desc:'Skript + hook + CTA' },
+                    { id:'facebook',  emoji:'💬', name:'Facebook post',  desc:'Delší text, komunita' },
+                    { id:'linkedin',  emoji:'💼', name:'LinkedIn',       desc:'Odborný příspěvek' },
+                    { id:'newsletter',emoji:'📧', name:'Newsletter',     desc:'Email pro odběratele' },
+                    { id:'stories',   emoji:'✨', name:'Stories',        desc:'Krátký obsah, 24h' },
+                  ].map(f => {
+                    const isSel = startFormats.includes(f.id)
+                    return (
+                      <div
+                        key={f.id}
+                        onClick={() => setStartFormats(prev =>
+                          prev.includes(f.id) ? prev.filter(x => x !== f.id) : [...prev, f.id]
+                        )}
+                        style={{
+                          border: `1.5px solid ${isSel ? '#b7e94c' : '#e8e4dc'}`,
+                          borderRadius:12, padding:'13px 14px',
+                          cursor:'pointer', display:'flex', alignItems:'center', gap:10,
+                          background: isSel ? '#f0fce0' : '#fff',
+                          transition:'all .2s',
+                        }}
+                      >
+                        <div style={{ fontSize:22, flexShrink:0 }}>{f.emoji}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontSize:13, fontWeight:600, color:'#111' }}>{f.name}</div>
+                          <div style={{ fontSize:11, color:'#888' }}>{f.desc}</div>
+                        </div>
+                        {isSel && (
+                          <div style={{ width:20, height:20, borderRadius:'50%', background:'#b7e94c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#1a2a00', flexShrink:0 }}>✓</div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div style={{ fontSize:12, color:'#bbb', textAlign:'center' as const, marginBottom:12 }}>
+                  {startFormats.length === 0 && 'Vyber aspoň jeden formát'}
+                  {startFormats.length > 0 && `${startFormats.length} formát${startFormats.length > 1 ? 'y' : ''} vybrán${startFormats.length > 1 ? 'y' : ''}`}
+                </div>
+
+                <button
+                  onClick={() => { if(startFormats.length > 0) setStartStep('analyzer') }}
+                  style={{
+                    width:'100%',
+                    background: startFormats.length > 0 ? '#111' : '#e8e4dc',
+                    color: startFormats.length > 0 ? '#fff' : '#bbb',
+                    border:'none', borderRadius:12, padding:15,
+                    fontSize:14, fontWeight:600,
+                    cursor: startFormats.length > 0 ? 'pointer' : 'default',
+                    fontFamily:'inherit', transition:'all .2s',
+                  }}
+                >
+                  Spustit analýzu ✨
+                </button>
+              </div>
+
+            ) : (
+              /* ── KROK 5: StartAnalyzer ── */
+              <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
+                <button
+                  onClick={() => setStartStep('formats')}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 24, padding: 0 }}
                 >
                   ← Zpět

@@ -96,9 +96,10 @@ export default function BrandScanPage() {
   const stepsSectionRef = useRef<HTMLElement | null>(null);
   const [bsEntryType, setBsEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null);
   const [bsInputValue, setBsInputValue] = useState('');
-  const [bsStep, setBsStep] = useState<'entry' | 'input' | 'mood' | 'analyzer'>('entry');
+  const [bsStep, setBsStep] = useState<'entry' | 'input' | 'mood' | 'formats' | 'analyzer'>('entry');
   const [bsManualChoice, setBsManualChoice] = useState<string | null>(null);
   const [moodSelected, setMoodSelected] = useState<string[]>([]);
+  const [bsFormats, setBsFormats] = useState<string[]>([]);
 
   useEffect(() => {
     const el = stepsSectionRef.current;
@@ -785,22 +786,104 @@ export default function BrandScanPage() {
                 })}
               </div>
               <button
-                onClick={() => setBsStep('analyzer')}
+                onClick={() => setBsStep('formats')}
                 style={{ width: '100%', padding: '14px 0', borderRadius: 12, background: moodSelected.length > 0 ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: moodSelected.length > 0 ? 'pointer' : 'not-allowed', transition: 'background .2s', fontFamily: 'inherit' }}
               >
                 {moodSelected.length > 0 ? 'Pokračovat →' : 'Vyber aspoň jednu náladu'}
               </button>
               <p style={{ textAlign: 'center', fontSize: 11, color: FAINT, marginTop: 10 }}>
                 Nebo{' '}
-                <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setBsStep('analyzer')}>přeskočit</span>
+                <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setBsStep('formats')}>přeskočit</span>
               </p>
             </div>
 
-          ) : (
-            /* ── KROK 3: StartAnalyzer ── */
-            <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
+          ) : bsStep === 'formats' ? (
+            /* ── KROK 4: Formáty obsahu ── */
+            <div style={{ animation: 'bsFadeIn .3s ease' }}>
               <button
                 onClick={() => setBsStep('mood')}
+                style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:MUTED, marginBottom:20, display:'flex', alignItems:'center', gap:6, padding:0, fontFamily:'inherit' }}
+              >← Zpět</button>
+
+              <div style={{ display:'flex', gap:6, marginBottom:28 }}>
+                {[0,1,2,3,4].map(i => (
+                  <div key={i} style={{ height:4, flex:1, borderRadius:4, background: i===3 ? LIME : i<3 ? LIME_DARK : '#e8e4dc' }} />
+                ))}
+              </div>
+
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:LIME_DARK, marginBottom:8 }}>
+                Krok 4 z 5 — Formát obsahu
+              </div>
+              <div style={{ fontFamily:"'Playfair Display', serif", fontSize:26, fontWeight:700, color:TEXT, marginBottom:6, lineHeight:1.25 }}>
+                Co chceš dostávat?
+              </div>
+              <div style={{ fontSize:14, color:FAINT, marginBottom:24 }}>
+                Vyber formáty — AI připraví obsah přesně pro tebe.
+              </div>
+
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                {[
+                  { id:'instagram', emoji:'📸', name:'Instagram post', desc:'Fotka + caption + hashtagy' },
+                  { id:'reels',     emoji:'🎬', name:'Reels / Video',  desc:'Skript + hook + CTA' },
+                  { id:'facebook',  emoji:'💬', name:'Facebook post',  desc:'Delší text, komunita' },
+                  { id:'linkedin',  emoji:'💼', name:'LinkedIn',       desc:'Odborný příspěvek' },
+                  { id:'newsletter',emoji:'📧', name:'Newsletter',     desc:'Email pro odběratele' },
+                  { id:'stories',   emoji:'✨', name:'Stories',        desc:'Krátký obsah, 24h' },
+                ].map(f => {
+                  const isSel = bsFormats.includes(f.id)
+                  return (
+                    <div
+                      key={f.id}
+                      onClick={() => setBsFormats(prev =>
+                        prev.includes(f.id) ? prev.filter(x => x !== f.id) : [...prev, f.id]
+                      )}
+                      style={{
+                        border: `1.5px solid ${isSel ? LIME : BORDER}`,
+                        borderRadius:12, padding:'13px 14px',
+                        cursor:'pointer', display:'flex', alignItems:'center', gap:10,
+                        background: isSel ? '#f0fce0' : BG,
+                        transition:'all .2s',
+                      }}
+                    >
+                      <div style={{ fontSize:22, flexShrink:0 }}>{f.emoji}</div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:13, fontWeight:600, color:TEXT }}>{f.name}</div>
+                        <div style={{ fontSize:11, color:MUTED }}>{f.desc}</div>
+                      </div>
+                      {isSel && (
+                        <div style={{ width:20, height:20, borderRadius:'50%', background:LIME, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#1a2a00', flexShrink:0 }}>✓</div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div style={{ fontSize:12, color:FAINT, textAlign:'center' as const, marginBottom:12 }}>
+                {bsFormats.length === 0 && 'Vyber aspoň jeden formát'}
+                {bsFormats.length > 0 && `${bsFormats.length} formát${bsFormats.length > 1 ? 'y' : ''} vybrán${bsFormats.length > 1 ? 'y' : ''}`}
+              </div>
+
+              <button
+                onClick={() => { if(bsFormats.length > 0) setBsStep('analyzer') }}
+                style={{
+                  width:'100%',
+                  background: bsFormats.length > 0 ? '#111' : '#e8e4dc',
+                  color: bsFormats.length > 0 ? '#fff' : FAINT,
+                  border:'none', borderRadius:12, padding:15,
+                  fontSize:14, fontWeight:600,
+                  cursor: bsFormats.length > 0 ? 'pointer' : 'default',
+                  fontFamily:'inherit', transition:'all .2s',
+                }}
+              >
+                Spustit analýzu ✨
+              </button>
+            </div>
+
+          ) : (
+            /* ── KROK 5: StartAnalyzer ── */
+            <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
+              <button
+                onClick={() => setBsStep('formats')}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
               >
                 ← Zpět
