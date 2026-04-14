@@ -88,6 +88,51 @@ const K04_PHOTOS = [
   { src: '/placeholders/stock-vizualni knihovna/K04/k04-008.png',  label: 'Story moment',  liked: true  },
 ]
 
+const TONES = [
+  { id:'editorial', e:'🤍', name:'Klidně a s rozvahou',
+    example:'"Někdy stačí zastavit se. Dát si prostor. A odpověď přijde sama."',
+    img:'/placeholders/stock-vizualni knihovna/K03/k03-007.jpeg' },
+  { id:'bold', e:'⚡', name:'Silně a přímo',
+    example:'"Přestaň čekat na správný moment. Správný moment jsi ty."',
+    img:'/placeholders/stock-vizualni knihovna/K02/k02-007.jpeg' },
+  { id:'golden', e:'✨', name:'Osobně a příběhem',
+    example:'"Před rokem jsem nevěděla jak dál. Dnes vím, že to byl začátek."',
+    img:'/placeholders/stock-vizualni knihovna/K04/k04-007.jpeg' },
+  { id:'disruptor', e:'🔥', name:'Nekonvenčně',
+    example:'"Všichni ti říkají buď trpělivý. Já ti říkám: ne. Jednej teď."',
+    img:'/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg' },
+  { id:'educator', e:'📐', name:'Odborně a strukturovaně',
+    example:'"3 kroky jak zlepšit engagement o 40 %: 1) Hook 2) Hodnota 3) CTA"',
+    img:'/placeholders/stock-vizualni knihovna/K01/k01-007.jpeg' },
+]
+
+const AUDIENCES = [
+  { id:'personal',  e:'👤', bg:'#f0e8f8', name:'Osobní značka',       desc:'Budují kariéru nebo vlastní podnikání', tag:'Jednotlivci' },
+  { id:'business',  e:'💼', bg:'#e8f0f8', name:'Podnikatelé & firmy', desc:'Hledají růst, efektivitu a výsledky',   tag:'B2B & B2C' },
+  { id:'creative',  e:'🎨', bg:'#f8f0e8', name:'Kreativci & freelanceři', desc:'Umělci, designéři, fotografové',   tag:'Tvůrčí obor' },
+  { id:'beginners', e:'🌱', bg:'#e8f8ec', name:'Začátečníci',         desc:'Teprve startují, hledají cestu',        tag:'Nový start' },
+  { id:'family',    e:'👨‍👩‍👧', bg:'#fef8e8', name:'Rodiny & rodiče',  desc:'Rovnováha práce a rodiny',             tag:'Životní styl' },
+  { id:'health',    e:'🏃', bg:'#f8eae8', name:'Sportovci & zdraví',  desc:'Fitness, výživa, wellbeing',            tag:'Zdraví' },
+]
+
+const COLOR_STYLES = [
+  { id:'prirodni', name:'Zemitá zelená',    desc:'Přírodní, organická', img:'/placeholders/stock-vizualni knihovna/K01/k01-008.jpeg', folder:'K01' },
+  { id:'kremova',  name:'Krémová & blush',  desc:'Jemná, teplá',       img:'/placeholders/stock-vizualni knihovna/K04/k04-008.png',  folder:'K04' },
+  { id:'bordo',    name:'Bordó & dramatická',desc:'Silná, luxusní',    img:'/placeholders/stock-vizualni knihovna/K07/k07-084.jpeg', folder:'K07' },
+  { id:'minimalni',name:'Světlá & minimální',desc:'Čistá, vzdušná',    img:'/placeholders/stock-vizualni knihovna/K03/k03-008.jpeg', folder:'K03' },
+  { id:'zlata',    name:'Teplá zlatá',      desc:'Energie, slunce',    img:'/placeholders/stock-vizualni knihovna/K05/k05-008.png',  folder:'K05' },
+  { id:'moderni',  name:'Chladná & moderní',desc:'Profesionální',      img:'/placeholders/stock-vizualni knihovna/K02/k02-008.jpeg', folder:'K02' },
+]
+
+const FORMATS = [
+  { id:'instagram',  e:'📸', name:'Instagram post', desc:'Fotka + caption + hashtagy' },
+  { id:'reels',      e:'🎬', name:'Reels / Video',  desc:'Skript + hook + CTA' },
+  { id:'facebook',   e:'💬', name:'Facebook post',  desc:'Delší text, komunita' },
+  { id:'linkedin',   e:'💼', name:'LinkedIn',       desc:'Odborný příspěvek' },
+  { id:'newsletter', e:'📧', name:'Newsletter',     desc:'Email pro odběratele' },
+  { id:'stories',    e:'✨', name:'Stories',        desc:'Krátký obsah, 24h' },
+]
+
 const MOODS = [
   { id: 'prirodni',   name: 'Zemitý & přírodní',  desc: 'Organický, zelený, klidný',    folder: 'K01', img: '/placeholders/stock-vizualni knihovna/K01/k01-006.jpeg' },
   { id: 'kremovy',    name: 'Krémový & jemný',     desc: 'Blush, růžová, teplá bílá',    folder: 'K04', img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png' },
@@ -130,9 +175,21 @@ export default function StartPage() {
   const [startEntryType, setStartEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null)
   const [startInputValue, setStartInputValue] = useState('')
   const [startStep, setStartStep] = useState<'entry' | 'input' | 'mood' | 'formats' | 'analyzer'>('entry')
-  const [startManualChoice, setStartManualChoice] = useState<string | null>(null)
   const [startMoodSelected, setStartMoodSelected] = useState<string[]>([])
   const [startFormats, setStartFormats] = useState<string[]>([])
+  const [manualStep, setManualStep] = useState<'basic'|'ton'|'audience'|'colors'|'formats'>('basic')
+  const [manualTon, setManualTon] = useState<string|null>(null)
+  const [manualAudience, setManualAudience] = useState<string[]>([])
+  const [manualColors, setManualColors] = useState<string[]>([])
+  const [manualFormats, setManualFormats] = useState<string[]>([])
+  const [manualName, setManualName] = useState('')
+  const [manualWhat, setManualWhat] = useState<string[]>([])
+  const [manualForWhom, setManualForWhom] = useState<string[]>([])
+  const [manualPrice, setManualPrice] = useState<string|null>(null)
+  const [manualPhase, setManualPhase] = useState<string|null>(null)
+  const [manualGoal, setManualGoal] = useState<string|null>(null)
+  const [manualDiff, setManualDiff] = useState('')
+  const [manualFeel, setManualFeel] = useState('')
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -1480,97 +1537,242 @@ export default function StartPage() {
                     </div>
                   )}
 
-                  {/* sec-manual */}
+                  {/* sec-manual — multi-step */}
                   {startEntryType === 'manual' && (
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' as const, color: '#5a7a00', marginBottom: 8 }}>✨ Začínám od nuly</div>
-                      <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 24, fontWeight: 700, color: '#111', marginBottom: 6 }}>Řekni nám o své značce.</div>
-                      <div style={{ fontSize: 14, color: '#aaa', marginBottom: 24 }}>Pár kliknutí — žádné dlouhé formuláře.</div>
-
-                      {/* Jméno */}
-                      <div style={{ marginBottom: 20 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>Jak ti říkají?</div>
-                        <input
-                          type="text"
-                          placeholder="Jméno nebo název značky"
-                          style={{ width: '100%', border: '1.5px solid #e8e4dc', borderRadius: 10, padding: '12px 16px', fontSize: 14, fontFamily: 'inherit', outline: 'none', background: '#fff', boxSizing: 'border-box' as const }}
-                          onFocus={e => { e.currentTarget.style.borderColor = '#b7e94c'; }}
-                          onBlur={e => { e.currentTarget.style.borderColor = '#e8e4dc'; }}
-                        />
+                      {/* Progress bar */}
+                      <div style={{ display:'flex', gap:5, marginBottom:24 }}>
+                        {['basic','ton','audience','colors','formats'].map((s,i) => (
+                          <div key={s} style={{ flex:1, height:4, borderRadius:4,
+                            background: manualStep === s ? '#b7e94c'
+                              : ['basic','ton','audience','colors','formats'].indexOf(manualStep) > i ? '#5a7a00'
+                              : '#e8e4dc'
+                          }} />
+                        ))}
                       </div>
 
-                      {/* Co nabízíš */}
-                      <div style={{ marginBottom: 20 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 10, textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>Co děláš? (vyber 1–2)</div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
-                          {['Koučink & terapie', 'Kurzy & vzdělávání', 'Kreativní služba', 'Produkty & e-shop', 'Zdraví & péče', 'Konzultace', 'Jiné'].map(t => (
-                            <div
-                              key={t}
-                              onClick={e => {
-                                const el = e.currentTarget;
-                                const on = el.dataset.on === '1';
-                                el.dataset.on = on ? '0' : '1';
-                                el.style.background = on ? '#fff' : '#b7e94c';
-                                el.style.color = on ? '#555' : '#1a2a00';
-                                el.style.borderColor = on ? '#e8e4dc' : '#b7e94c';
-                              }}
-                              style={{ padding: '8px 16px', borderRadius: 20, border: '1.5px solid #e8e4dc', fontSize: 13, cursor: 'pointer', background: '#fff', color: '#555', transition: 'all .15s', userSelect: 'none' as const }}
-                            >{t}</div>
-                          ))}
+                      {/* ── BASIC ── */}
+                      {manualStep === 'basic' && (
+                        <div>
+                          <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 1 z 5 — Tvoje základy</div>
+                          <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Řekni nám o své značce.</div>
+                          <div style={{ fontSize:14, color:'#aaa', marginBottom:24 }}>Čím víc víme, tím přesnější obsah dostaneš.</div>
+
+                          <div style={{ marginBottom:16 }}>
+                            <div style={{ fontSize:12, fontWeight:600, color:'#555', marginBottom:8, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>Jak ti říkají?</div>
+                            <input type="text" value={manualName} onChange={e => setManualName(e.target.value)}
+                              placeholder="Jméno nebo název značky"
+                              style={{ width:'100%', border:'1.5px solid #e8e4dc', borderRadius:10, padding:'12px 16px', fontSize:14, fontFamily:'inherit', outline:'none', background:'#fff', boxSizing:'border-box' as const }}
+                              onFocus={e => { e.currentTarget.style.borderColor='#b7e94c'; }}
+                              onBlur={e => { e.currentTarget.style.borderColor='#e8e4dc'; }}
+                            />
+                          </div>
+
+                          <div style={{ marginBottom:16 }}>
+                            <div style={{ fontSize:12, fontWeight:600, color:'#555', marginBottom:8, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>Co nabízíš? (vyber 1–2)</div>
+                            <div style={{ display:'flex', flexWrap:'wrap' as const, gap:7 }}>
+                              {['Koučink','Terapie & poradenství','Kurzy & vzdělávání','Kreativní služba','Produkty & e-shop','Zdraví & péče','Konzultace','Řemeslo & výroba','Jiné'].map(t => {
+                                const sel = manualWhat.includes(t)
+                                return (
+                                  <div key={t} onClick={() => setManualWhat(prev => sel ? prev.filter(x=>x!==t) : prev.length<2 ? [...prev,t] : prev)}
+                                    style={{ padding:'7px 14px', borderRadius:20, border:`1.5px solid ${sel?'#b7e94c':'#e8e4dc'}`, fontSize:13, cursor:'pointer', background:sel?'#b7e94c':'#fff', color:sel?'#1a2a00':'#555', transition:'all .15s', userSelect:'none' as const }}
+                                  >{t}</div>
+                                )
+                              })}
+                            </div>
+                          </div>
+
+                          <div style={{ marginBottom:16 }}>
+                            <div style={{ fontSize:12, fontWeight:600, color:'#555', marginBottom:8, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>Kde se nacházíš?</div>
+                            <div style={{ display:'flex', flexDirection:'column' as const, gap:7 }}>
+                              {['Začínám — buduju základ','Mám klienty, chci růst','Rebranding & nový směr','Škáluji a rozšiřuji'].map(t => (
+                                <div key={t} onClick={() => setManualPhase(t)}
+                                  style={{ padding:'10px 14px', borderRadius:10, border:`1.5px solid ${manualPhase===t?'#b7e94c':'#e8e4dc'}`, fontSize:13, cursor:'pointer', background:manualPhase===t?'#f0fce0':'#fff', color:'#333', transition:'all .15s', userSelect:'none' as const }}
+                                >{t}</div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ marginBottom:16 }}>
+                            <div style={{ fontSize:12, fontWeight:600, color:'#555', marginBottom:8, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>Hlavní cíl na sítích?</div>
+                            <div style={{ display:'flex', flexDirection:'column' as const, gap:7 }}>
+                              {['Získávat nové klienty','Budovat důvěru & autoritu','Vzdělávat a inspirovat','Budovat komunitu','Prodávat produkty'].map(t => (
+                                <div key={t} onClick={() => setManualGoal(t)}
+                                  style={{ padding:'10px 14px', borderRadius:10, border:`1.5px solid ${manualGoal===t?'#b7e94c':'#e8e4dc'}`, fontSize:13, cursor:'pointer', background:manualGoal===t?'#f0fce0':'#fff', color:'#333', transition:'all .15s', userSelect:'none' as const }}
+                                >{t}</div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ marginBottom:16 }}>
+                            <div style={{ fontSize:12, fontWeight:600, color:'#555', marginBottom:8, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>Čím se odlišuješ? <span style={{ fontWeight:400, color:'#bbb' }}>(volitelné)</span></div>
+                            <textarea value={manualDiff} onChange={e => setManualDiff(e.target.value.slice(0,150))}
+                              placeholder="Čím jsi jiný než ostatní ve svém oboru..."
+                              rows={2}
+                              style={{ width:'100%', border:'1.5px solid #e8e4dc', borderRadius:10, padding:'12px 16px', fontSize:13, fontFamily:'inherit', outline:'none', background:'#fff', boxSizing:'border-box' as const, resize:'none' as const }}
+                              onFocus={e => { e.currentTarget.style.borderColor='#b7e94c'; }}
+                              onBlur={e => { e.currentTarget.style.borderColor='#e8e4dc'; }}
+                            />
+                            <div style={{ fontSize:11, color:'#ccc', textAlign:'right' as const }}>{manualDiff.length}/150</div>
+                          </div>
+
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ fontSize:12, fontWeight:600, color:'#555', marginBottom:8, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>Co chceš aby zákazník pocítil? <span style={{ fontWeight:400, color:'#bbb' }}>(volitelné)</span></div>
+                            <textarea value={manualFeel} onChange={e => setManualFeel(e.target.value)}
+                              placeholder="Inspiraci, důvěru, klid, odvahu..."
+                              rows={2}
+                              style={{ width:'100%', border:'1.5px solid #e8e4dc', borderRadius:10, padding:'12px 16px', fontSize:13, fontFamily:'inherit', outline:'none', background:'#fff', boxSizing:'border-box' as const, resize:'none' as const }}
+                              onFocus={e => { e.currentTarget.style.borderColor='#b7e94c'; }}
+                              onBlur={e => { e.currentTarget.style.borderColor='#e8e4dc'; }}
+                            />
+                          </div>
+
+                          <button onClick={() => { if(manualName.trim()) setManualStep('ton') }}
+                            disabled={!manualName.trim()}
+                            style={{ width:'100%', padding:'13px 0', borderRadius:12, background:manualName.trim()?'#111':'#e8e4dc', color:manualName.trim()?'#fff':'#bbb', border:'none', fontSize:14, fontWeight:600, cursor:manualName.trim()?'pointer':'not-allowed', fontFamily:'inherit', transition:'all .2s' }}
+                          >Pokračovat →</button>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Pro koho */}
-                      <div style={{ marginBottom: 20 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 10, textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>Pro koho pracuješ? (vyber 1–2)</div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
-                          {['Ženy budující značku', 'Podnikatelé', 'Firmy', 'Kreativci', 'Začátečníci', 'Kdokoli'].map(t => (
-                            <div
-                              key={t}
-                              onClick={e => {
-                                const el = e.currentTarget;
-                                const on = el.dataset.on === '1';
-                                el.dataset.on = on ? '0' : '1';
-                                el.style.background = on ? '#fff' : '#b7e94c';
-                                el.style.color = on ? '#555' : '#1a2a00';
-                                el.style.borderColor = on ? '#e8e4dc' : '#b7e94c';
-                              }}
-                              style={{ padding: '8px 16px', borderRadius: 20, border: '1.5px solid #e8e4dc', fontSize: 13, cursor: 'pointer', background: '#fff', color: '#555', transition: 'all .15s', userSelect: 'none' as const }}
-                            >{t}</div>
-                          ))}
+                      {/* ── TON ── */}
+                      {manualStep === 'ton' && (
+                        <div>
+                          <button onClick={() => setManualStep('basic')}
+                            style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'#888', marginBottom:16, display:'flex', alignItems:'center', gap:6, padding:0, fontFamily:'inherit' }}
+                          >← Zpět</button>
+                          <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 2 z 5 — Tón komunikace</div>
+                          <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Jak mluvíš ke svým zákazníkům?</div>
+                          <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>Každá karta ukazuje ukázku jak bude AI psát za tebe.</div>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                            {TONES.map(t => {
+                              const sel = manualTon === t.id
+                              return (
+                                <div key={t.id} onClick={() => setManualTon(t.id)}
+                                  style={{ border:`2px solid ${sel?'#b7e94c':'#e8e4dc'}`, borderRadius:14, overflow:'hidden', cursor:'pointer', background:sel?'#f0fce0':'#fff', transition:'all .2s' }}
+                                >
+                                  <div style={{ height:120, overflow:'hidden' }}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={t.img} alt={t.name} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                                  </div>
+                                  <div style={{ padding:'12px 14px' }}>
+                                    <div style={{ fontSize:13, fontWeight:700, color:'#111', marginBottom:6 }}>{t.e} {t.name}</div>
+                                    <div style={{ fontSize:11, color:'#777', fontStyle:'italic', lineHeight:1.5, background:'#f7f7f5', padding:'8px 10px', borderRadius:8 }}>{t.example}</div>
+                                  </div>
+                                  {sel && (
+                                    <div style={{ margin:'0 14px 12px', background:'#b7e94c', borderRadius:8, padding:'4px 0', textAlign:'center' as const, fontSize:11, fontWeight:700, color:'#1a2a00' }}>✓ Vybraný styl</div>
+                                  )}
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <button onClick={() => { if(manualTon) setManualStep('audience') }}
+                            disabled={!manualTon}
+                            style={{ width:'100%', padding:'13px 0', borderRadius:12, background:manualTon?'#111':'#e8e4dc', color:manualTon?'#fff':'#bbb', border:'none', fontSize:14, fontWeight:600, cursor:manualTon?'pointer':'not-allowed', fontFamily:'inherit', transition:'all .2s' }}
+                          >Pokračovat →</button>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Cenová hladina */}
-                      <div style={{ marginBottom: 24 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: '#555', marginBottom: 10, textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>Cenová hladina?</div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          {['Dostupné', 'Střední třída', 'Prémiové'].map(t => (
-                            <div
-                              key={t}
-                              onClick={e => {
-                                const p = e.currentTarget.parentElement;
-                                if (p) p.querySelectorAll('div').forEach((d: Element) => {
-                                  (d as HTMLElement).style.background = '#fff';
-                                  (d as HTMLElement).style.color = '#555';
-                                  (d as HTMLElement).style.borderColor = '#e8e4dc';
-                                });
-                                const el = e.currentTarget;
-                                el.style.background = '#b7e94c';
-                                el.style.color = '#1a2a00';
-                                el.style.borderColor = '#b7e94c';
-                              }}
-                              style={{ flex: 1, padding: '10px', borderRadius: 10, border: '1.5px solid #e8e4dc', fontSize: 13, cursor: 'pointer', background: '#fff', color: '#555', textAlign: 'center' as const, transition: 'all .15s', userSelect: 'none' as const }}
-                            >{t}</div>
-                          ))}
+                      {/* ── AUDIENCE ── */}
+                      {manualStep === 'audience' && (
+                        <div>
+                          <button onClick={() => setManualStep('ton')}
+                            style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'#888', marginBottom:16, display:'flex', alignItems:'center', gap:6, padding:0, fontFamily:'inherit' }}
+                          >← Zpět</button>
+                          <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 3 z 5 — Cílová skupina</div>
+                          <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Pro koho tvoříš obsah?</div>
+                          <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>Vyber 1–2 skupiny — AI přizpůsobí jazyk.</div>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                            {AUDIENCES.map(a => {
+                              const sel = manualAudience.includes(a.id)
+                              return (
+                                <div key={a.id} onClick={() => setManualAudience(prev => sel ? prev.filter(x=>x!==a.id) : prev.length<2 ? [...prev,a.id] : prev)}
+                                  style={{ border:`2px solid ${sel?'#b7e94c':'transparent'}`, borderRadius:14, overflow:'hidden', cursor:'pointer', background:a.bg, padding:'16px', transition:'all .2s', position:'relative' as const }}
+                                >
+                                  <div style={{ fontSize:28, marginBottom:8 }}>{a.e}</div>
+                                  <div style={{ fontSize:13, fontWeight:700, color:'#111', marginBottom:4 }}>{a.name}</div>
+                                  <div style={{ fontSize:11, color:'#666', marginBottom:8, lineHeight:1.4 }}>{a.desc}</div>
+                                  <div style={{ display:'inline-block', background:'rgba(183,233,76,0.25)', color:'#5a7a00', fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:20 }}>{a.tag}</div>
+                                  {sel && <div style={{ position:'absolute', top:10, right:10, width:22, height:22, borderRadius:'50%', background:'#b7e94c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:'#1a2a00' }}>✓</div>}
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <button onClick={() => { if(manualAudience.length>0) setManualStep('colors') }}
+                            disabled={manualAudience.length===0}
+                            style={{ width:'100%', padding:'13px 0', borderRadius:12, background:manualAudience.length>0?'#111':'#e8e4dc', color:manualAudience.length>0?'#fff':'#bbb', border:'none', fontSize:14, fontWeight:600, cursor:manualAudience.length>0?'pointer':'not-allowed', fontFamily:'inherit', transition:'all .2s' }}
+                          >Pokračovat →</button>
                         </div>
-                      </div>
+                      )}
 
-                      <button
-                        onClick={() => setStartStep('mood')}
-                        style={{ width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '14px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                      >Spustit analýzu ✨</button>
-                      <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 12 }}>Zdarma · Bez webu · Výsledky během minut</p>
+                      {/* ── COLORS ── */}
+                      {manualStep === 'colors' && (
+                        <div>
+                          <button onClick={() => setManualStep('audience')}
+                            style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'#888', marginBottom:16, display:'flex', alignItems:'center', gap:6, padding:0, fontFamily:'inherit' }}
+                          >← Zpět</button>
+                          <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 4 z 5 — Vizuální styl</div>
+                          <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Která barevnost ti sedí?</div>
+                          <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>AI vybere vizuály ze správné kolekce.</div>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
+                            {COLOR_STYLES.map(c => {
+                              const sel = manualColors.includes(c.id)
+                              return (
+                                <div key={c.id} onClick={() => setManualColors(prev => sel ? prev.filter(x=>x!==c.id) : prev.length<2 ? [...prev,c.id] : prev)}
+                                  style={{ border:`2px solid ${sel?'#b7e94c':'#e8e4dc'}`, borderRadius:12, overflow:'hidden', cursor:'pointer', background:sel?'#f0fce0':'#fff', transition:'all .2s' }}
+                                >
+                                  <div style={{ height:90, overflow:'hidden' }}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={c.img} alt={c.name} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                                  </div>
+                                  <div style={{ padding:'10px 12px' }}>
+                                    <div style={{ fontSize:12, fontWeight:700, color:'#111' }}>{c.name}</div>
+                                    <div style={{ fontSize:11, color:'#888' }}>{c.desc}</div>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <button onClick={() => { if(manualColors.length>0) setManualStep('formats') }}
+                            disabled={manualColors.length===0}
+                            style={{ width:'100%', padding:'13px 0', borderRadius:12, background:manualColors.length>0?'#111':'#e8e4dc', color:manualColors.length>0?'#fff':'#bbb', border:'none', fontSize:14, fontWeight:600, cursor:manualColors.length>0?'pointer':'not-allowed', fontFamily:'inherit', transition:'all .2s' }}
+                          >Pokračovat →</button>
+                        </div>
+                      )}
+
+                      {/* ── FORMATS ── */}
+                      {manualStep === 'formats' && (
+                        <div>
+                          <button onClick={() => setManualStep('colors')}
+                            style={{ background:'none', border:'none', cursor:'pointer', fontSize:13, color:'#888', marginBottom:16, display:'flex', alignItems:'center', gap:6, padding:0, fontFamily:'inherit' }}
+                          >← Zpět</button>
+                          <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 5 z 5 — Formát obsahu</div>
+                          <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Co chceš dostávat?</div>
+                          <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>Vyber formáty — AI připraví obsah přesně pro tebe.</div>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                            {FORMATS.map(f => {
+                              const sel = manualFormats.includes(f.id)
+                              return (
+                                <div key={f.id} onClick={() => setManualFormats(prev => prev.includes(f.id) ? prev.filter(x=>x!==f.id) : [...prev,f.id])}
+                                  style={{ border:`1.5px solid ${sel?'#b7e94c':'#e8e4dc'}`, borderRadius:12, padding:'13px 14px', cursor:'pointer', display:'flex', alignItems:'center', gap:10, background:sel?'#f0fce0':'#fff', transition:'all .2s' }}
+                                >
+                                  <div style={{ fontSize:22, flexShrink:0 }}>{f.e}</div>
+                                  <div style={{ flex:1 }}>
+                                    <div style={{ fontSize:13, fontWeight:600, color:'#111' }}>{f.name}</div>
+                                    <div style={{ fontSize:11, color:'#888' }}>{f.desc}</div>
+                                  </div>
+                                  {sel && <div style={{ width:20, height:20, borderRadius:'50%', background:'#b7e94c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#1a2a00', flexShrink:0 }}>✓</div>}
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <button onClick={() => { if(manualFormats.length>0) setStartStep('analyzer') }}
+                            disabled={manualFormats.length===0}
+                            style={{ width:'100%', padding:'13px 0', borderRadius:12, background:manualFormats.length>0?'#111':'#e8e4dc', color:manualFormats.length>0?'#fff':'#bbb', border:'none', fontSize:14, fontWeight:600, cursor:manualFormats.length>0?'pointer':'not-allowed', fontFamily:'inherit', transition:'all .2s' }}
+                          >Spustit analýzu ✨</button>
+                          <p style={{ textAlign:'center', fontSize:11, color:'#bbb', marginTop:10 }}>Zdarma · Bez webu · Výsledky během minut</p>
+                        </div>
+                      )}
+
                     </div>
                   )}
 
