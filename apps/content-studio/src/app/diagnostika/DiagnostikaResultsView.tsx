@@ -108,6 +108,7 @@ export function DiagnostikaResultsView({
   const [leadEmail, setLeadEmail] = useState("");
   const [leadName, setLeadName] = useState(displayName);
   const [leadWeb, setLeadWeb] = useState(displayWeb);
+  const [ctaEmailOpen, setCtaEmailOpen] = useState(false);
 
   useEffect(() => {
     setLeadName(displayName);
@@ -678,24 +679,87 @@ export function DiagnostikaResultsView({
             </div>
 
             {/* ── CTA ── */}
-            <div style={{ marginTop: 24, background: '#f5f2ec', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 4 }}>
-                  Ulož výsledky zdarma
-                </div>
-                <div style={{ fontSize: 13, color: '#777', lineHeight: 1.5 }}>
-                  Získáš přístup k plné Brand DNA, 3 příspěvkům ke stažení<br />a vizuální knihovně.
+            {leadSubmitted ? (
+              <div style={{ marginTop: 24, background: '#f0fce0', border: '1px solid rgba(183,233,76,0.35)', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.lime, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>✓</div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#111', marginBottom: 3 }}>Výsledky uloženy.</div>
+                  <div style={{ fontSize: 13, color: '#555' }}>Odkaz pro návrat jsme odeslali na váš e-mail. Platnost 7 dní.</div>
+                  {accessUrl && (
+                    <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(accessUrl)}
+                      style={{ marginTop: 10, background: 'none', border: `1px solid ${C.limeBorder}`, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 600, color: C.limeDark, cursor: 'pointer', fontFamily: 'inherit' }}
+                    >📋 Zkopírovat odkaz</button>
+                  )}
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
-                <button style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 24px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
-                  Vytvořit účet zdarma →
-                </button>
-                <button style={{ background: 'none', border: 'none', fontSize: 12, color: '#aaa', cursor: 'pointer', fontFamily: 'inherit' }}>
-                  Pokračovat bez účtu
-                </button>
+            ) : !ctaEmailOpen ? (
+              <div style={{ marginTop: 24, background: '#f5f2ec', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 4 }}>Ulož výsledky zdarma</div>
+                  <div style={{ fontSize: 13, color: '#777', lineHeight: 1.5 }}>
+                    Získáš přístup k plné Brand DNA, 3 příspěvkům ke stažení<br />a vizuální knihovně.
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+                  <button
+                    onClick={() => setCtaEmailOpen(true)}
+                    style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 24px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' as const, fontFamily: 'inherit' }}
+                  >Uložit výsledky →</button>
+                  <button
+                    onClick={() => setCtaEmailOpen(false)}
+                    style={{ background: 'none', border: 'none', fontSize: 12, color: '#aaa', cursor: 'pointer', fontFamily: 'inherit' }}
+                  >Pokračovat bez uložení</button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div style={{ marginTop: 24, background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 14, padding: '28px 28px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#111', marginBottom: 3 }}>Kam poslat výsledky?</div>
+                    <div style={{ fontSize: 13, color: '#777' }}>Odkaz pro přístup k Brand DNA + příspěvkům. Platnost 7 dní.</div>
+                  </div>
+                  <button onClick={() => setCtaEmailOpen(false)} style={{ background: 'none', border: 'none', fontSize: 18, color: '#bbb', cursor: 'pointer', padding: 4, lineHeight: 1 }}>×</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' as const, color: '#999', marginBottom: 6 }}>Jméno / značka</label>
+                    <input
+                      type="text"
+                      value={leadName}
+                      onChange={e => setLeadName(e.target.value)}
+                      placeholder="např. Studio Marta"
+                      style={{ width: '100%', padding: '11px 14px', borderRadius: 9, border: '1.5px solid #e8e4dc', fontSize: 14, fontFamily: 'inherit', background: '#fafaf8', color: '#111', boxSizing: 'border-box' as const, outline: 'none' }}
+                      onFocus={e => { e.currentTarget.style.borderColor = C.lime; }}
+                      onBlur={e => { e.currentTarget.style.borderColor = '#e8e4dc'; }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' as const, color: '#999', marginBottom: 6 }}>Váš e-mail *</label>
+                    <input
+                      type="email"
+                      value={leadEmail}
+                      onChange={e => setLeadEmail(e.target.value)}
+                      placeholder="vas@email.cz"
+                      autoFocus
+                      style={{ width: '100%', padding: '11px 14px', borderRadius: 9, border: '1.5px solid #e8e4dc', fontSize: 14, fontFamily: 'inherit', background: '#fafaf8', color: '#111', boxSizing: 'border-box' as const, outline: 'none' }}
+                      onFocus={e => { e.currentTarget.style.borderColor = C.lime; }}
+                      onBlur={e => { e.currentTarget.style.borderColor = '#e8e4dc'; }}
+                      onKeyDown={e => { if (e.key === 'Enter' && leadEmail.trim() && onSaveLead) onSaveLead({ email: leadEmail.trim(), name: leadName || undefined, web: leadWeb || undefined }); }}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={leadSubmitting || !leadEmail.trim()}
+                  onClick={() => { if (onSaveLead && leadEmail.trim()) onSaveLead({ email: leadEmail.trim(), name: leadName || undefined, web: leadWeb || undefined }); }}
+                  style={{ width: '100%', padding: '13px', borderRadius: 10, background: leadEmail.trim() ? '#111' : '#e8e4dc', color: leadEmail.trim() ? '#fff' : '#aaa', border: 'none', fontSize: 14, fontWeight: 600, cursor: leadEmail.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit', transition: 'background .2s' }}
+                >{leadSubmitting ? 'Ukládám…' : 'Odeslat a odemknout →'}</button>
+                {leadError && <p style={{ fontSize: 12, color: C.danger, marginTop: 10 }}>{leadError}</p>}
+                <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 10 }}>Nespamujeme. Pouze tento odkaz.</p>
+              </div>
+            )}
 
           </div>
         )}
