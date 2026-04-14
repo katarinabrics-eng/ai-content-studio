@@ -1439,13 +1439,13 @@ export default function StartPage() {
                         type="url"
                         value={startInputValue}
                         onChange={e => setStartInputValue(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('mood'); }}
+                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('analyzer'); }}
                         placeholder="https://vaseweb.cz"
                         style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
                         autoFocus
                       />
                       <button
-                        onClick={() => { if (startInputValue.trim()) setStartStep('mood'); }}
+                        onClick={() => { if (startInputValue.trim()) setStartStep('analyzer'); }}
                         disabled={!startInputValue.trim()}
                         style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                       >Analyzovat →</button>
@@ -1464,14 +1464,14 @@ export default function StartPage() {
                           type="text"
                           value={startInputValue}
                           onChange={e => setStartInputValue(e.target.value.replace(/^@/, ''))}
-                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('mood'); }}
+                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('analyzer'); }}
                           placeholder="vashandle"
                           style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const }}
                           autoFocus
                         />
                       </div>
                       <button
-                        onClick={() => { if (startInputValue.trim()) setStartStep('mood'); }}
+                        onClick={() => { if (startInputValue.trim()) setStartStep('analyzer'); }}
                         disabled={!startInputValue.trim()}
                         style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                       >Analyzovat →</button>

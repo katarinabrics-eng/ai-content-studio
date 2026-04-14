@@ -583,13 +583,13 @@ export default function BrandScanPage() {
                       type="url"
                       value={bsInputValue}
                       onChange={e => setBsInputValue(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsStep('mood'); }}
+                      onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsStep('analyzer'); }}
                       placeholder="https://vaseweb.cz"
                       style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: TEXT, outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
                       autoFocus
                     />
                     <button
-                      onClick={() => { if (bsInputValue.trim()) setBsStep('mood'); }}
+                      onClick={() => { if (bsInputValue.trim()) setBsStep('analyzer'); }}
                       disabled={!bsInputValue.trim()}
                       style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: bsInputValue.trim() ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: bsInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                     >Analyzovat →</button>
@@ -608,14 +608,14 @@ export default function BrandScanPage() {
                         type="text"
                         value={bsInputValue}
                         onChange={e => setBsInputValue(e.target.value.replace(/^@/, ''))}
-                        onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsStep('mood'); }}
+                        onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsStep('analyzer'); }}
                         placeholder="vashandle"
                         style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: TEXT, outline: 'none', boxSizing: 'border-box' as const }}
                         autoFocus
                       />
                     </div>
                     <button
-                      onClick={() => { if (bsInputValue.trim()) setBsStep('mood'); }}
+                      onClick={() => { if (bsInputValue.trim()) setBsStep('analyzer'); }}
                       disabled={!bsInputValue.trim()}
                       style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: bsInputValue.trim() ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: bsInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                     >Analyzovat →</button>
