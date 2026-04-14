@@ -88,6 +88,15 @@ const K04_PHOTOS = [
   { src: '/placeholders/stock-vizualni knihovna/K04/k04-008.png',  label: 'Story moment',  liked: true  },
 ]
 
+const MOODS = [
+  { id: 'prirodni',   name: 'Zemitý & přírodní',  desc: 'Organický, zelený, klidný',    folder: 'K01', img: '/placeholders/stock-vizualni knihovna/K01/k01-006.jpeg' },
+  { id: 'kremovy',    name: 'Krémový & jemný',     desc: 'Blush, růžová, teplá bílá',    folder: 'K04', img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png' },
+  { id: 'dramaticky', name: 'Tmavý & dramatický',  desc: 'Burgundy, bordeaux, síla',      folder: 'K07', img: '/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg' },
+  { id: 'minimalni',  name: 'Světlý & minimální',  desc: 'Čistá bílá, vzdušný prostor',  folder: 'K03', img: '/placeholders/stock-vizualni knihovna/K03/k03-006.png' },
+  { id: 'zlaty',      name: 'Teplý & zlatý',       desc: 'Jantar, karamel, slunce',       folder: 'K05', img: '/placeholders/stock-vizualni knihovna/K05/k05-006.png' },
+  { id: 'moderni',    name: 'Chladný & moderní',   desc: 'Oceánová šedá, kovový',         folder: 'K02', img: '/placeholders/stock-vizualni knihovna/K02/k02-006.png' },
+]
+
 export default function StartPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -120,8 +129,9 @@ export default function StartPage() {
   const [rtgApproved, setRtgApproved] = useState(false)
   const [startEntryType, setStartEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null)
   const [startInputValue, setStartInputValue] = useState('')
-  const [startAnalyzerReady, setStartAnalyzerReady] = useState(false)
+  const [startStep, setStartStep] = useState<'entry' | 'input' | 'mood' | 'analyzer'>('entry')
   const [startManualChoice, setStartManualChoice] = useState<string | null>(null)
+  const [startMoodSelected, setStartMoodSelected] = useState<string[]>([])
 
   // Vizuální knihovna — slide 2
   const [visualPhotos, setVisualPhotos] = useState<VisualPhoto[]>(K04_PHOTOS)
@@ -1357,7 +1367,7 @@ export default function StartPage() {
         {/* MAGNET INPUT */}
         <section id="vyzkousej" style={{ padding: '80px 40px', background: '#f5f3ee' }}>
           <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-            {!startEntryType ? (
+            {startStep === 'entry' ? (
               /* ── KROK 0: 3 dlaždice ── */
               <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
                 <div style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -1379,7 +1389,7 @@ export default function StartPage() {
                   ].map(item => (
                     <div
                       key={item.type}
-                      onClick={() => { setStartEntryType(item.type); setStartInputValue(''); setStartManualChoice(null); setStartAnalyzerReady(false); }}
+                      onClick={() => { setStartEntryType(item.type); setStartInputValue(''); setStartManualChoice(null); setStartStep('input'); }}
                       style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', transition: 'all .2s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#b7e94c'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#e8e4dc'; e.currentTarget.style.transform = 'translateY(0)'; }}
@@ -1404,11 +1414,11 @@ export default function StartPage() {
                 </p>
               </div>
 
-            ) : !startAnalyzerReady ? (
+            ) : startStep === 'input' ? (
               /* ── KROK 1: Input karta ── */
               <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
                 <button
-                  onClick={() => { setStartEntryType(null); setStartInputValue(''); setStartManualChoice(null); }}
+                  onClick={() => { setStartStep('entry'); setStartEntryType(null); setStartInputValue(''); setStartManualChoice(null); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 28, padding: 0 }}
                 >
                   ← Zpět
@@ -1429,13 +1439,13 @@ export default function StartPage() {
                         type="url"
                         value={startInputValue}
                         onChange={e => setStartInputValue(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartAnalyzerReady(true); }}
+                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('mood'); }}
                         placeholder="https://vaseweb.cz"
                         style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
                         autoFocus
                       />
                       <button
-                        onClick={() => { if (startInputValue.trim()) setStartAnalyzerReady(true); }}
+                        onClick={() => { if (startInputValue.trim()) setStartStep('mood'); }}
                         disabled={!startInputValue.trim()}
                         style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                       >Analyzovat →</button>
@@ -1454,14 +1464,14 @@ export default function StartPage() {
                           type="text"
                           value={startInputValue}
                           onChange={e => setStartInputValue(e.target.value.replace(/^@/, ''))}
-                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartAnalyzerReady(true); }}
+                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('mood'); }}
                           placeholder="vashandle"
                           style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const }}
                           autoFocus
                         />
                       </div>
                       <button
-                        onClick={() => { if (startInputValue.trim()) setStartAnalyzerReady(true); }}
+                        onClick={() => { if (startInputValue.trim()) setStartStep('mood'); }}
                         disabled={!startInputValue.trim()}
                         style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                       >Analyzovat →</button>
@@ -1556,7 +1566,7 @@ export default function StartPage() {
                       </div>
 
                       <button
-                        onClick={() => setStartAnalyzerReady(true)}
+                        onClick={() => setStartStep('mood')}
                         style={{ width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '14px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
                       >Spustit analýzu ✨</button>
                       <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 12 }}>Zdarma · Bez webu · Výsledky během minut</p>
@@ -1566,11 +1576,87 @@ export default function StartPage() {
                 </div>
               </div>
 
-            ) : (
-              /* ── KROK 2: StartAnalyzer ── */
+            ) : startStep === 'mood' ? (
+              /* ── KROK 2: Mood board ── */
               <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
                 <button
-                  onClick={() => { setStartAnalyzerReady(false); setStartInputValue(''); }}
+                  onClick={() => setStartStep('input')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+                >
+                  ← Zpět
+                </button>
+                {/* Progress bar — 5 segmentů, krok 2 svítí */}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 36 }}>
+                  {[0,1,2,3,4].map(i => (
+                    <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i === 1 ? '#b7e94c' : '#e8e4dc', transition: 'background .3s' }} />
+                  ))}
+                </div>
+                <div style={{ textAlign: 'center', marginBottom: 40 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: '#5a7a00', marginBottom: 12 }}>Krok 2 ze 5</div>
+                  <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 700, color: '#111', lineHeight: 1.2, marginBottom: 12 }}>
+                    Jaký vizuální styl tě oslovuje?
+                  </h2>
+                  <p style={{ fontSize: 15, color: '#777', maxWidth: 440, margin: '0 auto', lineHeight: 1.6 }}>
+                    Vyber až 2 nálady — pomůže nám to přesně nastavit tvůj brand styl.
+                  </p>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 32 }}>
+                  {MOODS.map(mood => {
+                    const selected = startMoodSelected.includes(mood.id);
+                    return (
+                      <div
+                        key={mood.id}
+                        onClick={() => {
+                          setStartMoodSelected(prev => {
+                            if (prev.includes(mood.id)) return prev.filter(x => x !== mood.id);
+                            if (prev.length >= 2) return prev;
+                            return [...prev, mood.id];
+                          });
+                        }}
+                        style={{
+                          borderRadius: 16,
+                          overflow: 'hidden',
+                          cursor: 'pointer',
+                          border: selected ? '2px solid #b7e94c' : '2px solid transparent',
+                          boxShadow: selected ? '0 0 0 2px rgba(183,233,76,0.27)' : '0 2px 12px rgba(0,0,0,0.06)',
+                          transition: 'all 0.2s ease',
+                          background: '#fff',
+                        }}
+                      >
+                        <div style={{ height: 140, overflow: 'hidden', position: 'relative' }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={mood.img} alt={mood.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                          {selected && (
+                            <div style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: '#b7e94c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#1a2a00' }}>
+                              ✓
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ padding: '14px 16px' }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: '#111', marginBottom: 4 }}>{mood.name}</div>
+                          <div style={{ fontSize: 12, color: '#777' }}>{mood.desc}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={() => { if (startMoodSelected.length > 0) setStartStep('analyzer'); }}
+                  style={{ width: '100%', padding: '14px 0', borderRadius: 12, background: startMoodSelected.length > 0 ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startMoodSelected.length > 0 ? 'pointer' : 'not-allowed', transition: 'background .2s', fontFamily: 'inherit' }}
+                >
+                  {startMoodSelected.length > 0 ? 'Pokračovat →' : 'Vyber aspoň jednu náladu'}
+                </button>
+                <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 10 }}>
+                  Nebo{' '}
+                  <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setStartStep('analyzer')}>přeskočit</span>
+                </p>
+              </div>
+
+            ) : (
+              /* ── KROK 3: StartAnalyzer ── */
+              <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
+                <button
+                  onClick={() => setStartStep('mood')}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: '#777', marginBottom: 24, padding: 0 }}
                 >
                   ← Zpět
