@@ -83,12 +83,22 @@ const analyzerWrapperStyle: React.CSSProperties = {
   boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.5) inset",
 };
 
+const MOODS = [
+  { id: 'prirodni',   name: 'Zemitý & přírodní',  desc: 'Organický, zelený, klidný',   folder: 'K01', img: '/placeholders/stock-vizualni knihovna/K01/k01-006.jpeg' },
+  { id: 'kremovy',    name: 'Krémový & jemný',     desc: 'Blush, růžová, teplá bílá',   folder: 'K04', img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png' },
+  { id: 'dramaticky', name: 'Tmavý & dramatický',  desc: 'Burgundy, bordeaux, síla',     folder: 'K07', img: '/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg' },
+  { id: 'minimalni',  name: 'Světlý & minimální',  desc: 'Čistá bílá, vzdušný prostor', folder: 'K03', img: '/placeholders/stock-vizualni knihovna/K03/k03-006.jpeg' },
+  { id: 'zlaty',      name: 'Teplý & zlatý',       desc: 'Jantar, karamel, slunce',      folder: 'K05', img: '/placeholders/stock-vizualni knihovna/K05/k05-006.png' },
+  { id: 'moderni',    name: 'Chladný & moderní',   desc: 'Oceánová šedá, kovový',        folder: 'K02', img: '/placeholders/stock-vizualni knihovna/K02/k02-006.jpeg' },
+];
+
 export default function BrandScanPage() {
   const stepsSectionRef = useRef<HTMLElement | null>(null);
   const [bsEntryType, setBsEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null);
   const [bsInputValue, setBsInputValue] = useState('');
-  const [bsAnalyzerReady, setBsAnalyzerReady] = useState(false);
+  const [bsStep, setBsStep] = useState<'entry' | 'input' | 'mood' | 'analyzer'>('entry');
   const [bsManualChoice, setBsManualChoice] = useState<string | null>(null);
+  const [moodSelected, setMoodSelected] = useState<string[]>([]);
 
   useEffect(() => {
     const el = stepsSectionRef.current;
@@ -501,7 +511,7 @@ export default function BrandScanPage() {
       <section id="analyzer" style={{ padding: '80px 24px', background: '#f5f2ec' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
 
-          {!bsEntryType ? (
+          {bsStep === 'entry' ? (
             /* ── KROK 0: 3 dlaždice ── */
             <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
               <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -523,7 +533,7 @@ export default function BrandScanPage() {
                 ].map((item) => (
                   <div
                     key={item.type}
-                    onClick={() => { setBsEntryType(item.type); setBsInputValue(''); setBsManualChoice(null); setBsAnalyzerReady(false); }}
+                    onClick={() => { setBsEntryType(item.type); setBsInputValue(''); setBsManualChoice(null); setBsStep('input'); }}
                     style={{ background: '#ffffff', border: '1.5px solid #e8e4dc', borderRadius: 20, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column' as const }}
                     onMouseEnter={e => { const el = e.currentTarget; el.style.border = '1.5px solid #b7e94c'; el.style.transform = 'translateY(-4px)'; el.style.boxShadow = '0 12px 40px rgba(183,233,76,0.15)'; }}
                     onMouseLeave={e => { const el = e.currentTarget; el.style.border = '1.5px solid #e8e4dc'; el.style.transform = 'translateY(0)'; el.style.boxShadow = 'none'; }}
@@ -548,11 +558,11 @@ export default function BrandScanPage() {
               </p>
             </div>
 
-          ) : !bsAnalyzerReady ? (
+          ) : bsStep === 'input' ? (
             /* ── KROK 1: Input karta ── */
             <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
               <button
-                onClick={() => { setBsEntryType(null); setBsInputValue(''); setBsManualChoice(null); }}
+                onClick={() => { setBsEntryType(null); setBsInputValue(''); setBsManualChoice(null); setBsStep('entry'); }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 28, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
               >
                 ← Zpět
@@ -573,13 +583,13 @@ export default function BrandScanPage() {
                       type="url"
                       value={bsInputValue}
                       onChange={e => setBsInputValue(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                      onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsStep('mood'); }}
                       placeholder="https://vaseweb.cz"
                       style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: TEXT, outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
                       autoFocus
                     />
                     <button
-                      onClick={() => { if (bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                      onClick={() => { if (bsInputValue.trim()) setBsStep('mood'); }}
                       disabled={!bsInputValue.trim()}
                       style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: bsInputValue.trim() ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: bsInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                     >Analyzovat →</button>
@@ -598,14 +608,14 @@ export default function BrandScanPage() {
                         type="text"
                         value={bsInputValue}
                         onChange={e => setBsInputValue(e.target.value.replace(/^@/, ''))}
-                        onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                        onKeyDown={e => { if (e.key === 'Enter' && bsInputValue.trim()) setBsStep('mood'); }}
                         placeholder="vashandle"
                         style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: TEXT, outline: 'none', boxSizing: 'border-box' as const }}
                         autoFocus
                       />
                     </div>
                     <button
-                      onClick={() => { if (bsInputValue.trim()) setBsAnalyzerReady(true); }}
+                      onClick={() => { if (bsInputValue.trim()) setBsStep('mood'); }}
                       disabled={!bsInputValue.trim()}
                       style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: bsInputValue.trim() ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: bsInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                     >Analyzovat →</button>
@@ -700,7 +710,7 @@ export default function BrandScanPage() {
                     </div>
 
                     <button
-                      onClick={() => setBsAnalyzerReady(true)}
+                      onClick={() => setBsStep('mood')}
                       style={{ width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '14px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
                     >Spustit analýzu ✨</button>
                     <p style={{ textAlign: 'center', fontSize: 11, color: FAINT, marginTop: 12 }}>Zdarma · Bez webu · Výsledky během minut</p>
@@ -710,11 +720,87 @@ export default function BrandScanPage() {
               </div>
             </div>
 
-          ) : (
-            /* ── KROK 2: StartAnalyzer ── */
+          ) : bsStep === 'mood' ? (
+            /* ── KROK 2: Mood board ── */
             <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
               <button
-                onClick={() => { setBsAnalyzerReady(false); setBsInputValue(''); }}
+                onClick={() => setBsStep('input')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 28, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
+              >
+                ← Zpět
+              </button>
+              {/* Progress bar — 5 segmentů, krok 2 svítí */}
+              <div style={{ display: 'flex', gap: 6, marginBottom: 36 }}>
+                {[0,1,2,3,4].map(i => (
+                  <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i === 1 ? LIME : '#e8e4dc', transition: 'background .3s' }} />
+                ))}
+              </div>
+              <div style={{ textAlign: 'center', marginBottom: 40 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: LIME_DARK, marginBottom: 12 }}>Krok 2 ze 5</div>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 700, color: TEXT, lineHeight: 1.2, marginBottom: 12 }}>
+                  Jaký vizuální styl tě oslovuje?
+                </h2>
+                <p style={{ fontSize: 15, color: MUTED, maxWidth: 440, margin: '0 auto', lineHeight: 1.6 }}>
+                  Vyber až 2 nálady — pomůže nám to přesně nastavit tvůj brand styl.
+                </p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 32 }}>
+                {MOODS.map(mood => {
+                  const selected = moodSelected.includes(mood.id);
+                  return (
+                    <div
+                      key={mood.id}
+                      onClick={() => {
+                        setMoodSelected(prev => {
+                          if (prev.includes(mood.id)) return prev.filter(x => x !== mood.id);
+                          if (prev.length >= 2) return prev;
+                          return [...prev, mood.id];
+                        });
+                      }}
+                      style={{
+                        borderRadius: 16,
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        border: selected ? `2px solid ${LIME}` : '2px solid transparent',
+                        boxShadow: selected ? `0 0 0 2px ${LIME}44` : '0 2px 12px rgba(0,0,0,0.06)',
+                        transition: 'all 0.2s ease',
+                        background: '#fff',
+                      }}
+                    >
+                      <div style={{ height: 140, overflow: 'hidden', position: 'relative' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={mood.img} alt={mood.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        {selected && (
+                          <div style={{ position: 'absolute', top: 10, right: 10, width: 28, height: 28, borderRadius: '50%', background: LIME, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#1a2a00' }}>
+                            ✓
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ padding: '14px 16px' }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{mood.name}</div>
+                        <div style={{ fontSize: 12, color: MUTED }}>{mood.desc}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => setBsStep('analyzer')}
+                style={{ width: '100%', padding: '14px 0', borderRadius: 12, background: moodSelected.length > 0 ? LIME : '#e8e4dc', color: TEXT, border: 'none', fontSize: 15, fontWeight: 700, cursor: moodSelected.length > 0 ? 'pointer' : 'not-allowed', transition: 'background .2s', fontFamily: 'inherit' }}
+              >
+                {moodSelected.length > 0 ? 'Pokračovat →' : 'Vyber aspoň jednu náladu'}
+              </button>
+              <p style={{ textAlign: 'center', fontSize: 11, color: FAINT, marginTop: 10 }}>
+                Nebo{' '}
+                <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setBsStep('analyzer')}>přeskočit</span>
+              </p>
+            </div>
+
+          ) : (
+            /* ── KROK 3: StartAnalyzer ── */
+            <div style={{ animation: 'bsFadeIn 0.3s ease' }}>
+              <button
+                onClick={() => setBsStep('mood')}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: MUTED, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6, padding: 0 }}
               >
                 ← Zpět
