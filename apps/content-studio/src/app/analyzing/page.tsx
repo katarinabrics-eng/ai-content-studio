@@ -31,6 +31,90 @@ const MESSAGES = [
   "Dokončuji analýzu…",
 ];
 
+// Strategist data
+const STRATEGISTS: Record<string, { emoji: string; name: string; tagline: string; desc: string; color: string }> = {
+  ilumina: {
+    emoji: "✨",
+    name: "Ilumina",
+    tagline: "Příběh & jasné sdělení",
+    desc: "Pomůže ti komunikovat tak, aby zákazník okamžitě pochopil tvoji hodnotu. Mistryně brand storytellingu.",
+    color: "#f0e6ff",
+  },
+  impuls: {
+    emoji: "⚡",
+    name: "Impuls",
+    tagline: "Energie & dosah",
+    desc: "Zaměří se na obsah, který šíří a zvyšuje dosah tvé značky. Mistr virálního obsahu a viditelnosti.",
+    color: "#fff8e0",
+  },
+  katalyzator: {
+    emoji: "🔥",
+    name: "Katalyzátor",
+    tagline: "Emoce & transformace",
+    desc: "Propojí zákazníka s tvou značkou na hlubší úrovni. Mistr emocí, loajality a prodeje vztahem.",
+    color: "#fff1ed",
+  },
+  architect: {
+    emoji: "🏗",
+    name: "The Architect",
+    tagline: "Hodnotová nabídka",
+    desc: "Vytvoří neodolatelnou nabídku postavenou na hodnotovém vzorci — zákazník kupuje výsledek, ne produkt.",
+    color: "#f0fce0",
+  },
+  signal: {
+    emoji: "📡",
+    name: "Signal",
+    tagline: "Hlas & niche",
+    desc: "Pomůže ti najít tvůj jedinečný hlas a cílovou skupinu. Mistr pozicování a permission marketingu.",
+    color: "#e8f4ff",
+  },
+  content_voice: {
+    emoji: "✍️",
+    name: "Content Voice",
+    tagline: "Texty & brand hlas",
+    desc: "Převede tvé Brand DNA do konkrétních textů, bio a social copy. Hlas a příběh tvé značky.",
+    color: "#f5f3ee",
+  },
+};
+
+// Map quiz answers to strategist scores
+function getRecommendedStrategists(answers: string[]): [string, string] {
+  const scores: Record<string, number> = {
+    ilumina: 0, impuls: 0, katalyzator: 0,
+    architect: 0, signal: 0, content_voice: 0,
+  };
+
+  // Q1: Co je pro tebe v obsahu nejdůležitější?
+  const q1 = answers[0] ?? "";
+  if (q1.includes("Autenticita")) { scores.ilumina += 3; scores.katalyzator += 2; }
+  if (q1.includes("Odbornost")) { scores.architect += 3; scores.content_voice += 2; }
+  if (q1.includes("Vizuální")) { scores.impuls += 3; scores.ilumina += 1; }
+  if (q1.includes("Komunita")) { scores.katalyzator += 3; scores.signal += 2; }
+
+  // Q2: Jak často chceš publikovat?
+  const q2 = answers[1] ?? "";
+  if (q2.includes("Každý den") || q2.includes("3–4")) { scores.impuls += 2; scores.content_voice += 1; }
+  if (q2.includes("1–2") || q2.includes("Nepravidelně")) { scores.signal += 1; scores.architect += 1; }
+
+  // Q3: Co tě nejvíc blokuje?
+  const q3 = answers[2] ?? "";
+  if (q3.includes("čas")) { scores.architect += 3; scores.impuls += 1; }
+  if (q3.includes("Nevím co psát")) { scores.content_voice += 3; scores.ilumina += 2; }
+  if (q3.includes("Bojím")) { scores.katalyzator += 3; scores.ilumina += 2; }
+  if (q3.includes("systém")) { scores.architect += 3; scores.signal += 1; }
+
+  // Q4: Jaký typ zákazníka?
+  const q4 = answers[3] ?? "";
+  if (q4.includes("Motivovaný")) { scores.impuls += 2; scores.katalyzator += 2; }
+  if (q4.includes("porozumění")) { scores.ilumina += 2; scores.content_voice += 2; }
+  if (q4.includes("Profesionál")) { scores.architect += 2; scores.signal += 2; }
+  if (q4.includes("Kdokoli")) { scores.content_voice += 2; scores.ilumina += 1; }
+
+  // Sort by score, return top 2
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  return [sorted[0][0], sorted[1][0]];
+}
+
 function AnalyzingInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -48,7 +132,11 @@ function AnalyzingInner() {
   const [quizDone, setQuizDone] = useState(false);
   const [selectedOpt, setSelectedOpt] = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [showStrategist, setShowStrategist] = useState(false);
+  const [chosenStrategist, setChosenStrategist] = useState<string | null>(null);
+  const [recommendedPair, setRecommendedPair] = useState<[string, string]>(["ilumina", "architect"]);
   const doneRef = useRef(false);
+  const strategistShownRef = useRef(false);
 
   // Progress bar — 90s total, accelerates after quiz done
   useEffect(() => {
@@ -79,21 +167,31 @@ function AnalyzingInner() {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect when done
+  // Show strategist screen when done
   useEffect(() => {
-    if (progress >= 100 && quizDone && !doneRef.current) {
-      doneRef.current = true;
-      setTimeout(() => {
-        if (type === "manual") {
-          const p = new URLSearchParams({ type: "manual", name, ton, what, autostart: "1" });
-          router.push(`/brand-scan?${p.toString()}`);
-        } else {
-          const p = new URLSearchParams({ url, autostart: "1" });
-          router.push(`/brand-scan?${p.toString()}`);
-        }
-      }, 600);
+    if (progress >= 100 && quizDone && !strategistShownRef.current) {
+      strategistShownRef.current = true;
+      const pair = getRecommendedStrategists(quizAnswers);
+      setRecommendedPair(pair);
+      setTimeout(() => setShowStrategist(true), 400);
     }
-  }, [progress, quizDone, type, url, name, ton, what, router]);
+  }, [progress, quizDone, quizAnswers]);
+
+  // Redirect after strategist chosen
+  function handleContinue(stratId: string) {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    setChosenStrategist(stratId);
+    setTimeout(() => {
+      if (type === "manual") {
+        const p = new URLSearchParams({ type: "manual", name, ton, what, autostart: "1", strateg: stratId });
+        router.push(`/brand-scan?${p.toString()}`);
+      } else {
+        const p = new URLSearchParams({ url, autostart: "1", strateg: stratId });
+        router.push(`/brand-scan?${p.toString()}`);
+      }
+    }, 500);
+  }
 
   function handleAnswer(opt: string) {
     if (transitioning) return;
@@ -114,7 +212,102 @@ function AnalyzingInner() {
 
   const displayLabel = type === "manual" ? (name || "Tvoje značka") : (url || "Tvůj web");
   const currentQ = QUIZ_STEPS[quizStep];
+  const [primary, secondary] = recommendedPair;
+  const primaryS = STRATEGISTS[primary];
+  const secondaryS = STRATEGISTS[secondary];
 
+  // ── Strategist selection screen ──────────────────────────────
+  if (showStrategist) {
+    return (
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
+
+        {/* Logo */}
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
+        </div>
+
+        <div style={{ maxWidth: 580, width: "100%", paddingTop: 40, animation: "fadeUp .5s ease" }}>
+
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: 36 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "8px 18px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 20 }}>
+              ✓ Analýza dokončena
+            </div>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: "#111", lineHeight: 1.25, margin: "0 0 12px" }}>
+              Doporučujeme ti stratéga
+            </h1>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: 0 }}>
+              Na základě tvých odpovědí jsme vybrali dva stratégy.<br />
+              Zvol si, kdo povede tvůj obsah.
+            </p>
+          </div>
+
+          {/* Strategist cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+
+            {/* Primary */}
+            <div style={{ background: "#fff", borderRadius: 20, border: "2px solid #b7e94c", padding: "28px 24px", position: "relative", boxShadow: "0 8px 32px rgba(183,233,76,0.15)" }}>
+              <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#b7e94c", color: "#111", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", padding: "4px 14px", borderRadius: 20, whiteSpace: "nowrap" }}>
+                Nejlepší shoda
+              </div>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: primaryS?.color ?? "#f0fce0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>
+                {primaryS?.emoji}
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 4 }}>{primaryS?.name}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 12 }}>{primaryS?.tagline}</div>
+              <div style={{ fontSize: 13, color: "#555", lineHeight: 1.6, marginBottom: 20 }}>{primaryS?.desc}</div>
+              <button
+                onClick={() => handleContinue(primary)}
+                disabled={!!chosenStrategist}
+                style={{ width: "100%", background: chosenStrategist === primary ? "#5a7a00" : "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 0", fontSize: 13, fontWeight: 600, cursor: chosenStrategist ? "default" : "pointer", fontFamily: "inherit", transition: "background .2s" }}
+              >
+                {chosenStrategist === primary ? "✓ Vybráno" : "Pokračovat s tímto →"}
+              </button>
+            </div>
+
+            {/* Secondary */}
+            <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #e8e4dc", padding: "28px 24px", opacity: chosenStrategist && chosenStrategist !== secondary ? 0.5 : 1, transition: "opacity .3s" }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: secondaryS?.color ?? "#f5f3ee", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>
+                {secondaryS?.emoji}
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 4 }}>{secondaryS?.name}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#888", marginBottom: 12 }}>{secondaryS?.tagline}</div>
+              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{secondaryS?.desc}</div>
+              <button
+                onClick={() => handleContinue(secondary)}
+                disabled={!!chosenStrategist}
+                style={{ width: "100%", background: chosenStrategist === secondary ? "#5a7a00" : "#f5f3ee", color: chosenStrategist === secondary ? "#fff" : "#555", border: "1px solid #e8e4dc", borderRadius: 10, padding: "12px 0", fontSize: 13, fontWeight: 600, cursor: chosenStrategist ? "default" : "pointer", fontFamily: "inherit", transition: "all .2s" }}
+              >
+                {chosenStrategist === secondary ? "✓ Vybráno" : "Vybrat tohoto"}
+              </button>
+            </div>
+          </div>
+
+          {/* Skip link */}
+          <div style={{ textAlign: "center" }}>
+            <button
+              onClick={() => handleContinue("ilumina")}
+              disabled={!!chosenStrategist}
+              style={{ background: "none", border: "none", fontSize: 12, color: "#aaa", cursor: chosenStrategist ? "default" : "pointer", fontFamily: "inherit", textDecoration: "underline" }}
+            >
+              Přeskočit — rozhodnu se později
+            </button>
+          </div>
+
+          <p style={{ textAlign: "center", fontSize: 11, color: "#bbb", marginTop: 20 }}>
+            Zdarma · Bez registrace · Data nejsou sdílena
+          </p>
+        </div>
+
+        <style>{`
+          @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        `}</style>
+      </main>
+    );
+  }
+
+  // ── Progress + Quiz screen ────────────────────────────────────
   return (
     <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
 
@@ -145,7 +338,7 @@ function AnalyzingInner() {
           </div>
           {progress >= 100 && (
             <div style={{ marginTop: 16, textAlign: "center", fontSize: 13, color: "#5a7a00", fontWeight: 600 }}>
-              ✓ Analýza dokončena — přesměrovávám…
+              ✓ Analýza dokončena — připravuji doporučení…
             </div>
           )}
         </div>
@@ -187,7 +380,7 @@ function AnalyzingInner() {
             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#111", marginBottom: 6 }}>
               Výborně! Zpracováváme výsledky.
             </div>
-            <div style={{ fontSize: 13, color: "#5a7a00" }}>Ještě moment — dokončujeme analýzu…</div>
+            <div style={{ fontSize: 13, color: "#5a7a00" }}>Ještě moment — vybíráme tvého stratéga…</div>
           </div>
         )}
 
