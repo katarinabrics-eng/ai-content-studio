@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { StartAnalyzer } from "../start/StartAnalyzer";
 
 // CSS proměnné podle specu
@@ -92,7 +93,8 @@ const MOODS = [
   { id: 'moderni',    name: 'Chladný & moderní',   desc: 'Oceánová šedá, kovový',        folder: 'K02', img: '/placeholders/stock-vizualni knihovna/K02/k02-006.jpeg' },
 ];
 
-export default function BrandScanPage() {
+function BrandScanPageInner() {
+  const searchParams = useSearchParams();
   const stepsSectionRef = useRef<HTMLElement | null>(null);
   const [bsEntryType, setBsEntryType] = useState<'web' | 'instagram' | 'manual' | null>(null);
   const [bsInputValue, setBsInputValue] = useState('');
@@ -100,6 +102,27 @@ export default function BrandScanPage() {
   const [bsManualChoice, setBsManualChoice] = useState<string | null>(null);
   const [moodSelected, setMoodSelected] = useState<string[]>([]);
   const [bsFormats, setBsFormats] = useState<string[]>([]);
+
+  // Auto-start from /analyzing redirect
+  useEffect(() => {
+    const autostart = searchParams.get("autostart");
+    if (autostart !== "1") return;
+    const urlParam = searchParams.get("url");
+    const typeParam = searchParams.get("type") as 'web' | 'instagram' | 'manual' | null;
+    if (urlParam) {
+      setBsInputValue(urlParam);
+      setBsEntryType(typeParam || 'web');
+      setBsStep('analyzer');
+      const el = document.getElementById("analyzer");
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
+    } else if (typeParam === "manual") {
+      setBsEntryType("manual");
+      setBsStep("analyzer");
+      const el = document.getElementById("analyzer");
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const el = stepsSectionRef.current;
@@ -1238,5 +1261,13 @@ export default function BrandScanPage() {
         </Link>
       </footer>
     </main>
+  );
+}
+
+export default function BrandScanPage() {
+  return (
+    <Suspense>
+      <BrandScanPageInner />
+    </Suspense>
   );
 }

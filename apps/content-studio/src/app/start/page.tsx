@@ -1547,13 +1547,13 @@ export default function StartPage() {
                         type="url"
                         value={startInputValue}
                         onChange={e => setStartInputValue(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('analyzer'); }}
+                        onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) { const p = new URLSearchParams({ type: startEntryType || 'web', url: startInputValue, returnTo: '/start' }); window.location.href = `/analyzing?${p.toString()}`; } }}
                         placeholder="https://vaseweb.cz"
                         style={{ width: '100%', padding: '13px 16px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const, marginBottom: 16 }}
                         autoFocus
                       />
                       <button
-                        onClick={() => { if (startInputValue.trim()) setStartStep('analyzer'); }}
+                        onClick={() => { if (startInputValue.trim()) { const p = new URLSearchParams({ type: startEntryType || 'web', url: startInputValue, returnTo: '/start' }); window.location.href = `/analyzing?${p.toString()}`; } }}
                         disabled={!startInputValue.trim()}
                         style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                       >Analyzovat →</button>
@@ -1572,14 +1572,14 @@ export default function StartPage() {
                           type="text"
                           value={startInputValue}
                           onChange={e => setStartInputValue(e.target.value.replace(/^@/, ''))}
-                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) setStartStep('analyzer'); }}
+                          onKeyDown={e => { if (e.key === 'Enter' && startInputValue.trim()) { const p = new URLSearchParams({ type: 'instagram', url: `https://www.instagram.com/${startInputValue.replace(/^@/, '')}`, returnTo: '/start' }); window.location.href = `/analyzing?${p.toString()}`; } }}
                           placeholder="vashandle"
                           style={{ width: '100%', padding: '13px 16px 13px 32px', borderRadius: 12, border: '1.5px solid #e8e4dc', fontSize: 15, color: '#111', outline: 'none', boxSizing: 'border-box' as const }}
                           autoFocus
                         />
                       </div>
                       <button
-                        onClick={() => { if (startInputValue.trim()) setStartStep('analyzer'); }}
+                        onClick={() => { if (startInputValue.trim()) { const p = new URLSearchParams({ type: 'instagram', url: `https://www.instagram.com/${startInputValue.replace(/^@/, '')}`, returnTo: '/start' }); window.location.href = `/analyzing?${p.toString()}`; } }}
                         disabled={!startInputValue.trim()}
                         style={{ width: '100%', padding: '13px 0', borderRadius: 12, background: startInputValue.trim() ? '#b7e94c' : '#e8e4dc', color: '#111', border: 'none', fontSize: 15, fontWeight: 700, cursor: startInputValue.trim() ? 'pointer' : 'not-allowed', transition: 'background .2s' }}
                       >Analyzovat →</button>
@@ -1815,7 +1815,7 @@ export default function StartPage() {
                               )
                             })}
                           </div>
-                          <button onClick={() => { if(manualFormats.length>0) setStartStep('analyzer') }}
+                          <button onClick={() => { if(manualFormats.length>0) { const p = new URLSearchParams({ type: 'manual', name: manualName, what: manualWhat.join(','), ton: manualTon || '', returnTo: '/start' }); window.location.href = `/analyzing?${p.toString()}`; } }}
                             disabled={manualFormats.length===0}
                             style={{ width:'100%', padding:'13px 0', borderRadius:12, background:manualFormats.length>0?'#111':'#e8e4dc', color:manualFormats.length>0?'#fff':'#bbb', border:'none', fontSize:14, fontWeight:600, cursor:manualFormats.length>0?'pointer':'not-allowed', fontFamily:'inherit', transition:'all .2s' }}
                           >Spustit analýzu ✨</button>
@@ -1972,7 +1972,7 @@ export default function StartPage() {
                 </div>
 
                 <button
-                  onClick={() => { if(startFormats.length > 0) setStartStep('analyzer') }}
+                  onClick={() => { if(startFormats.length > 0) { const p = new URLSearchParams({ type: startEntryType || 'web', url: startInputValue, returnTo: '/start' }); window.location.href = `/analyzing?${p.toString()}`; } }}
                   style={{
                     width:'100%',
                     background: startFormats.length > 0 ? '#111' : '#e8e4dc',
