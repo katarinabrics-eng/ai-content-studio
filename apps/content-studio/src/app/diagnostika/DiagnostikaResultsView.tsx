@@ -606,158 +606,121 @@ export function DiagnostikaResultsView({
         {!hideCta && (
           <div style={{ marginTop: 48 }}>
 
-            {/* ── 3 príspevky ── */}
-            <div style={{ marginBottom: 12, fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#5a7a00' }}>
-              Tvůj obsah připravený k použití
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 40 }}>
-              {[
-                { label: 'GRAFIKA · INSTAGRAM', title: '"Každé ráno si říkám — dneska to zvládnu."', body: 'A pak přijde ten moment, kdy všechno zpomalí. Tohle je pro tebe.', tags: '#osobnirozvoj #mindset', src: '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg' },
-                { label: 'VIDEO · REELS', title: '"Tohle ti nikdo neřekne."', body: 'Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala. A nechala systém pracovat za mě.', tags: '#podnikani #brand #marketing', src: '/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg' },
-                { label: 'CAROUSEL · INSTAGRAM', title: '"5 věcí které mě nikdo nenaučil o značce. Slide →"', body: 'Každý snímek ti řekne něco, co konkurence tají. Připraveno za 3 minuty.', tags: '#znacka #strategie #instagram', src: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg' },
-              ].map((post, i) => (
-                <div key={i} style={{ background: '#fff', border: '1px solid #e8e4dc', borderRadius: 14, overflow: 'hidden', display: 'flex', gap: 0 }}>
-                  <div style={{ width: 100, flexShrink: 0, overflow: 'hidden' }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  </div>
-                  <div style={{ padding: '14px 18px', flex: 1 }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.1em', color: '#b7e94c', textTransform: 'uppercase', marginBottom: 5 }}>{post.label}</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111', marginBottom: 5 }}>{post.title}</div>
-                    <div style={{ fontSize: 12, color: '#666', lineHeight: 1.6, marginBottom: 8 }}>{post.body}</div>
-                    <div style={{ fontSize: 11, color: '#aaa' }}>{post.tags}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── Brand DNA preview → fade → zámok ── */}
-            <div style={{ marginBottom: 12, fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#5a7a00' }}>
-              Tvá Brand DNA strategie
-            </div>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 14, border: '1px solid #e8e4dc', background: '#fff' }}>
-              <div style={{ padding: '24px 24px 0' }}>
-                <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: '#111' }}>Pozicinování:</strong> {result.brandDna?.positioning ?? 'Tvá značka komunikuje z pozice důvěry a osobního přístupu.'}
-                </div>
-                <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: '#111' }}>Tón komunikace:</strong> {result.brandDna?.tone ?? 'Klidný, autentický, s osobním příběhem.'}
-                </div>
-                <div style={{ fontSize: 14, color: '#555', lineHeight: 1.8 }}>
-                  <strong style={{ color: '#111' }}>Cílová skupina:</strong> {result.brandDna?.targetAudience ?? 'Ženy 28–45, budující osobní nebo profesní značku.'}
-                </div>
+            {/* ── ZMENA 1: 3 príspevky ── */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#5a7a00', marginBottom: 16 }}>
+                Tvůj obsah připravený k použití
               </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {[
+                  { label: 'GRAFIKA · INSTAGRAM', title: '"Každé ráno si říkám — dneska to zvládnu."', body: 'A pak přijde ten moment, kdy všechno zpomalí. Tohle je pro tebe.', tags: '#osobnirozvoj #mindset #rannirutina', src: '/placeholders/stock-vizualni knihovna/K04/k04-012.png' },
+                  { label: 'VIDEO · REELS', title: '"Tohle ti nikdo neřekne."', body: 'Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala. A nechala systém pracovat za mě.', tags: '#podnikani #brand #marketing', src: '/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg' },
+                  { label: 'CAROUSEL · INSTAGRAM', title: '"5 věcí které mě nikdo nenaučil o značce. Slide →"', body: 'Každý snímek ti řekne něco co konkurence tají. Připraveno za 3 minuty.', tags: '#znacka #strategie #instagram', src: '/placeholders/stock-vizualni knihovna/K01/k01-012.jpeg' },
+                ].map((post, i) => (
+                  <div key={i} style={{ background: '#fff', border: '1px solid #e8e4dc', borderRadius: 14, overflow: 'hidden', display: 'flex' }}>
+                    <div style={{ width: 120, flexShrink: 0 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={post.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    </div>
+                    <div style={{ padding: '14px 18px', flex: 1 }}>
+                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.1em', color: '#b7e94c', textTransform: 'uppercase', marginBottom: 5 }}>{post.label}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#111', marginBottom: 5, lineHeight: 1.4 }}>{post.title}</div>
+                      <div style={{ fontSize: 12, color: '#666', lineHeight: 1.6, marginBottom: 8 }}>{post.body}</div>
+                      <div style={{ fontSize: 11, color: '#aaa' }}>{post.tags}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-              {/* Fade overlay */}
-              <div style={{
-                position: 'absolute', bottom: 0, left: 0, right: 0, height: 140,
-                background: 'linear-gradient(to bottom, transparent, #fff)',
-                display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-                paddingBottom: 24,
-              }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: '50%',
-                    background: '#1a1a1a', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', margin: '0 auto 10px',
-                  }}>
+            {/* ── ZMENA 2: Brand DNA fade + zámok ── */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#5a7a00', marginBottom: 16 }}>
+                Tvá Brand DNA strategie
+              </div>
+              <div style={{ position: 'relative', borderRadius: 14, border: '1px solid #e8e4dc', background: '#fff', overflow: 'hidden' }}>
+                <div style={{ padding: '24px 24px 0' }}>
+                  {result.brandDna?.positioning && (
+                    <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8, marginBottom: 10 }}>
+                      <strong style={{ color: '#111' }}>Pozicionování: </strong>{result.brandDna.positioning}
+                    </div>
+                  )}
+                  {result.brandDna?.tone && (
+                    <div style={{ fontSize: 14, color: '#333', lineHeight: 1.8, marginBottom: 10 }}>
+                      <strong style={{ color: '#111' }}>Tón komunikace: </strong>{result.brandDna.tone}
+                    </div>
+                  )}
+                  {result.brandDna?.targetAudience && (
+                    <div style={{ fontSize: 14, color: '#555', lineHeight: 1.8 }}>
+                      <strong style={{ color: '#111' }}>Cílová skupina: </strong>{result.brandDna.targetAudience}
+                    </div>
+                  )}
+                  {result.brandDna?.uniqueValue && (
+                    <div style={{ fontSize: 14, color: '#555', lineHeight: 1.8, marginTop: 10 }}>
+                      <strong style={{ color: '#111' }}>Unikátní hodnota: </strong>{result.brandDna.uniqueValue}
+                    </div>
+                  )}
+                </div>
+                {/* Fade + zámok */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 160, background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,1) 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 24 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 4 }}>
-                    Odemkni plnou Brand DNA strategii
-                  </div>
-                  <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
-                    Pozicinování · Pilíře obsahu · Archetyp · Doporučení stratéga
-                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 4, textAlign: 'center' }}>Odemkni plnou Brand DNA strategii</div>
+                  <div style={{ fontSize: 12, color: '#888', textAlign: 'center', maxWidth: 280 }}>Pozicinování · Pilíře obsahu · Archetyp · Doporučení stratéga</div>
                 </div>
+                <div style={{ height: 180 }} />
               </div>
-
-              {/* Spacer pre výšku fade */}
-              <div style={{ height: 160 }} />
             </div>
 
-            {/* ── CTA ── */}
-            {leadSubmitted ? (
-              <div style={{ marginTop: 24, background: '#f0fce0', border: '1px solid rgba(183,233,76,0.35)', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.lime, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, flexShrink: 0 }}>✓</div>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: '#111', marginBottom: 3 }}>Výsledky uloženy.</div>
-                  <div style={{ fontSize: 13, color: '#555' }}>Odkaz pro návrat jsme odeslali na váš e-mail. Platnost 7 dní.</div>
-                  {accessUrl && (
-                    <button
-                      type="button"
-                      onClick={() => navigator.clipboard.writeText(accessUrl)}
-                      style={{ marginTop: 10, background: 'none', border: `1px solid ${C.limeBorder}`, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 600, color: C.limeDark, cursor: 'pointer', fontFamily: 'inherit' }}
-                    >📋 Zkopírovat odkaz</button>
-                  )}
-                </div>
+            {/* ── ZMENA 3: Ďalšie príspevky zamknuté ── */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: 16 }}>
+                Další příspěvky
               </div>
-            ) : !ctaEmailOpen ? (
-              <div style={{ marginTop: 24, background: '#f5f2ec', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                {[1, 2, 3].map(i => (
+                  <div key={i} style={{ background: '#f7f5f0', border: '1px solid #e8e4dc', borderRadius: 12, padding: '20px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 100, gap: 8 }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <div style={{ fontSize: 11, color: '#ccc', textAlign: 'center' }}>Příspěvek {i + 3}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ textAlign: 'center', fontSize: 12, color: '#aaa', marginTop: 12 }}>
+                Předplať si a získej obsah každý týden →
+              </div>
+            </div>
+
+            {/* ── ZMENA 4: CTA lišta ── */}
+            {!leadSubmitted ? (
+              <div style={{ background: '#f5f2ec', borderRadius: 14, padding: '24px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' as const }}>
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 4 }}>Ulož výsledky zdarma</div>
                   <div style={{ fontSize: 13, color: '#777', lineHeight: 1.5 }}>
-                    Získáš přístup k plné Brand DNA, 3 příspěvkům ke stažení<br />a vizuální knihovně.
+                    Získáš přístup k plné Brand DNA, 3 příspěvkům<br />ke stažení a vizuální knihovně.
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
                   <button
-                    onClick={() => setCtaEmailOpen(true)}
+                    onClick={() => onSaveLead?.({ email: '', name: '' })}
                     style={{ background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 24px', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' as const, fontFamily: 'inherit' }}
-                  >Uložit výsledky →</button>
+                  >Vytvořit účet zdarma →</button>
                   <button
-                    onClick={() => setCtaEmailOpen(false)}
                     style={{ background: 'none', border: 'none', fontSize: 12, color: '#aaa', cursor: 'pointer', fontFamily: 'inherit' }}
-                  >Pokračovat bez uložení</button>
+                  >Pokračovat bez účtu</button>
                 </div>
               </div>
             ) : (
-              <div style={{ marginTop: 24, background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 14, padding: '28px 28px 24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#111', marginBottom: 3 }}>Kam poslat výsledky?</div>
-                    <div style={{ fontSize: 13, color: '#777' }}>Odkaz pro přístup k Brand DNA + příspěvkům. Platnost 7 dní.</div>
-                  </div>
-                  <button onClick={() => setCtaEmailOpen(false)} style={{ background: 'none', border: 'none', fontSize: 18, color: '#bbb', cursor: 'pointer', padding: 4, lineHeight: 1 }}>×</button>
+              <div style={{ background: '#f0fce0', borderRadius: 14, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 12, border: '1px solid rgba(183,233,76,.3)' }}>
+                <div style={{ fontSize: 20 }}>✓</div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#3d6b00' }}>Výsledky uloženy!</div>
+                  <div style={{ fontSize: 12, color: '#5a7a00' }}>Odkaz na výsledky jsme ti poslali na email.</div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' as const, color: '#999', marginBottom: 6 }}>Jméno / značka</label>
-                    <input
-                      type="text"
-                      value={leadName}
-                      onChange={e => setLeadName(e.target.value)}
-                      placeholder="např. Studio Marta"
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: 9, border: '1.5px solid #e8e4dc', fontSize: 14, fontFamily: 'inherit', background: '#fafaf8', color: '#111', boxSizing: 'border-box' as const, outline: 'none' }}
-                      onFocus={e => { e.currentTarget.style.borderColor = C.lime; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = '#e8e4dc'; }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' as const, color: '#999', marginBottom: 6 }}>Váš e-mail *</label>
-                    <input
-                      type="email"
-                      value={leadEmail}
-                      onChange={e => setLeadEmail(e.target.value)}
-                      placeholder="vas@email.cz"
-                      autoFocus
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: 9, border: '1.5px solid #e8e4dc', fontSize: 14, fontFamily: 'inherit', background: '#fafaf8', color: '#111', boxSizing: 'border-box' as const, outline: 'none' }}
-                      onFocus={e => { e.currentTarget.style.borderColor = C.lime; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = '#e8e4dc'; }}
-                      onKeyDown={e => { if (e.key === 'Enter' && leadEmail.trim() && onSaveLead) onSaveLead({ email: leadEmail.trim(), name: leadName || undefined, web: leadWeb || undefined }); }}
-                    />
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  disabled={leadSubmitting || !leadEmail.trim()}
-                  onClick={() => { if (onSaveLead && leadEmail.trim()) onSaveLead({ email: leadEmail.trim(), name: leadName || undefined, web: leadWeb || undefined }); }}
-                  style={{ width: '100%', padding: '13px', borderRadius: 10, background: leadEmail.trim() ? '#111' : '#e8e4dc', color: leadEmail.trim() ? '#fff' : '#aaa', border: 'none', fontSize: 14, fontWeight: 600, cursor: leadEmail.trim() ? 'pointer' : 'not-allowed', fontFamily: 'inherit', transition: 'background .2s' }}
-                >{leadSubmitting ? 'Ukládám…' : 'Odeslat a odemknout →'}</button>
-                {leadError && <p style={{ fontSize: 12, color: C.danger, marginTop: 10 }}>{leadError}</p>}
-                <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 10 }}>Nespamujeme. Pouze tento odkaz.</p>
               </div>
             )}
 
