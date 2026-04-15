@@ -176,6 +176,7 @@ export default function StartPage() {
   const [startInputValue, setStartInputValue] = useState('')
   const [startStep, setStartStep] = useState<'entry' | 'input' | 'mood' | 'formats' | 'analyzer'>('entry')
   const [startMoodSelected, setStartMoodSelected] = useState<string[]>([])
+  const [tileIndex, setTileIndex] = useState(0)
   const [startFormats, setStartFormats] = useState<string[]>([])
   const [manualStep, setManualStep] = useState<'basic'|'ton'|'audience'|'colors'|'formats'>('basic')
   const [manualTon, setManualTon] = useState<string|null>(null)
@@ -1424,7 +1425,7 @@ export default function StartPage() {
 
         {/* MAGNET INPUT */}
         <section id="vyzkousej" style={{ padding: '80px 40px', background: '#f5f3ee' }}>
-          <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
             {startStep === 'entry' ? (
               /* ── KROK 0: 3 dlaždice ── */
               <div style={{ animation: 'entryFadeIn 0.3s ease' }}>
@@ -1439,34 +1440,83 @@ export default function StartPage() {
                     Zjisti jak je na tom tvá značka — za pár minut.
                   </p>
                 </div>
-                <div className="start-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
-                  {[
+                {(() => {
+                  const TILES = [
                     { type: 'web' as const, emoji: '🌐', title: 'Mám web', desc: 'Zadej URL — analyzujeme ho za 60 sekund.', img: '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg' },
                     { type: 'instagram' as const, emoji: '📱', title: 'Mám Instagram', desc: 'Zadej @handle — přečteme tvůj styl.', img: '/placeholders/stock-vizualni knihovna/K09/k09-001.png' },
                     { type: 'manual' as const, emoji: '✨', title: 'Začínám od nuly', desc: 'Vyber z možností — jsme tu pro tebe.', img: '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg' },
-                  ].map(item => (
-                    <div
-                      key={item.type}
-                      onClick={() => { setStartEntryType(item.type); setStartInputValue(''); setStartManualChoice(null); setStartStep('input'); }}
-                      style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', transition: 'all .2s' }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#b7e94c'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#e8e4dc'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                    >
-                      <div style={{ height: 160, overflow: 'hidden', position: 'relative' }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                        <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
-                          {item.emoji}
+                  ]
+                  return (
+                    <>
+                      {/* Mobile carousel */}
+                      {isMobile && (
+                        <div style={{ marginBottom: 16 }}>
+                          {TILES.map((item, i) => i === tileIndex && (
+                            <div key={item.type} style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', animation: 'entryFadeIn .3s ease' }}>
+                              <div style={{ height: 200, overflow: 'hidden', position: 'relative' }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,.92)', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+                                  {item.emoji}
+                                </div>
+                              </div>
+                              <div style={{ padding: 20 }}>
+                                <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 700, color: '#111', marginBottom: 6 }}>{item.title}</div>
+                                <div style={{ fontSize: 14, color: '#777', marginBottom: 16 }}>{item.desc}</div>
+                                <button
+                                  onClick={() => { setStartEntryType(item.type); setStartInputValue(''); setStartStep('input'); }}
+                                  style={{ width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: 14, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                                >Začít →</button>
+                              </div>
+                            </div>
+                          ))}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+                            <button onClick={() => setTileIndex(i => Math.max(0, i - 1))}
+                              style={{ background: 'none', border: '1.5px solid #e8e4dc', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: 16, opacity: tileIndex === 0 ? .3 : 1 }}
+                            >←</button>
+                            <div style={{ display: 'flex', gap: 6 }}>
+                              {[0, 1, 2].map(i => (
+                                <div key={i} onClick={() => setTileIndex(i)}
+                                  style={{ width: i === tileIndex ? 16 : 6, height: 6, borderRadius: 9999, background: i === tileIndex ? '#111' : '#ccc', cursor: 'pointer', transition: 'all .3s' }}
+                                />
+                              ))}
+                            </div>
+                            <button onClick={() => setTileIndex(i => Math.min(2, i + 1))}
+                              style={{ background: 'none', border: '1.5px solid #e8e4dc', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: 16, opacity: tileIndex === 2 ? .3 : 1 }}
+                            >→</button>
+                          </div>
                         </div>
-                      </div>
-                      <div style={{ padding: '16px 18px 20px' }}>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 6, fontFamily: "'Playfair Display',serif" }}>{item.title}</div>
-                        <div style={{ fontSize: 13, color: '#777', lineHeight: 1.55, marginBottom: 14 }}>{item.desc}</div>
-                        <div style={{ background: '#111', color: '#fff', padding: '9px 0', borderRadius: 9, fontSize: 12, fontWeight: 600, textAlign: 'center' as const }}>Začít →</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      )}
+                      {/* Desktop grid */}
+                      {!isMobile && (
+                        <div className="start-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+                          {TILES.map(item => (
+                            <div
+                              key={item.type}
+                              onClick={() => { setStartEntryType(item.type); setStartInputValue(''); setStartStep('input'); }}
+                              style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', transition: 'all .2s' }}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = '#b7e94c'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e8e4dc'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            >
+                              <div style={{ height: 160, overflow: 'hidden', position: 'relative' }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={item.img} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+                                  {item.emoji}
+                                </div>
+                              </div>
+                              <div style={{ padding: '16px 18px 20px' }}>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 6, fontFamily: "'Playfair Display',serif" }}>{item.title}</div>
+                                <div style={{ fontSize: 13, color: '#777', lineHeight: 1.55, marginBottom: 14 }}>{item.desc}</div>
+                                <div style={{ background: '#111', color: '#fff', padding: '9px 0', borderRadius: 9, fontSize: 12, fontWeight: 600, textAlign: 'center' as const }}>Začít →</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )
+                })()}
                 <p style={{ textAlign: 'center', fontSize: 11, color: '#bbb', marginTop: 16 }}>
                   Zdarma · Bez registrace · Výsledky během minut
                 </p>
@@ -1486,7 +1536,7 @@ export default function StartPage() {
                   {startEntryType === 'instagram' && '📱 Analýza Instagramu'}
                   {startEntryType === 'manual' && '✨ Začínám od nuly'}
                 </div>
-                <div style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 20, padding: '36px 40px' }}>
+                <div style={{ background: '#fff', border: '1.5px solid #e8e4dc', borderRadius: 20, padding: '32px 40px', maxWidth: '100%' }}>
 
                   {/* sec-web */}
                   {startEntryType === 'web' && (
@@ -1643,7 +1693,7 @@ export default function StartPage() {
                           <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 2 z 5 — Tón komunikace</div>
                           <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Jak mluvíš ke svým zákazníkům?</div>
                           <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>Každá karta ukazuje ukázku jak bude AI psát za tebe.</div>
-                          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
                             {TONES.map(t => {
                               const sel = manualTon === t.id
                               return (
@@ -1681,7 +1731,7 @@ export default function StartPage() {
                           <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 3 z 5 — Cílová skupina</div>
                           <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Pro koho tvoříš obsah?</div>
                           <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>Vyber 1–2 skupiny — AI přizpůsobí jazyk.</div>
-                          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
                             {AUDIENCES.map(a => {
                               const sel = manualAudience.includes(a.id)
                               return (
@@ -1748,7 +1798,7 @@ export default function StartPage() {
                           <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#5a7a00', marginBottom:8 }}>Krok 5 z 5 — Formát obsahu</div>
                           <div style={{ fontFamily:"'Playfair Display',serif", fontSize:24, fontWeight:700, color:'#111', marginBottom:6 }}>Co chceš dostávat?</div>
                           <div style={{ fontSize:14, color:'#aaa', marginBottom:20 }}>Vyber formáty — AI připraví obsah přesně pro tebe.</div>
-                          <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10, marginBottom:20 }}>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
                             {FORMATS.map(f => {
                               const sel = manualFormats.includes(f.id)
                               return (
