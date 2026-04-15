@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const QUIZ_STEPS = [
   {
@@ -117,7 +117,6 @@ function getRecommendedStrategists(answers: string[]): [string, string] {
 
 function AnalyzingInner() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const type = searchParams.get("type") || "web";
   const url = searchParams.get("url") || "";
@@ -135,6 +134,7 @@ function AnalyzingInner() {
   const [showStrategist, setShowStrategist] = useState(false);
   const [chosenStrategist, setChosenStrategist] = useState<string | null>(null);
   const [recommendedPair, setRecommendedPair] = useState<[string, string]>(["ilumina", "architect"]);
+  const [phase, setPhase] = useState<'analyzing' | 'strategist' | 'done'>('analyzing');
   const doneRef = useRef(false);
   const strategistShownRef = useRef(false);
 
@@ -177,20 +177,12 @@ function AnalyzingInner() {
     }
   }, [progress, quizDone, quizAnswers]);
 
-  // Redirect after strategist chosen
+  // Show done phase after strategist chosen
   function handleContinue(stratId: string) {
     if (doneRef.current) return;
     doneRef.current = true;
     setChosenStrategist(stratId);
-    setTimeout(() => {
-      if (type === "manual") {
-        const p = new URLSearchParams({ type: "manual", name, ton, what, autostart: "1", strateg: stratId });
-        router.push(`/brand-scan?${p.toString()}`);
-      } else {
-        const p = new URLSearchParams({ url, autostart: "1", strateg: stratId });
-        router.push(`/brand-scan?${p.toString()}`);
-      }
-    }, 500);
+    setTimeout(() => setPhase('done'), 400);
   }
 
   function handleAnswer(opt: string) {
@@ -215,6 +207,46 @@ function AnalyzingInner() {
   const [primary, secondary] = recommendedPair;
   const primaryS = STRATEGISTS[primary];
   const secondaryS = STRATEGISTS[secondary];
+
+  // ── Done screen ───────────────────────────────────────────────
+  if (phase === 'done') {
+    const s = STRATEGISTS[chosenStrategist ?? "ilumina"];
+    return (
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
+        </div>
+        <div style={{ maxWidth: 480, width: "100%", textAlign: "center", animation: "fadeUp .5s ease" }}>
+          <div style={{ width: 72, height: 72, borderRadius: 20, background: s?.color ?? "#f0fce0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, margin: "0 auto 24px" }}>
+            {s?.emoji}
+          </div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "8px 18px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 20 }}>
+            ✓ Stratég vybrán
+          </div>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 700, color: "#111", lineHeight: 1.25, margin: "0 0 12px" }}>
+            {s?.name} bude tvořit s tebou
+          </h1>
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 32px" }}>
+            {s?.desc}
+          </p>
+          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e8e4dc", padding: "24px", textAlign: "left", marginBottom: 24 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#aaa", marginBottom: 12 }}>Tvoje Brand DNA je připravena</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {["Vizuální identita analyzována", "5 pilířů značky vyhodnoceno", "Obsah strategie navržena", "Doporučení stratéga aktivována"].map(item => (
+                <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#333" }}>
+                  <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#f0fce0", border: "1px solid #b7e94c", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#5a7a00", flexShrink: 0 }}>✓</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          <p style={{ fontSize: 11, color: "#bbb" }}>Zdarma · Bez registrace · Data nejsou sdílena</p>
+        </div>
+        <style>{`@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+      </main>
+    );
+  }
 
   // ── Strategist selection screen ──────────────────────────────
   if (showStrategist) {
