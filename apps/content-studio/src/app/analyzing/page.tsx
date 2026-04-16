@@ -31,126 +31,127 @@ const MESSAGES = [
   "Dokončuji analýzu…",
 ];
 
-// Strategist data
-const STRATEGISTS: Record<string, { emoji: string; name: string; tagline: string; desc: string; color: string }> = {
-  ilumina: {
-    emoji: "✨",
-    name: "Ilumina",
-    tagline: "Příběh & jasné sdělení",
-    desc: "Pomůže ti komunikovat tak, aby zákazník okamžitě pochopil tvoji hodnotu. Mistryně brand storytellingu.",
-    color: "#f0e6ff",
-  },
-  impuls: {
-    emoji: "⚡",
-    name: "Impuls",
-    tagline: "Energie & dosah",
-    desc: "Zaměří se na obsah, který šíří a zvyšuje dosah tvé značky. Mistr virálního obsahu a viditelnosti.",
-    color: "#fff8e0",
-  },
-  katalyzator: {
-    emoji: "🔥",
-    name: "Katalyzátor",
-    tagline: "Emoce & transformace",
-    desc: "Propojí zákazníka s tvou značkou na hlubší úrovni. Mistr emocí, loajality a prodeje vztahem.",
-    color: "#fff1ed",
-  },
-  architect: {
-    emoji: "🏗",
-    name: "The Architect",
-    tagline: "Hodnotová nabídka",
-    desc: "Vytvoří neodolatelnou nabídku postavenou na hodnotovém vzorci — zákazník kupuje výsledek, ne produkt.",
-    color: "#f0fce0",
-  },
-  signal: {
-    emoji: "📡",
-    name: "Signal",
-    tagline: "Hlas & niche",
-    desc: "Pomůže ti najít tvůj jedinečný hlas a cílovou skupinu. Mistr pozicování a permission marketingu.",
-    color: "#e8f4ff",
-  },
-  content_voice: {
-    emoji: "✍️",
-    name: "Content Voice",
-    tagline: "Texty & brand hlas",
-    desc: "Převede tvé Brand DNA do konkrétních textů, bio a social copy. Hlas a příběh tvé značky.",
-    color: "#f5f3ee",
-  },
+type Strategist = {
+  id: string;
+  emoji: string;
+  name: string;
+  tagline: string;
+  desc: string;
+  color: string;
 };
 
+const STRATEGIST_LIST: Strategist[] = [
+  { id: "ilumina",     emoji: "✨", name: "Ilumina",       tagline: "Brand storytelling",     color: "#f5e6ff", desc: "Brand storytelling, zákazník jako hrdina. Pomůže ti komunikovat tak, aby zákazník okamžitě pochopil tvoji hodnotu." },
+  { id: "impuls",      emoji: "⚡", name: "Impuls",         tagline: "Content systém & dosah", color: "#fff8e1", desc: "Content systém, viditelnost a dosah. Zaměří se na obsah, který šíří a zvyšuje dosah tvé značky." },
+  { id: "katalyzator", emoji: "🔥", name: "Katalyzátor",    tagline: "Emoce & transformace",   color: "#fff0e6", desc: "Emocionální triggery, prodej a akce. Propojí zákazníka s tvou značkou na hlubší úrovni." },
+  { id: "architect",   emoji: "🏗", name: "Architekt",      tagline: "Hodnotová nabídka",      color: "#e6f0ff", desc: "Value stack, jasná nabídka a pozicionování. Vytvoří neodolatelnou nabídku postavenou na hodnotovém vzorci." },
+  { id: "signal",      emoji: "📡", name: "Signál",         tagline: "Pozicionování & niche",  color: "#e6fff0", desc: "Jasné pozicionování, niche expertíza. Pomůže ti najít tvůj jedinečný hlas a cílovou skupinu." },
+  { id: "voice",       emoji: "✍️", name: "Content Voice",  tagline: "Hlas & texty",           color: "#fff5e6", desc: "Hlas značky, texty a claims. Převede tvé Brand DNA do konkrétních textů, bio a social copy." },
+];
+
 // Map quiz answers to strategist scores
-function getRecommendedStrategists(answers: string[]): [string, string] {
+function getRecommendedIds(answers: string[]): [string, string] {
   const scores: Record<string, number> = {
-    ilumina: 0, impuls: 0, katalyzator: 0,
-    architect: 0, signal: 0, content_voice: 0,
+    ilumina: 0, impuls: 0, katalyzator: 0, architect: 0, signal: 0, voice: 0,
   };
 
-  // Q1: Co je pro tebe v obsahu nejdůležitější?
   const q1 = answers[0] ?? "";
   if (q1.includes("Autenticita")) { scores.ilumina += 3; scores.katalyzator += 2; }
-  if (q1.includes("Odbornost")) { scores.architect += 3; scores.content_voice += 2; }
-  if (q1.includes("Vizuální")) { scores.impuls += 3; scores.ilumina += 1; }
-  if (q1.includes("Komunita")) { scores.katalyzator += 3; scores.signal += 2; }
+  if (q1.includes("Odbornost"))   { scores.architect += 3; scores.voice += 2; }
+  if (q1.includes("Vizuální"))    { scores.impuls += 3; scores.ilumina += 1; }
+  if (q1.includes("Komunita"))    { scores.katalyzator += 3; scores.signal += 2; }
 
-  // Q2: Jak často chceš publikovat?
   const q2 = answers[1] ?? "";
-  if (q2.includes("Každý den") || q2.includes("3–4")) { scores.impuls += 2; scores.content_voice += 1; }
+  if (q2.includes("Každý den") || q2.includes("3–4")) { scores.impuls += 2; scores.voice += 1; }
   if (q2.includes("1–2") || q2.includes("Nepravidelně")) { scores.signal += 1; scores.architect += 1; }
 
-  // Q3: Co tě nejvíc blokuje?
   const q3 = answers[2] ?? "";
-  if (q3.includes("čas")) { scores.architect += 3; scores.impuls += 1; }
-  if (q3.includes("Nevím co psát")) { scores.content_voice += 3; scores.ilumina += 2; }
-  if (q3.includes("Bojím")) { scores.katalyzator += 3; scores.ilumina += 2; }
-  if (q3.includes("systém")) { scores.architect += 3; scores.signal += 1; }
+  if (q3.includes("čas"))           { scores.architect += 3; scores.impuls += 1; }
+  if (q3.includes("Nevím co psát")) { scores.voice += 3; scores.ilumina += 2; }
+  if (q3.includes("Bojím"))         { scores.katalyzator += 3; scores.ilumina += 2; }
+  if (q3.includes("systém"))        { scores.architect += 3; scores.signal += 1; }
 
-  // Q4: Jaký typ zákazníka?
   const q4 = answers[3] ?? "";
-  if (q4.includes("Motivovaný")) { scores.impuls += 2; scores.katalyzator += 2; }
-  if (q4.includes("porozumění")) { scores.ilumina += 2; scores.content_voice += 2; }
+  if (q4.includes("Motivovaný"))  { scores.impuls += 2; scores.katalyzator += 2; }
+  if (q4.includes("porozumění"))  { scores.ilumina += 2; scores.voice += 2; }
   if (q4.includes("Profesionál")) { scores.architect += 2; scores.signal += 2; }
-  if (q4.includes("Kdokoli")) { scores.content_voice += 2; scores.ilumina += 1; }
+  if (q4.includes("Kdokoli"))     { scores.voice += 2; scores.ilumina += 1; }
 
-  // Sort by score, return top 2
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   return [sorted[0][0], sorted[1][0]];
+}
+
+const SAMPLE_POSTS = [
+  {
+    label: "GRAFIKA · INSTAGRAM",
+    title: '"Každé ráno si říkám — dneska to zvládnu."',
+    body: "A pak přijde ten moment, kdy všechno zpomalí.",
+    tags: "#osobnirozvoj #mindset",
+    src: "/placeholders/stock-vizualni knihovna/K04/k04-012.png",
+  },
+  {
+    label: "VIDEO · REELS",
+    title: '"Tohle ti nikdo neřekne."',
+    body: "Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala.",
+    tags: "#brand #marketing",
+    src: "/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg",
+  },
+  {
+    label: "CAROUSEL · INSTAGRAM",
+    title: '"5 věcí které mě nikdo nenaučil. Slide →"',
+    body: "Každý snímek ti řekne něco co konkurence tají.",
+    tags: "#znacka #strategie",
+    src: "/placeholders/stock-vizualni knihovna/K01/k01-012.jpeg",
+  },
+];
+
+// Shared logo header
+function Logo() {
+  return (
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
+    </div>
+  );
 }
 
 function AnalyzingInner() {
   const searchParams = useSearchParams();
 
   const type = searchParams.get("type") || "web";
-  const url = searchParams.get("url") || "";
+  const url  = searchParams.get("url")  || "";
   const name = searchParams.get("name") || "";
-  const ton = searchParams.get("ton") || "";
+  const ton  = searchParams.get("ton")  || "";
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const what = searchParams.get("what") || "";
 
-  const [progress, setProgress] = useState(0);
-  const [msgIndex, setMsgIndex] = useState(0);
-  const [quizStep, setQuizStep] = useState(0);
-  const [quizAnswers, setQuizAnswers] = useState<string[]>([]);
-  const [quizDone, setQuizDone] = useState(false);
-  const [selectedOpt, setSelectedOpt] = useState<string | null>(null);
+  const [progress, setProgress]           = useState(0);
+  const [msgIndex, setMsgIndex]           = useState(0);
+  const [quizStep, setQuizStep]           = useState(0);
+  const [quizAnswers, setQuizAnswers]     = useState<string[]>([]);
+  const [quizDone, setQuizDone]           = useState(false);
+  const [selectedOpt, setSelectedOpt]     = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [showStrategist, setShowStrategist] = useState(false);
-  const [chosenStrategist, setChosenStrategist] = useState<string | null>(null);
-  const [recommendedPair, setRecommendedPair] = useState<[string, string]>(["ilumina", "architect"]);
-  const [phase, setPhase] = useState<'analyzing' | 'strategist' | 'done'>('analyzing');
-  const doneRef = useRef(false);
-  const strategistShownRef = useRef(false);
+  const [recommendedIds, setRecommendedIds] = useState<[string, string]>(["ilumina", "architect"]);
+  const [selectedStrateg, setSelectedStrateg] = useState<Strategist | null>(null);
+  const [phase, setPhase] = useState<"analyzing" | "strategist" | "done">("analyzing");
+  const doneRef             = useRef(false);
+  const strategistShownRef  = useRef(false);
 
   // Progress bar — 90s total, accelerates after quiz done
   useEffect(() => {
-    const totalMs = quizDone ? 3000 : 90000;
+    const totalMs  = quizDone ? 3000 : 90000;
     const targetPct = quizDone ? 100 : 85;
-    const startPct = progress;
+    const startPct  = progress;
     const startTime = performance.now();
 
     let raf = 0;
     const tick = (now: number) => {
       const elapsed = now - startTime;
-      const t = Math.min(1, elapsed / totalMs);
+      const t    = Math.min(1, elapsed / totalMs);
       const eased = 1 - Math.pow(1 - t, 3);
-      const next = Math.round(startPct + (targetPct - startPct) * eased);
+      const next  = Math.round(startPct + (targetPct - startPct) * eased);
       setProgress(next);
       if (t < 1) raf = requestAnimationFrame(tick);
     };
@@ -167,22 +168,21 @@ function AnalyzingInner() {
     return () => clearInterval(interval);
   }, []);
 
-  // Show strategist screen when done
+  // Show strategist screen when progress + quiz done
   useEffect(() => {
     if (progress >= 100 && quizDone && !strategistShownRef.current) {
       strategistShownRef.current = true;
-      const pair = getRecommendedStrategists(quizAnswers);
-      setRecommendedPair(pair);
+      const ids = getRecommendedIds(quizAnswers);
+      setRecommendedIds(ids);
       setTimeout(() => setShowStrategist(true), 400);
     }
   }, [progress, quizDone, quizAnswers]);
 
-  // Show done phase after strategist chosen
-  function handleContinue(stratId: string) {
+  function handleChooseStrateg(s: Strategist) {
     if (doneRef.current) return;
     doneRef.current = true;
-    setChosenStrategist(stratId);
-    setTimeout(() => setPhase('done'), 400);
+    setSelectedStrateg(s);
+    setTimeout(() => setPhase("done"), 400);
   }
 
   function handleAnswer(opt: string) {
@@ -203,125 +203,206 @@ function AnalyzingInner() {
   }
 
   const displayLabel = type === "manual" ? (name || "Tvoje značka") : (url || "Tvůj web");
-  const currentQ = QUIZ_STEPS[quizStep];
-  const [primary, secondary] = recommendedPair;
-  const primaryS = STRATEGISTS[primary];
-  const secondaryS = STRATEGISTS[secondary];
+  const currentQ     = QUIZ_STEPS[quizStep];
+  const [primaryId, secondaryId] = recommendedIds;
 
-  // ── Done screen ───────────────────────────────────────────────
-  if (phase === 'done') {
-    const s = STRATEGISTS[chosenStrategist ?? "ilumina"];
+  // ── DONE SCREEN ──────────────────────────────────────────────
+  if (phase === "done") {
     return (
-      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
-        </div>
-        <div style={{ maxWidth: 480, width: "100%", textAlign: "center", animation: "fadeUp .5s ease" }}>
-          <div style={{ width: 72, height: 72, borderRadius: 20, background: s?.color ?? "#f0fce0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, margin: "0 auto 24px" }}>
-            {s?.emoji}
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "80px 24px 48px", fontFamily: "system-ui, sans-serif" }}>
+        <Logo />
+        <div style={{ maxWidth: 520, width: "100%", animation: "fadeUp .4s ease" }}>
+
+          {/* Stratég badge */}
+          {selectedStrateg && (
+            <div style={{ textAlign: "center", marginBottom: 28 }}>
+              <div style={{ fontSize: 36, marginBottom: 8 }}>{selectedStrateg.emoji}</div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "7px 16px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 4 }}>
+                ✓ Stratég vybrán
+              </div>
+              <div style={{ fontSize: 13, color: "#5a7a00", fontWeight: 600, marginTop: 6 }}>
+                Tvůj stratég: {selectedStrateg.name}
+              </div>
+            </div>
+          )}
+
+          {/* 3 sample příspěvky */}
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 12 }}>
+            Tvůj obsah připravený k použití
           </div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "8px 18px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 20 }}>
-            ✓ Stratég vybrán
-          </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 700, color: "#111", lineHeight: 1.25, margin: "0 0 12px" }}>
-            {s?.name} bude tvořit s tebou
-          </h1>
-          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: "0 0 32px" }}>
-            {s?.desc}
-          </p>
-          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e8e4dc", padding: "24px", textAlign: "left", marginBottom: 24 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#aaa", marginBottom: 12 }}>Tvoje Brand DNA je připravena</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {["Vizuální identita analyzována", "5 pilířů značky vyhodnoceno", "Obsah strategie navržena", "Doporučení stratéga aktivována"].map(item => (
-                <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#333" }}>
-                  <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#f0fce0", border: "1px solid #b7e94c", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#5a7a00", flexShrink: 0 }}>✓</span>
-                  {item}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+            {SAMPLE_POSTS.map((post, i) => (
+              <div key={i} style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden", display: "flex" }}>
+                <div style={{ width: 100, flexShrink: 0 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
-              ))}
+                <div style={{ padding: "12px 16px", flex: 1 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".1em", color: "#b7e94c", textTransform: "uppercase", marginBottom: 4 }}>{post.label}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4, lineHeight: 1.4 }}>{post.title}</div>
+                  <div style={{ fontSize: 12, color: "#666", marginBottom: 5 }}>{post.body}</div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>{post.tags}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Brand DNA — fade/lock */}
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 12 }}>
+            Tvá Brand DNA strategie
+          </div>
+          <div style={{ position: "relative", borderRadius: 12, border: "1px solid #e8e4dc", background: "#fff", overflow: "hidden", marginBottom: 24 }}>
+            <div style={{ padding: "20px 20px 0" }}>
+              {type === "manual" ? (
+                <>
+                  {name && (
+                    <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                      <strong style={{ color: "#111" }}>Značka: </strong>{name}
+                    </div>
+                  )}
+                  {ton && (
+                    <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                      <strong style={{ color: "#111" }}>Tón komunikace: </strong>{ton}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {url && (
+                    <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                      <strong style={{ color: "#111" }}>Web: </strong>{url}
+                    </div>
+                  )}
+                  <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, marginBottom: 8 }}>
+                    <strong style={{ color: "#111" }}>Vizuální identita: </strong>Analyzována
+                  </div>
+                  <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, marginBottom: 8 }}>
+                    <strong style={{ color: "#111" }}>5 pilířů značky: </strong>Vyhodnoceno
+                  </div>
+                </>
+              )}
+              <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8 }}>
+                <strong style={{ color: "#111" }}>Stratég: </strong>{selectedStrateg?.name ?? "Ilumina"} · {selectedStrateg?.tagline ?? "Brand storytelling"}
+              </div>
+            </div>
+            {/* Fade overlay + lock */}
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 140, background: "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: 20 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3 }}>Odemkni plnou Brand DNA strategii</div>
+              <div style={{ fontSize: 11, color: "#888" }}>Pozicionování · Pilíře · Archetyp · Stratég</div>
+            </div>
+            <div style={{ height: 160 }} />
+          </div>
+
+          {/* Zamknuté príspevky */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 12 }}>
+            {[4, 5, 6].map(i => (
+              <div key={i} style={{ background: "#f7f5f0", border: "1px solid #e8e4dc", borderRadius: 10, padding: "16px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 80, gap: 6 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <div style={{ fontSize: 11, color: "#ccc" }}>Příspěvek {i}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: "center", fontSize: 12, color: "#aaa", marginBottom: 24 }}>
+            Předplať si a získej obsah každý týden →
+          </div>
+
+          {/* CTA */}
+          <div style={{ background: "#f5f2ec", borderRadius: 12, padding: "20px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 3 }}>Ulož výsledky zdarma</div>
+              <div style={{ fontSize: 12, color: "#777", lineHeight: 1.5 }}>Brand DNA, 3 příspěvky ke stažení a vizuální knihovna.</div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+              <button style={{ background: "#111", color: "#fff", border: "none", borderRadius: 9, padding: "11px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                Vytvořit účet zdarma →
+              </button>
+              <button style={{ background: "none", border: "none", fontSize: 11, color: "#aaa", cursor: "pointer", fontFamily: "inherit" }}>
+                Pokračovat bez účtu
+              </button>
             </div>
           </div>
-          <p style={{ fontSize: 11, color: "#bbb" }}>Zdarma · Bez registrace · Data nejsou sdílena</p>
+
         </div>
-        <style>{`@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+        <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }`}</style>
       </main>
     );
   }
 
-  // ── Strategist selection screen ──────────────────────────────
+  // ── STRATEGIST SELECTION SCREEN ──────────────────────────────
   if (showStrategist) {
     return (
-      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
-
-        {/* Logo */}
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
-        </div>
-
-        <div style={{ maxWidth: 580, width: "100%", paddingTop: 40, animation: "fadeUp .5s ease" }}>
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "80px 24px 48px", fontFamily: "system-ui, sans-serif" }}>
+        <Logo />
+        <div style={{ maxWidth: 600, width: "100%", animation: "fadeUp .5s ease" }}>
 
           {/* Header */}
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "8px 18px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 20 }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "8px 18px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 16 }}>
               ✓ Analýza dokončena
             </div>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: "#111", lineHeight: 1.25, margin: "0 0 12px" }}>
-              Doporučujeme ti stratéga
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 700, color: "#111", lineHeight: 1.25, margin: "0 0 10px" }}>
+              Vyber si svého stratéga
             </h1>
-            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, margin: 0 }}>
-              Na základě tvých odpovědí jsme vybrali dva stratégy.<br />
-              Zvol si, kdo povede tvůj obsah.
+            <p style={{ fontSize: 13, color: "#666", lineHeight: 1.6, margin: 0 }}>
+              Na základě tvých odpovědí doporučujeme <strong style={{ color: "#111" }}>
+                {STRATEGIST_LIST.find(s => s.id === primaryId)?.name}
+              </strong>.<br />
+              Můžeš vybrat i jiného — kdo tě osloví.
             </p>
           </div>
 
-          {/* Strategist cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
-
-            {/* Primary */}
-            <div style={{ background: "#fff", borderRadius: 20, border: "2px solid #b7e94c", padding: "28px 24px", position: "relative", boxShadow: "0 8px 32px rgba(183,233,76,0.15)" }}>
-              <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#b7e94c", color: "#111", fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", padding: "4px 14px", borderRadius: 20, whiteSpace: "nowrap" }}>
-                Nejlepší shoda
-              </div>
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: primaryS?.color ?? "#f0fce0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>
-                {primaryS?.emoji}
-              </div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 4 }}>{primaryS?.name}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 12 }}>{primaryS?.tagline}</div>
-              <div style={{ fontSize: 13, color: "#555", lineHeight: 1.6, marginBottom: 20 }}>{primaryS?.desc}</div>
-              <button
-                onClick={() => handleContinue(primary)}
-                disabled={!!chosenStrategist}
-                style={{ width: "100%", background: chosenStrategist === primary ? "#5a7a00" : "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 0", fontSize: 13, fontWeight: 600, cursor: chosenStrategist ? "default" : "pointer", fontFamily: "inherit", transition: "background .2s" }}
-              >
-                {chosenStrategist === primary ? "✓ Vybráno" : "Pokračovat s tímto →"}
-              </button>
-            </div>
-
-            {/* Secondary */}
-            <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #e8e4dc", padding: "28px 24px", opacity: chosenStrategist && chosenStrategist !== secondary ? 0.5 : 1, transition: "opacity .3s" }}>
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: secondaryS?.color ?? "#f5f3ee", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>
-                {secondaryS?.emoji}
-              </div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 4 }}>{secondaryS?.name}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#888", marginBottom: 12 }}>{secondaryS?.tagline}</div>
-              <div style={{ fontSize: 13, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{secondaryS?.desc}</div>
-              <button
-                onClick={() => handleContinue(secondary)}
-                disabled={!!chosenStrategist}
-                style={{ width: "100%", background: chosenStrategist === secondary ? "#5a7a00" : "#f5f3ee", color: chosenStrategist === secondary ? "#fff" : "#555", border: "1px solid #e8e4dc", borderRadius: 10, padding: "12px 0", fontSize: 13, fontWeight: 600, cursor: chosenStrategist ? "default" : "pointer", fontFamily: "inherit", transition: "all .2s" }}
-              >
-                {chosenStrategist === secondary ? "✓ Vybráno" : "Vybrat tohoto"}
-              </button>
-            </div>
+          {/* 6 karet — 2 × 3 grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 20 }}>
+            {STRATEGIST_LIST.map(s => {
+              const isTop = s.id === primaryId;
+              const isSecond = s.id === secondaryId;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => handleChooseStrateg(s)}
+                  style={{
+                    background: "#fff",
+                    borderRadius: 16,
+                    border: isTop ? "2px solid #b7e94c" : isSecond ? "1.5px solid #d4f0a0" : "1px solid #e8e4dc",
+                    padding: "20px 16px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    position: "relative",
+                    boxShadow: isTop ? "0 6px 24px rgba(183,233,76,0.18)" : "none",
+                    transition: "transform .15s, box-shadow .15s",
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(0,0,0,0.08)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = isTop ? "0 6px 24px rgba(183,233,76,0.18)" : "none"; }}
+                >
+                  {isTop && (
+                    <div style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: "#b7e94c", color: "#111", fontSize: 9, fontWeight: 700, letterSpacing: ".07em", textTransform: "uppercase", padding: "3px 10px", borderRadius: 20, whiteSpace: "nowrap" }}>
+                      Doporučeno
+                    </div>
+                  )}
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: s.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 12 }}>
+                    {s.emoji}
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111", marginBottom: 3 }}>{s.name}</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".07em", textTransform: "uppercase", color: isTop ? "#5a7a00" : "#aaa", marginBottom: 8 }}>{s.tagline}</div>
+                  <div style={{ fontSize: 11, color: "#666", lineHeight: 1.5 }}>{s.desc}</div>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Skip link */}
+          {/* Skip */}
           <div style={{ textAlign: "center" }}>
             <button
-              onClick={() => handleContinue("ilumina")}
-              disabled={!!chosenStrategist}
-              style={{ background: "none", border: "none", fontSize: 12, color: "#aaa", cursor: chosenStrategist ? "default" : "pointer", fontFamily: "inherit", textDecoration: "underline" }}
+              onClick={() => handleChooseStrateg(STRATEGIST_LIST[0])}
+              style={{ background: "none", border: "none", fontSize: 12, color: "#aaa", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}
             >
               Přeskočit — rozhodnu se později
             </button>
@@ -331,23 +412,15 @@ function AnalyzingInner() {
             Zdarma · Bez registrace · Data nejsou sdílena
           </p>
         </div>
-
-        <style>{`
-          @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        `}</style>
+        <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }`}</style>
       </main>
     );
   }
 
-  // ── Progress + Quiz screen ────────────────────────────────────
+  // ── PROGRESS + QUIZ SCREEN ────────────────────────────────────
   return (
     <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
-
-      {/* Logo */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
-      </div>
+      <Logo />
 
       <div style={{ maxWidth: 560, width: "100%", paddingTop: 40 }}>
 
