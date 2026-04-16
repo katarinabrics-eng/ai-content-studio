@@ -83,25 +83,52 @@ function getRecommendedIds(answers: string[]): [string, string] {
 
 const SAMPLE_POSTS = [
   {
-    label: "GRAFIKA · INSTAGRAM",
-    title: '"Každé ráno si říkám — dneska to zvládnu."',
-    body: "A pak přijde ten moment, kdy všechno zpomalí.",
-    tags: "#osobnirozvoj #mindset",
-    src: "/placeholders/stock-vizualni knihovna/K04/k04-012.png",
+    type: 'video',
+    label: 'VIDEO · REELS',
+    variant: 'Varianta A',
+    platform: 'Instagram',
+    duration: '15s · Reels',
+    style: 'Storytelling · přirozený moment',
+    title: '"Ráno. Okno. Ticho před dnem."',
+    body: `Každé ráno si říkám – dneska to zvládnu.\nA pak přijde ten moment, kdy všechno zpomalí.\nOkno. Světlo. Ticho.\n\nTo je tvůj obsah. Každý týden. Bez námahy.`,
+    img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
+    selected: true,
   },
   {
-    label: "VIDEO · REELS",
+    type: 'video',
+    label: 'VIDEO · REELS',
+    variant: 'Varianta B',
+    platform: 'Instagram',
+    duration: '12s · Reels',
+    style: 'Hook přímý · osobní tón',
     title: '"Tohle ti nikdo neřekne."',
-    body: "Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala.",
-    tags: "#brand #marketing",
-    src: "/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg",
+    body: `Strávila jsem hodiny přemýšlením co postovat.\nPak jsem to vzdala.\nA nechala systém pracovat za mě.\n\n3 posty týdně. Hotovo za 5 minut.`,
+    img: '/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg',
+    selected: false,
   },
   {
-    label: "CAROUSEL · INSTAGRAM",
-    title: '"5 věcí které mě nikdo nenaučil. Slide →"',
-    body: "Každý snímek ti řekne něco co konkurence tají.",
-    tags: "#znacka #strategie",
-    src: "/placeholders/stock-vizualni knihovna/K01/k01-012.jpeg",
+    type: 'grafika',
+    label: 'GRAFIKA',
+    variant: null,
+    platform: 'Instagram',
+    duration: null,
+    style: 'Soft feminine · lifestyle',
+    title: '"Kdy jsi naposledy stála a jen… byla?"',
+    body: `Obsah který mluví za tebe.\nBez zbytečného přemýšlení.`,
+    img: '/placeholders/stock-vizualni knihovna/K04/k04-018.png',
+    selected: false,
+  },
+  {
+    type: 'grafika',
+    label: 'GRAFIKA',
+    variant: null,
+    platform: 'Instagram',
+    duration: null,
+    style: 'Editorial · atmosféra',
+    title: '"Volnost má svůj rytmus."',
+    body: `Vizuál připravený k použití.\nStačí schválit a zveřejnit.`,
+    img: '/placeholders/stock-vizualni knihovna/K04/k04-019.png',
+    selected: false,
   },
 ];
 
@@ -226,22 +253,52 @@ function AnalyzingInner() {
             </div>
           )}
 
-          {/* 3 sample příspěvky */}
+          {/* Príspevky */}
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 12 }}>
             Tvůj obsah připravený k použití
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-            {SAMPLE_POSTS.map((post, i) => (
-              <div key={i} style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden", display: "flex" }}>
-                <div style={{ width: 100, flexShrink: 0 }}>
+
+          {/* Video karty — 2 vedľa seba */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            {SAMPLE_POSTS.filter(p => p.type === "video").map((post, i) => (
+              <div key={i} style={{ border: post.selected ? "2px solid #111" : "1px solid #e8e4dc", borderRadius: 14, overflow: "hidden", background: "#fff" }}>
+                <div style={{ position: "relative" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <img src={post.img} alt="" style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }} />
+                  <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10 }}>
+                    ▶ {post.duration}
+                  </div>
                 </div>
-                <div style={{ padding: "12px 16px", flex: 1 }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".1em", color: "#b7e94c", textTransform: "uppercase", marginBottom: 4 }}>{post.label}</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4, lineHeight: 1.4 }}>{post.title}</div>
-                  <div style={{ fontSize: 12, color: "#666", marginBottom: 5 }}>{post.body}</div>
-                  <div style={{ fontSize: 11, color: "#aaa" }}>{post.tags}</div>
+                <div style={{ padding: "14px 16px" }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".1em", color: "#b7e94c", textTransform: "uppercase", marginBottom: 6 }}>{post.label}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111", lineHeight: 1.4, marginBottom: 5 }}>{post.title}</div>
+                  <div style={{ fontSize: 11, color: "#888", marginBottom: 10 }}>{post.style}</div>
+                  <div style={{ fontSize: 12, color: "#555", background: "#f7f5f0", borderRadius: 6, padding: "10px 12px", lineHeight: 1.7, whiteSpace: "pre-line", marginBottom: 10 }}>
+                    {post.body}
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {post.variant && <span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 10, background: post.selected ? "#111" : "#f0f0f0", color: post.selected ? "#fff" : "#666" }}>{post.variant}</span>}
+                    <span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 10, background: "#f0f0f0", color: "#666" }}>{post.platform}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Grafika karty — 2 vedľa seba */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+            {SAMPLE_POSTS.filter(p => p.type === "grafika").map((post, i) => (
+              <div key={i} style={{ border: "1px solid #e8e4dc", borderRadius: 14, overflow: "hidden", background: "#fff" }}>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", top: 8, left: 8, background: "rgba(255,255,255,0.9)", fontSize: 10, fontWeight: 600, color: "#555", padding: "2px 8px", borderRadius: 10, zIndex: 1 }}>
+                    □ {post.label}
+                  </span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.img} alt="" style={{ width: "100%", height: 280, objectFit: "cover", display: "block" }} />
+                </div>
+                <div style={{ padding: "12px 14px" }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4 }}>{post.title}</div>
+                  <div style={{ fontSize: 11, color: "#888" }}>{post.style}</div>
                 </div>
               </div>
             ))}
