@@ -236,9 +236,9 @@ function AnalyzingInner() {
   // ── DONE SCREEN ──────────────────────────────────────────────
   if (phase === "done") {
     return (
-      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", justifyContent: "flex-start", padding: "80px 40px 48px", fontFamily: "system-ui, sans-serif" }}>
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "80px 40px 48px", fontFamily: "system-ui, sans-serif" }}>
         <Logo />
-        <div style={{ width: "100%", animation: "fadeUp .4s ease" }}>
+        <div style={{ width: "100%", maxWidth: 960, animation: "fadeUp .4s ease" }}>
 
           {/* Stratég badge */}
           {selectedStrateg && (
@@ -476,10 +476,10 @@ function AnalyzingInner() {
 
   // ── PROGRESS + QUIZ SCREEN ────────────────────────────────────
   return (
-    <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", justifyContent: "center", padding: "40px 40px", fontFamily: "system-ui, sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 40px", fontFamily: "system-ui, sans-serif" }}>
       <Logo />
 
-      <div style={{ width: "100%", paddingTop: 40 }}>
+      <div style={{ width: "100%", maxWidth: 960, paddingTop: 40 }}>
 
         {/* Badge */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
