@@ -236,9 +236,9 @@ function AnalyzingInner() {
   // ── DONE SCREEN ──────────────────────────────────────────────
   if (phase === "done") {
     return (
-      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "80px 24px 48px", fontFamily: "system-ui, sans-serif" }}>
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", justifyContent: "flex-start", padding: "80px 40px 48px", fontFamily: "system-ui, sans-serif" }}>
         <Logo />
-        <div style={{ maxWidth: 520, width: "100%", animation: "fadeUp .4s ease" }}>
+        <div style={{ width: "100%", animation: "fadeUp .4s ease" }}>
 
           {/* Stratég badge */}
           {selectedStrateg && (
@@ -258,48 +258,48 @@ function AnalyzingInner() {
             Tvůj obsah připravený k použití
           </div>
 
-          {/* Video karty — 2 vedľa seba */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          {/* Video karty — obrázok vľavo, text vpravo (RTG štýl) */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 12 }}>
             {SAMPLE_POSTS.filter(p => p.type === "video").map((post, i) => (
-              <div key={i} style={{ border: post.selected ? "2px solid #111" : "1px solid #e8e4dc", borderRadius: 14, overflow: "hidden", background: "#fff" }}>
-                <div style={{ position: "relative" }}>
+              <div key={i} style={{ display: "flex", gap: 16, alignItems: "flex-start", background: "#fff", border: post.selected ? "1px solid #111" : "1px solid #e8e4dc", borderRadius: 12, padding: 14 }}>
+                {/* Obrázok — pevná šírka, 9:16 pomer */}
+                <div style={{ flexShrink: 0, width: 140, aspectRatio: "9/16", borderRadius: 8, overflow: "hidden", position: "relative" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.img} alt="" style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }} />
-                  <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10 }}>
+                  <img src={post.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <div style={{ position: "absolute", bottom: 6, left: 6, background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: 9, padding: "2px 7px", borderRadius: 20, backdropFilter: "blur(4px)" }}>
                     ▶ {post.duration}
                   </div>
                 </div>
-                <div style={{ padding: "14px 16px" }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".1em", color: "#b7e94c", textTransform: "uppercase", marginBottom: 6 }}>{post.label}</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111", lineHeight: 1.4, marginBottom: 5 }}>{post.title}</div>
-                  <div style={{ fontSize: 11, color: "#888", marginBottom: 10 }}>{post.style}</div>
-                  <div style={{ fontSize: 12, color: "#555", background: "#f7f5f0", borderRadius: 6, padding: "10px 12px", lineHeight: 1.7, whiteSpace: "pre-line", marginBottom: 10 }}>
+                {/* Text */}
+                <div style={{ flex: 1, paddingTop: 4 }}>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: "#b7e94c", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 6 }}>{post.label}</div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#111", lineHeight: 1.4, marginBottom: 6, margin: "0 0 6px" }}>{post.title}</p>
+                  <p style={{ fontSize: 12, color: "#888", marginBottom: 12, margin: "0 0 12px" }}>{post.style}</p>
+                  <div style={{ fontSize: 11, color: "#555", background: "#f5f3ee", borderRadius: 6, padding: "8px 10px", lineHeight: 1.6, whiteSpace: "pre-line", marginBottom: 10 }}>
                     {post.body}
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
-                    {post.variant && <span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 10, background: post.selected ? "#111" : "#f0f0f0", color: post.selected ? "#fff" : "#666" }}>{post.variant}</span>}
-                    <span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 10, background: "#f0f0f0", color: "#666" }}>{post.platform}</span>
+                    {post.variant && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 20, background: "#f0f0f0", color: "#666" }}>{post.variant}</span>}
+                    <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 20, background: "#f0f0f0", color: "#666" }}>{post.platform}</span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Grafika karty — 2 vedľa seba */}
+          {/* Grafika karty — badge + 1:1 obrázok + text pod ním (RTG štýl) */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
             {SAMPLE_POSTS.filter(p => p.type === "grafika").map((post, i) => (
-              <div key={i} style={{ border: "1px solid #e8e4dc", borderRadius: 14, overflow: "hidden", background: "#fff" }}>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", top: 8, left: 8, background: "rgba(255,255,255,0.9)", fontSize: 10, fontWeight: 600, color: "#555", padding: "2px 8px", borderRadius: 10, zIndex: 1 }}>
-                    □ {post.label}
-                  </span>
+              <div key={i} style={{ background: "#fafaf7", border: "1px solid #e8e8e4", borderRadius: 10, padding: 12 }}>
+                <div style={{ display: "inline-flex", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 100, background: "#dcfce7", color: "#15803d", letterSpacing: ".06em", marginBottom: 8 }}>
+                  □ {post.label}
+                </div>
+                <div style={{ width: "100%", aspectRatio: "1/1", overflow: "hidden", borderRadius: 10, marginBottom: 8 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.img} alt="" style={{ width: "100%", height: 280, objectFit: "cover", display: "block" }} />
+                  <img src={post.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
                 </div>
-                <div style={{ padding: "12px 14px" }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4 }}>{post.title}</div>
-                  <div style={{ fontSize: 11, color: "#888" }}>{post.style}</div>
-                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#111", lineHeight: 1.4, marginBottom: 2 }}>{post.title}</div>
+                <div style={{ fontSize: 10, color: "#9a9a90" }}>{post.style}</div>
               </div>
             ))}
           </div>
@@ -395,9 +395,9 @@ function AnalyzingInner() {
   // ── STRATEGIST SELECTION SCREEN ──────────────────────────────
   if (showStrategist) {
     return (
-      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "80px 24px 48px", fontFamily: "system-ui, sans-serif" }}>
+      <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", justifyContent: "flex-start", padding: "80px 40px 48px", fontFamily: "system-ui, sans-serif" }}>
         <Logo />
-        <div style={{ maxWidth: 600, width: "100%", animation: "fadeUp .5s ease" }}>
+        <div style={{ width: "100%", animation: "fadeUp .5s ease" }}>
 
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 32 }}>
@@ -476,10 +476,10 @@ function AnalyzingInner() {
 
   // ── PROGRESS + QUIZ SCREEN ────────────────────────────────────
   return (
-    <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", fontFamily: "system-ui, sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", justifyContent: "center", padding: "40px 40px", fontFamily: "system-ui, sans-serif" }}>
       <Logo />
 
-      <div style={{ maxWidth: 560, width: "100%", paddingTop: 40 }}>
+      <div style={{ width: "100%", paddingTop: 40 }}>
 
         {/* Badge */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
