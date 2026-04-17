@@ -3,9 +3,10 @@ import { selectStrategists } from "@/lib/strategist-selector";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
-const FIRECRAWL_BASE = "https://api.firecrawl.dev/v2";
+const FIRECRAWL_V1 = "https://api.firecrawl.dev/v1";
+const FIRECRAWL_V2 = "https://api.firecrawl.dev/v2";
 const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 const OPENAI_MODEL = "gpt-4o";
 const FETCH_TIMEOUT_MS = 55_000;
@@ -24,26 +25,27 @@ type Scraped = {
   description?: string;
 };
 
+// /v2/scrape — homepage screenshot + markdown
 async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped> {
   const normalized = url.startsWith("http") ? url : `https://${url}`;
   const res = await fetchWithTimeout(
-    `${FIRECRAWL_BASE}/scrape`,
+    `${FIRECRAWL_V2}/scrape`,
     {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        url: normalized,
+        formats: [
+          { type: "markdown" },
+          { type: "screenshot", viewport: { width: 1280, height: 800 } },
+        ],
+        onlyMainContent: true,
+        waitFor: 2000,
+      }),
     },
-    body: JSON.stringify({
-      url: normalized,
-      formats: [
-        { type: "markdown" },
-        { type: "screenshot", viewport: { width: 1280, height: 800 } },
-      ],
-      onlyMainContent: true,
-      waitFor: 2000,
-    }),
-  },
     FETCH_TIMEOUT_MS
   );
 
@@ -54,7 +56,7 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
       ? "URL není platná nebo web se nepodařilo načíst. Zkuste zkontrolovat adresu a zkusit znovu."
       : raw;
     if (process.env.NODE_ENV !== "production") {
-      console.error("[analyze] Firecrawl error:", { raw, message: msg, param: e?.param });
+      console.error("[analyze] Firecrawl scrape error:", { raw, message: msg, param: e?.param });
     }
     throw new Error(msg);
   }
@@ -83,8 +85,86 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
   };
 }
 
-function buildAnalyzeInput(scraped: Scraped): string {
-  const textContent = scraped.markdown.slice(0, 7000);
+type CrawlPage = {
+  url?: string;
+  markdown?: string;
+  metadata?: { title?: string };
+};
+
+// /v1/crawl — celý web, max 10 podstránok, polling
+async function crawlWithFirecrawl(url: string, apiKey: string): Promise<string> {
+  const normalized = url.startsWith("http") ? url : `https://${url}`;
+
+  // Spusti crawl
+  const crawlRes = await fetchWithTimeout(
+    `${FIRECRAWL_V1}/crawl`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        url: normalized,
+        limit: 10,
+        scrapeOptions: {
+          formats: ["markdown"],
+          onlyMainContent: true,
+        },
+      }),
+    },
+    FETCH_TIMEOUT_MS
+  );
+
+  if (!crawlRes.ok) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[analyze] Firecrawl crawl start failed:", crawlRes.status);
+    }
+    return "";
+  }
+
+  const crawlData = await crawlRes.json() as { id?: string };
+  const crawlId = crawlData.id;
+  if (!crawlId) return "";
+
+  // Polling — max 25 iterácií × 2s = 50s
+  let crawlResult: { status?: string; data?: CrawlPage[] } | null = null;
+  for (let i = 0; i < 25; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    const statusRes = await fetch(
+      `${FIRECRAWL_V1}/crawl/${crawlId}`,
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    );
+    const statusData = await statusRes.json() as { status?: string; data?: CrawlPage[] };
+    if (statusData?.status === "completed") {
+      crawlResult = statusData;
+      break;
+    }
+  }
+
+  if (!crawlResult?.data?.length) return "";
+
+  // Prioritné stránky navrchu
+  const priorityPages = crawlResult.data.filter(p => {
+    const u = p.url?.toLowerCase() || "";
+    return u.includes("cen") || u.includes("reference") ||
+           u.includes("o-nas") || u.includes("about") ||
+           u.includes("sluzb") || u.includes("kontakt");
+  });
+
+  const priorityMarkdown = priorityPages
+    .map(p => `\n\n## DŮLEŽITÁ STRÁNKA: ${p.url}\n${p.markdown || ""}`)
+    .join("\n");
+
+  const allMarkdown = crawlResult.data
+    .map(p => `\n\n## ${p.metadata?.title || p.url}\n${p.markdown || ""}`)
+    .join("\n");
+
+  return (priorityMarkdown + "\n\n" + allMarkdown).slice(0, 25000);
+}
+
+function buildAnalyzeInput(scraped: Scraped, contentMarkdown: string): string {
+  const textContent = contentMarkdown.slice(0, 10000);
   return `Analyzuj následující web na základě jeho skutečného obsahu. Veškerou odpověď piš výhradně v češtině.
 
 URL: ${scraped.url}
@@ -150,8 +230,23 @@ Rules:
   DŮLEŽITÉ: Pokud jsou na stránce citace od jmenovaných klientů, považuj je za reference a uveď je v observed[]. Do notObserved[] dávej jen co skutečně chybí. Nikdy nepiš chybí reference pokud jsou na stránce citace s jmény klientů.
 `;
 
+const CRAWL_INSTRUCTIONS = `
+Analyzuj CELÝ web vrátane podstránok. Venuj zvláštnou pozornost:
+- Cenník a ceny (ak existujú)
+- Referencie a hodnotenia klientov
+- O nás / tím
+- Služby a produkty
+- CTA prvky na každej stránke
+
+Hľadaj konkrétne:
+- Chýbajúce social proof
+- Slabé miesta v predajnom funneli
+- Vizuálna konzistencia naprieč stránkami
+- Kvalita copywritingu
+`;
+
 function buildDiagnostikaPromptFromText(sourceContent: string): string {
-  const text = sourceContent.slice(0, 12000);
+  const text = sourceContent.slice(0, 25000);
   return `Analyzuj zadané podklady o značce a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
 
 OBSAH (zadaný text nebo extrahovaný z dokumentu):
@@ -187,15 +282,15 @@ JSON musí mít přesně tento tvar:
 }`;
 }
 
-function buildDiagnostikaPrompt(scraped: Scraped): string {
-  const textContent = scraped.markdown.slice(0, 10000);
+function buildDiagnostikaPrompt(scraped: Scraped, contentMarkdown: string): string {
+  const textContent = contentMarkdown.slice(0, 25000);
   return `Analyzuj tento web a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
-
+${CRAWL_INSTRUCTIONS}
 URL: ${scraped.url}
 Název: ${scraped.title ?? ""}
 Meta popis: ${scraped.description ?? ""}
 
-OBSAH WEBU (markdown):
+OBSAH WEBU (markdown ze všech podstránek):
 ---
 ${textContent}
 ---
@@ -228,7 +323,6 @@ JSON musí mít přesně tento tvar:
 }`;
 }
 
-/** Extract plain text from Chat Completions response. */
 function getTextFromChatResponse(data: unknown): string {
   if (data == null) return "No output received";
   const d = data as { model?: string; choices?: Array<{ message?: { content?: unknown } }> };
@@ -246,7 +340,6 @@ function parseDiagnostikaResult(raw: string): Record<string, unknown> {
   return JSON.parse(match[0]) as Record<string, unknown>;
 }
 
-/** Validuje, že každý pilíř má score v rozsahu 1–10 (číslo). Vyhodí chybu při neplatném výstupu. */
 function validatePillarScores(result: Record<string, unknown>): void {
   const pillarAnalysis = result.pillarAnalysis as Record<string, { score?: unknown }> | undefined;
   if (!pillarAnalysis || typeof pillarAnalysis !== "object") {
@@ -300,11 +393,19 @@ export async function POST(request: Request) {
     if (url) {
       const firecrawlKey = process.env.FIRECRAWL_API_KEY;
       if (!firecrawlKey) return NextResponse.json({ error: "FIRECRAWL_API_KEY není nastaven." }, { status: 500 });
-      scraped = await scrapeWithFirecrawl(url, firecrawlKey);
+
+      // Scrape (screenshot + homepage) a crawl (celý web) bežia súčasne
+      const [scrapeResult, crawlMarkdown] = await Promise.all([
+        scrapeWithFirecrawl(url, firecrawlKey),
+        crawlWithFirecrawl(url, firecrawlKey),
+      ]);
+
+      scraped = scrapeResult;
       if (!scraped.markdown && !scraped.screenshot) {
         return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
       }
-      sourceContent = scraped.markdown ?? "";
+      // Crawl markdown má prednosť (viac stránok), fallback na homepage
+      sourceContent = crawlMarkdown || scraped.markdown || "";
     }
 
     if (manualData) {
@@ -337,8 +438,8 @@ export async function POST(request: Request) {
     }
 
     let prompt = formatDiagnostika
-      ? (scraped ? buildDiagnostikaPrompt(scraped) : buildDiagnostikaPromptFromText(sourceContent))
-      : buildAnalyzeInput(scraped!);
+      ? (scraped ? buildDiagnostikaPrompt(scraped, sourceContent) : buildDiagnostikaPromptFromText(sourceContent))
+      : buildAnalyzeInput(scraped!, sourceContent);
 
     if (imageBase64 && imageMimeType) {
       prompt += "\n\nUživatel přiložil ukázku grafiky nebo fotografie značky. Vyhodnoť ji v kontextu vizuální identity a emoční stopy (pilíř Identita a celkový dojem).";
