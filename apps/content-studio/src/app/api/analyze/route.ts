@@ -505,6 +505,88 @@ export async function POST(request: Request) {
           at: new Date().toISOString(),
         });
         const suggested = selectStrategists(result);
+
+        // Generuj 3 príspevky z Brand DNA
+        const brandDna = result.brandDna as Record<string, unknown> | undefined;
+        const postsPrompt = `Si expert na social media obsah.
+Na základe tejto Brand DNA analýzy vytvor 3 príspevky.
+
+Značka: ${String(brandDna?.name || url)}
+Pozicionování: ${String(brandDna?.positioning || '')}
+Tón komunikace: ${String(brandDna?.tone || '')}
+Cílová skupina: ${String(brandDna?.targetAudience || '')}
+Unikátní hodnota: ${String(brandDna?.uniqueValue || '')}
+Obsahové pilíře: ${Array.isArray(brandDna?.contentPillars) ? (brandDna.contentPillars as string[]).join(', ') : ''}
+
+Vytvor presne 3 príspevky v JSON formáte:
+[
+  {
+    "type": "video",
+    "label": "VIDEO · REELS",
+    "variant": "Varianta A",
+    "platform": "Instagram",
+    "duration": "15s · Reels",
+    "style": "krátky popis štýlu",
+    "title": "hook v úvodzovkách",
+    "body": "text príspevku 2-4 vety",
+    "tags": "#hashtag1 #hashtag2 #hashtag3"
+  },
+  {
+    "type": "video",
+    "label": "VIDEO · REELS",
+    "variant": "Varianta B",
+    "platform": "Instagram",
+    "duration": "12s · Reels",
+    "style": "krátky popis štýlu",
+    "title": "iný hook",
+    "body": "iný text 2-4 vety",
+    "tags": "#hashtag1 #hashtag2"
+  },
+  {
+    "type": "grafika",
+    "label": "GRAFIKA",
+    "variant": null,
+    "platform": "Instagram",
+    "duration": null,
+    "style": "vizuálny štýl",
+    "title": "headline pre grafiku",
+    "body": "krátky text pod grafiku",
+    "tags": "#hashtag1 #hashtag2"
+  }
+]
+
+Obsah musí byť relevantný pre túto konkrétnu značku.
+Použi reálne informácie z analýzy — ceny ak sú dostupné,
+konkrétne služby, referencie ak existujú.
+Vráť IBA JSON pole, nič iné.`;
+
+        let generatedPosts: unknown[] = [];
+        try {
+          const anthropicKey = process.env.ANTHROPIC_API_KEY;
+          if (anthropicKey) {
+            const postsRes = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': anthropicKey,
+                'anthropic-version': '2023-06-01',
+              },
+              body: JSON.stringify({
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 2000,
+                messages: [{ role: 'user', content: postsPrompt }],
+              }),
+            });
+            const postsData = await postsRes.json() as { content?: Array<{ text?: string }> };
+            const postsText = postsData.content?.[0]?.text || '[]';
+            const clean = postsText.replace(/```json|```/g, '').trim();
+            generatedPosts = JSON.parse(clean) as unknown[];
+          }
+        } catch (e) {
+          console.error('[analyze] Posts generation failed:', e);
+          generatedPosts = [];
+        }
+
         return NextResponse.json({
           result: {
             brandScore: result.brandScore,
@@ -513,6 +595,7 @@ export async function POST(request: Request) {
             pillarAnalysis: result.pillarAnalysis ?? undefined,
             suggested_strategists: suggested,
           },
+          generatedPosts,
           scraped: scrapedPayload,
         });
       } catch (err) {

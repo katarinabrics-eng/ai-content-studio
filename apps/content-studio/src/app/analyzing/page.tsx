@@ -504,7 +504,7 @@ function AnalyzingInner() {
 
           {/* Unified grid — video + grafika */}
           <div className="results-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24 }}>
-            {SAMPLE_POSTS.map((post, i) =>
+            {(analysisResult?.generatedPosts?.length > 0 ? analysisResult.generatedPosts : SAMPLE_POSTS).map((post: any, i: number) =>
               post.type === "video" ? (
                 <div key={i} style={{ display: "flex", gap: 0, background: "#fff", border: post.selected ? "1px solid #111" : "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden" }}>
                   <div style={{ flexShrink: 0, width: 220, position: "relative", overflow: "hidden" }}>
