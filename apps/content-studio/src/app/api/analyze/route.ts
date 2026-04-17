@@ -658,36 +658,38 @@ Vytvor presne 3 príspevky v JSON formáte:
 Obsah musí byť relevantný pre túto konkrétnu značku.
 Použi reálne informácie z analýzy — ceny ak sú dostupné,
 konkrétne služby, referencie ak existujú.
-Vráť IBA JSON pole, nič iné.`;
+Vráť JSON objekt s kľúčom posts: { "posts": [ ... ] }`;
 
         let generatedPosts: unknown[] = [];
         try {
-          const anthropicKey = process.env.ANTHROPIC_API_KEY;
-          console.log('Generating posts for:', url, 'brandDna:', !!result.brandDna, 'hasAnthropicKey:', !!anthropicKey);
-          if (anthropicKey) {
-            const postsRes = await fetch('https://api.anthropic.com/v1/messages', {
+          const openaiKeyPosts = process.env.OPENAI_API_KEY;
+          console.log('Generating posts for:', url, 'brandDna:', !!result.brandDna, 'hasOpenAIKey:', !!openaiKeyPosts);
+          if (openaiKeyPosts) {
+            const postsRes = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': anthropicKey,
-                'anthropic-version': '2023-06-01',
+                'Authorization': `Bearer ${openaiKeyPosts}`,
               },
               body: JSON.stringify({
-                model: 'claude-haiku-4-5-20251001',
-                max_tokens: 2000,
+                model: 'gpt-4o',
+                max_tokens: 3000,
                 messages: [{ role: 'user', content: postsPrompt }],
+                response_format: { type: 'json_object' },
               }),
             });
-            const postsData = await postsRes.json() as { content?: Array<{ text?: string }> };
-            console.log('Posts API response:', JSON.stringify(postsData).slice(0, 500));
-            const postsText = postsData.content?.[0]?.text || '[]';
-            console.log('Posts text:', postsText?.slice(0, 300));
-            const clean = postsText.replace(/```json|```/g, '').trim();
-            generatedPosts = JSON.parse(clean) as unknown[];
+            const postsData = await postsRes.json() as { choices?: Array<{ message?: { content?: string } }> };
+            console.log('Posts OpenAI response status:', postsRes.status);
+            const postsText = postsData.choices?.[0]?.message?.content || '{"posts":[]}';
+            console.log('Posts text preview:', postsText.slice(0, 200));
+            const parsed = JSON.parse(postsText) as { posts?: unknown[] } | unknown[];
+            generatedPosts = (Array.isArray(parsed) ? parsed : (parsed as { posts?: unknown[] }).posts) ?? [];
+          } else {
+            console.log('No OpenAI key — skipping posts generation');
           }
         } catch (e: unknown) {
           const err = e instanceof Error ? e : new Error(String(e));
-          console.error('[analyze] Posts generation failed:', err.message, err.stack);
+          console.error('Posts generation error:', err.message);
           generatedPosts = [];
         }
 
