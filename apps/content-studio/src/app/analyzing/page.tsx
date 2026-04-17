@@ -577,9 +577,39 @@ function AnalyzingInner() {
                 </div>
               )}
               {analysisResult?.result?.brandDna?.targetAudience && (
-                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8 }}>
+                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, marginBottom: 8 }}>
                   <strong style={{ color: "#111" }}>Cílová skupina: </strong>
                   {analysisResult.result.brandDna.targetAudience}
+                </div>
+              )}
+              {analysisResult?.result?.brandDna?.prices && (
+                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                  <strong style={{ color: "#111" }}>Ceny: </strong>
+                  {analysisResult.result.brandDna.prices}
+                </div>
+              )}
+              {analysisResult?.result?.brandDna?.services?.length > 0 && (
+                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                  <strong style={{ color: "#111" }}>Služby: </strong>
+                  {analysisResult.result.brandDna.services.join(" · ")}
+                </div>
+              )}
+              {analysisResult?.result?.brandDna?.testimonials && (
+                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                  <strong style={{ color: "#111" }}>Reference: </strong>
+                  {analysisResult.result.brandDna.testimonials}
+                </div>
+              )}
+              {analysisResult?.result?.brandDna?.strengths?.length > 0 && (
+                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
+                  <strong style={{ color: "#5a7a00" }}>✓ Silné stránky: </strong>
+                  {analysisResult.result.brandDna.strengths.join(" · ")}
+                </div>
+              )}
+              {analysisResult?.result?.brandDna?.weaknesses?.length > 0 && (
+                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8 }}>
+                  <strong style={{ color: "#e05a5a" }}>✗ Chybí: </strong>
+                  {analysisResult.result.brandDna.weaknesses.join(" · ")}
                 </div>
               )}
               {!analysisResult && (

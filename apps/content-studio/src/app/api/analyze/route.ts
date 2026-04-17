@@ -284,22 +284,17 @@ JSON musí mít přesně tento tvar:
 
 function buildDiagnostikaPrompt(scraped: Scraped, contentMarkdown: string): string {
   const textContent = contentMarkdown.slice(0, 25000);
-  return `Analyzuj tento web a vrať POUZE jeden validní JSON objekt (žádný text před/za ním).
-${CRAWL_INSTRUCTIONS}
-URL: ${scraped.url}
-Název: ${scraped.title ?? ""}
-Meta popis: ${scraped.description ?? ""}
+  return `Jsi expert na brand strategii a marketing.
+Analyzuj KOMPLETNÍ obsah webu níže a vytvoř hlubokou Brand DNA diagnostiku.
 
-OBSAH WEBU (markdown ze všech podstránek):
----
+Web: ${scraped.url}
+Obsah (${textContent.length} znaků):
 ${textContent}
----
-${DIAGNOSTIKA_METHODOLOGY}
 
-JSON musí mít přesně tento tvar:
+Vrať JSON s touto PŘESNOU strukturou:
 {
   "brandScore": {
-    "total": <číslo 0-100, průměr skóre všech 5 pilířů × 10, zaokrouhleno>,
+    "total": číslo 0-100,
     "hasHeadline": true/false,
     "hasOffer": true/false,
     "hasTargetAudience": true/false,
@@ -308,19 +303,42 @@ JSON musí mít přesně tento tvar:
     "hasSocialProof": true/false
   },
   "brandDna": {
-    "name": "string nebo null",
-    "positioning": "string nebo null",
-    "tone": "string nebo null",
-    "targetAudience": "string nebo null",
-    "communicationStyle": "string nebo null",
-    "uniqueValue": "string nebo null",
-    "contentPillars": ["string"] nebo [],
-    "missingElements": ["string"] nebo [],
-    "visualStyle": { "primaryColor": "#hex", "secondaryColor": "#hex", "mood": "string", "typography": "string" } nebo null
+    "name": "název značky",
+    "positioning": "konkrétní positioning v 1-2 větách",
+    "tone": "tón komunikace s příklady ze skutečného textu webu",
+    "targetAudience": "detailní popis cílové skupiny - věk, profese, potřeby",
+    "communicationStyle": "styl komunikace s konkrétními příklady",
+    "uniqueValue": "unikátní hodnota - co dělá jinak než konkurence",
+    "contentPillars": ["pilíř 1", "pilíř 2", "pilíř 3", "pilíř 4"],
+    "missingElements": ["co chybí 1", "co chybí 2", "co chybí 3"],
+    "prices": "konkrétní ceny pokud jsou na webu - uveď přesné částky",
+    "services": ["služba 1 s popisem", "služba 2 s popisem"],
+    "testimonials": "shrnutí referencí klientů pokud jsou na webu",
+    "strengths": ["silná stránka 1", "silná stránka 2", "silná stránka 3"],
+    "weaknesses": ["slabá stránka 1", "slabá stránka 2", "slabá stránka 3"],
+    "visualStyle": {
+      "mood": "popis vizuálního stylu",
+      "colors": "barvy které jsou patrné",
+      "typography": "typografie pokud je patrná"
+    }
   },
-  "summary": "Krátké shrnutí od stratéga – 2–4 věty.",
-  ${PILLAR_ANALYSIS_SCHEMA.trim()}
-}`;
+  "summary": "Strategický souhrn 3-4 věty s konkrétními doporučeními",
+  "pillarAnalysis": {
+    "light": { "score": 1-10, "interpretation": "co jsme zjistili" },
+    "energy": { "score": 1-10, "interpretation": "co jsme zjistili" },
+    "architecture": { "score": 1-10, "interpretation": "co jsme zjistili" },
+    "identity": { "score": 1-10, "interpretation": "co jsme zjistili" },
+    "trust": { "score": 1-10, "interpretation": "co jsme zjistili - reference, ceny, garance" }
+  },
+  "suggested_strategists": ["id1", "id2"]
+}
+
+DŮLEŽITÉ:
+- Pokud web obsahuje ceny, uveď je PŘESNĚ
+- Pokud web obsahuje reference, popiš je konkrétně
+- Pokud web neobsahuje něco důležitého, uveď to jako slabinu
+- Vše musí vycházet z REÁLNÉHO obsahu webu, ne z domněnek
+- Vrať POUZE JSON, nic jiného`;
 }
 
 function getTextFromChatResponse(data: unknown): string {
