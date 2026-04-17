@@ -255,6 +255,12 @@ function AnalyzingInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (analysisResult?.generatedPosts) {
+      console.log('POSTS:', JSON.stringify(analysisResult.generatedPosts, null, 2));
+    }
+  }, [analysisResult]);
+
   function handleChooseStrateg(s: Strategist) {
     if (doneRef.current) return;
     doneRef.current = true;
