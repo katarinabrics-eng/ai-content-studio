@@ -640,7 +640,7 @@ function AnalyzingInner() {
     return (
       <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", justifyContent: "flex-start", padding: "80px 40px 48px", fontFamily: "system-ui, sans-serif" }}>
         <Logo />
-        <div style={{ width: "100%", animation: "fadeUp .5s ease" }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%', padding: '40px 48px', animation: "fadeUp .5s ease" }}>
 
           <div style={{ textAlign: "center", marginBottom: 32 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#f0fce0", border: "1px solid #d4f0a0", borderRadius: 20, padding: "8px 18px", fontSize: 12, color: "#5a7a00", fontWeight: 600, marginBottom: 16 }}>
