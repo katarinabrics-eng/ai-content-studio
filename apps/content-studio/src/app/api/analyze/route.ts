@@ -120,12 +120,12 @@ async function crawlWithFirecrawl(url: string, apiKey: string): Promise<{ markdo
     if (process.env.NODE_ENV !== "production") {
       console.error("[analyze] Firecrawl crawl start failed:", crawlRes.status);
     }
-    return "";
+    return { markdown: "", images: [] };
   }
 
   const crawlData = await crawlRes.json() as { id?: string };
   const crawlId = crawlData.id;
-  if (!crawlId) return "";
+  if (!crawlId) return { markdown: "", images: [] };
 
   // Polling — max 25 iterácií × 2s = 50s
   let crawlResult: { status?: string; data?: CrawlPage[] } | null = null;
@@ -421,7 +421,7 @@ function validatePillarScores(result: Record<string, unknown>): void {
     }
     const score = pillar.score;
     const num = typeof score === "string" ? parseInt(score, 10) : typeof score === "number" ? score : NaN;
-    if (Number.isNaN(num) || num < 1 || num > 10 || Math.floor(num) !== num) {
+    if (Number.isNaN(num) || num < 0 || num > 10 || Math.floor(num) !== num) {
       throw new Error(`Pilíř "${key}" má neplatné score (očekáváno celé číslo 1–10): ${String(score)}`);
     }
   }
@@ -445,6 +445,8 @@ export async function POST(request: Request) {
     const imageMimeType = typeof body?.imageMimeType === "string" ? body.imageMimeType : "";
     const formatDiagnostika = body?.format === "diagnostika";
 
+    console.log("API called with:", { url: url || "(none)", format: body?.format, hasManualData: !!manualData });
+
     const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
     if (imageBase64) {
       if (!imageMimeType || !allowedImageTypes.includes(imageMimeType)) {
@@ -465,12 +467,19 @@ export async function POST(request: Request) {
       if (!firecrawlKey) return NextResponse.json({ error: "FIRECRAWL_API_KEY není nastaven." }, { status: 500 });
 
       // Scrape (screenshot + homepage) a crawl (celý web) bežia súčasne
-      const [scrapeResult, crawlResult] = await Promise.all([
-        scrapeWithFirecrawl(url, firecrawlKey),
-        crawlWithFirecrawl(url, firecrawlKey),
-      ]);
+      let crawlResult: { markdown: string; images: string[] } = { markdown: "", images: [] };
+      let scrapeResult: Scraped;
+      try {
+        [scrapeResult, crawlResult] = await Promise.all([
+          scrapeWithFirecrawl(url, firecrawlKey),
+          crawlWithFirecrawl(url, firecrawlKey),
+        ]);
+      } catch (crawlErr) {
+        console.error("[analyze] Crawl/scrape failed, retrying scrape only:", crawlErr instanceof Error ? crawlErr.message : crawlErr);
+        scrapeResult = await scrapeWithFirecrawl(url, firecrawlKey);
+      }
 
-      scraped = scrapeResult;
+      scraped = scrapeResult!;
       if (!scraped.markdown && !scraped.screenshot) {
         return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
       }
@@ -540,7 +549,7 @@ export async function POST(request: Request) {
             },
             { role: "user", content: messageContent }
           ],
-          max_tokens: formatDiagnostika ? 4200 : 2000,
+          max_tokens: formatDiagnostika ? 6000 : 2000,
           ...(formatDiagnostika ? { temperature: 0.1, seed: 42 } : {}),
         }),
       },
@@ -673,8 +682,9 @@ Vráť IBA JSON pole, nič iné.`;
             const clean = postsText.replace(/```json|```/g, '').trim();
             generatedPosts = JSON.parse(clean) as unknown[];
           }
-        } catch (e) {
-          console.error('[analyze] Posts generation failed:', e);
+        } catch (e: unknown) {
+          const err = e instanceof Error ? e : new Error(String(e));
+          console.error('[analyze] Posts generation failed:', err.message, err.stack);
           generatedPosts = [];
         }
 
