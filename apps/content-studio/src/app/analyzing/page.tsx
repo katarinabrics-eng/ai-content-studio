@@ -561,184 +561,157 @@ function AnalyzingInner() {
             )}
           </div>
 
-          {/* ZMENA 6 — Brand DNA s reálnymi dátami */}
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 12 }}>
-            Tvá Brand DNA strategie
-          </div>
-          <div style={{ position: "relative", borderRadius: 12, border: "1px solid #e8e4dc", background: "#fff", overflow: "hidden", marginBottom: 24 }}>
-            <div style={{ padding: "20px 20px 0" }}>
+          {/* Brand DNA + piliere + riziká + zámok */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 14 }}>
+              Tvá Brand DNA strategie
+            </div>
+
+            <div style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 16, overflow: "hidden", position: "relative" }}>
+
+              {/* Skóre */}
               {analysisResult?.result?.brandScore?.total && (
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, padding: "12px 16px", background: "#f5f2ec", borderRadius: 10 }}>
-                  <div style={{ fontSize: 36, fontWeight: 700, color: "#111", lineHeight: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, background: "#f5f2ec", padding: "18px 24px", borderBottom: "1px solid #f0ede6" }}>
+                  <div style={{ fontSize: 44, fontWeight: 700, color: "#111", lineHeight: 1 }}>
                     {analysisResult.result.brandScore.total}
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Index značky</div>
-                    <div style={{ fontSize: 12, color: "#777" }}>
-                      {analysisResult.result.brandScore.total >= 70 ? '↑ Nad průměrem oboru' : 'Prostor pro růst'}
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Index značky</div>
+                    <div style={{ fontSize: 12, color: "#5a7a00" }}>
+                      {analysisResult.result.brandScore.total >= 70 ? "↑ Nad průměrem oboru" : "Prostor pro růst"}
                     </div>
                   </div>
                 </div>
               )}
-              {analysisResult?.result?.brandDna?.positioning && (
-                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#111" }}>Pozicionování: </strong>
-                  {analysisResult.result.brandDna.positioning}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.tone && (
-                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#111" }}>Tón komunikace: </strong>
-                  {analysisResult.result.brandDna.tone}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.targetAudience && (
-                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#111" }}>Cílová skupina: </strong>
-                  {analysisResult.result.brandDna.targetAudience}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.prices && (
-                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#111" }}>Ceny: </strong>
-                  {analysisResult.result.brandDna.prices}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.services?.length > 0 && (
-                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#111" }}>Služby: </strong>
-                  {analysisResult.result.brandDna.services.join(" · ")}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.testimonials && (
-                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#111" }}>Reference: </strong>
-                  {analysisResult.result.brandDna.testimonials}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.strengths?.length > 0 && (
-                <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 8 }}>
-                  <strong style={{ color: "#5a7a00" }}>✓ Silné stránky: </strong>
-                  {analysisResult.result.brandDna.strengths.join(" · ")}
-                </div>
-              )}
-              {analysisResult?.result?.brandDna?.weaknesses?.length > 0 && (
-                <div style={{ fontSize: 13, color: "#555", lineHeight: 1.8 }}>
-                  <strong style={{ color: "#e05a5a" }}>✗ Chybí: </strong>
-                  {analysisResult.result.brandDna.weaknesses.join(" · ")}
-                </div>
-              )}
-              {!analysisResult && (
-                <div style={{ fontSize: 13, color: "#aaa", paddingBottom: 16 }}>
-                  {analysisError ? 'Analýza webu sa nezdařila.' : 'Brand DNA sa připravuje…'}
-                </div>
-              )}
-            </div>
-            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 140, background: "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: 20 }}>
-              <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#111", marginBottom: 3, textAlign: "center" }}>Odemkni plnou Brand DNA strategii</div>
-              <div style={{ fontSize: 11, color: "#888", textAlign: "center" }}>Pozicionování · Pilíře · Archetyp · Stratég</div>
-            </div>
-            <div style={{ height: 160 }} />
-          </div>
 
-          {/* Piliere */}
-          {analysisResult?.result?.pillarAnalysis && (
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 16 }}>
-                Pět pilířů značky
-              </div>
-              {Object.entries(analysisResult.result.pillarAnalysis).map(([key, pillar]: [string, any]) => (
-                <div key={key} style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "16px 20px", marginBottom: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: ".06em" }}>
-                      {key === "light" ? "Hodnota" : key === "energy" ? "Energie" : key === "architecture" ? "Architektura" : key === "identity" ? "Identita" : "Důvěra"}
-                    </div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: pillar.score >= 8 ? "#5a7a00" : pillar.score >= 5 ? "#f0a500" : "#e05a5a" }}>
-                      {pillar.score}/10
-                    </div>
+              {/* Brand DNA */}
+              <div style={{ padding: "24px 24px 16px" }}>
+                {analysisResult?.result?.brandDna?.positioning && (
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 10 }}>
+                    <strong style={{ color: "#111" }}>Pozicionování: </strong>
+                    {analysisResult.result.brandDna.positioning}
                   </div>
-                  <div style={{ fontSize: 12, color: "#555", lineHeight: 1.7, marginBottom: 8 }}>{pillar.interpretation}</div>
-                  {pillar.observed?.length > 0 && (
-                    <div style={{ fontSize: 11, color: "#5a7a00", marginBottom: 4 }}>
-                      {pillar.observed.map((o: string, i: number) => <div key={i}>↗ {o}</div>)}
-                    </div>
-                  )}
-                  {pillar.notObserved?.length > 0 && (
-                    <div style={{ fontSize: 11, color: "#aaa" }}>
-                      {pillar.notObserved.map((o: string, i: number) => <div key={i}>→ {o}</div>)}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+                )}
+                {analysisResult?.result?.brandDna?.tone && (
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 10 }}>
+                    <strong style={{ color: "#111" }}>Tón komunikace: </strong>
+                    {analysisResult.result.brandDna.tone}
+                  </div>
+                )}
+                {analysisResult?.result?.brandDna?.targetAudience && (
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 10 }}>
+                    <strong style={{ color: "#111" }}>Cílová skupina: </strong>
+                    {analysisResult.result.brandDna.targetAudience}
+                  </div>
+                )}
+                {analysisResult?.result?.brandDna?.prices && (
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 10 }}>
+                    <strong style={{ color: "#111" }}>Ceny: </strong>
+                    {analysisResult.result.brandDna.prices}
+                  </div>
+                )}
+                {analysisResult?.result?.brandDna?.strengths?.length > 0 && (
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8, marginBottom: 6 }}>
+                    <strong style={{ color: "#111" }}>Silné stránky: </strong>
+                    <span style={{ color: "#5a7a00" }}>✓ </span>
+                    {analysisResult.result.brandDna.strengths.join(" · ")}
+                  </div>
+                )}
+                {analysisResult?.result?.brandDna?.weaknesses?.length > 0 && (
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.8 }}>
+                    <strong style={{ color: "#111" }}>Chybí: </strong>
+                    <span style={{ color: "#e05a5a" }}>✗ </span>
+                    {analysisResult.result.brandDna.weaknesses.join(" · ")}
+                  </div>
+                )}
+                {!analysisResult && (
+                  <div style={{ fontSize: 13, color: "#aaa" }}>
+                    {analysisError ? "Analýza webu sa nezdařila." : "Brand DNA sa připravuje…"}
+                  </div>
+                )}
+              </div>
 
-          {/* Strategický profil */}
-          {(analysisResult?.result?.risks?.length > 0 || analysisResult?.result?.immediateActions?.length > 0) && (
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 16 }}>
-                Strategický profil
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-                <div style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "16px 18px" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#e05a5a", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 10 }}>3 klíčová rizika</div>
-                  {analysisResult.result.risks?.map((r: string, i: number) => (
-                    <div key={i} style={{ fontSize: 12, color: "#555", marginBottom: 6, display: "flex", gap: 8 }}>
-                      <span style={{ color: "#e05a5a", flexShrink: 0 }}>—</span>{r}
-                    </div>
-                  ))}
+              {/* Piliere — graficky */}
+              {analysisResult?.result?.pillarAnalysis && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, padding: "0 24px 20px" }}>
+                  {Object.entries(analysisResult.result.pillarAnalysis).map(([key, pillar]: [string, any]) => {
+                    const names: Record<string, string> = { light: "Hodnota", energy: "Energie", architecture: "Archit.", identity: "Identita", trust: "Důvěra" };
+                    const color = pillar.score >= 8 ? "#b7e94c" : pillar.score >= 5 ? "#f0a500" : "#e05a5a";
+                    return (
+                      <div key={key} style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 9, color: "#aaa", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 5 }}>
+                          {names[key] || key}
+                        </div>
+                        <div style={{ height: 40, borderRadius: 6, background: "#f0ede6", position: "relative", overflow: "hidden" }}>
+                          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, borderRadius: 6, background: color, height: `${pillar.score * 10}%`, transition: "height .6s ease" }} />
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#555", marginTop: 4 }}>{pillar.score}/10</div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "16px 18px" }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#5a7a00", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 10 }}>Okamžité akce</div>
-                  {analysisResult.result.immediateActions?.map((a: string, i: number) => (
-                    <div key={i} style={{ fontSize: 12, color: "#555", marginBottom: 6, display: "flex", gap: 8 }}>
-                      <span style={{ color: "#5a7a00", flexShrink: 0 }}>—</span>{a}
-                    </div>
-                  ))}
+              )}
+
+              {/* Riziká + akcie */}
+              {(analysisResult?.result?.risks?.length > 0 || analysisResult?.result?.immediateActions?.length > 0) && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, padding: "0 24px 20px" }}>
+                  <div style={{ borderRadius: 10, padding: "14px 16px", border: "1px solid #e8e4dc" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#e05a5a", marginBottom: 8 }}>3 klíčová rizika</div>
+                    {analysisResult.result.risks?.map((r: string, i: number) => (
+                      <div key={i} style={{ fontSize: 12, color: "#555", marginBottom: 5, display: "flex", gap: 6, lineHeight: 1.5 }}>
+                        <span style={{ color: "#e05a5a", flexShrink: 0 }}>—</span>{r}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ borderRadius: 10, padding: "14px 16px", border: "1px solid #e8e4dc" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 8 }}>Okamžité akce</div>
+                    {analysisResult.result.immediateActions?.map((a: string, i: number) => (
+                      <div key={i} style={{ fontSize: 12, color: "#555", marginBottom: 5, display: "flex", gap: 6, lineHeight: 1.5 }}>
+                        <span style={{ color: "#5a7a00", flexShrink: 0 }}>—</span>{a}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              {analysisResult.result.summary && (
-                <div style={{ background: "#f5f2ec", borderRadius: 12, padding: "14px 18px", fontSize: 13, color: "#555", lineHeight: 1.7, borderLeft: "3px solid #b7e94c" }}>
+              )}
+
+              {/* Strategický posun */}
+              {analysisResult?.result?.summary && (
+                <div style={{ margin: "0 24px 20px", background: "#f5f2ec", borderRadius: 10, padding: "14px 18px", borderLeft: "3px solid #b7e94c", fontSize: 13, color: "#555", lineHeight: 1.7 }}>
                   <strong style={{ color: "#111", display: "block", marginBottom: 4 }}>Doporučený strategický posun</strong>
                   {analysisResult.result.summary}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Zamknuté príspevky */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 12 }}>
-            {[4, 5, 6].map(i => (
-              <div key={i} style={{ background: "#f7f5f0", border: "1px solid #e8e4dc", borderRadius: 10, padding: "16px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 80, gap: 6 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <div style={{ fontSize: 11, color: "#ccc" }}>Příspěvek {i}</div>
+              {/* Fade — čo je za zámkom */}
+              <div style={{ position: "relative", height: 80, overflow: "hidden", padding: "0 24px" }}>
+                <div style={{ fontSize: 12, color: "#ddd", lineHeight: 1.8 }}>
+                  Archetyp značky · Komunikační styl · Obsahové pilíře · Doporučení stratéga · Plán obsahu na 30 dní · Klíčová slova · Vizuální moodboard · Konkurenční analýza...
+                </div>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))" }} />
               </div>
-            ))}
-          </div>
-          <div style={{ textAlign: "center", fontSize: 12, color: "#aaa", marginBottom: 24 }}>
-            Předplať si a získej obsah každý týden →
-          </div>
 
-          {/* CTA */}
-          <div style={{ background: "#f5f2ec", borderRadius: 12, padding: "20px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#111", marginBottom: 3 }}>Ulož výsledky zdarma</div>
-              <div style={{ fontSize: 12, color: "#777", lineHeight: 1.5 }}>Brand DNA, 3 příspěvky ke stažení a vizuální knihovna.</div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
-              <button style={{ background: "#111", color: "#fff", border: "none", borderRadius: 9, padding: "11px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
-                Vytvořit účet zdarma →
-              </button>
-              <button style={{ background: "none", border: "none", fontSize: 11, color: "#aaa", cursor: "pointer", fontFamily: "inherit" }}>
-                Pokračovat bez účtu
-              </button>
+              {/* Zámok */}
+              <div style={{ padding: "20px 24px 24px", textAlign: "center", borderTop: "1px solid #f0ede6" }}>
+                <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 4 }}>Odemkni plnou Brand DNA strategii</div>
+                <div style={{ fontSize: 11, color: "#888", marginBottom: 14 }}>Zdarma — stačí vytvořit účet</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 16 }}>
+                  {["Archetyp značky", "Obsahové pilíře", "Plán na 30 dní", "Stratég doporučení", "Vizuální moodboard"].map(c => (
+                    <div key={c} style={{ background: "#f5f2ec", borderRadius: 20, padding: "4px 12px", fontSize: 11, color: "#777" }}>{c}</div>
+                  ))}
+                </div>
+                <button style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 8, display: "block" }}>
+                  Vytvořit účet zdarma →
+                </button>
+                <button style={{ fontSize: 11, color: "#aaa", cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}>
+                  Pokračovat bez účtu
+                </button>
+              </div>
+
             </div>
           </div>
 
