@@ -478,6 +478,22 @@ function AnalyzingInner() {
   }
 
   // ── DONE SCREEN ──────────────────────────────────────────────
+  const getPostImage = (post: any): string => {
+    if (post.imageUrl) return post.imageUrl;
+    if (post.imageFolder) {
+      const folderMap: Record<string, string> = {
+        'K01': '/placeholders/stock-vizualni knihovna/K01/k01-006.jpeg',
+        'K02': '/placeholders/stock-vizualni knihovna/K02/k02-006.jpeg',
+        'K03': '/placeholders/stock-vizualni knihovna/K03/k03-006.png',
+        'K04': '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
+        'K05': '/placeholders/stock-vizualni knihovna/K05/k05-006.png',
+        'K07': '/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg',
+      };
+      return folderMap[post.imageFolder] || folderMap['K04'];
+    }
+    return post.img || '/placeholders/stock-vizualni knihovna/K04/k04-006.png';
+  };
+
   if (phase === "done") {
     return (
       <main style={{ minHeight: "100vh", background: "#f5f3ee", fontFamily: "system-ui, sans-serif" }}>
@@ -509,7 +525,7 @@ function AnalyzingInner() {
                 <div key={i} style={{ display: "flex", gap: 0, background: "#fff", border: post.selected ? "1px solid #111" : "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden" }}>
                   <div style={{ flexShrink: 0, width: 220, position: "relative", overflow: "hidden" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    <img src={getPostImage(post)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                     <div style={{ position: "absolute", bottom: 6, left: 6, background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: 9, padding: "2px 7px", borderRadius: 20, backdropFilter: "blur(4px)" }}>
                       ▶ {post.duration}
                     </div>
@@ -531,7 +547,7 @@ function AnalyzingInner() {
                 <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e4", borderRadius: 12, overflow: "hidden" }}>
                   <div style={{ width: "100%", height: 320, overflow: "hidden" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
+                    <img src={getPostImage(post)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
                   </div>
                   <div style={{ padding: 16 }}>
                     <div style={{ display: "inline-flex", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 100, background: "#dcfce7", color: "#15803d", letterSpacing: ".06em", marginBottom: 8 }}>

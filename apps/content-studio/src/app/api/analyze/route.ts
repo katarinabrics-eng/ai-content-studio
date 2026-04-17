@@ -88,11 +88,11 @@ async function scrapeWithFirecrawl(url: string, apiKey: string): Promise<Scraped
 type CrawlPage = {
   url?: string;
   markdown?: string;
-  metadata?: { title?: string };
+  metadata?: { title?: string; ogImage?: string; image?: string };
 };
 
 // /v1/crawl — celý web, max 10 podstránok, polling
-async function crawlWithFirecrawl(url: string, apiKey: string): Promise<string> {
+async function crawlWithFirecrawl(url: string, apiKey: string): Promise<{ markdown: string; images: string[] }> {
   const normalized = url.startsWith("http") ? url : `https://${url}`;
 
   // Spusti crawl
@@ -142,7 +142,20 @@ async function crawlWithFirecrawl(url: string, apiKey: string): Promise<string> 
     }
   }
 
-  if (!crawlResult?.data?.length) return "";
+  if (!crawlResult?.data?.length) return { markdown: "", images: [] };
+
+  // Extrahuj fotky z crawlovaných stránok
+  const scrapedImages: string[] = [];
+  for (const page of crawlResult.data) {
+    const imgRegex = /!\[.*?\]\((https?:\/\/[^)]+\.(jpg|jpeg|png|webp))\)/gi;
+    let match;
+    while ((match = imgRegex.exec(page.markdown || "")) !== null) {
+      if (!scrapedImages.includes(match[1])) scrapedImages.push(match[1]);
+    }
+    if (page.metadata?.ogImage && !scrapedImages.includes(page.metadata.ogImage)) scrapedImages.push(page.metadata.ogImage);
+    if (page.metadata?.image && !scrapedImages.includes(page.metadata.image)) scrapedImages.push(page.metadata.image);
+  }
+  const topImages = scrapedImages.slice(0, 10);
 
   // Prioritné stránky navrchu
   const priorityPages = crawlResult.data.filter(p => {
@@ -160,7 +173,10 @@ async function crawlWithFirecrawl(url: string, apiKey: string): Promise<string> 
     .map(p => `\n\n## ${p.metadata?.title || p.url}\n${p.markdown || ""}`)
     .join("\n");
 
-  return (priorityMarkdown + "\n\n" + allMarkdown).slice(0, 25000);
+  return {
+    markdown: (priorityMarkdown + "\n\n" + allMarkdown).slice(0, 25000),
+    images: topImages,
+  };
 }
 
 function buildAnalyzeInput(scraped: Scraped, contentMarkdown: string): string {
@@ -442,13 +458,14 @@ export async function POST(request: Request) {
 
     let sourceContent = "";
     let scraped: Scraped | null = null;
+    let topImages: string[] = [];
 
     if (url) {
       const firecrawlKey = process.env.FIRECRAWL_API_KEY;
       if (!firecrawlKey) return NextResponse.json({ error: "FIRECRAWL_API_KEY není nastaven." }, { status: 500 });
 
       // Scrape (screenshot + homepage) a crawl (celý web) bežia súčasne
-      const [scrapeResult, crawlMarkdown] = await Promise.all([
+      const [scrapeResult, crawlResult] = await Promise.all([
         scrapeWithFirecrawl(url, firecrawlKey),
         crawlWithFirecrawl(url, firecrawlKey),
       ]);
@@ -457,8 +474,9 @@ export async function POST(request: Request) {
       if (!scraped.markdown && !scraped.screenshot) {
         return NextResponse.json({ error: "Web nevrátil žádný obsah." }, { status: 422 });
       }
+      topImages = crawlResult.images;
       // Crawl markdown má prednosť (viac stránok), fallback na homepage
-      sourceContent = crawlMarkdown || scraped.markdown || "";
+      sourceContent = crawlResult.markdown || scraped.markdown || "";
     }
 
     if (manualData) {
@@ -571,6 +589,14 @@ Cílová skupina: ${String(brandDna?.targetAudience || '')}
 Unikátní hodnota: ${String(brandDna?.uniqueValue || '')}
 Obsahové pilíře: ${Array.isArray(brandDna?.contentPillars) ? (brandDna.contentPillars as string[]).join(', ') : ''}
 
+Dostupné fotky z webu klienta (použi ich URL ak sú relevantné):
+${topImages.length > 0 ? topImages.map((img, i) => `${i + 1}. ${img}`).join('\n') : 'Žiadne fotky nenájdené — použi archív Lucifera'}
+
+Pre každý príspevok urči:
+- imageSource: 'client' ak použiješ fotku z webu (uveď URL v imageUrl)
+- imageSource: 'archive' ak nemáš vhodnú fotku (uveď folder K01-K10 podľa štýlu)
+- imageMood: 'prirodni'|'kremovy'|'dramaticky'|'minimalni'|'zlaty'|'moderni'
+
 Vytvor presne 3 príspevky v JSON formáte:
 [
   {
@@ -581,8 +607,12 @@ Vytvor presne 3 príspevky v JSON formáte:
     "duration": "15s · Reels",
     "style": "krátky popis štýlu",
     "title": "hook v úvodzovkách",
-    "body": "text príspevku 2-4 vety",
-    "tags": "#hashtag1 #hashtag2 #hashtag3"
+    "body": "plný text príspevku 3-5 viet",
+    "tags": "#hashtag1 #hashtag2 #hashtag3",
+    "imageSource": "client|archive",
+    "imageUrl": "https://... ak client, alebo null",
+    "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
+    "imageFolder": "K01|K02|K03|K04|K05|K07 ak archive, inak null"
   },
   {
     "type": "video",
@@ -592,8 +622,12 @@ Vytvor presne 3 príspevky v JSON formáte:
     "duration": "12s · Reels",
     "style": "krátky popis štýlu",
     "title": "iný hook",
-    "body": "iný text 2-4 vety",
-    "tags": "#hashtag1 #hashtag2"
+    "body": "plný text príspevku 3-5 viet",
+    "tags": "#hashtag1 #hashtag2",
+    "imageSource": "client|archive",
+    "imageUrl": null,
+    "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
+    "imageFolder": "K01|K02|K03|K04|K05|K07 ak archive, inak null"
   },
   {
     "type": "grafika",
@@ -603,8 +637,12 @@ Vytvor presne 3 príspevky v JSON formáte:
     "duration": null,
     "style": "vizuálny štýl",
     "title": "headline pre grafiku",
-    "body": "krátky text pod grafiku",
-    "tags": "#hashtag1 #hashtag2"
+    "body": "plný text príspevku 3-5 viet",
+    "tags": "#hashtag1 #hashtag2",
+    "imageSource": "client|archive",
+    "imageUrl": null,
+    "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
+    "imageFolder": "K01|K02|K03|K04|K05|K07 ak archive, inak null"
   }
 ]
 
@@ -645,10 +683,13 @@ Vráť IBA JSON pole, nič iné.`;
             brandScore: result.brandScore,
             brandDna: result.brandDna,
             summary: result.summary,
+            risks: result.risks ?? undefined,
+            immediateActions: result.immediateActions ?? undefined,
             pillarAnalysis: result.pillarAnalysis ?? undefined,
             suggested_strategists: suggested,
           },
           generatedPosts,
+          scrapedImages: topImages,
           scraped: scrapedPayload,
         });
       } catch (err) {
