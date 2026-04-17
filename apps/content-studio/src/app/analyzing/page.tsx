@@ -178,6 +178,7 @@ function AnalyzingInner() {
   const [selectedStrateg, setSelectedStrateg] = useState<Strategist | null>(null);
   // ZMENA 1 — rozšírený phase type
   const [phase, setPhase] = useState<"analyzing" | "formats" | "strategist" | "done">("analyzing");
+  const [previewFormat, setPreviewFormat] = useState('instagram');
   // ZMENA 2 — analysisResult state
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -281,83 +282,190 @@ function AnalyzingInner() {
 
   // ZMENA 5 — formats screen
   if (phase === 'formats') {
-    const selectedFormats = quizAnswers.filter(a => FORMAT_IDS.includes(a));
     return (
-      <div style={{ minHeight: '100vh', background: '#fff', fontFamily: 'system-ui,sans-serif' }}>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid #f0ede6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.1em', color: '#aaa' }}>LUCIFERA</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f5f2ec', borderRadius: 20, padding: '5px 14px' }}>
-            <div style={{ width: 70, height: 4, background: '#e8e4dc', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: '#b7e94c', borderRadius: 4, width: '90%', transition: 'width 1s' }} />
+      <div style={{ minHeight:'100vh', background:'#fff', fontFamily:'system-ui,sans-serif', display:'flex', flexDirection:'column' }}>
+
+        {/* Nav */}
+        <div style={{ padding:'14px 40px', borderBottom:'1px solid #f0ede6', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ fontSize:12, fontWeight:700, letterSpacing:'.1em', color:'#aaa' }}>LUCIFERA</div>
+          <div style={{ display:'flex', alignItems:'center', gap:8, background:'#f5f2ec', borderRadius:20, padding:'5px 14px' }}>
+            <div style={{ width:70, height:4, background:'#e8e4dc', borderRadius:4, overflow:'hidden' }}>
+              <div style={{ height:'100%', background:'#b7e94c', width:'90%' }} />
             </div>
-            <div style={{ fontSize: 11, color: '#5a7a00', fontWeight: 600 }}>Výběr formátů…</div>
+            <div style={{ fontSize:11, color:'#5a7a00', fontWeight:600 }}>Výběr formátů…</div>
           </div>
         </div>
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: '48px 24px' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#5a7a00', marginBottom: 8, textAlign: 'center' }}>
-            Poslední krok
+
+        {/* Badge */}
+        <div style={{ textAlign:'center', padding:'14px 0 0' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#f5f2ec', borderRadius:20, padding:'6px 16px', fontSize:12, color:'#777' }}>
+            <div style={{ width:6, height:6, borderRadius:'50%', background:'#b7e94c', animation:'pulse 1.5s infinite' }} />
+            🌐 {url || name || 'vaše značka'}
+            <span style={{ fontSize:10, color:'#b7e94c', fontWeight:600 }}>· detekováno</span>
           </div>
-          <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 26, fontWeight: 700, color: '#111', marginBottom: 6, textAlign: 'center', lineHeight: 1.3 }}>
-            Co chceš dostávat?
-          </div>
-          <div style={{ fontSize: 14, color: '#aaa', textAlign: 'center', marginBottom: 28 }}>
-            Vyber formáty — AI připraví obsah přesně pro tebe.
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 20 }}>
-            {[
-              { id: 'instagram', e: '📸', name: 'Instagram post', desc: 'Fotka + caption + hashtagy' },
-              { id: 'reels',     e: '🎬', name: 'Reels / Video',  desc: 'Skript + hook + CTA' },
-              { id: 'facebook',  e: '💬', name: 'Facebook post',  desc: 'Delší text, komunita' },
-              { id: 'linkedin',  e: '💼', name: 'LinkedIn',       desc: 'Odborný příspěvek' },
-              { id: 'newsletter',e: '📧', name: 'Newsletter',     desc: 'Email pro odběratele' },
-              { id: 'stories',   e: '✨', name: 'Stories',        desc: 'Krátký obsah, 24h' },
-            ].map(f => {
-              const isSel = quizAnswers.includes(f.id);
-              return (
-                <div
-                  key={f.id}
-                  onClick={() => {
-                    setQuizAnswers(prev =>
-                      prev.includes(f.id)
-                        ? prev.filter(x => x !== f.id)
-                        : [...prev, f.id]
-                    );
-                  }}
-                  style={{
-                    border: `1.5px solid ${isSel ? '#b7e94c' : '#e8e4dc'}`,
-                    borderRadius: 12, padding: '13px 14px',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                    background: isSel ? '#f0fce0' : '#fff',
-                    transition: 'all .15s',
-                  }}
-                >
-                  <div style={{ fontSize: 22, flexShrink: 0 }}>{f.e}</div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>{f.name}</div>
-                    <div style={{ fontSize: 11, color: '#888' }}>{f.desc}</div>
+        </div>
+
+        {/* Hlavný layout */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1.5fr', maxWidth:980, margin:'0 auto', padding:'24px 40px', alignItems:'start', width:'100%' }}>
+
+          {/* ĽAVÝ — výber formátov */}
+          <div style={{ paddingRight:24 }}>
+            <div style={{ fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', color:'#5a7a00', marginBottom:6 }}>Poslední krok</div>
+            <div style={{ fontFamily:"'Playfair Display',serif", fontSize:22, fontWeight:700, color:'#111', marginBottom:4, lineHeight:1.3 }}>Co chceš dostávat?</div>
+            <div style={{ fontSize:13, color:'#aaa', marginBottom:18 }}>Vyber formáty — AI připraví obsah přesně pro tebe.</div>
+
+            <div style={{ display:'flex', flexDirection:'column', gap:6, marginBottom:14 }}>
+              {[
+                { id:'instagram', e:'📸', name:'Instagram post', desc:'Fotka + caption + hashtagy' },
+                { id:'reels',     e:'🎬', name:'Reels / Video',  desc:'Skript + hook + CTA · 9:16' },
+                { id:'facebook',  e:'💬', name:'Facebook post',  desc:'Delší text, komunita' },
+                { id:'linkedin',  e:'💼', name:'LinkedIn',       desc:'Odborný příspěvek' },
+                { id:'newsletter',e:'📧', name:'Newsletter',     desc:'Email pro odběratele' },
+                { id:'stories',   e:'✨', name:'Stories',        desc:'Krátký obsah, 24h · 9:16' },
+              ].map(f => {
+                const isSel = quizAnswers.includes(f.id);
+                return (
+                  <div
+                    key={f.id}
+                    onClick={() => {
+                      setQuizAnswers((prev: string[]) =>
+                        prev.includes(f.id) ? prev.filter((x: string) => x !== f.id) : [...prev, f.id]
+                      );
+                      setPreviewFormat(f.id);
+                    }}
+                    onMouseEnter={() => setPreviewFormat(f.id)}
+                    style={{ border:`1.5px solid ${isSel ? '#b7e94c' : '#e8e4dc'}`, borderRadius:10, padding:'10px 12px', cursor:'pointer', display:'flex', alignItems:'center', gap:10, background: isSel ? '#f0fce0' : '#fff', transition:'all .15s' }}
+                  >
+                    <div style={{ fontSize:18, flexShrink:0 }}>{f.e}</div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:12, fontWeight:600, color:'#111' }}>{f.name}</div>
+                      <div style={{ fontSize:10, color:'#888' }}>{f.desc}</div>
+                    </div>
+                    {isSel && <div style={{ width:17, height:17, borderRadius:'50%', background:'#b7e94c', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:700, color:'#1a2a00', flexShrink:0 }}>✓</div>}
                   </div>
-                  {isSel && <div style={{ marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', background: '#b7e94c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#1a2a00', flexShrink: 0 }}>✓</div>}
+                );
+              })}
+            </div>
+
+            <div style={{ fontSize:11, color:'#bbb', textAlign:'center', marginBottom:10 }}>
+              {quizAnswers.filter((a: string) => ['instagram','reels','facebook','linkedin','newsletter','stories'].includes(a)).length === 0
+                ? 'Vyber aspoň jeden formát'
+                : `${quizAnswers.filter((a: string) => ['instagram','reels','facebook','linkedin','newsletter','stories'].includes(a)).length} formátů vybráno`}
+            </div>
+            <button onClick={() => setPhase('strategist')} style={{ width:'100%', background:'#111', color:'#fff', border:'none', borderRadius:10, padding:12, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+              Zobrazit výsledky →
+            </button>
+          </div>
+
+          {/* PRAVÝ — náhľad */}
+          <div style={{ position:'sticky', top:20 }}>
+
+            {previewFormat === 'instagram' && (
+              <div style={{ width:240, margin:'0 auto', background:'#fff', borderRadius:18, overflow:'hidden', border:'1px solid #e8e4dc', boxShadow:'0 6px 28px rgba(0,0,0,.08)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderBottom:'1px solid #f0ede6' }}>
+                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#f5c5d0,#c4a8d0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:700, color:'#fff' }}>VN</div>
+                  <div style={{ fontSize:11, fontWeight:600, color:'#111' }}>veronika.wellness</div>
+                  <div style={{ marginLeft:'auto', fontSize:14, color:'#aaa' }}>···</div>
                 </div>
-              );
-            })}
+                <div style={{ height:210, background:'linear-gradient(135deg,#f0e8e0,#e8d0c4)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:56 }}>🌸</div>
+                <div style={{ display:'flex', gap:10, padding:'8px 12px 5px', fontSize:16 }}>🤍 💬 ✈️ <span style={{ marginLeft:'auto' }}>🔖</span></div>
+                <div style={{ padding:'3px 12px', fontSize:10, fontWeight:600, color:'#111' }}>234 líbí se</div>
+                <div style={{ padding:'3px 12px 5px', fontSize:10, color:'#333', lineHeight:1.5 }}><strong>veronika.wellness</strong> Každé ráno si říkám — dneska to zvládnu. 🌿</div>
+                <div style={{ padding:'2px 12px 9px', fontSize:10, color:'#3897f0' }}>#osobnirozvoj #mindset</div>
+              </div>
+            )}
+
+            {previewFormat === 'reels' && (
+              <div style={{ display:'flex', gap:16, alignItems:'flex-start', maxWidth:420, margin:'0 auto' }}>
+                <div style={{ width:160, flexShrink:0, background:'#111', borderRadius:16, height:284, display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden', boxShadow:'0 6px 28px rgba(0,0,0,.15)' }}>
+                  <div style={{ fontSize:40, opacity:.2 }}>▶</div>
+                  <div style={{ position:'absolute', top:10, left:8, right:8, height:2, background:'rgba(255,255,255,.3)', borderRadius:2 }}>
+                    <div style={{ height:'100%', width:'30%', background:'#fff', borderRadius:2 }} />
+                  </div>
+                  <div style={{ position:'absolute', top:18, left:8, background:'rgba(0,0,0,.55)', color:'#fff', fontSize:7, padding:'2px 7px', borderRadius:8 }}>▶ 15s · Reels</div>
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'40px 10px 12px', background:'linear-gradient(transparent,rgba(0,0,0,.75))' }}>
+                    <div style={{ fontSize:12, fontWeight:700, color:'#fff', lineHeight:1.4 }}>&quot;Tohle ti nikdo neřekne.&quot;</div>
+                    <div style={{ fontSize:9, color:'rgba(255,255,255,.6)', marginTop:3 }}>veronika.wellness · Sledovat</div>
+                  </div>
+                </div>
+                <div style={{ flex:1, background:'#fff', border:'1px solid #e8e4dc', borderRadius:12, padding:14, boxShadow:'0 6px 28px rgba(0,0,0,.08)' }}>
+                  <div style={{ fontSize:8, fontWeight:700, color:'#b7e94c', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:6 }}>VIDEO · REELS 9:16</div>
+                  <div style={{ fontFamily:"'Playfair Display',serif", fontSize:14, fontWeight:700, color:'#111', marginBottom:8, lineHeight:1.35 }}>&quot;Tohle ti nikdo neřekne.&quot;</div>
+                  <div style={{ fontSize:11, color:'#777', marginBottom:5, fontWeight:600 }}>Hook:</div>
+                  <div style={{ fontSize:11, color:'#555', background:'#f7f5f0', borderRadius:6, padding:8, lineHeight:1.6, marginBottom:8, fontStyle:'italic' }}>&quot;Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala.&quot;</div>
+                  <div style={{ fontSize:11, color:'#777', marginBottom:5, fontWeight:600 }}>CTA:</div>
+                  <div style={{ fontSize:11, color:'#555', background:'#f7f5f0', borderRadius:6, padding:8, lineHeight:1.6, fontStyle:'italic' }}>&quot;Uložíš si to? Celý systém v odkazu v biu.&quot;</div>
+                </div>
+              </div>
+            )}
+
+            {previewFormat === 'facebook' && (
+              <div style={{ maxWidth:300, margin:'0 auto', background:'#fff', borderRadius:12, border:'1px solid #e8e4dc', overflow:'hidden', boxShadow:'0 6px 28px rgba(0,0,0,.08)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:9, padding:'12px 14px' }}>
+                  <div style={{ width:36, height:36, borderRadius:'50%', background:'linear-gradient(135deg,#4a6fa5,#3d5a8a)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'#fff', flexShrink:0 }}>V</div>
+                  <div><div style={{ fontSize:12, fontWeight:600, color:'#111' }}>Veronika Novotná</div><div style={{ fontSize:10, color:'#aaa' }}>🌍 Právě teď</div></div>
+                </div>
+                <div style={{ padding:'0 14px 12px', fontSize:12, color:'#333', lineHeight:1.7 }}>Strávila jsem hodiny přemýšlením co postovat. Pak jsem to vzdala.<br/><br/>A nechala systém pracovat za mě.<br/><br/>3 příspěvky týdně. Hotovo za 5 minut. 👇</div>
+                <div style={{ height:158, background:'linear-gradient(135deg,#d8e4d0,#c8d8bc)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:44 }}>🌿</div>
+                <div style={{ display:'flex', justifyContent:'space-between', padding:'8px 14px', borderTop:'1px solid #f0ede6', fontSize:10, color:'#888' }}>
+                  <span>👍 ❤️ 48</span><span>12 komentářů</span>
+                </div>
+              </div>
+            )}
+
+            {previewFormat === 'linkedin' && (
+              <div style={{ maxWidth:300, margin:'0 auto', background:'#fff', borderRadius:12, border:'1px solid #e8e4dc', overflow:'hidden', boxShadow:'0 6px 28px rgba(0,0,0,.08)' }}>
+                <div style={{ display:'flex', alignItems:'flex-start', gap:9, padding:14 }}>
+                  <div style={{ width:40, height:40, borderRadius:7, background:'linear-gradient(135deg,#3a4d5e,#5a6d7e)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:700, color:'#fff', flexShrink:0 }}>VN</div>
+                  <div><div style={{ fontSize:12, fontWeight:600, color:'#111' }}>Veronika Novotná</div><div style={{ fontSize:10, color:'#888' }}>Wellness koučka · Praha</div><div style={{ fontSize:10, color:'#aaa' }}>1 hodina · 🌍</div></div>
+                </div>
+                <div style={{ padding:'0 14px 12px', fontSize:12, color:'#333', lineHeight:1.8 }}>Za 3 roky práce s klientkami jsem si všimla jednoho vzorce.<br/><br/><strong>Tvoří bez systému.</strong><br/><br/>Řešení není víc času. Je to správný systém.<br/><br/>Jaký systém používáte vy? 👇</div>
+                <div style={{ height:158, background:'linear-gradient(135deg,#e8e4dc,#d8d4cc)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:44 }}>💼</div>
+                <div style={{ display:'flex', gap:14, padding:'9px 14px', borderTop:'1px solid #f0ede6', fontSize:10, color:'#888' }}>
+                  <span>👍 84</span><span>💬 23</span><span>↗ Sdílet</span>
+                </div>
+              </div>
+            )}
+
+            {previewFormat === 'newsletter' && (
+              <div style={{ maxWidth:300, margin:'0 auto', background:'#fff', borderRadius:12, border:'1px solid #e8e4dc', overflow:'hidden', boxShadow:'0 6px 28px rgba(0,0,0,.08)' }}>
+                <div style={{ background:'#f5f2ec', padding:'10px 14px', borderBottom:'1px solid #e8e4dc' }}>
+                  <div style={{ fontSize:9, color:'#aaa', marginBottom:2 }}>INBOX</div>
+                  <div style={{ fontSize:11, fontWeight:600, color:'#111', marginBottom:1 }}>Jedna věc která mi pomohla 🌿</div>
+                  <div style={{ fontSize:10, color:'#888' }}>Veronika &lt;veronika@wellness.cz&gt;</div>
+                </div>
+                <div style={{ padding:'20px 18px' }}>
+                  <div style={{ fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'#b7e94c', marginBottom:10 }}>Týdenní dávka</div>
+                  <div style={{ fontFamily:"'Playfair Display',serif", fontSize:17, fontWeight:700, color:'#111', marginBottom:10, lineHeight:1.35 }}>Ahoj,<br/>připravila jsem pro tebe jednu věc.</div>
+                  <div style={{ width:40, height:2, background:'#b7e94c', marginBottom:12, borderRadius:2 }} />
+                  <div style={{ fontSize:11, color:'#555', lineHeight:1.8, marginBottom:14 }}>Před rokem jsem strávila hodiny přemýšlením nad každým příspěvkem.<br/><br/>Dnes to dělám jinak.</div>
+                  <div style={{ background:'#111', color:'#fff', padding:'10px 18px', borderRadius:8, fontSize:11, fontWeight:600, display:'inline-block' }}>Číst celý příběh →</div>
+                </div>
+                <div style={{ padding:'10px 18px', borderTop:'1px solid #f0ede6', fontSize:9, color:'#ccc' }}>Odhlásit se · Správa preferencí</div>
+              </div>
+            )}
+
+            {previewFormat === 'stories' && (
+              <div style={{ width:160, margin:'0 auto', background:'#111', borderRadius:20, height:284, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden', boxShadow:'0 6px 28px rgba(0,0,0,.2)' }}>
+                <div style={{ position:'absolute', top:10, left:0, right:0, display:'flex', gap:3, padding:'0 10px' }}>
+                  <div style={{ height:2, flex:1, background:'rgba(255,255,255,.8)', borderRadius:2 }} />
+                  <div style={{ height:2, flex:1, background:'rgba(255,255,255,.3)', borderRadius:2 }} />
+                  <div style={{ height:2, flex:1, background:'rgba(255,255,255,.3)', borderRadius:2 }} />
+                </div>
+                <div style={{ fontSize:44, opacity:.2 }}>✨</div>
+                <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'40px 12px 16px', background:'linear-gradient(transparent,rgba(0,0,0,.75))', textAlign:'center' }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'#fff', lineHeight:1.4 }}>&quot;Jeden moment.<br/>Celý den.&quot;</div>
+                  <div style={{ fontSize:9, color:'rgba(255,255,255,.5)', marginTop:4 }}>Stories · 24h · 9:16</div>
+                </div>
+              </div>
+            )}
+
           </div>
-          <div style={{ fontSize: 12, color: '#bbb', textAlign: 'center', marginBottom: 16 }}>
-            {selectedFormats.length === 0
-              ? 'Vyber aspoň jeden formát'
-              : `${selectedFormats.length} formátů vybráno`}
-          </div>
-          <button
-            onClick={() => setPhase('strategist')}
-            style={{
-              width: '100%', background: '#111', color: '#fff',
-              border: 'none', borderRadius: 12, padding: 14,
-              fontSize: 14, fontWeight: 600, cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            Zobrazit výsledky →
-          </button>
         </div>
+
+        <style>{`
+          @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        `}</style>
       </div>
     );
   }
@@ -367,7 +475,7 @@ function AnalyzingInner() {
     return (
       <main style={{ minHeight: "100vh", background: "#f5f3ee", fontFamily: "system-ui, sans-serif" }}>
         <Logo />
-        <div style={{ width: "100%", maxWidth: "none", padding: "80px 48px 48px", animation: "fadeUp .4s ease" }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 48px 48px', width: '100%', animation: "fadeUp .4s ease" }}>
 
           {/* Stratég badge */}
           {selectedStrateg && (
