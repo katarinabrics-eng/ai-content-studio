@@ -183,6 +183,7 @@ function AnalyzingInner() {
   const [selectedStrateg, setSelectedStrateg] = useState<Strategist | null>(null);
   // ZMENA 1 — rozšírený phase type
   const [phase, setPhase] = useState<"analyzing" | "formats" | "strategist" | "done">("analyzing");
+  const [modalPost, setModalPost] = useState<any>(null);
   const [previewFormat, setPreviewFormat] = useState('instagram');
   // ZMENA 2 — analysisResult state
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -530,7 +531,7 @@ function AnalyzingInner() {
           <div className="results-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24 }}>
             {(analysisResult?.generatedPosts?.length > 0 ? analysisResult.generatedPosts : SAMPLE_POSTS).map((post: any, i: number) =>
               post.type === "video" ? (
-                <div key={i} style={{ display: "flex", gap: 0, background: "#fff", border: post.selected ? "1px solid #111" : "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden" }}>
+                <div key={i} onClick={() => setModalPost(post)} style={{ display: "flex", gap: 0, background: "#fff", border: post.selected ? "1px solid #111" : "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden", cursor: "pointer" }}>
                   <div style={{ flexShrink: 0, width: 220, position: "relative", overflow: "hidden" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getPostImage(post)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
@@ -552,7 +553,7 @@ function AnalyzingInner() {
                   </div>
                 </div>
               ) : (
-                <div key={i} style={{ background: "#fff", border: "1px solid #e8e8e4", borderRadius: 12, overflow: "hidden" }}>
+                <div key={i} onClick={() => setModalPost(post)} style={{ background: "#fff", border: "1px solid #e8e8e4", borderRadius: 12, overflow: "hidden", cursor: "pointer" }}>
                   <div style={{ width: "100%", height: 320, overflow: "hidden" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getPostImage(post)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
@@ -724,6 +725,85 @@ function AnalyzingInner() {
           </div>
 
         </div>
+
+        {/* Modal */}
+        {modalPost && (
+          <div
+            onClick={() => setModalPost(null)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', maxWidth: 380, width: '100%', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}
+            >
+              <button
+                onClick={() => setModalPost(null)}
+                style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,.5)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, zIndex: 10, fontFamily: 'inherit' }}
+              >✕</button>
+
+              {modalPost.type === 'video' && (
+                <div style={{ width: '100%', aspectRatio: '9/16', background: '#111', position: 'relative', overflow: 'hidden' }}>
+                  {getPostImage(modalPost) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={getPostImage(modalPost)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: .7 }} />
+                  )}
+                  <div style={{ position: 'absolute', top: 14, left: 12, right: 12 }}>
+                    <div style={{ display: 'flex', gap: 3, marginBottom: 8 }}>
+                      {[0, 1, 2].map(i => <div key={i} style={{ height: 2, flex: 1, borderRadius: 2, background: i === 0 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.3)' }} />)}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#b7e94c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#1a2a00', border: '2px solid rgba(255,255,255,.5)' }}>SL</div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>studiolucifera</div>
+                    </div>
+                  </div>
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', background: 'linear-gradient(transparent,rgba(0,0,0,.9))' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20 }}>
+                    <div style={{ display: 'inline-block', background: 'rgba(255,255,255,.15)', border: '1px solid rgba(255,255,255,.25)', color: '#fff', fontSize: 9, fontWeight: 700, padding: '3px 10px', borderRadius: 20, marginBottom: 9 }}>
+                      {modalPost.label}{modalPost.duration ? ' · ' + modalPost.duration : ''}
+                    </div>
+                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 700, color: '#fff', lineHeight: 1.3, marginBottom: 8 }}>{modalPost.title}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,.85)', lineHeight: 1.6, marginBottom: 8, whiteSpace: 'pre-line' }}>{modalPost.body}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,.6)' }}>{modalPost.tags}</div>
+                  </div>
+                </div>
+              )}
+
+              {modalPost.type === 'grafika' && getPostImage(modalPost) && !modalPost.imageFolder?.includes('K04') && (
+                <div style={{ width: '100%', aspectRatio: '1/1', background: '#111', position: 'relative', overflow: 'hidden' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={getPostImage(modalPost)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: .7 }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(transparent 40%, rgba(0,0,0,.85))' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20 }}>
+                    <div style={{ display: 'inline-block', background: '#b7e94c', color: '#1a2a00', fontSize: 9, fontWeight: 700, padding: '3px 10px', borderRadius: 20, marginBottom: 8 }}>{modalPost.label}</div>
+                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 700, color: '#fff', lineHeight: 1.3, marginBottom: 6 }}>{modalPost.title}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,.8)', lineHeight: 1.6 }}>{modalPost.body}</div>
+                  </div>
+                </div>
+              )}
+
+              {modalPost.type === 'grafika' && (modalPost.imageFolder?.includes('K04') || !getPostImage(modalPost)) && (
+                <div>
+                  <div style={{ height: 180, background: 'linear-gradient(135deg,#f0e8e0,#e8d4c8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64, opacity: .3 }}>✨</div>
+                  <div style={{ padding: '20px 22px 24px' }}>
+                    <div style={{ width: 28, height: 3, background: '#b7e94c', borderRadius: 2, marginBottom: 12 }} />
+                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 20, fontWeight: 700, color: '#111', lineHeight: 1.3, marginBottom: 10 }}>{modalPost.title}</div>
+                    <div style={{ fontSize: 13, color: '#555', lineHeight: 1.8, marginBottom: 10, whiteSpace: 'pre-line' }}>{modalPost.body}</div>
+                    <div style={{ fontSize: 11, color: '#aaa' }}>{modalPost.tags}</div>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ padding: '12px 16px', borderTop: '1px solid #f0ede6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 10, color: '#aaa', display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: modalPost.imageSource === 'client' ? '#b7e94c' : '#5a7a00' }} />
+                  {modalPost.imageSource === 'client' ? 'Fotka z webu klienta' : 'Archív Lucifera'}
+                </div>
+                <div style={{ fontSize: 10, color: '#b7e94c', fontWeight: 600 }}>Dostupné po přihlášení</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <style>{`
           @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
           @media (max-width: 768px) {
