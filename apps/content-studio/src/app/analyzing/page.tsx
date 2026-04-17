@@ -532,9 +532,9 @@ function AnalyzingInner() {
             {(analysisResult?.generatedPosts?.length > 0 ? analysisResult.generatedPosts : SAMPLE_POSTS).map((post: any, i: number) =>
               post.type === "video" ? (
                 <div key={i} onClick={() => setModalPost(post)} style={{ display: "flex", gap: 0, background: "#fff", border: post.selected ? "1px solid #111" : "1px solid #e8e4dc", borderRadius: 12, overflow: "hidden", cursor: "pointer" }}>
-                  <div style={{ flexShrink: 0, width: 220, position: "relative", overflow: "hidden" }}>
+                  <div style={{ flexShrink: 0, width: 180, position: "relative", overflow: "hidden" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={getPostImage(post)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    <img src={getPostImage(post)} alt="" style={{ width: "100%", height: 320, objectFit: "cover", objectPosition: "center top", display: "block" }} />
                     <div style={{ position: "absolute", bottom: 6, left: 6, background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: 9, padding: "2px 7px", borderRadius: 20, backdropFilter: "blur(4px)" }}>
                       ▶ {post.duration}
                     </div>
@@ -553,12 +553,12 @@ function AnalyzingInner() {
                   </div>
                 </div>
               ) : (
-                <div key={i} onClick={() => setModalPost(post)} style={{ background: "#fff", border: "1px solid #e8e8e4", borderRadius: 12, overflow: "hidden", cursor: "pointer" }}>
-                  <div style={{ width: "100%", height: 320, overflow: "hidden" }}>
+                <div key={i} onClick={() => setModalPost(post)} style={{ display: "flex", flexDirection: "column", background: "#fff", border: "1px solid #e8e8e4", borderRadius: 12, overflow: "hidden", cursor: "pointer" }}>
+                  <div style={{ width: "100%", aspectRatio: "1/1", overflow: "hidden" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={getPostImage(post)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
                   </div>
-                  <div style={{ padding: 16 }}>
+                  <div style={{ padding: 14 }}>
                     <div style={{ display: "inline-flex", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 100, background: "#dcfce7", color: "#15803d", letterSpacing: ".06em", marginBottom: 8 }}>
                       □ {post.label}
                     </div>
