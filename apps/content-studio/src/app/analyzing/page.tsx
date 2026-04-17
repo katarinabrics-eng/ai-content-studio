@@ -630,6 +630,71 @@ function AnalyzingInner() {
             <div style={{ height: 160 }} />
           </div>
 
+          {/* Piliere */}
+          {analysisResult?.result?.pillarAnalysis && (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 16 }}>
+                Pět pilířů značky
+              </div>
+              {Object.entries(analysisResult.result.pillarAnalysis).map(([key, pillar]: [string, any]) => (
+                <div key={key} style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "16px 20px", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#555", textTransform: "uppercase", letterSpacing: ".06em" }}>
+                      {key === "light" ? "Hodnota" : key === "energy" ? "Energie" : key === "architecture" ? "Architektura" : key === "identity" ? "Identita" : "Důvěra"}
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: pillar.score >= 8 ? "#5a7a00" : pillar.score >= 5 ? "#f0a500" : "#e05a5a" }}>
+                      {pillar.score}/10
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, color: "#555", lineHeight: 1.7, marginBottom: 8 }}>{pillar.interpretation}</div>
+                  {pillar.observed?.length > 0 && (
+                    <div style={{ fontSize: 11, color: "#5a7a00", marginBottom: 4 }}>
+                      {pillar.observed.map((o: string, i: number) => <div key={i}>↗ {o}</div>)}
+                    </div>
+                  )}
+                  {pillar.notObserved?.length > 0 && (
+                    <div style={{ fontSize: 11, color: "#aaa" }}>
+                      {pillar.notObserved.map((o: string, i: number) => <div key={i}>→ {o}</div>)}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Strategický profil */}
+          {(analysisResult?.result?.risks?.length > 0 || analysisResult?.result?.immediateActions?.length > 0) && (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 16 }}>
+                Strategický profil
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "16px 18px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#e05a5a", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 10 }}>3 klíčová rizika</div>
+                  {analysisResult.result.risks?.map((r: string, i: number) => (
+                    <div key={i} style={{ fontSize: 12, color: "#555", marginBottom: 6, display: "flex", gap: 8 }}>
+                      <span style={{ color: "#e05a5a", flexShrink: 0 }}>—</span>{r}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ background: "#fff", border: "1px solid #e8e4dc", borderRadius: 12, padding: "16px 18px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#5a7a00", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 10 }}>Okamžité akce</div>
+                  {analysisResult.result.immediateActions?.map((a: string, i: number) => (
+                    <div key={i} style={{ fontSize: 12, color: "#555", marginBottom: 6, display: "flex", gap: 8 }}>
+                      <span style={{ color: "#5a7a00", flexShrink: 0 }}>—</span>{a}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {analysisResult.result.summary && (
+                <div style={{ background: "#f5f2ec", borderRadius: 12, padding: "14px 18px", fontSize: 13, color: "#555", lineHeight: 1.7, borderLeft: "3px solid #b7e94c" }}>
+                  <strong style={{ color: "#111", display: "block", marginBottom: 4 }}>Doporučený strategický posun</strong>
+                  {analysisResult.result.summary}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Zamknuté príspevky */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 12 }}>
             {[4, 5, 6].map(i => (

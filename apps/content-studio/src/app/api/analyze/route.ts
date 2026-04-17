@@ -323,20 +323,55 @@ Vrať JSON s touto PŘESNOU strukturou:
     }
   },
   "summary": "Strategický souhrn 3-4 věty s konkrétními doporučeními",
+  "risks": ["konkrétní riziko 1 pro tento web", "konkrétní riziko 2", "konkrétní riziko 3"],
+  "immediateActions": ["konkrétní akce 1 pro tento web", "konkrétní akce 2", "konkrétní akce 3"],
   "pillarAnalysis": {
-    "light": { "score": 1-10, "interpretation": "co jsme zjistili" },
-    "energy": { "score": 1-10, "interpretation": "co jsme zjistili" },
-    "architecture": { "score": 1-10, "interpretation": "co jsme zjistili" },
-    "identity": { "score": 1-10, "interpretation": "co jsme zjistili" },
-    "trust": { "score": 1-10, "interpretation": "co jsme zjistili - reference, ceny, garance" }
+    "light": {
+      "score": 1-10,
+      "interpretation": "2-3 věty co jsme zjistili",
+      "observed": ["co jsme na webu našli 1", "co jsme na webu našli 2"],
+      "notObserved": ["co chybí 1", "co chybí 2"],
+      "strategicOpportunity": "konkrétní příležitost pro tento pilíř"
+    },
+    "energy": {
+      "score": 1-10,
+      "interpretation": "2-3 věty co jsme zjistili",
+      "observed": ["..."],
+      "notObserved": ["..."],
+      "strategicOpportunity": "..."
+    },
+    "architecture": {
+      "score": 1-10,
+      "interpretation": "2-3 věty co jsme zjistili",
+      "observed": ["..."],
+      "notObserved": ["..."],
+      "strategicOpportunity": "..."
+    },
+    "identity": {
+      "score": 1-10,
+      "interpretation": "2-3 věty co jsme zjistili",
+      "observed": ["..."],
+      "notObserved": ["..."],
+      "strategicOpportunity": "..."
+    },
+    "trust": {
+      "score": 1-10,
+      "interpretation": "2-3 věty co jsme zjistili - reference, ceny, garance",
+      "observed": ["..."],
+      "notObserved": ["..."],
+      "strategicOpportunity": "..."
+    }
   },
   "suggested_strategists": ["id1", "id2"]
 }
 
 DŮLEŽITÉ:
+- risks a immediateActions musí být KONKRÉTNÍ pro tento web — ne generické rady
+  Příklady: "Chybí ceník na webu", "Žádné reference klientů", "CTA tlačítko není viditelné"
 - Pokud web obsahuje ceny, uveď je PŘESNĚ
 - Pokud web obsahuje reference, popiš je konkrétně
 - Pokud web neobsahuje něco důležitého, uveď to jako slabinu
+- observed a notObserved v pillarAnalysis musí vycházet z reálného obsahu
 - Vše musí vycházet z REÁLNÉHO obsahu webu, ne z domněnek
 - Vrať POUZE JSON, nic jiného`;
 }
