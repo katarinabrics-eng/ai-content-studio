@@ -485,19 +485,21 @@ function AnalyzingInner() {
 
   // ── DONE SCREEN ──────────────────────────────────────────────
   const getPostImage = (post: any): string => {
-    if (post.imageUrl) return post.imageUrl;
+    if (post.imageUrl && !post.imageUrl.includes('logo') && !post.imageUrl.includes('icon')) {
+      return post.imageUrl;
+    }
     if (post.imageFolder) {
       const folderMap: Record<string, string> = {
-        'K01': '/placeholders/stock-vizualni knihovna/K01/k01-006.jpeg',
-        'K02': '/placeholders/stock-vizualni knihovna/K02/k02-006.jpeg',
-        'K03': '/placeholders/stock-vizualni knihovna/K03/k03-006.png',
-        'K04': '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
-        'K05': '/placeholders/stock-vizualni knihovna/K05/k05-006.png',
+        'K01': '/placeholders/stock-vizualni knihovna/K01/k01-001.jpeg',
+        'K02': '/placeholders/stock-vizualni knihovna/K02/k02-001.jpeg',
+        'K03': '/placeholders/stock-vizualni knihovna/K03/k03-001.jpeg',
+        'K04': '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg',
+        'K05': '/placeholders/stock-vizualni knihovna/K05/k05-001.png',
         'K07': '/placeholders/stock-vizualni knihovna/K07/k07-083.jpeg',
       };
       return folderMap[post.imageFolder] || folderMap['K04'];
     }
-    return post.img || '/placeholders/stock-vizualni knihovna/K04/k04-006.png';
+    return post.img || '/placeholders/stock-vizualni knihovna/K04/k04-001.jpeg';
   };
 
   if (phase === "done") {

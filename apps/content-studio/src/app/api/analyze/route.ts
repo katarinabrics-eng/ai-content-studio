@@ -155,7 +155,14 @@ async function crawlWithFirecrawl(url: string, apiKey: string): Promise<{ markdo
     if (page.metadata?.ogImage && !scrapedImages.includes(page.metadata.ogImage)) scrapedImages.push(page.metadata.ogImage);
     if (page.metadata?.image && !scrapedImages.includes(page.metadata.image)) scrapedImages.push(page.metadata.image);
   }
-  const topImages = scrapedImages.slice(0, 10);
+  const filteredImages = scrapedImages.filter(u => {
+    const l = u.toLowerCase();
+    return !l.includes('logo') && !l.includes('icon') && !l.includes('favicon') &&
+           !l.includes('sprite') && !l.includes('placeholder') &&
+           (l.includes('.jpg') || l.includes('.jpeg') || l.includes('.png') || l.includes('.webp')) &&
+           (l.includes('media') || l.includes('photo') || l.includes('image') || l.includes('assets'));
+  });
+  const topImages = (filteredImages.length > 0 ? filteredImages : scrapedImages).slice(0, 10);
 
   // Prioritné stránky navrchu
   const priorityPages = crawlResult.data.filter(p => {
@@ -586,10 +593,10 @@ export async function POST(request: Request) {
         });
         const suggested = selectStrategists(result);
 
-        // Generuj 3 príspevky z Brand DNA
+        // Generuj 4 príspevky z Brand DNA
         const brandDna = result.brandDna as Record<string, unknown> | undefined;
         const postsPrompt = `Si expert na social media obsah.
-Na základe tejto Brand DNA analýzy vytvor 3 príspevky.
+Na základe tejto Brand DNA analýzy vytvor 4 príspevky.
 
 Značka: ${String(brandDna?.name || url)}
 Pozicionování: ${String(brandDna?.positioning || '')}
@@ -603,61 +610,79 @@ ${topImages.length > 0 ? topImages.map((img, i) => `${i + 1}. ${img}`).join('\n'
 
 Pre každý príspevok urči:
 - imageSource: 'client' ak použiješ fotku z webu (uveď URL v imageUrl)
-- imageSource: 'archive' ak nemáš vhodnú fotku (uveď folder K01-K10 podľa štýlu)
+- imageSource: 'archive' ak nemáš vhodnú fotku (uveď folder K01-K07 podľa štýlu)
 - imageMood: 'prirodni'|'kremovy'|'dramaticky'|'minimalni'|'zlaty'|'moderni'
 
-Vytvor presne 3 príspevky v JSON formáte:
-[
-  {
-    "type": "video",
-    "label": "VIDEO · REELS",
-    "variant": "Varianta A",
-    "platform": "Instagram",
-    "duration": "15s · Reels",
-    "style": "krátky popis štýlu",
-    "title": "hook v úvodzovkách",
-    "body": "plný text príspevku 3-5 viet",
-    "tags": "#hashtag1 #hashtag2 #hashtag3",
-    "imageSource": "client|archive",
-    "imageUrl": "https://... ak client, alebo null",
-    "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
-    "imageFolder": "K01|K02|K03|K04|K05|K07 ak archive, inak null"
-  },
-  {
-    "type": "video",
-    "label": "VIDEO · REELS",
-    "variant": "Varianta B",
-    "platform": "Instagram",
-    "duration": "12s · Reels",
-    "style": "krátky popis štýlu",
-    "title": "iný hook",
-    "body": "plný text príspevku 3-5 viet",
-    "tags": "#hashtag1 #hashtag2",
-    "imageSource": "client|archive",
-    "imageUrl": null,
-    "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
-    "imageFolder": "K01|K02|K03|K04|K05|K07 ak archive, inak null"
-  },
-  {
-    "type": "grafika",
-    "label": "GRAFIKA",
-    "variant": null,
-    "platform": "Instagram",
-    "duration": null,
-    "style": "vizuálny štýl",
-    "title": "headline pre grafiku",
-    "body": "plný text príspevku 3-5 viet",
-    "tags": "#hashtag1 #hashtag2",
-    "imageSource": "client|archive",
-    "imageUrl": null,
-    "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
-    "imageFolder": "K01|K02|K03|K04|K05|K07 ak archive, inak null"
-  }
-]
+Vytvor presne 4 príspevky v JSON formáte:
+{
+  "posts": [
+    {
+      "type": "video",
+      "label": "VIDEO · REELS",
+      "variant": "Varianta A",
+      "platform": "Instagram",
+      "duration": "15s · Reels",
+      "style": "krátky popis štýlu",
+      "title": "hook v úvodzovkách",
+      "body": "plný text príspevku minimálne 4-5 viet — rozvinutý storytelling o značke",
+      "tags": "#hashtag1 #hashtag2 #hashtag3",
+      "imageSource": "client ak máš URL, inak archive",
+      "imageUrl": "https://... ak client, alebo null",
+      "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
+      "imageFolder": "K03 ak archive"
+    },
+    {
+      "type": "video",
+      "label": "VIDEO · REELS",
+      "variant": "Varianta B",
+      "platform": "Instagram",
+      "duration": "12s · Reels",
+      "style": "krátky popis štýlu",
+      "title": "iný hook",
+      "body": "plný text príspevku minimálne 4-5 viet — rozvinutý storytelling",
+      "tags": "#hashtag1 #hashtag2",
+      "imageSource": "archive",
+      "imageUrl": null,
+      "imageMood": "prirodni|kremovy|dramaticky|minimalni|zlaty|moderni",
+      "imageFolder": "K03"
+    },
+    {
+      "type": "grafika",
+      "label": "GRAFIKA",
+      "variant": null,
+      "platform": "Instagram",
+      "duration": null,
+      "style": "vizuálny štýl",
+      "title": "headline pre grafiku",
+      "body": "rozvinutý storytelling text minimálne 4-5 viet — nie len 1 veta, ale celý príbeh značky",
+      "tags": "#hashtag1 #hashtag2",
+      "imageSource": "client ak máš URL, inak archive",
+      "imageUrl": null,
+      "imageMood": "kremovy|zlatý|minimalni",
+      "imageFolder": "K04 ak archive"
+    },
+    {
+      "type": "grafika",
+      "label": "GRAFIKA",
+      "variant": null,
+      "platform": "Instagram",
+      "duration": null,
+      "style": "vizuálny štýl",
+      "title": "headline pre druhú grafiku",
+      "body": "rozvinutý storytelling text minimálne 4-5 viet — emotívny príbeh alebo konkrétny benefit",
+      "tags": "#hashtag1 #hashtag2",
+      "imageSource": "archive",
+      "imageUrl": null,
+      "imageMood": "dramaticky|moderni|zlaty",
+      "imageFolder": "K07"
+    }
+  ]
+}
 
 Obsah musí byť relevantný pre túto konkrétnu značku.
 Použi reálne informácie z analýzy — ceny ak sú dostupné,
 konkrétne služby, referencie ak existujú.
+DÔLEŽITÉ: body každého príspevku musí mať minimálne 4-5 viet rozvinutého textu.
 Vráť JSON objekt s kľúčom posts: { "posts": [ ... ] }`;
 
         let generatedPosts: unknown[] = [];
