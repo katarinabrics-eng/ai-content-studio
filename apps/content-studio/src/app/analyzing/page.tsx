@@ -43,11 +43,16 @@ const QUIZ_STEPS: { q: string; opts: QuizOpt[] }[] = [
 
 const MESSAGES = [
   "Načítám tvůj web…",
-  "Analyzuji vizuální identitu…",
-  "Čtu Brand DNA…",
-  "Vyhodnocuji 5 pilířů značky…",
-  "Připravuji doporučení stratéga…",
-  "Dokončuji analýzu…",
+  "Čteme obsah stránek…",
+  "Hledáme ceny a služby…",
+  "Analyzujeme reference klientů…",
+  "Mapujeme vizuální identitu…",
+  "Hodnotíme strukturu webu…",
+  "Analyzujeme cílovou skupinu…",
+  "Sestavujeme Brand DNA…",
+  "Vybíráme stratéga…",
+  "Připravujeme obsah…",
+  "Finalizujeme výsledky…",
 ];
 
 type Strategist = {
@@ -187,8 +192,10 @@ function AnalyzingInner() {
   const strategistShownRef  = useRef(false);
 
   useEffect(() => {
-    const totalMs  = quizDone ? 3000 : 90000;
-    const targetPct = quizDone ? 100 : 85;
+    const totalMs  = quizDone ? 3000 : 120000;
+    const targetPct = quizDone
+      ? (analysisResult || analysisError ? 100 : 99)
+      : 85;
     const startPct  = progress;
     const startTime = performance.now();
 
@@ -204,23 +211,23 @@ function AnalyzingInner() {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quizDone]);
+  }, [quizDone, analysisResult, analysisError]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setMsgIndex(i => Math.min(i + 1, MESSAGES.length - 1));
-    }, 12000);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (progress >= 100 && quizDone && !strategistShownRef.current) {
+    if (progress >= 100 && quizDone && (analysisResult || analysisError) && !strategistShownRef.current) {
       strategistShownRef.current = true;
       const ids = getRecommendedIds(quizAnswers);
       setRecommendedIds(ids);
       setTimeout(() => setShowStrategist(true), 400);
     }
-  }, [progress, quizDone, quizAnswers]);
+  }, [progress, quizDone, quizAnswers, analysisResult, analysisError]);
 
   // ZMENA 3 — API useEffect
   useEffect(() => {
@@ -776,7 +783,12 @@ function AnalyzingInner() {
                 ))}
               </div>
 
-              {progress >= 100 && (
+              {progress >= 99 && quizDone && !analysisResult && !analysisError && (
+                <div style={{ marginTop: 14, textAlign: "center", fontSize: 12, color: "#777", fontWeight: 500, background: "#f5f2ec", borderRadius: 8, padding: "8px 12px" }}>
+                  Dokončujeme analýzu… ještě chvíli
+                </div>
+              )}
+              {progress >= 100 && (analysisResult || analysisError) && (
                 <div style={{ marginTop: 14, textAlign: "center", fontSize: 12, color: "#5a7a00", fontWeight: 600, background: "#f0fce0", borderRadius: 8, padding: "8px 12px" }}>
                   ✓ Dokončeno — připravuji doporučení…
                 </div>
