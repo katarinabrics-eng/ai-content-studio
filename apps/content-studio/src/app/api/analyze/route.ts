@@ -663,6 +663,7 @@ Vráť IBA JSON pole, nič iné.`;
         let generatedPosts: unknown[] = [];
         try {
           const anthropicKey = process.env.ANTHROPIC_API_KEY;
+          console.log('Generating posts for:', url, 'brandDna:', !!result.brandDna, 'hasAnthropicKey:', !!anthropicKey);
           if (anthropicKey) {
             const postsRes = await fetch('https://api.anthropic.com/v1/messages', {
               method: 'POST',
@@ -678,7 +679,9 @@ Vráť IBA JSON pole, nič iné.`;
               }),
             });
             const postsData = await postsRes.json() as { content?: Array<{ text?: string }> };
+            console.log('Posts API response:', JSON.stringify(postsData).slice(0, 500));
             const postsText = postsData.content?.[0]?.text || '[]';
+            console.log('Posts text:', postsText?.slice(0, 300));
             const clean = postsText.replace(/```json|```/g, '').trim();
             generatedPosts = JSON.parse(clean) as unknown[];
           }
