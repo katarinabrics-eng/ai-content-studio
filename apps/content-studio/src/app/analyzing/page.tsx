@@ -262,6 +262,22 @@ function AnalyzingInner() {
     }
   }, [analysisResult]);
 
+  useEffect(() => {
+    if (phase === 'done' && analysisResult) {
+      try {
+        localStorage.setItem('analyzing_result', JSON.stringify({
+          analysisResult,
+          generatedPosts: analysisResult?.generatedPosts || [],
+          url,
+          name,
+          timestamp: Date.now(),
+        }));
+      } catch(e) {
+        console.error('localStorage save failed:', e);
+      }
+    }
+  }, [phase, analysisResult, url, name]);
+
   function handleChooseStrateg(s: Strategist) {
     if (doneRef.current) return;
     doneRef.current = true;
@@ -713,10 +729,27 @@ function AnalyzingInner() {
                     <div key={c} style={{ background: "#f5f2ec", borderRadius: 20, padding: "4px 12px", fontSize: 11, color: "#777" }}>{c}</div>
                   ))}
                 </div>
-                <button style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 8, display: "block" }}>
+                <button
+                  onClick={() => { window.location.href = '/start/success'; }}
+                  style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 8, display: "block" }}
+                >
                   Vytvořit účet zdarma →
                 </button>
-                <button style={{ fontSize: 11, color: "#aaa", cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}>
+                <button
+                  onClick={() => {
+                    try {
+                      localStorage.setItem('analyzing_result', JSON.stringify({
+                        analysisResult,
+                        generatedPosts: analysisResult?.generatedPosts || [],
+                        url,
+                        name,
+                        timestamp: Date.now(),
+                      }));
+                    } catch(e) {}
+                    window.location.href = '/client/magnet/rtg/onboarding';
+                  }}
+                  style={{ fontSize: 11, color: "#aaa", cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}
+                >
                   Pokračovat bez účtu
                 </button>
               </div>
