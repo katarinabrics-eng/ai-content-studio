@@ -27,133 +27,398 @@ type Project = {
   pendingCount: number
 }
 
-// ─── Defaults ─────────────────────────────────────────────────────────────────
+// ─── Seed / defaults ──────────────────────────────────────────────────────────
+
+const POSTS_SEED = [
+  {
+    id: 'p1', type: 'Foto',    aspect: '9:16', duration: '15s',
+    img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
+    title: 'Buďte autentičtí, nezapomenutelní',
+  },
+  {
+    id: 'p2', type: 'Foto',    aspect: '9:16', duration: '12s',
+    img: '/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg',
+    title: 'Otevřete dveře, které jste neviděli.',
+  },
+  {
+    id: 'p3', type: 'Grafika', aspect: '1:1',  duration: undefined,
+    img: '/placeholders/stock-vizualni knihovna/K04/k04-018.png',
+    title: 'Buďte autentičtí, nezapomenutelní',
+  },
+  {
+    id: 'p4', type: 'Grafika', aspect: '1:1',  duration: undefined,
+    img: '/placeholders/stock-vizualni knihovna/K04/k04-019.png',
+    title: 'Otevřete dveře, které jste neviděli, že existují.',
+  },
+]
+
+const SCHEDULE_SEED = [
+  { date: '22', type: 'Reel',     img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',  time: '09:00' },
+  { date: '23', type: 'Carousel', img: '/placeholders/stock-vizualni knihovna/K04/k04-018.png',  time: '11:30' },
+  { date: '24', type: 'Story',    img: '/placeholders/stock-vizualni knihovna/K04/k04-019.png',  time: '17:00' },
+  { date: '25', type: 'Reel',     img: '/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg', time: '18:30' },
+  { date: '26', type: 'Post',     img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',  time: '10:00' },
+  { date: '27', type: 'Story',    img: '/placeholders/stock-vizualni knihovna/K04/k04-018.png',  time: '20:00' },
+  { date: '28', type: 'Reel',     img: '/placeholders/stock-vizualni knihovna/K04/k04-019.png',  time: '19:00' },
+  { date: '30', type: 'Carousel', img: '/placeholders/stock-vizualni knihovna/K07/k07-085.jpeg', time: '11:00' },
+  { date: '02', type: 'Post',     img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',  time: '09:30' },
+  { date: '03', type: 'Reel',     img: '/placeholders/stock-vizualni knihovna/K04/k04-018.png',  time: '18:00' },
+]
+
+const LIBRARY_PREVIEW = [
+  '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
+  '/placeholders/stock-vizualni knihovna/K04/k04-018.png',
+  '/placeholders/stock-vizualni knihovna/K04/k04-019.png',
+]
 
 const DEFAULT_PILLARS: Pillar[] = [
-  { key: 'value',        label: 'Hodnota',     score: 7 },
-  { key: 'energy',       label: 'Energie',      score: 6 },
-  { key: 'architecture', label: 'Architektura', score: 8 },
-  { key: 'identity',     label: 'Identita',     score: 5, tone: 'warn' },
-  { key: 'trust',        label: 'Důvěra',       score: 6, tone: 'warn' },
+  { key: 'value',        label: 'Hodnota',     score: 8 },
+  { key: 'energy',       label: 'Energie',      score: 7 },
+  { key: 'architecture', label: 'Architektura', score: 7 },
+  { key: 'identity',     label: 'Identita',     score: 6, tone: 'warn' },
+  { key: 'trust',        label: 'Důvěra',       score: 5, tone: 'warn' },
 ]
 
 const DEFAULT_PALETTE = [
-  '#c8b89a', '#d8c8a8', '#e0ceb0', '#b4a08c', '#a09070',
-  '#e8e0d0', '#d0c8b8', '#c0b0a0', '#b8a898', '#a89880',
+  { hex: '#f0e8c8', label: 'Krémová' },
+  { hex: '#e9d4c8', label: 'Pudrová' },
+  { hex: '#f5ede4', label: 'Slonovina' },
+  { hex: '#e8d0c0', label: 'Pšenice' },
+  { hex: '#ddd0bc', label: 'Písek' },
+  { hex: '#e8dcc8', label: 'Lněná' },
+  { hex: '#f0e8d8', label: 'Mléčná' },
+  { hex: '#e4d4bc', label: 'Karamel' },
+  { hex: '#ecdcc0', label: 'Med' },
+  { hex: '#f5e8d4', label: 'Marcipán' },
 ]
 
 function parseBrand(project: Project): BrandData {
-  const sr = project.scan_result as Record<string, unknown> | null ?? {}
+  const sr = (project.scan_result as Record<string, unknown>) ?? {}
   const bs = (sr.brandScore as Record<string, unknown>) ?? {}
   const dna = (sr.brandDna as Record<string, unknown>) ?? {}
   const rawPillars = sr.pillars as Pillar[] | undefined
   const rawPalette = sr.palette as { hex: string; label?: string }[] | undefined
-  const rawArchetype = (sr.archetype ?? (dna.archetype)) as string | undefined
+  const rawArchetype = (sr.archetype ?? dna.archetype) as string | undefined
 
   return {
-    name: project.client_name ?? 'Tvoje značka',
-    handle: '',
+    name: project.client_name ?? 'Studio Lucifera',
+    handle: (sr.website as string) ?? 'studiolucifera.cz',
     score: (bs.total as number) ?? 0,
-    archetype: rawArchetype ?? '–',
+    archetype: rawArchetype ?? 'Kreátor',
     pillars: rawPillars?.length ? rawPillars : DEFAULT_PILLARS,
-    palette: rawPalette?.length
-      ? rawPalette
-      : DEFAULT_PALETTE.map((hex) => ({ hex })),
-    positioning: (dna.positioning as string) ?? '',
-    tone: (dna.tone as string) ?? '',
-    targetAudience: (dna.targetAudience as string) ?? '',
+    palette: rawPalette?.length ? rawPalette : DEFAULT_PALETTE,
+    positioning: (dna.positioning as string) ?? 'Profesionální portréty pro herce a podnikatele',
+    tone: (dna.tone as string) ?? 'Osobní a profesionální',
+    targetAudience: (dna.targetAudience as string) ?? 'Herci a podnikatelé',
   }
 }
 
-// ─── Spider chart ─────────────────────────────────────────────────────────────
+// ─── SpiderChart ──────────────────────────────────────────────────────────────
 
-function SpiderChart({ pillars, size = 180 }: { pillars: Pillar[]; size?: number }) {
+function SpiderChart({ pillars, size = 220 }: { pillars: Pillar[]; size?: number }) {
   const cx = size / 2, cy = size / 2, r = size * 0.38
   const n = pillars.length
-  const pts = (scores: number[]) =>
-    scores
-      .map((s, i) => {
-        const a = (Math.PI * 2 * i) / n - Math.PI / 2
-        const d = (s / 10) * r
-        return `${cx + d * Math.cos(a)},${cy + d * Math.sin(a)}`
-      })
-      .join(' ')
-
-  const axes = Array.from({ length: n }, (_, i) => {
+  const pt = (s: number, i: number): [number, number] => {
     const a = (Math.PI * 2 * i) / n - Math.PI / 2
-    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
-  })
+    const d = (s / 10) * r
+    return [cx + d * Math.cos(a), cy + d * Math.sin(a)]
+  }
+  const axes = Array.from({ length: n }, (_, i) => pt(10, i))
+  const poly = pillars.map((p, i) => pt(p.score, i).join(',')).join(' ')
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
       {[0.25, 0.5, 0.75, 1].map((t) => (
         <polygon
           key={t}
-          points={axes.map(({ x, y }) =>
-            `${cx + (x - cx) * t},${cy + (y - cy) * t}`
-          ).join(' ')}
-          fill="none" stroke="#e8e4dc" strokeWidth="1"
+          points={axes.map(([x, y]) => `${cx + (x - cx) * t},${cy + (y - cy) * t}`).join(' ')}
+          fill="none" stroke="#e8e4dc" strokeWidth="0.8"
         />
       ))}
-      {axes.map(({ x, y }, i) => (
-        <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#e8e4dc" strokeWidth="1" />
+      {axes.map(([x, y], i) => (
+        <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#e8e4dc" strokeWidth="0.6" opacity=".5" />
       ))}
-      <polygon
-        points={pts(pillars.map((p) => p.score))}
-        fill="rgba(183,233,76,0.25)" stroke="#b7e94c" strokeWidth="1.5"
-      />
+      <polygon points={poly} fill="rgba(183,233,76,0.25)" stroke="#b7e94c" strokeWidth="1.5" />
+      {pillars.map((p, i) => {
+        const [x, y] = pt(p.score, i)
+        return <circle key={p.key} cx={x} cy={y} r="3" fill="#b7e94c" />
+      })}
+      {pillars.map((p, i) => {
+        const [x, y] = pt(11.5, i)
+        return (
+          <text key={p.key} x={x} y={y}
+            textAnchor="middle" dominantBaseline="middle"
+            fontSize="9.5" fontWeight="600" fill="#8a8680"
+            fontFamily="'DM Sans', system-ui, sans-serif">
+            {p.label}
+          </text>
+        )
+      })}
     </svg>
   )
 }
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+// ─── StatCard ─────────────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value, suffix, trend, accent, subtle, muted,
+  label, value, suffix, trend, accent, muted, asDisplay,
 }: {
   label: string
   value: string | number
   suffix?: string
   trend?: string
   accent?: boolean
-  subtle?: boolean
   muted?: boolean
+  asDisplay?: boolean
 }) {
   return (
     <div style={{
-      background: accent ? '#111' : '#fff',
-      border: `1px solid ${accent ? 'transparent' : '#e8e4dc'}`,
-      borderRadius: 14,
-      padding: '20px 22px',
+      background: accent ? '#111111' : '#ffffff',
+      border: `1px solid ${accent ? '#111111' : '#e8e4dc'}`,
+      borderRadius: 12,
+      padding: '18px 20px',
+      color: accent ? '#f5f3ee' : '#111111',
     }}>
       <div style={{
-        fontSize: 10, fontWeight: 700, letterSpacing: '.12em',
-        textTransform: 'uppercase',
-        color: accent ? '#b7e94c' : '#b0aea8',
-        marginBottom: 10,
+        fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+        fontWeight: 600,
+        color: accent ? '#b7e94c' : '#8a8680',
       }}>{label}</div>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginTop: 8, lineHeight: 1 }}>
         <span style={{
           fontFamily: "'Playfair Display', serif",
-          fontSize: accent ? 42 : 32,
+          fontSize: asDisplay ? 22 : 34,
           fontWeight: 500,
-          color: accent ? '#fff' : (muted ? '#ccc' : '#111'),
-          lineHeight: 1,
+          letterSpacing: '-0.02em',
+          color: muted ? '#b0aea8' : 'inherit',
         }}>{value}</span>
         {suffix && (
-          <span style={{ fontSize: 13, color: accent ? 'rgba(255,255,255,.4)' : '#bbb' }}>
+          <span style={{ fontSize: 14, color: accent ? '#888' : '#8a8680', fontWeight: 400 }}>
             {suffix}
           </span>
         )}
       </div>
       {trend && (
-        <div style={{ marginTop: 8, fontSize: 11, color: '#b7e94c', fontWeight: 500 }}>
-          ↗ {trend}
+        <div style={{
+          fontSize: 11, marginTop: 8,
+          color: accent ? '#b7e94c' : '#3d6b00',
+          display: 'flex', alignItems: 'center', gap: 4,
+        }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 17l6-6 4 4 8-8" />
+          </svg>
+          {trend}
         </div>
       )}
-      {subtle && !accent && (
-        <div style={{ marginTop: 6, fontSize: 10, color: '#aaa' }}>kreditů zbývá</div>
+    </div>
+  )
+}
+
+// ─── PostThumb ────────────────────────────────────────────────────────────────
+
+function PostThumb({ post, onClick }: { post: typeof POSTS_SEED[0]; onClick?: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        aspectRatio: post.aspect === '1:1' ? '1' : '9/14',
+        borderRadius: 10,
+        overflow: 'hidden',
+        position: 'relative',
+        backgroundImage: `url(${post.img})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        cursor: 'pointer',
+        border: '1px solid #e8e4dc',
+      }}
+    >
+      <div style={{
+        position: 'absolute', top: 8, left: 8,
+        fontSize: 9, fontWeight: 700, letterSpacing: '.1em',
+        padding: '3px 7px', borderRadius: 999,
+        background: post.type === 'Grafika' ? '#b7e94c' : 'rgba(255,255,255,.92)',
+        color: '#111', textTransform: 'uppercase' as const,
+      }}>{post.type}</div>
+      {post.duration && (
+        <div style={{
+          position: 'absolute', bottom: 8, left: 8,
+          fontSize: 10, fontWeight: 600,
+          padding: '2px 7px', borderRadius: 999,
+          background: 'rgba(17,17,17,.7)', color: '#fff',
+          backdropFilter: 'blur(4px)',
+        }}>{post.duration}</div>
       )}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, transparent 55%, rgba(0,0,0,.6))',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: 8, right: 8, left: 36,
+        fontSize: 10, color: '#fff', lineHeight: 1.3, fontWeight: 500,
+        overflow: 'hidden',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical' as never,
+      }}>{post.title}</div>
+    </div>
+  )
+}
+
+// ─── BrandDNACard ─────────────────────────────────────────────────────────────
+
+function BrandDNACard({ brand, locked }: { brand: BrandData; locked: boolean }) {
+  return (
+    <div style={{
+      background: '#ffffff', border: '1px solid #e8e4dc',
+      borderRadius: 12, padding: 22,
+      position: 'relative', overflow: 'hidden',
+    }}>
+      <div style={{
+        fontSize: 10, fontWeight: 600, letterSpacing: '0.14em',
+        textTransform: 'uppercase' as const, color: '#8a8680',
+        marginBottom: 10,
+      }}>Brand DNA</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {[
+          { label: 'Pozicionování', value: brand.positioning },
+          { label: 'Tón',            value: brand.tone },
+          { label: 'Cílová skupina', value: brand.targetAudience },
+          { label: 'Archetyp',       value: brand.archetype, accent: true },
+        ].map(({ label, value, accent }) => (
+          <div key={label} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <span style={{
+              fontSize: 10.5, color: '#b0aea8', width: 100, flexShrink: 0,
+              letterSpacing: '0.08em', textTransform: 'uppercase' as const, paddingTop: 2,
+            }}>{label}</span>
+            <span style={{
+              fontSize: accent ? 15 : 13,
+              color: '#111111',
+              fontWeight: accent ? 600 : 400,
+              flex: 1,
+              fontFamily: accent ? "'Playfair Display', serif" : 'inherit',
+            }}>{value}</span>
+          </div>
+        ))}
+      </div>
+      {/* Gradient fade for locked */}
+      {locked && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(180deg, transparent 0%, rgba(250,248,243,0.96) 58%)',
+          pointerEvents: 'none',
+        }} />
+      )}
+      {locked && (
+        <button style={{
+          marginTop: 14, width: '100%', padding: '8px 12px', fontSize: 11.5,
+          position: 'relative', zIndex: 2,
+          background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 10,
+          cursor: 'pointer', fontFamily: 'inherit',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          color: '#111',
+        }}>
+          🔒 Odemknout celou strategii
+        </button>
+      )}
+    </div>
+  )
+}
+
+// ─── ContentCalendar ─────────────────────────────────────────────────────────
+
+function ContentCalendar() {
+  const byDate = Object.fromEntries(SCHEDULE_SEED.map(s => [s.date, s]))
+  const cells: { date: string; isMay: boolean; post?: typeof SCHEDULE_SEED[0] }[] = []
+  const start = 21
+  for (let w = 0; w < 4; w++) {
+    for (let d = 0; d < 7; d++) {
+      const num = start + w * 7 + d
+      const date = num > 30 ? String(num - 30).padStart(2, '0') : String(num).padStart(2, '0')
+      cells.push({ date, isMay: num > 30, post: byDate[date] })
+    }
+  }
+
+  return (
+    <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: '#8a8680', marginBottom: 4 }}>
+            Obsahový plán
+          </div>
+          <div style={{ fontSize: 18, fontFamily: "'Playfair Display', serif", color: '#111', fontWeight: 500 }}>
+            Duben / Květen 2025
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {['‹', '›'].map(ch => (
+            <button key={ch} style={{
+              padding: '5px 10px', fontSize: 11,
+              background: '#ffffff', border: '1px solid #e8e4dc',
+              borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit',
+            }}>{ch}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Day headers */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 5, marginBottom: 5 }}>
+        {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
+          <div key={d} style={{
+            textAlign: 'center', fontSize: 10,
+            letterSpacing: '.08em', textTransform: 'uppercase' as const,
+            color: '#b0aea8', fontWeight: 600,
+          }}>{d}</div>
+        ))}
+      </div>
+
+      {/* Calendar cells */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 5 }}>
+        {cells.map((c, idx) => (
+          <div key={idx} style={{
+            aspectRatio: '1', borderRadius: 8, overflow: 'hidden',
+            border: '1px solid #e8e4dc',
+            background: c.post ? 'transparent' : '#faf8f3',
+            position: 'relative', cursor: c.post ? 'pointer' : 'default',
+            opacity: c.isMay && !c.post ? 0.45 : 1,
+          }}>
+            {c.post ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={c.post.img} alt=""
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,.5) 0%, transparent 30%, transparent 60%, rgba(0,0,0,.75) 100%)' }} />
+                <div style={{ position: 'absolute', top: 4, left: 5, color: '#fff', fontSize: 10, fontWeight: 600, textShadow: '0 1px 2px rgba(0,0,0,.4)' }}>
+                  {c.date}
+                </div>
+                <div style={{ position: 'absolute', top: 4, right: 4, background: '#b7e94c', color: '#111', fontSize: 8, fontWeight: 700, letterSpacing: '.04em', padding: '2px 5px', borderRadius: 4, textTransform: 'uppercase' as const }}>
+                  {c.post.type}
+                </div>
+                <div style={{ position: 'absolute', bottom: 3, left: 5, right: 5, color: '#fff', fontSize: 9, lineHeight: 1.2, textShadow: '0 1px 2px rgba(0,0,0,.6)' }}>
+                  {c.post.time}
+                </div>
+              </>
+            ) : (
+              <div style={{ position: 'absolute', top: 4, left: 5, fontSize: 10, color: '#b0aea8', fontWeight: 500 }}>
+                {c.date}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 14, marginTop: 14, fontSize: 10.5, color: '#8a8680', flexWrap: 'wrap' as const, alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: '#b7e94c', display: 'inline-block' }} />
+          {SCHEDULE_SEED.length} naplánováno
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: '#faf8f3', border: '1px solid #e8e4dc', display: 'inline-block' }} />
+          Volné sloty
+        </div>
+        <div style={{ marginLeft: 'auto', fontSize: 10.5 }}>Klikni na den pro detail →</div>
+      </div>
     </div>
   )
 }
@@ -176,29 +441,20 @@ function DashboardInner() {
         rtg_plan: null, pvi_active: false,
         scan_result: null, client_name: null, pendingCount: 0,
       }
-
-      // RTG path
       try {
-        const r = await fetch(
-          `/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
-        )
+        const r = await fetch(`/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`)
         const d = await r.json()
         if (d.ok && d.project) {
           result.rtg_plan = d.project.rtg_plan ?? d.project.plan ?? null
           result.client_name = d.project.client_name ?? null
           result.pvi_active = d.project.pvi_active ?? false
           if (d.posts) {
-            result.pendingCount = (d.posts as Array<{ status: string }>)
-              .filter((p) => p.status === 'client_review').length
+            result.pendingCount = (d.posts as Array<{ status: string }>).filter(p => p.status === 'client_review').length
           }
         }
       } catch { /* ignore */ }
-
-      // Brand/PVI path
       try {
-        const r = await fetch(
-          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
-        )
+        const r = await fetch(`/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`)
         const d = await r.json()
         if (d.project) {
           result.scan_result = d.project.scan_result ?? null
@@ -207,7 +463,6 @@ function DashboardInner() {
           result.rtg_plan = result.rtg_plan ?? d.project.rtg_plan ?? null
         }
       } catch { /* ignore */ }
-
       setProject(result)
       setLoading(false)
     })()
@@ -217,77 +472,91 @@ function DashboardInner() {
     return (
       <div style={{ padding: '40px 32px' }}>
         <div style={{ height: 28, width: 240, background: '#f0efeb', borderRadius: 8, marginBottom: 12, animation: 'shimmer 1.4s infinite' }} />
-        <div style={{ height: 16, width: 180, background: '#f0efeb', borderRadius: 6, animation: 'shimmer 1.4s infinite' }} />
-        <style>{`@keyframes shimmer { 0%{opacity:1} 50%{opacity:.5} 100%{opacity:1} }`}</style>
+        <div style={{ height: 16, width: 180, background: '#f0efeb', borderRadius: 6 }} />
+        <style>{`@keyframes shimmer{0%,100%{opacity:1}50%{opacity:.5}}`}</style>
       </div>
     )
   }
 
-  const isFree = !project?.rtg_plan && !project?.pvi_active && !project?.scan_result?.brandScore
-  const brand = parseBrand(project ?? {
-    rtg_plan: null, pvi_active: false,
-    scan_result: null, client_name: null, pendingCount: 0,
-  })
-  const hasScanData = !!(project?.scan_result)
+  const isFree  = !project?.rtg_plan && !project?.pvi_active
+  const hasRtg  = !!(project?.rtg_plan)
+  const hasPVI  = !!(project?.pvi_active)
+  const brand   = parseBrand(project ?? { rtg_plan: null, pvi_active: false, scan_result: null, client_name: null, pendingCount: 0 })
   const pendingCount = project?.pendingCount ?? 0
-  const hasRtg = !!(project?.rtg_plan)
+  const creditsInit  = hasRtg
+    ? project?.rtg_plan === 'pro' ? 22000 : project?.rtg_plan === 'plus' ? 12000 : 6000
+    : 0
 
   return (
-    <div style={{ padding: '28px 32px 48px', maxWidth: 1200 }}>
+    <div style={{ padding: '32px 28px 80px', maxWidth: 1280, margin: '0 auto' }}>
 
       {/* ── Page header ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, marginBottom: 28 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: '#b0aea8', marginBottom: 6 }}>
-            Dobré ráno
+          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 8 }}>
+            Dobré ráno, Kataríno
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 500, color: '#111', margin: 0, lineHeight: 1.2 }}>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 500, letterSpacing: '-0.02em', color: '#111', margin: '0 0 8px', lineHeight: 1.05 }}>
             {brand.name}
           </h1>
-          <p style={{ fontSize: 13, color: '#888', marginTop: 6 }}>
+          <div style={{ fontSize: 14, color: '#8a8680', maxWidth: 560 }}>
             {isFree
               ? 'Zkoumáme tvou značku — tvé výsledky budou plně aktivní po upgradu.'
-              : hasRtg
-              ? `Plán ${project?.rtg_plan?.toUpperCase()} · obsah na autopilotu`
-              : 'Tvá prémiová identita roste. Tady je dnešní přehled.'}
-          </p>
+              : hasPVI
+              ? 'Tvá prémiová identita roste. Tady je dnešní přehled.'
+              : `Tempo ${project?.rtg_plan?.toUpperCase()} · obsah na autopilotu.`}
+          </div>
         </div>
-        <button style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: '#111', color: '#fff', border: 'none',
-          borderRadius: 10, padding: '11px 20px', fontSize: 13,
-          fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-        }}>
-          ✦ Vytvořit příspěvek
-        </button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          {!isFree && (
+            <button style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+              background: '#ffffff', border: '1px solid #e8e4dc', color: '#111',
+              cursor: 'pointer', fontFamily: 'inherit',
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 4v12"/><path d="M6 10l6 6 6-6"/><path d="M5 20h14"/></svg>
+              Exportovat report
+            </button>
+          )}
+          <button style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '10px 18px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+            background: '#111111', color: '#f5f3ee',
+            border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+          }}>
+            ✦ Vytvořit příspěvek
+          </button>
+        </div>
       </div>
 
       {/* ── Free trial banner ── */}
       {isFree && (
         <div style={{
-          background: '#111', borderRadius: 16, padding: '24px 28px',
+          background: '#111111', borderRadius: 16, padding: '24px 28px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 24, marginBottom: 24,
+          gap: 24, marginBottom: 22,
         }}>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: 6 }}>
               Free trial · 14 dní
             </div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500, color: '#fff', marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 500, letterSpacing: '-0.01em', color: '#f5f3ee' }}>
               Tvé výsledky jsou dostupné ještě 14 dní.
             </div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,.5)', maxWidth: 460, lineHeight: 1.6 }}>
+            <div style={{ fontSize: 13, color: '#b0aea8', marginTop: 6, maxWidth: 480 }}>
               Po uplynutí doby se všechna data automaticky vymažou.
               Přihlaš se k odběru a pracuj s nimi dál.
             </div>
           </div>
           <button style={{
-            background: '#b7e94c', color: '#111', border: 'none',
-            borderRadius: 10, padding: '12px 22px', fontSize: 13,
-            fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
-            whiteSpace: 'nowrap', flexShrink: 0,
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '11px 18px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+            background: '#b7e94c', border: 'none', color: '#111',
+            cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0,
           }}>
-            Přejít na placený plán →
+            Přejít na placený plán
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
           </button>
         </div>
       )}
@@ -301,237 +570,200 @@ function DashboardInner() {
           trend={brand.score ? '+6 tento měsíc' : undefined}
           accent
         />
-        <StatCard label="Archetyp" value={brand.archetype} />
+        <StatCard label="Archetyp" value={brand.archetype} asDisplay />
         <StatCard label="Příspěvky ke schválení" value={pendingCount} muted={pendingCount === 0} />
         <StatCard
           label={isFree ? 'Zbývá zdarma' : 'Kredit'}
-          value={isFree ? '14 dní' : '4 200'}
-          subtle
+          value={isFree ? '14 dní' : creditsInit.toLocaleString('cs')}
         />
       </div>
 
       {/* ── 2-col layout ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.35fr 1fr', gap: 20, alignItems: 'start' }}>
 
-        {/* ── LEFT: Pilíře ── */}
+        {/* LEFT column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e8e4dc', padding: 26 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+
+          {/* Brand pillars */}
+          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 26 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#b0aea8', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
                   Pilíře značky
                 </div>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 600, color: '#111', margin: 0 }}>
-                  Pět sil, co drží tvou značku v rovnováze
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500, color: '#111', margin: '4px 0 0', letterSpacing: '-0.01em' }}>
+                  Pět sil, co drží {brand.name} v rovnováze
                 </h3>
               </div>
-              <span style={{
-                padding: '5px 12px', borderRadius: 999, fontSize: 11, fontWeight: 600,
-                background: isFree ? '#f5f3ee' : '#f0fce0',
-                color: isFree ? '#888' : '#3d6b00',
-              }}>
+              <div style={{ padding: '6px 12px', borderRadius: 999, background: '#f0fce0', color: '#3d6b00', fontSize: 11, fontWeight: 600, flexShrink: 0 }}>
                 {isFree ? 'Náhled' : 'Aktivní'}
-              </span>
+              </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 24, alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 26, marginTop: 22, alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {brand.pillars.map((p) => (
-                  <div key={p.key} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 86, fontSize: 12, color: '#555', fontWeight: 500, flexShrink: 0 }}>
+                  <div key={p.key} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 80, fontSize: 12, color: '#444444', fontWeight: 500, flexShrink: 0 }}>
                       {p.label}
                     </div>
                     <div style={{
-                      flex: 1, height: 6, background: '#f0efeb',
+                      flex: 1, height: 6, background: '#faf8f3',
                       borderRadius: 999, overflow: 'hidden',
-                      filter: isFree ? 'blur(2px)' : 'none',
+                      filter: isFree ? 'blur(2px) opacity(.7)' : 'none',
                     }}>
                       <div style={{
                         width: `${p.score * 10}%`, height: '100%',
                         background: p.tone === 'warn' ? '#e0a24a' : '#b7e94c',
-                        borderRadius: 999,
                         transition: 'width .6s ease',
                       }} />
                     </div>
                     <div style={{
                       fontFamily: "'Playfair Display', serif",
-                      fontSize: 16, fontWeight: 500, width: 18,
-                      textAlign: 'right', color: '#111',
-                      filter: isFree ? 'blur(4px)' : 'none',
-                    }}>
-                      {p.score}
-                    </div>
+                      fontSize: 16, fontWeight: 500, width: 20, textAlign: 'right' as const,
+                      filter: isFree ? 'blur(3px)' : 'none', color: '#111',
+                    }}>{p.score}</div>
                   </div>
                 ))}
               </div>
-              <div style={{
-                display: 'flex', justifyContent: 'center',
-                filter: isFree ? 'blur(3px)' : 'none',
-                opacity: isFree ? .6 : 1,
-              }}>
-                <SpiderChart pillars={brand.pillars} size={200} />
+              <div style={{ display: 'flex', justifyContent: 'center', filter: isFree ? 'blur(2.5px)' : 'none', opacity: isFree ? 0.6 : 1 }}>
+                <SpiderChart pillars={brand.pillars} size={220} />
               </div>
             </div>
 
             {isFree && (
               <div style={{
-                marginTop: 20, padding: '12px 16px',
-                background: '#f5f3ee', border: '1px solid #e8e4dc',
-                borderRadius: 10, fontSize: 12, color: '#888',
+                marginTop: 20, padding: 14,
+                background: '#faf8f3', border: '1px solid #e8e4dc', borderRadius: 10,
+                fontSize: 12, color: '#8a8680',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               }}>
                 <span>Plná analýza pilířů je odemčena v placeném tarifu.</span>
                 <button style={{
-                  background: 'none', border: '1px solid #e8e4dc', borderRadius: 7,
-                  padding: '5px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', color: '#555',
-                }}>
-                  Odemknout →
+                  background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 7,
+                  padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', color: '#111',
+                }}>Odemknout →</button>
+              </div>
+            )}
+          </div>
+
+          {/* Content: RTG/PVI → PostThumbs, free → preview grid */}
+          {(hasRtg || hasPVI) ? (
+            <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 26 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
+                    Tvůj obsah
+                  </div>
+                  <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 0' }}>
+                    Připravený k použití
+                  </h3>
+                </div>
+                <button style={{ color: '#8a8680', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Vidět vše →
                 </button>
               </div>
-            )}
-          </div>
-
-          {/* Ochutnávka / Obsah */}
-          <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e8e4dc', padding: 26 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#b0aea8', marginBottom: 8 }}>
-              {hasRtg ? 'Tvůj obsah' : 'Ochutnávka'}
-            </div>
-            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: '#111', margin: '0 0 6px' }}>
-              {hasRtg ? 'Připravený k použití' : '3 příspěvky zdarma čekají v knihovně'}
-            </h3>
-            <p style={{ fontSize: 13, color: '#888', marginBottom: 16, lineHeight: 1.6 }}>
-              {hasRtg
-                ? 'Klikni pro schválení nebo úpravu textu.'
-                : 'Vyber si fotku, kterou znáš — zbytek za tebe Lucifera dotvoří.'}
-            </p>
-            {/* Placeholder grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-              {[
-                '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
-                '/placeholders/stock-vizualni knihovna/K04/k04-018.png',
-                '/placeholders/stock-vizualni knihovna/K04/k04-019.png',
-              ].map((src, i) => (
-                <div key={i} style={{ aspectRatio: '4/5', borderRadius: 10, overflow: 'hidden', background: '#f0efeb', position: 'relative', cursor: 'pointer' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
-                  {!hasRtg && (
-                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 11, background: 'rgba(255,255,255,.9)', color: '#111', padding: '4px 10px', borderRadius: 8, fontWeight: 500 }}>
-                        Zdarma
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ── RIGHT: Brand DNA + Paleta + Stratég ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-          {/* Brand DNA */}
-          <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e8e4dc', padding: 22 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#b0aea8', marginBottom: 12 }}>
-              Brand DNA
-            </div>
-            {hasScanData && !isFree ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { label: 'POZICIONOVÁNÍ', value: brand.positioning },
-                  { label: 'TÓN', value: brand.tone },
-                  { label: 'CÍLOVÁ SKUPINA', value: brand.targetAudience },
-                ].map(({ label, value }) => value ? (
-                  <div key={label} style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 8, alignItems: 'start' }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.1em', color: '#b0aea8', textTransform: 'uppercase', paddingTop: 2 }}>
-                      {label}
-                    </span>
-                    <span style={{ fontSize: 13, color: '#333', lineHeight: 1.5 }}>{value}</span>
-                  </div>
-                ) : null)}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {['POZICIONOVÁNÍ', 'TÓN', 'CÍLOVÁ SKUPINA'].map((l) => (
-                  <div key={l} style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: 8 }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.1em', color: '#b0aea8', textTransform: 'uppercase', paddingTop: 4 }}>{l}</span>
-                    <div style={{ height: 14, background: '#f0efeb', borderRadius: 6, filter: 'blur(3px)' }} />
-                  </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                {POSTS_SEED.slice(0, 4).map((p) => (
+                  <PostThumb key={p.id} post={p} />
                 ))}
               </div>
-            )}
-            <button style={{
-              marginTop: 16, width: '100%', padding: '10px', background: '#f5f3ee',
-              border: '1px solid #e8e4dc', borderRadius: 9, fontSize: 12, color: '#555',
-              cursor: 'pointer', fontFamily: 'inherit', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', gap: 6,
-            }}>
-              🔒 Odemknout celou strategii
-            </button>
-          </div>
+            </div>
+          ) : (
+            <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 26 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
+                Ochutnávka
+              </div>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 6px' }}>
+                3 příspěvky zdarma čekají v knihovně
+              </h3>
+              <div style={{ fontSize: 13, color: '#8a8680', marginBottom: 14, lineHeight: 1.6 }}>
+                Vyber si fotku, kterou znáš — zbytek za tebe Lucifera dotvoří.
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                {LIBRARY_PREVIEW.map((src, i) => (
+                  <div key={i} style={{
+                    aspectRatio: '4/5', borderRadius: 10, overflow: 'hidden',
+                    backgroundImage: `url(${src})`,
+                    backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'pointer',
+                  }} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          <BrandDNACard brand={brand} locked={isFree} />
 
           {/* Paleta */}
-          <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e8e4dc', padding: 22 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#b0aea8', marginBottom: 6 }}>
-                  Paleta
-                </div>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, color: '#111', margin: 0 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>Paleta</div>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, color: '#111', margin: '4px 0 0', fontWeight: 500 }}>
                   Krémová & jemná
                 </h3>
               </div>
+              {!isFree && (
+                <button style={{
+                  padding: '5px 10px', fontSize: 10.5,
+                  background: '#ffffff', border: '1px solid #e8e4dc',
+                  borderRadius: 8, cursor: 'pointer', fontFamily: 'inherit',
+                  display: 'inline-flex', alignItems: 'center', gap: 5, color: '#111',
+                }}>✦ Upravit</button>
+              )}
             </div>
-            <div style={{ fontSize: 10, color: '#b0aea8', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
-              🌐 Z diagnostiky <strong style={{ color: '#888' }}>{brand.handle || 'tvého webu'}</strong>
-              <span style={{ color: '#ccc' }}>· auto-extrakt</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#8a8680', margin: '6px 0 12px' }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3 3 4.5 6.5 4.5 9s-1.5 6-4.5 9M12 3c-3 3-4.5 6.5-4.5 9s1.5 6 4.5 9"/></svg>
+              Z diagnostiky <strong style={{ color: '#444' }}>{brand.handle}</strong>
+              <span style={{ color: '#b0aea8' }}>· auto-extrakt</span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, marginBottom: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 }}>
               {brand.palette.slice(0, 10).map((c, i) => (
-                <div key={i} title={c.hex} style={{
-                  aspectRatio: '1', borderRadius: 8,
-                  background: c.hex,
+                <div key={i} title={c.label ?? c.hex} style={{
+                  aspectRatio: '1', borderRadius: 8, background: c.hex,
                   border: '1px solid rgba(17,17,17,0.08)',
                 }} />
               ))}
             </div>
-            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#ccc', lineHeight: 1.7, wordBreak: 'break-all' }}>
-              {brand.palette.slice(0, 5).map((c) => `'${c.hex}'`).join(', ')} …
+            <div style={{ marginTop: 14, fontFamily: 'monospace', fontSize: 10, color: '#b0aea8', lineHeight: 1.7, letterSpacing: '-.01em', wordBreak: 'break-all' as const }}>
+              {brand.palette.slice(0, 6).map(c => `'${c.hex}'`).join(', ')} …
             </div>
+            {!isFree && (
+              <div style={{ marginTop: 10, padding: '8px 10px', background: '#f0fce0', borderRadius: 6, fontSize: 10.5, color: '#3d6b00', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12l5 5L20 6"/></svg>
+                Přepisovatelné — v plném tarifu si paletu upravíš ručně
+              </div>
+            )}
           </div>
 
           {/* Stratég */}
-          <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #e8e4dc', padding: 22 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#b0aea8', marginBottom: 14 }}>
+          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 12 }}>
               Doporučení stratéga
             </div>
-            <div style={{ display: 'flex', gap: 14, marginBottom: 12 }}>
+            <div style={{ display: 'flex', gap: 12 }}>
               <div style={{
-                width: 40, height: 40, borderRadius: '50%',
+                width: 40, height: 40, borderRadius: 999, flexShrink: 0,
                 background: '#f0fce0', color: '#3d6b00',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 20, flexShrink: 0,
-              }}>
-                ✨
-              </div>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#111', marginBottom: 3 }}>Ilumina</div>
-                <div style={{ fontSize: 11, color: '#888', lineHeight: 1.5 }}>
-                  Brand storytelling & jasné sdělení
+                fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: 14,
+              }}>JV</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>Jana Válková</div>
+                <div style={{ fontSize: 11, color: '#8a8680' }}>Brand strateg · fit {brand.score || 75}%</div>
+                <div style={{ fontSize: 12.5, color: '#444444', marginTop: 10, lineHeight: 1.6 }}>
+                  „Zesil pilíř <strong>Důvěra</strong> sérií 3 testimonialů — tvůj archetyp to unese."
                 </div>
               </div>
             </div>
-            <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginBottom: 14 }}>
-              Pomůže ti komunikovat tak, aby zákazník okamžitě pochopil tvoji hodnotu.
-            </div>
-            <button style={{
-              width: '100%', padding: '10px', background: '#111',
-              border: 'none', borderRadius: 9, fontSize: 12, color: '#fff',
-              cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600,
-            }}>
-              Spustit strategii →
-            </button>
           </div>
+
+          {/* Obsahový plán — only for paid plans */}
+          {!isFree && <ContentCalendar />}
 
         </div>
       </div>
