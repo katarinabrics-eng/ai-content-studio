@@ -3,6 +3,7 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Sidebar } from "./components/Sidebar";
+import { TopBar } from "./components/TopBar";
 
 type ProjectInfo = {
   rtg_plan: string | null;
@@ -105,8 +106,11 @@ function ClientLayoutInner({ children }: { children: React.ReactNode }) {
         hasRtg={hasRtg}
         hasPortrait={hasPortrait}
       />
-      <div style={{ flex: 1, overflow: "auto" }}>
-        {children}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <TopBar clientName={project?.client_name} />
+        <div style={{ flex: 1, overflow: "auto" }}>
+          {children}
+        </div>
       </div>
     </div>
   );
