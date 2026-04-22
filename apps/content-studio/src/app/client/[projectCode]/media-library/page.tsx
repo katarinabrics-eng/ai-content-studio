@@ -255,13 +255,16 @@ export default function MediaLibraryPage() {
   }, [projectCode])
 
   useEffect(() => {
+    if (!projectCode) return
+    fetchVB('') // vizuální banka nepotřebuje token
     fetchMedia('all')
-    fetchVB('') // načti banku hned na startu
-  }, [projectCode])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectCode, token])
 
   useEffect(() => {
     if (activeTab === 'moje') fetchMedia(activeType)
-  }, [activeTab])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, activeType, token])
 
   async function fetchMedia(type: string) {
     setLoading(true)

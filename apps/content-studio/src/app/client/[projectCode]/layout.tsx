@@ -68,13 +68,14 @@ function ClientLayoutInner({ children }: { children: React.ReactNode }) {
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
-    if (!token || !projectCode) return;
+    if (!projectCode) return;
 
     loadProjectInfo(projectCode, token).then((info) => {
       if (info) setProject(info);
     });
 
-    // Počet postů ke schválení (RTG systém)
+    // Počet postů ke schválení (RTG systém) — jen pokud máme token
+    if (!token) return;
     fetch(
       `/api/client/rtg/batches?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
     )
