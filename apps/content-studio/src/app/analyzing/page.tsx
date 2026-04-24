@@ -286,7 +286,7 @@ function AnalyzingInner() {
       const res = await fetch('/api/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, name, website: url }),
+        body: JSON.stringify({ url, name, website: url, analysisResult }),
       });
       const data = await res.json();
       const token = data.access?.magicToken ?? '';
@@ -294,7 +294,7 @@ function AnalyzingInner() {
       if (destination === 'project' && projectCode) {
         window.location.href = `/client/${projectCode}?token=${token}`;
       } else {
-        window.location.href = `/client/magnet?token=${token}`;
+        window.location.href = `/client/${projectCode}?token=${token}`;
       }
     } catch {
       setCreating(false);
