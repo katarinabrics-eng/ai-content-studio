@@ -103,7 +103,7 @@ function parseBrand(project: Project): BrandData {
   return {
     name: project.client_name ?? 'Studio Lucifera',
     handle: (sr.website as string) ?? 'studiolucifera.cz',
-    score: (bs.total as number) ?? 0,
+    score: (bs.total as number) ?? (sr.score as number) ?? (sr.brandScore as number) ?? 0,
     archetype: rawArchetype ?? 'Kreátor',
     pillars: rawPillars?.length ? rawPillars : DEFAULT_PILLARS,
     palette: rawPalette?.length ? rawPalette : DEFAULT_PALETTE,
@@ -423,6 +423,23 @@ function ContentCalendar() {
   )
 }
 
+// ─── Strategist ───────────────────────────────────────────────────────────────
+
+const STRATEGIST_MAP: Record<string, { name: string; bg: string; color: string; initials: string; desc: string }> = {
+  ilumina:       { name: 'Ilumina',       bg: '#f5e6ff', color: '#6b00b3', initials: 'IL', desc: 'Mistryně příběhu a jasného sdělení. Pomůže komunikovat tak, aby zákazník okamžitě pochopil hodnotu.' },
+  impuls:        { name: 'Impuls',        bg: '#fff8e1', color: '#b36b00', initials: 'IM', desc: 'Mistr energie, dosahu a viditelnosti. Zaměří se na obsah, který šíří a zvyšuje dosah značky.' },
+  katalyzator:   { name: 'Katalyzátor',   bg: '#fff0e6', color: '#b34400', initials: 'KA', desc: 'Mistr emoce, transformace a prodeje. Propojí zákazníka se značkou na hlubší úrovni.' },
+  architekt:     { name: 'Architekt',     bg: '#e6f0ff', color: '#003db3', initials: 'AR', desc: 'Vytvoří neodolatelnou nabídku postavenou na hodnotovém vzorci. Identifikuje co zákazník skutečně kupuje.' },
+  signal:        { name: 'Signál',        bg: '#e6fff0', color: '#006b3d', initials: 'SI', desc: 'Mistr hlasu, niche a permission marketingu. Pomůže najít jedinečný hlas a cílovou skupinu.' },
+  content_voice: { name: 'Content Voice', bg: '#fff5e6', color: '#b36b00', initials: 'CV', desc: 'Hlas a příběh značky — texty, bio, claims. Převede Brand DNA do konkrétních textů.' },
+}
+
+function getStrategist(sr: Record<string, unknown>) {
+  const id = ((sr.recommended_strategist ?? sr.strategist_id) as string | undefined)?.toLowerCase()
+  if (!id) return null
+  return STRATEGIST_MAP[id] ?? null
+}
+
 // ─── Dashboard Inner ──────────────────────────────────────────────────────────
 
 function DashboardInner() {
@@ -433,6 +450,14 @@ function DashboardInner() {
 
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
+  const [vbPreview, setVbPreview] = useState<{ id: string; thumbnailUrl: string }[]>([])
+
+  useEffect(() => {
+    fetch('/api/client/visual-bank?limit=3')
+      .then(r => r.json())
+      .then(d => { if (d.files?.length) setVbPreview(d.files.slice(0, 3)) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (!projectCode) return
@@ -681,10 +706,10 @@ function DashboardInner() {
                 Vyber si fotku, kterou znáš — zbytek za tebe Lucifera dotvoří.
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-                {LIBRARY_PREVIEW.map((src, i) => (
-                  <div key={i} style={{
+                {(vbPreview.length > 0 ? vbPreview : LIBRARY_PREVIEW.map((src, i) => ({ id: String(i), thumbnailUrl: src }))).map(f => (
+                  <div key={f.id} style={{
                     aspectRatio: '4/5', borderRadius: 10, overflow: 'hidden',
-                    backgroundImage: `url(${src})`,
+                    backgroundImage: `url(${f.thumbnailUrl})`,
                     backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'pointer',
                   }} />
                 ))}
@@ -741,26 +766,38 @@ function DashboardInner() {
           </div>
 
           {/* Stratég */}
-          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 12 }}>
-              Doporučení stratéga
-            </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 999, flexShrink: 0,
-                background: '#f0fce0', color: '#3d6b00',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: 14,
-              }}>JV</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>Jana Válková</div>
-                <div style={{ fontSize: 11, color: '#8a8680' }}>Brand strateg · fit {brand.score || 75}%</div>
-                <div style={{ fontSize: 12.5, color: '#444444', marginTop: 10, lineHeight: 1.6 }}>
-                  „Zesil pilíř <strong>Důvěra</strong> sérií 3 testimonialů — tvůj archetyp to unese."
+          {(() => {
+            const sr = (project?.scan_result as Record<string, unknown>) ?? {}
+            const strat = getStrategist(sr)
+            return (
+              <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 12 }}>
+                  Doporučení stratéga
                 </div>
+                {strat ? (
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: 999, flexShrink: 0,
+                      background: strat.bg, color: strat.color,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: 13,
+                    }}>{strat.initials}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>{strat.name}</div>
+                      <div style={{ fontSize: 11, color: '#8a8680' }}>Brand strateg · fit {brand.score || 80}%</div>
+                      <div style={{ fontSize: 12.5, color: '#444444', marginTop: 10, lineHeight: 1.6 }}>
+                        {strat.desc}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 13, color: '#8a8680', lineHeight: 1.6 }}>
+                    Stratég bude doporučen po dokončení analýzy.
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
+            )
+          })()}
 
           {/* Obsahový plán — only for paid plans */}
           {!isFree && <ContentCalendar />}
