@@ -127,7 +127,7 @@ function VBCard({ file, index, isFaved, onToggleFav }: {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={file.thumbnailUrl}
+        src={file.thumbnailUrl || `https://lh3.googleusercontent.com/d/${file.id}=s400`}
         alt={file.name}
         style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 8 }}
         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
