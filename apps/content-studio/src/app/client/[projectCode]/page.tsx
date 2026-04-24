@@ -699,21 +699,43 @@ function DashboardInner() {
               <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
                 Ochutnávka
               </div>
-              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 6px' }}>
-                3 příspěvky zdarma čekají v knihovně
-              </h3>
-              <div style={{ fontSize: 13, color: '#8a8680', marginBottom: 14, lineHeight: 1.6 }}>
-                Vyber si fotku, kterou znáš — zbytek za tebe Lucifera dotvoří.
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-                {(vbPreview.length > 0 ? vbPreview : LIBRARY_PREVIEW.map((src, i) => ({ id: String(i), thumbnailUrl: src }))).map(f => (
-                  <div key={f.id} style={{
-                    aspectRatio: '4/5', borderRadius: 10, overflow: 'hidden',
-                    backgroundImage: `url(${f.thumbnailUrl})`,
-                    backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'pointer',
-                  }} />
-                ))}
-              </div>
+              {(() => {
+                const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string }[] | undefined) ?? []
+                if (gp.length > 0) {
+                  return (
+                    <>
+                      <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 14px' }}>
+                        Příspěvky připravené pro tvou značku
+                      </h3>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                        {gp.slice(0, 4).map((post, i) => (
+                          <div key={i} style={{ border: '1px solid #e8e4dc', borderRadius: 10, padding: '14px 16px', background: '#fafaf8' }}>
+                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: 8 }}>
+                              {post.label ?? (post.type === 'video' ? 'VIDEO · REELS' : 'GRAFIKA')}
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: 6 }}>
+                              {post.title}
+                            </div>
+                            {post.style && (
+                              <div style={{ fontSize: 11, color: '#8a8680' }}>{post.style}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 6px' }}>
+                      Příspěvky se připravují
+                    </h3>
+                    <div style={{ fontSize: 13, color: '#8a8680', lineHeight: 1.6 }}>
+                      Po dokončení diagnostiky zde uvidíš ukázku obsahu pro tvou značku.
+                    </div>
+                  </>
+                )
+              })()}
             </div>
           )}
         </div>
