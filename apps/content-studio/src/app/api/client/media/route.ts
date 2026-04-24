@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
         name: f.name,
         fileType,
         mimeType: f.mimeType,
-        thumbnailUrl: f.thumbnailLink || null,
+        thumbnailUrl: `https://lh3.googleusercontent.com/d/${f.id}=s400`,
         webViewLink: f.webViewLink || null,
         subfolder: f.subfolder || null,
         createdAt: f.createdTime || null,
