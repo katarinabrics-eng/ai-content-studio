@@ -188,6 +188,7 @@ function AnalyzingInner() {
   // ZMENA 2 — analysisResult state
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const analysisStarted = useRef(false);
   const doneRef             = useRef(false);
   const strategistShownRef  = useRef(false);
@@ -277,6 +278,28 @@ function AnalyzingInner() {
       }
     }
   }, [phase, analysisResult, url, name]);
+
+  async function handleCreateProject(destination: 'project' | 'magnet') {
+    if (creating) return;
+    setCreating(true);
+    try {
+      const res = await fetch('/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, name, website: url }),
+      });
+      const data = await res.json();
+      const token = data.access?.magicToken ?? '';
+      const projectCode = data.projectCode ?? '';
+      if (destination === 'project' && projectCode) {
+        window.location.href = `/client/${projectCode}?token=${token}`;
+      } else {
+        window.location.href = `/client/magnet?token=${token}`;
+      }
+    } catch {
+      setCreating(false);
+    }
+  }
 
   function handleChooseStrateg(s: Strategist) {
     if (doneRef.current) return;
@@ -730,25 +753,16 @@ function AnalyzingInner() {
                   ))}
                 </div>
                 <button
-                  onClick={() => { window.location.href = '/start/success'; }}
-                  style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginBottom: 8, display: "block" }}
+                  onClick={() => handleCreateProject('project')}
+                  disabled={creating}
+                  style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 13, fontWeight: 600, cursor: creating ? "wait" : "pointer", fontFamily: "inherit", marginBottom: 8, display: "block", opacity: creating ? 0.7 : 1 }}
                 >
-                  Vytvořit účet zdarma →
+                  {creating ? 'Vytvářím...' : 'Vytvořit účet zdarma →'}
                 </button>
                 <button
-                  onClick={() => {
-                    try {
-                      localStorage.setItem('analyzing_result', JSON.stringify({
-                        analysisResult,
-                        generatedPosts: analysisResult?.generatedPosts || [],
-                        url,
-                        name,
-                        timestamp: Date.now(),
-                      }));
-                    } catch(e) {}
-                    window.location.href = '/client/magnet/rtg/onboarding';
-                  }}
-                  style={{ fontSize: 11, color: "#aaa", cursor: "pointer", background: "none", border: "none", fontFamily: "inherit" }}
+                  onClick={() => handleCreateProject('magnet')}
+                  disabled={creating}
+                  style={{ fontSize: 11, color: "#aaa", cursor: creating ? "wait" : "pointer", background: "none", border: "none", fontFamily: "inherit" }}
                 >
                   Pokračovat bez účtu
                 </button>
