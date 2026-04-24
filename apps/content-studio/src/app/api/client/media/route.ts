@@ -61,6 +61,24 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // 3. Fallback: projects tabulka (hlavní systém, project_code uppercase)
+    if (!project) {
+      const { data } = await supabase
+        .from('projects')
+        .select('id, project_code')
+        .eq('project_code', projectCode.toUpperCase())
+        .single()
+
+      if (data) {
+        project = {
+          id: data.id,
+          name: projectCode,
+          drive_folder_id: null,
+          brand_colors: [],
+        }
+      }
+    }
+
     if (!project) {
       return NextResponse.json({ error: 'projekt nenalezen nebo neplatný přístup' }, { status: 404 })
     }
