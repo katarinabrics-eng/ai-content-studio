@@ -286,7 +286,7 @@ function AnalyzingInner() {
       const res = await fetch('/api/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, name, website: url, analysisResult }),
+        body: JSON.stringify({ url, name, website: url, analysisResult, generatedPosts: analysisResult?.generatedPosts ?? [] }),
       });
       const data = await res.json();
       const token = data.access?.magicToken ?? '';

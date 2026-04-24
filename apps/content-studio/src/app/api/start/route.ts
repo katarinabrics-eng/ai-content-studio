@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { runStartPipeline } from "@/lib/start-pipeline";
+import { getSupabaseClient } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -62,6 +63,20 @@ export async function POST(request: Request) {
         { ok: false, errorCode: result.errorCode, errorMessage: result.errorMessage, details: result.details },
         { status }
       );
+    }
+
+    // Ulož raw_analysis + generatedPosts do project_brief
+    const analysisResult = (input.analysisResult as Record<string, unknown>) ?? {};
+    const generatedPosts = (input.generatedPosts as unknown[]) ?? [];
+    if (Object.keys(analysisResult).length > 0) {
+      const supabase = getSupabaseClient();
+      await supabase
+        .from("project_brief")
+        .update({
+          raw_analysis: { ...analysisResult, generatedPosts },
+          updated_at: new Date().toISOString(),
+        })
+        .eq("project_id", result.projectId);
     }
 
     const baseUrl =
