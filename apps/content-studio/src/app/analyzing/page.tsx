@@ -290,6 +290,7 @@ function AnalyzingInner() {
       });
       const data = await res.json();
       const token = data.access?.magicToken ?? '';
+      console.log('DEBUG token:', { magicToken: data.access?.magicToken, accessMode: data.accessMode, fullData: data });
       const projectCode = data.projectCode ?? data.access?.code ?? '';
       console.log('DEBUG analyzing redirect:', { projectCode, token, data });
       if (destination === 'project' && projectCode) {
