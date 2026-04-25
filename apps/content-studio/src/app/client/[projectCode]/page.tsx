@@ -449,7 +449,14 @@ function getStrategist(sr: Record<string, unknown>) {
   const id = ((result.recommended_strategist ?? result.strategist_id) as string | undefined)?.toLowerCase()
     ?? ((result.suggested_strategists as {id?: string}[] | undefined)?.[0]?.id)?.toLowerCase()
   if (!id) return null
-  return STRATEGIST_MAP[id] ?? null
+  const normalized = id
+    .replace('the_catalyst', 'katalyzator')
+    .replace('the_pathfinder', 'impuls')
+    .replace('the_architect', 'architekt')
+    .replace('the_illuminator', 'ilumina')
+    .replace('the_signal', 'signal')
+    .replace('the_voice', 'content_voice')
+  return STRATEGIST_MAP[normalized] ?? STRATEGIST_MAP[id] ?? null
 }
 
 // ─── Dashboard Inner ──────────────────────────────────────────────────────────
