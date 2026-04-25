@@ -445,7 +445,9 @@ const STRATEGIST_MAP: Record<string, { name: string; bg: string; color: string; 
 }
 
 function getStrategist(sr: Record<string, unknown>) {
-  const id = ((sr.recommended_strategist ?? sr.strategist_id) as string | undefined)?.toLowerCase()
+  const result = (sr.result as Record<string, unknown>) ?? sr
+  const id = ((result.recommended_strategist ?? result.strategist_id) as string | undefined)?.toLowerCase()
+    ?? ((result.suggested_strategists as {id?: string}[] | undefined)?.[0]?.id)?.toLowerCase()
   if (!id) return null
   return STRATEGIST_MAP[id] ?? null
 }
