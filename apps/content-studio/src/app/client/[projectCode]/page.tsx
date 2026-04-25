@@ -270,16 +270,17 @@ function PostThumb({ post, onClick }: { post: PostItem; onClick?: () => void }) 
       )}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, transparent 55%, rgba(0,0,0,.6))',
+        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)',
       }} />
       <div style={{
-        position: 'absolute', bottom: 8, right: 8, left: 36,
-        fontSize: 10, color: '#fff', lineHeight: 1.3, fontWeight: 500,
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: '8px 12px',
+        fontSize: 13, color: '#fff', fontWeight: 600, lineHeight: 1.3,
         overflow: 'hidden',
         display: '-webkit-box',
         WebkitLineClamp: 2,
         WebkitBoxOrient: 'vertical' as never,
-      }}>{post.title}</div>
+      }}>{(post as PostItem & { hook?: string }).hook ?? post.title}</div>
     </div>
   )
 }
@@ -543,7 +544,8 @@ function DashboardInner() {
     : 0
 
   // ── scraped images + generated posts → PostItem[]
-  const scrapedImgs = (project?.scan_result?.scrapedImages as string[]) ?? []
+  const scrapedImgs = ((project?.scan_result?.scrapedImages as string[]) ?? [])
+    .filter((url: string) => !url.toLowerCase().includes('logo'))
   const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string; duration?: string }[] | undefined) ?? []
   const imgFor = (i: number) => scrapedImgs[i] ?? POSTS_SEED[i % POSTS_SEED.length]?.img ?? ''
 
