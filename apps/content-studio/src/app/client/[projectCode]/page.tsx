@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -476,6 +476,7 @@ function getStrategist(sr: Record<string, unknown>) {
 function DashboardInner() {
   const params = useParams()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const projectCode = params.projectCode as string
   const token = searchParams.get('token') ?? ''
 
@@ -760,7 +761,7 @@ function DashboardInner() {
                     return (
                       <div
                         key={i}
-                        onClick={() => setSelectedPost(i)}
+                        onClick={() => router.push(`/client/${projectCode}/prispevky?token=${token}`)}
                         style={{
                           height: 'auto',
                           aspectRatio: type.includes('REEL') || type.includes('STORY') || type.includes('VIDEO') ? '9/16' :
