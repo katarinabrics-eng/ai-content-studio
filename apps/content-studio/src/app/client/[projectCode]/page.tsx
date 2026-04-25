@@ -7,6 +7,15 @@ import { useParams, useSearchParams } from 'next/navigation'
 
 type Pillar = { key: string; label: string; score: number; tone?: string }
 
+type PostItem = {
+  id: string
+  type: string
+  aspect: string
+  duration?: string
+  img: string
+  title: string
+}
+
 type BrandData = {
   name: string
   handle: string
@@ -29,7 +38,7 @@ type Project = {
 
 // ─── Seed / defaults ──────────────────────────────────────────────────────────
 
-const POSTS_SEED = [
+const POSTS_SEED: PostItem[] = [
   {
     id: 'p1', type: 'Foto',    aspect: '9:16', duration: '15s',
     img: '/placeholders/stock-vizualni knihovna/K04/k04-006.png',
@@ -185,9 +194,10 @@ function StatCard({
     <div style={{
       background: accent ? '#111111' : '#ffffff',
       border: `1px solid ${accent ? '#111111' : '#e8e4dc'}`,
-      borderRadius: 12,
+      borderRadius: 16,
       padding: '18px 20px',
       color: accent ? '#f5f3ee' : '#111111',
+      boxShadow: '0 1px 3px rgba(0,0,0,.07)',
     }}>
       <div style={{
         fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase' as const,
@@ -226,13 +236,13 @@ function StatCard({
 
 // ─── PostThumb ────────────────────────────────────────────────────────────────
 
-function PostThumb({ post, onClick }: { post: typeof POSTS_SEED[0]; onClick?: () => void }) {
+function PostThumb({ post, onClick }: { post: PostItem; onClick?: () => void }) {
   return (
     <div
       onClick={onClick}
       style={{
         aspectRatio: post.aspect === '1:1' ? '1' : '9/14',
-        borderRadius: 10,
+        borderRadius: 12,
         overflow: 'hidden',
         position: 'relative',
         backgroundImage: `url(${post.img})`,
@@ -246,7 +256,7 @@ function PostThumb({ post, onClick }: { post: typeof POSTS_SEED[0]; onClick?: ()
         position: 'absolute', top: 8, left: 8,
         fontSize: 9, fontWeight: 700, letterSpacing: '.1em',
         padding: '3px 7px', borderRadius: 999,
-        background: post.type === 'Grafika' ? '#b7e94c' : 'rgba(255,255,255,.92)',
+        background: post.type === 'Grafika' || post.type === 'GRAFIKA' ? '#b7e94c' : 'rgba(255,255,255,.92)',
         color: '#111', textTransform: 'uppercase' as const,
       }}>{post.type}</div>
       {post.duration && (
@@ -280,8 +290,9 @@ function BrandDNACard({ brand, locked }: { brand: BrandData; locked: boolean }) 
   return (
     <div style={{
       background: '#ffffff', border: '1px solid #e8e4dc',
-      borderRadius: 12, padding: 22,
+      borderRadius: 16, padding: 22,
       position: 'relative', overflow: 'hidden',
+      boxShadow: '0 1px 3px rgba(0,0,0,.07)',
     }}>
       <div style={{
         fontSize: 10, fontWeight: 600, letterSpacing: '0.14em',
@@ -310,7 +321,6 @@ function BrandDNACard({ brand, locked }: { brand: BrandData; locked: boolean }) 
           </div>
         ))}
       </div>
-      {/* Gradient fade for locked */}
       {locked && (
         <div style={{
           position: 'absolute', inset: 0,
@@ -349,7 +359,11 @@ function ContentCalendar() {
   }
 
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+    <div style={{
+      background: '#ffffff', border: '1px solid #e8e4dc',
+      borderRadius: 16, padding: 22,
+      boxShadow: '0 1px 3px rgba(0,0,0,.07)',
+    }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: '#8a8680', marginBottom: 4 }}>
@@ -370,7 +384,6 @@ function ContentCalendar() {
         </div>
       </div>
 
-      {/* Day headers */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 5, marginBottom: 5 }}>
         {['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'].map(d => (
           <div key={d} style={{
@@ -381,7 +394,6 @@ function ContentCalendar() {
         ))}
       </div>
 
-      {/* Calendar cells */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 5 }}>
         {cells.map((c, idx) => (
           <div key={idx} style={{
@@ -417,7 +429,6 @@ function ContentCalendar() {
         ))}
       </div>
 
-      {/* Legend */}
       <div style={{ display: 'flex', gap: 14, marginTop: 14, fontSize: 10.5, color: '#8a8680', flexWrap: 'wrap' as const, alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <span style={{ width: 8, height: 8, borderRadius: 2, background: '#b7e94c', display: 'inline-block' }} />
@@ -531,8 +542,27 @@ function DashboardInner() {
     ? project?.rtg_plan === 'pro' ? 22000 : project?.rtg_plan === 'plus' ? 12000 : 6000
     : 0
 
+  // ── scraped images + generated posts → PostItem[]
+  const scrapedImgs = (project?.scan_result?.scrapedImages as string[]) ?? []
+  const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string; duration?: string }[] | undefined) ?? []
+  const imgFor = (i: number) => scrapedImgs[i] ?? POSTS_SEED[i % POSTS_SEED.length]?.img ?? ''
+
+  const contentPosts: PostItem[] = gp.length > 0
+    ? gp.slice(0, 4).map((post, i) => ({
+        id: `gp-${i}`,
+        type: post.label ?? (post.type === 'video' ? 'VIDEO · REELS' : 'GRAFIKA'),
+        aspect: post.type === 'video' ? '9:16' : '1:1',
+        duration: post.duration ?? (post.type === 'video' ? '15s · Reels' : undefined),
+        img: imgFor(i),
+        title: post.title ?? '',
+      }))
+    : POSTS_SEED.slice(0, 4).map((p, i) => ({
+        ...p,
+        img: scrapedImgs[i] ?? p.img,
+      }))
+
   return (
-    <div style={{ padding: '32px 28px 80px', maxWidth: 1280, margin: '0 auto' }}>
+    <div style={{ padding: '32px 28px 80px', maxWidth: 1280, margin: '0 auto', background: '#f5f2ec', minHeight: '100vh' }}>
 
       {/* ── Page header ── */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, marginBottom: 28 }}>
@@ -629,7 +659,7 @@ function DashboardInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Brand pillars */}
-          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 26 }}>
+          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 16, padding: 26, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
@@ -691,9 +721,9 @@ function DashboardInner() {
             )}
           </div>
 
-          {/* Content: RTG/PVI → PostThumbs, free → preview grid */}
+          {/* Content card — RTG/PVI: real posts; free: Ochutnávka with PostThumbs */}
           {(hasRtg || hasPVI) ? (
-            <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 26 }}>
+            <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 16, padding: 26, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
@@ -708,38 +738,27 @@ function DashboardInner() {
                 </button>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                {POSTS_SEED.slice(0, 4).map((p) => (
+                {contentPosts.slice(0, 4).map((p) => (
                   <PostThumb key={p.id} post={p} />
                 ))}
               </div>
             </div>
           ) : (
-            <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 26 }}>
+            <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 16, padding: 26, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
               <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>
                 Ochutnávka
               </div>
               {(() => {
                 console.log('DEBUG scan_result keys:', Object.keys(project?.scan_result ?? {}))
-                const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string }[] | undefined) ?? []
-                if (gp.length > 0) {
+                if (contentPosts.length > 0) {
                   return (
                     <>
                       <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 14px' }}>
                         Příspěvky připravené pro tvou značku
                       </h3>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-                        {gp.slice(0, 4).map((post, i) => (
-                          <div key={i} style={{ border: '1px solid #e8e4dc', borderRadius: 10, padding: '14px 16px', background: '#fafaf8' }}>
-                            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#b7e94c', marginBottom: 8 }}>
-                              {post.label ?? (post.type === 'video' ? 'VIDEO · REELS' : 'GRAFIKA')}
-                            </div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111', lineHeight: 1.4, marginBottom: 6 }}>
-                              {post.title}
-                            </div>
-                            {post.style && (
-                              <div style={{ fontSize: 11, color: '#8a8680' }}>{post.style}</div>
-                            )}
-                          </div>
+                        {contentPosts.slice(0, 4).map((post) => (
+                          <PostThumb key={post.id} post={post} />
                         ))}
                       </div>
                     </>
@@ -766,7 +785,7 @@ function DashboardInner() {
           <BrandDNACard brand={brand} locked={isFree} />
 
           {/* Paleta */}
-          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+          <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 16, padding: 22, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <div>
                 <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>Paleta</div>
@@ -812,7 +831,7 @@ function DashboardInner() {
             const sr = (project?.scan_result as Record<string, unknown>) ?? {}
             const strat = getStrategist(sr)
             return (
-              <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 12, padding: 22 }}>
+              <div style={{ background: '#ffffff', border: '1px solid #e8e4dc', borderRadius: 16, padding: 22, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
                 <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 12 }}>
                   Doporučení stratéga
                 </div>
@@ -854,7 +873,7 @@ function DashboardInner() {
 
 export default function ClientDashboardPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100%', background: '#f5f3ee' }} />}>
+    <Suspense fallback={<div style={{ minHeight: '100%', background: '#f5f2ec' }} />}>
       <DashboardInner />
     </Suspense>
   )
