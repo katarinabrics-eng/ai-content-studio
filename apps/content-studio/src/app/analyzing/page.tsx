@@ -189,6 +189,7 @@ function AnalyzingInner() {
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [preCreatedProject, setPreCreatedProject] = useState<{ projectCode: string; token: string } | null>(null);
   const analysisStarted = useRef(false);
   const doneRef             = useRef(false);
   const strategistShownRef  = useRef(false);
@@ -279,10 +280,41 @@ function AnalyzingInner() {
     }
   }, [phase, analysisResult, url, name]);
 
+  useEffect(() => {
+    if (!analysisResult) return;
+    // Auto-create projekt na pozadí
+    fetch('/api/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url, name, website: url, analysisResult,
+        generatedPosts: analysisResult?.generatedPosts ?? [],
+        brand_name: analysisResult?.result?.brandDna?.name ?? name ?? url,
+        industry: 'Ostatní',
+        communication_goal: analysisResult?.result?.brandDna?.positioning ?? '',
+        tone_of_voice: analysisResult?.result?.brandDna?.tone ?? '',
+        platforms: ['instagram'],
+      }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        setPreCreatedProject({
+          projectCode: data.projectCode ?? data.access?.code ?? '',
+          token: data.access?.magicToken ?? '',
+        });
+      }
+    });
+  }, [analysisResult]); // eslint-disable-line react-hooks/exhaustive-deps
+
   async function handleCreateProject(destination: 'project' | 'magnet') {
     if (creating) return;
     if (!analysisResult) {
       alert('Analýza ještě probíhá, počkejte prosím chvíli.');
+      return;
+    }
+    if (preCreatedProject?.projectCode) {
+      window.location.href = `/client/${preCreatedProject.projectCode}?token=${preCreatedProject.token}`;
       return;
     }
     setCreating(true);
@@ -315,11 +347,7 @@ function AnalyzingInner() {
       console.log('DEBUG token:', { magicToken: data.access?.magicToken, accessMode: data.accessMode, fullData: data });
       const projectCode = data.projectCode ?? data.access?.code ?? '';
       console.log('DEBUG analyzing redirect:', { projectCode, token, data });
-      if (destination === 'project' && projectCode) {
-        window.location.href = `/client/${projectCode}?token=${token}`;
-      } else {
-        window.location.href = `/client/${projectCode}?token=${token}`;
-      }
+      window.location.href = `/client/${projectCode}?token=${token}`;
     } catch {
       setCreating(false);
     }
