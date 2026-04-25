@@ -72,11 +72,11 @@ export async function POST(request: Request) {
       const supabase = getSupabaseClient();
       await supabase
         .from("project_brief")
-        .update({
+        .upsert({
+          project_id: result.projectId,
           raw_analysis: { ...analysisResult, generatedPosts },
           updated_at: new Date().toISOString(),
-        })
-        .eq("project_id", result.projectId);
+        });
     }
 
     const baseUrl =
