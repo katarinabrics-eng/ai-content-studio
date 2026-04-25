@@ -45,6 +45,9 @@ function PrispevkyInner() {
   const [statuses, setStatuses] = useState<Record<number, Status>>({})
   const [editing, setEditing] = useState(false)
   const [drafts, setDrafts] = useState<Record<number, { hook: string; body: string }>>({})
+  // UI-only states
+  const [showKampan, setShowKampan] = useState(false)
+  const [visualSource, setVisualSource] = useState<'web' | 'drive' | 'ai'>('web')
 
   useEffect(() => {
     if (!projectCode) return
@@ -103,6 +106,7 @@ function PrispevkyInner() {
   const sel = posts[selectedIdx]
   const selStatus = statuses[selectedIdx] ?? 'pending'
   const selDraft = drafts[selectedIdx] ?? { hook: '', body: '' }
+  const isSelVideo = sel?.type?.toLowerCase() === 'video'
 
   // ── Loading ──
   if (loading) {
@@ -132,241 +136,401 @@ function PrispevkyInner() {
     )
   }
 
+  // ── Helpers ──
+  const eyebrowStyle = {
+    fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
+    textTransform: 'uppercase' as const, color: '#8a8680',
+  }
+  const previewW = isSelVideo ? 160 : 200
+
   return (
-    <div style={{ padding: '32px 28px 80px', maxWidth: 1280, margin: '0 auto', background: '#f5f2ec', minHeight: '100vh' }}>
+    <div style={{ padding: '28px 24px 80px', maxWidth: 1280, margin: '0 auto', background: '#f5f2ec', minHeight: '100vh' }}>
 
       {/* ── Hlavička ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 24, marginBottom: 22 }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 8 }}>
-            Příspěvky · ochutnávka
-          </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(26px, 3vw, 36px)', fontWeight: 500, color: '#111', margin: '0 0 8px', lineHeight: 1.1 }}>
+          <div style={{ ...eyebrowStyle, marginBottom: 6 }}>Příspěvky · ochutnávka</div>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(24px, 2.8vw, 34px)', fontWeight: 500, color: '#111', margin: 0, lineHeight: 1.1 }}>
             Schval svůj obsah
           </h1>
-          <div style={{ fontSize: 13, color: '#8a8680' }}>
-            Zkontroluj příspěvky navržené pro tvou značku.
-          </div>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-          <span style={{
-            padding: '4px 12px', borderRadius: 999, fontSize: 11, fontWeight: 600,
-            background: '#ffffff', border: '1px solid #e8e4dc', color: '#555',
-          }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0, paddingTop: 4 }}>
+          <span style={{ padding: '4px 11px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#fff', border: '1px solid #e8e4dc', color: '#555' }}>
             {pendingCount} čeká
           </span>
-          <span style={{
-            padding: '4px 12px', borderRadius: 999, fontSize: 11, fontWeight: 600,
-            background: '#f0fce0', border: '1px solid #c6e88a', color: '#3d6b00',
-          }}>
+          <span style={{ padding: '4px 11px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: '#f0fce0', border: '1px solid #b7e94c', color: '#3d6b00' }}>
             {approvedCount} schváleno
           </span>
+          <div style={{ width: 1, height: 20, background: '#e8e4dc' }} />
+          <button style={{ padding: '8px 14px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#333', display: 'flex', alignItems: 'center', gap: 5 }}>
+            + Nový příspěvek
+          </button>
+          <button
+            onClick={() => setShowKampan(true)}
+            style={{ padding: '8px 14px', borderRadius: 9, border: 'none', background: '#111', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5 }}
+          >
+            ✦ Navrhnout kampaň
+          </button>
         </div>
       </div>
 
-      {/* ── Hlavný grid ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20, alignItems: 'start' }}>
+      {/* ── Hlavný grid: 200px | 1fr ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 12, alignItems: 'start' }}>
 
-        {/* LEFT — zoznam */}
-        <div style={{
-          background: '#ffffff', border: '1px solid #e8e4dc',
-          borderRadius: 16, overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,.07)',
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: '#e8e4dc' }}>
-            {posts.map((post, i) => {
-              const isSel = selectedIdx === i
-              const status = statuses[i] ?? 'pending'
-              const isVideo = post.type.toLowerCase() === 'video'
-              return (
-                <div
-                  key={i}
-                  onClick={() => { setSelectedIdx(i); setEditing(false) }}
-                  style={{
-                    background: '#ffffff',
-                    cursor: 'pointer',
-                    padding: 16,
-                    display: 'flex',
-                    gap: 14,
-                    position: 'relative',
-                    outline: isSel ? '2px solid #b7e94c' : 'none',
-                    outlineOffset: '-2px',
-                  }}
-                >
-                  {/* Thumbnail */}
-                  <div style={{
-                    width: 70, height: 90, flexShrink: 0, borderRadius: 8,
-                    backgroundImage: post.img ? `url(${post.img})` : 'none',
-                    backgroundSize: 'cover', backgroundPosition: 'center',
-                    backgroundColor: post.img ? undefined : '#f0efeb',
-                    border: '1px solid #e8e4dc',
-                  }} />
-                  {/* Text */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', gap: 5, marginBottom: 7, flexWrap: 'wrap' }}>
-                      <span style={{
-                        fontSize: 9.5, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
-                        background: isVideo ? '#111' : '#f0fce0',
-                        color: isVideo ? '#fff' : '#3d6b00',
-                        letterSpacing: '.04em', textTransform: 'uppercase' as const,
-                      }}>{post.label}</span>
-                      <span style={{
-                        fontSize: 9.5, fontWeight: 600, padding: '2px 8px', borderRadius: 999,
-                        background: '#faf8f3', border: '1px solid #e8e4dc', color: '#888',
-                      }}>{post.aspect}</span>
-                    </div>
+        {/* ── LEVÝ PANEL ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+          {/* Ke schválení */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
+            <div style={{ padding: '9px 12px 7px', ...eyebrowStyle, borderBottom: '1px solid #f0ece4' }}>
+              Ke schválení
+            </div>
+            <div style={{ padding: '6px 4px' }}>
+              {posts.map((post, i) => {
+                if (statuses[i] === 'approved') return null
+                const isSel = selectedIdx === i
+                const isVideo = post.type.toLowerCase() === 'video'
+                return (
+                  <div
+                    key={i}
+                    onClick={() => { setSelectedIdx(i); setEditing(false) }}
+                    style={{
+                      display: 'flex', gap: 8, padding: '6px 8px', cursor: 'pointer',
+                      borderRadius: 8, margin: '0 0 2px',
+                      border: isSel ? '1.5px solid #b7e94c' : '1.5px solid transparent',
+                      background: isSel ? '#f9fce8' : 'transparent',
+                      position: 'relative',
+                    }}
+                  >
                     <div style={{
-                      fontSize: 12.5, fontWeight: 600, color: '#111',
-                      marginBottom: 4, lineHeight: 1.3,
-                      display: '-webkit-box', WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical' as never,
-                      overflow: 'hidden',
-                    }}>
-                      {drafts[i]?.hook || post.hook}
+                      width: isVideo ? 30 : 36,
+                      height: isVideo ? 42 : 36,
+                      borderRadius: 4, flexShrink: 0,
+                      backgroundImage: post.img ? `url(${post.img})` : 'none',
+                      backgroundSize: 'cover', backgroundPosition: 'center',
+                      backgroundColor: '#2a1a3a',
+                    }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        display: 'inline-block', marginBottom: 3,
+                        fontSize: 8, fontWeight: 700, padding: '1px 5px', borderRadius: 999,
+                        background: isVideo ? '#111' : '#b7e94c',
+                        color: isVideo ? '#fff' : '#111',
+                        letterSpacing: '.04em', textTransform: 'uppercase',
+                      }}>{post.label}</span>
+                      <div style={{
+                        fontSize: 11, fontWeight: 500, color: '#111', lineHeight: 1.3,
+                        display: '-webkit-box', WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical' as never, overflow: 'hidden',
+                      }}>
+                        {drafts[i]?.hook || post.hook}
+                      </div>
                     </div>
-                    {post.duration && (
-                      <div style={{ fontSize: 10.5, color: '#b0aea8' }}>{post.duration}</div>
+                    {statuses[i] === 'rejected' && (
+                      <div style={{ position: 'absolute', top: 4, right: 6, fontSize: 10, color: '#aaa', fontWeight: 700 }}>×</div>
                     )}
                   </div>
-                  {/* Status ikonka */}
-                  {status !== 'pending' && (
-                    <div style={{
-                      position: 'absolute', top: 12, right: 12,
-                      width: 20, height: 20, borderRadius: 50,
-                      background: status === 'approved' ? '#b7e94c' : '#f0efeb',
-                      border: status === 'rejected' ? '1px solid #ddd' : 'none',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700,
-                      color: status === 'approved' ? '#111' : '#888',
-                    }}>
-                      {status === 'approved' ? '✓' : '×'}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
+
+          {/* Historie · schváleno */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
+            <div style={{ padding: '9px 12px 7px', ...eyebrowStyle, borderBottom: '1px solid #f0ece4' }}>
+              Historie · schváleno
+            </div>
+            {approvedCount === 0 ? (
+              <div style={{ padding: '14px 12px', fontSize: 11, color: '#b0aea8', textAlign: 'center' }}>—</div>
+            ) : (
+              <div style={{ padding: '6px 4px' }}>
+                {posts.map((post, i) => {
+                  if (statuses[i] !== 'approved') return null
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: 8, padding: '5px 8px', alignItems: 'center', opacity: 0.65 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 4, flexShrink: 0,
+                        backgroundImage: post.img ? `url(${post.img})` : 'none',
+                        backgroundSize: 'cover', backgroundPosition: 'center',
+                        backgroundColor: '#f0efeb',
+                      }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 10, fontWeight: 500, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {drafts[i]?.hook || post.hook}
+                        </div>
+                        <div style={{ fontSize: 9.5, color: '#8a8680' }}>Instagram · dnes</div>
+                      </div>
+                      <div style={{ fontSize: 11, color: '#3d6b00', fontWeight: 700, flexShrink: 0 }}>✓</div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
         </div>
 
-        {/* RIGHT — detail */}
+        {/* ── HLAVNÍ OKNO ── */}
         {sel && (
           <div style={{
-            background: '#ffffff', border: '1px solid #e8e4dc',
-            borderRadius: 16, padding: 22,
-            boxShadow: '0 1px 3px rgba(0,0,0,.07)',
-            position: 'sticky', top: 88, alignSelf: 'start',
+            background: '#fff', borderRadius: 16, padding: 20,
+            border: '1px solid #e8e4dc', boxShadow: '0 1px 3px rgba(0,0,0,.07)',
+            display: 'flex', gap: 20,
           }}>
 
-            {/* Obrázok */}
-            <div style={{
-              aspectRatio: sel.aspect === '9:16' ? '9/14' : '1/1',
-              borderRadius: 12, overflow: 'hidden',
-              backgroundImage: sel.img ? `url(${sel.img})` : 'none',
-              backgroundSize: 'cover', backgroundPosition: 'center',
-              background: sel.img ? undefined : '#f0efeb',
-              marginBottom: 18,
-              border: '1px solid #e8e4dc',
-            }}>
-              {sel.duration && (
+            {/* VLEVO — náhled */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+
+              {/* Preview image */}
+              {isSelVideo ? (
                 <div style={{
-                  margin: 10, float: 'right',
-                  padding: '4px 10px', borderRadius: 999,
-                  background: 'rgba(17,17,17,.7)', color: '#fff',
-                  fontSize: 10, fontWeight: 600,
+                  width: 160, height: 284, borderRadius: 12, overflow: 'hidden',
+                  backgroundImage: sel.img ? `url(${sel.img})` : 'none',
+                  backgroundSize: 'cover', backgroundPosition: 'center',
+                  backgroundColor: '#1a0a2e', position: 'relative', flexShrink: 0,
                 }}>
-                  ▶ {sel.duration}
+                  <span style={{
+                    position: 'absolute', top: 8, left: 8,
+                    fontSize: 8.5, fontWeight: 700, padding: '2px 7px', borderRadius: 999,
+                    background: 'rgba(17,17,17,.75)', color: '#fff',
+                    letterSpacing: '.06em', textTransform: 'uppercase',
+                  }}>REELS</span>
+                  {sel.duration && (
+                    <span style={{
+                      position: 'absolute', top: 8, right: 8,
+                      fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 999,
+                      background: 'rgba(17,17,17,.7)', color: '#fff',
+                    }}>▶ {sel.duration}</span>
+                  )}
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 55%)' }} />
+                  <div style={{
+                    position: 'absolute', bottom: 8, left: 8, right: 8,
+                    color: '#fff', fontSize: 11, fontWeight: 600, lineHeight: 1.3,
+                  }}>{selDraft.hook}</div>
                 </div>
+              ) : (
+                <div style={{
+                  width: 200, height: 200, borderRadius: 12, overflow: 'hidden',
+                  backgroundImage: sel.img ? `url(${sel.img})` : 'none',
+                  backgroundSize: 'cover', backgroundPosition: 'center',
+                  backgroundColor: '#f0efeb', flexShrink: 0,
+                }} />
               )}
-            </div>
 
-            {/* Hook */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 6 }}>
-              Hook
-            </div>
-            {editing ? (
-              <textarea
-                value={selDraft.hook}
-                onChange={e => setDrafts(prev => ({ ...prev, [selectedIdx]: { ...selDraft, hook: e.target.value } }))}
-                style={{
-                  width: '100%', padding: '10px 12px', boxSizing: 'border-box',
-                  border: '1px solid #e8e4dc', borderRadius: 8,
-                  fontSize: 14, fontFamily: 'inherit', fontWeight: 600,
-                  minHeight: 60, resize: 'vertical', background: '#faf8f3',
-                  color: '#111', outline: 'none',
-                }}
-              />
-            ) : (
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#111', marginBottom: 14, lineHeight: 1.35 }}>
-                {selDraft.hook || '—'}
+              <div style={{ fontSize: 10, color: '#8a8680', fontWeight: 500 }}>
+                {isSelVideo ? '9 : 16 · Reels' : '1 : 1 · Grafika'}
               </div>
-            )}
 
-            {/* Caption */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8680', marginTop: 14, marginBottom: 6 }}>
-              Caption
-            </div>
-            {editing ? (
-              <textarea
-                value={selDraft.body}
-                onChange={e => setDrafts(prev => ({ ...prev, [selectedIdx]: { ...selDraft, body: e.target.value } }))}
-                style={{
-                  width: '100%', padding: '10px 12px', boxSizing: 'border-box',
-                  border: '1px solid #e8e4dc', borderRadius: 8,
-                  fontSize: 12.5, fontFamily: 'inherit',
-                  minHeight: 90, resize: 'vertical', background: '#faf8f3',
-                  color: '#555', outline: 'none',
-                }}
-              />
-            ) : (
-              <div style={{ fontSize: 12.5, color: '#555', lineHeight: 1.6, marginBottom: 4 }}>
-                {selDraft.body || '—'}
+              {/* Zdroj vizuálu */}
+              <div style={{
+                width: previewW, border: '1px solid #e8e4dc', borderRadius: 8,
+                padding: 10, background: '#faf8f3',
+              }}>
+                <div style={{ ...eyebrowStyle, textAlign: 'center', marginBottom: 8 }}>Zdroj vizuálu</div>
+                {(['web', 'drive', 'ai'] as const).map(src => (
+                  <label key={src} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#555', marginBottom: 5, cursor: 'pointer' }}>
+                    <input
+                      type="radio" name="visualSource" value={src}
+                      checked={visualSource === src}
+                      onChange={() => setVisualSource(src)}
+                      style={{ accentColor: '#b7e94c' }}
+                    />
+                    {src === 'web' ? 'Z webu klienta' : src === 'drive' ? 'Z Drive knihovny' : 'AI generovaný'}
+                  </label>
+                ))}
+                <button style={{
+                  width: '100%', marginTop: 7, padding: '7px 0', borderRadius: 6,
+                  border: 'none', background: '#b7e94c', color: '#1a2a00',
+                  fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                }}>
+                  ✦ Změnit vizuál
+                </button>
               </div>
-            )}
-
-            {/* Edit toggle */}
-            <button
-              onClick={() => setEditing(e => !e)}
-              style={{
-                fontSize: 11, color: '#8a8680', marginTop: 10,
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4, padding: 0,
-              }}
-            >
-              ✎ {editing ? 'Hotovo' : 'Upravit text'}
-            </button>
-
-            {/* Akčné tlačidlá */}
-            <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
-              <button
-                onClick={() => setStatus(selectedIdx, 'rejected')}
-                style={{
-                  flex: 1, padding: '11px 12px', borderRadius: 10,
-                  border: '1.5px solid #e8e4dc', background: '#fff',
-                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                  color: '#555',
-                }}
-              >
-                Odmítnout
-              </button>
-              <button
-                onClick={() => setStatus(selectedIdx, 'approved')}
-                style={{
-                  flex: 2, padding: '11px 12px', borderRadius: 10,
-                  border: 'none',
-                  background: selStatus === 'approved' ? '#b7e94c' : '#111',
-                  color: selStatus === 'approved' ? '#111' : '#fff',
-                  fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                {selStatus === 'approved' ? 'Schváleno ✓' : 'Schválit ✓'}
-              </button>
             </div>
 
+            {/* VPRAVO — text a akce */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+
+              {/* Hook */}
+              <div>
+                <div style={{ ...eyebrowStyle, marginBottom: 6 }}>Hook</div>
+                {editing ? (
+                  <textarea
+                    value={selDraft.hook}
+                    onChange={e => setDrafts(prev => ({ ...prev, [selectedIdx]: { ...selDraft, hook: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 12px', boxSizing: 'border-box', border: '1px solid #e8e4dc', borderRadius: 8, fontSize: 15, fontFamily: 'inherit', fontWeight: 500, minHeight: 64, resize: 'vertical', background: '#faf8f3', color: '#111', outline: 'none' }}
+                  />
+                ) : (
+                  <div style={{ fontSize: 17, fontWeight: 500, color: '#111', lineHeight: 1.35 }}>
+                    {selDraft.hook || '—'}
+                  </div>
+                )}
+              </div>
+
+              {/* Caption */}
+              <div>
+                <div style={{ ...eyebrowStyle, marginBottom: 6 }}>Caption</div>
+                {editing ? (
+                  <textarea
+                    value={selDraft.body}
+                    onChange={e => setDrafts(prev => ({ ...prev, [selectedIdx]: { ...selDraft, body: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 12px', boxSizing: 'border-box', border: '1px solid #e8e4dc', borderRadius: 8, fontSize: 12, fontFamily: 'inherit', minHeight: 90, resize: 'vertical', background: '#faf8f3', color: '#555', outline: 'none' }}
+                  />
+                ) : (
+                  <div style={{ fontSize: 12, color: '#555', lineHeight: 1.7 }}>
+                    {selDraft.body || '—'}
+                  </div>
+                )}
+              </div>
+
+              {/* Pills */}
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <span style={{ border: '1px solid #e8e4dc', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#555' }}>Instagram</span>
+                <span style={{ border: '1px solid #e8e4dc', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#555' }}>Varianta A</span>
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button onClick={() => setEditing(e => !e)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
+                  ✎ {editing ? 'Hotovo' : 'Upravit text'}
+                </button>
+                <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
+                  ↓ Stáhnout
+                </button>
+                <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
+                  📅 Naplánovat
+                </button>
+              </div>
+
+              {/* Odmítnout / Schválit */}
+              <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 8 }}>
+                <button
+                  onClick={() => setStatus(selectedIdx, 'rejected')}
+                  style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: '1.5px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
+                >
+                  Odmítnout
+                </button>
+                <button
+                  onClick={() => setStatus(selectedIdx, 'approved')}
+                  style={{ flex: 2, padding: '11px 12px', borderRadius: 10, border: 'none', background: selStatus === 'approved' ? '#b7e94c' : '#111', color: selStatus === 'approved' ? '#111' : '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  {selStatus === 'approved' ? 'Schváleno ✓' : 'Schválit ✓'}
+                </button>
+              </div>
+
+            </div>
           </div>
         )}
-
-
       </div>
+
+      {/* ── Modal: Navrhnout kampaň ── */}
+      {showKampan && (
+        <div
+          onClick={() => setShowKampan(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: 16, width: 680, maxHeight: '85vh', overflowY: 'auto', padding: 28 }}
+          >
+            {/* Modal header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+              <div>
+                <div style={{ ...eyebrowStyle, color: '#b7a000', marginBottom: 6 }}>Stratég Katalyzátor · doporučuje</div>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500, color: '#111', margin: '0 0 8px', lineHeight: 1.2 }}>
+                  Tvá značka je připravená na kampaň.
+                </h2>
+                <div style={{ fontSize: 13, color: '#555', lineHeight: 1.6, maxWidth: 460 }}>
+                  Nastal čas posunout <strong>pilíř důvěry</strong> na novou úroveň a oslovit zákazníky, kteří na tebe čekají.
+                </div>
+              </div>
+              <button
+                onClick={() => setShowKampan(false)}
+                style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888', lineHeight: 1, padding: '4px 8px', flexShrink: 0 }}
+              >×</button>
+            </div>
+
+            {/* Tarify — 3 sloupce */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 22 }}>
+
+              {/* START */}
+              <div style={{ border: '2px solid #b7e94c', borderRadius: 12, padding: 16, position: 'relative' }}>
+                <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: '#b7e94c', color: '#111', fontSize: 9, fontWeight: 700, padding: '2px 10px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+                  Doporučeno
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>RTG · Start</div>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 500, color: '#111', lineHeight: 1 }}>2 900 Kč</div>
+                <div style={{ fontSize: 11, color: '#8a8680', marginBottom: 10 }}>/měs</div>
+                <div style={{ fontSize: 12, color: '#555', marginBottom: 14 }}>2 videa + 8 grafik / měsíc</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+                  {['AI zpracování videa', 'Hook + grafika overlay', 'Střih na max 45s', 'Stažení nebo plánování', 'Drive archiv', 'Vizuální banka'].map(f => (
+                    <div key={f} style={{ display: 'flex', gap: 7, alignItems: 'flex-start', fontSize: 11.5, color: '#444' }}>
+                      <span style={{ color: '#3d6b00', fontWeight: 700, flexShrink: 0 }}>✓</span> {f}
+                    </div>
+                  ))}
+                </div>
+                <button style={{ width: '100%', padding: '10px', borderRadius: 8, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Vezmi a použij →
+                </button>
+              </div>
+
+              {/* PLUS */}
+              <div style={{ border: '1px solid #e8e4dc', borderRadius: 12, padding: 16 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>RTG · Plus</div>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 500, color: '#111', lineHeight: 1 }}>4 900 Kč</div>
+                <div style={{ fontSize: 11, color: '#8a8680', marginBottom: 10 }}>/měs</div>
+                <div style={{ fontSize: 12, color: '#555', marginBottom: 14 }}>4 videa + 16 grafik / měsíc</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+                  {['Vše ze Start', '4 carousely', 'A/B varianty', 'Měsíční report'].map(f => (
+                    <div key={f} style={{ display: 'flex', gap: 7, alignItems: 'flex-start', fontSize: 11.5, color: '#444' }}>
+                      <span style={{ color: '#3d6b00', fontWeight: 700, flexShrink: 0 }}>✓</span> {f}
+                    </div>
+                  ))}
+                </div>
+                <button style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', color: '#111', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Vybrat Plus
+                </button>
+              </div>
+
+              {/* PRO */}
+              <div style={{ border: '1px solid #e8e4dc', borderRadius: 12, padding: 16 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 4 }}>RTG · Pro</div>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 26, fontWeight: 500, color: '#111', lineHeight: 1 }}>7 900 Kč</div>
+                <div style={{ fontSize: 11, color: '#8a8680', marginBottom: 10 }}>/měs</div>
+                <div style={{ fontSize: 12, color: '#555', marginBottom: 14 }}>8 videí + 30 grafik / měsíc</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+                  {['Vše z Plus', '8 carouselů', 'Prioritní podpora', 'Stratég na míru'].map(f => (
+                    <div key={f} style={{ display: 'flex', gap: 7, alignItems: 'flex-start', fontSize: 11.5, color: '#444' }}>
+                      <span style={{ color: '#3d6b00', fontWeight: 700, flexShrink: 0 }}>✓</span> {f}
+                    </div>
+                  ))}
+                </div>
+                <button style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', color: '#111', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Vybrat Pro
+                </button>
+              </div>
+            </div>
+
+            {/* Rozložení kampaně */}
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 10 }}>
+              Jak chceš kampaň rozložit?
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {[
+                { title: 'Buduju komunitu postupně', desc: '1–2 příspěvky týdně, AI sleduje reakce a optimalizuje obsah průběžně.', chip: 'Vhodné pro: dlouhodobý růst' },
+                { title: 'Mám launch nebo událost', desc: 'Vše naraz — maximální dopad v krátkém čase. Kampaň na 2–4 týdny.', chip: 'Vhodné pro: spuštění, akce' },
+              ].map(opt => (
+                <div key={opt.title} style={{ border: '1px solid #e8e4dc', borderRadius: 12, padding: 14, cursor: 'pointer' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111', marginBottom: 6 }}>{opt.title}</div>
+                  <div style={{ fontSize: 11.5, color: '#555', lineHeight: 1.55, marginBottom: 10 }}>{opt.desc}</div>
+                  <span style={{ border: '1px solid #e8e4dc', borderRadius: 20, padding: '2px 9px', fontSize: 10.5, color: '#8a8680' }}>{opt.chip}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
