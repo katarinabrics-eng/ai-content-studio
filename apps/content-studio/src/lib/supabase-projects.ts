@@ -31,6 +31,7 @@ export type ProjectBriefRow = {
   image_refs: string | null;
   source_url: string | null;
   brand_pdf_url: string | null;
+  raw_analysis: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
 };
