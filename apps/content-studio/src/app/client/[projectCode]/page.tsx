@@ -547,7 +547,16 @@ function DashboardInner() {
 
   // ── scraped images + generated posts → PostItem[]
   const scrapedImgs = ((project?.scan_result?.scrapedImages as string[]) ?? [])
-    .filter((url: string) => !url.toLowerCase().includes('logo') && !url.toLowerCase().includes('lucifera-logo'))
+    .filter((url: string) => {
+      const lower = url.toLowerCase()
+      return !lower.includes('logo') &&
+             !lower.includes('lucifera-logo') &&
+             !lower.endsWith('.png') &&
+             !lower.endsWith('.svg') &&
+             !lower.includes('icon') &&
+             !lower.includes('badge') &&
+             !lower.includes('watermark')
+    })
   const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string; duration?: string; platform?: string; variant?: string; hook?: string }[] | undefined) ?? []
   const imgFor = (i: number) => scrapedImgs[i] ?? POSTS_SEED[i % POSTS_SEED.length]?.img ?? ''
 

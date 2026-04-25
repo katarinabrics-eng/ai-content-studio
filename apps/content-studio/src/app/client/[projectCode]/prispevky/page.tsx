@@ -64,7 +64,16 @@ function PrispevkyInner() {
         // scrapedImages — filter logo URLs
         const rawImgs = (sr.scrapedImages as string[] | undefined) ?? []
         const imgs = rawImgs.filter(
-          (u) => !u.toLowerCase().includes('logo') && !u.toLowerCase().includes('lucifera-logo')
+          (u) => {
+            const lower = u.toLowerCase()
+            return !lower.includes('logo') &&
+                   !lower.includes('lucifera-logo') &&
+                   !lower.endsWith('.png') &&
+                   !lower.endsWith('.svg') &&
+                   !lower.includes('icon') &&
+                   !lower.includes('badge') &&
+                   !lower.includes('watermark')
+          }
         )
 
         // generatedPosts
