@@ -290,7 +290,8 @@ function AnalyzingInner() {
       });
       const data = await res.json();
       const token = data.access?.magicToken ?? '';
-      const projectCode = data.projectCode ?? '';
+      const projectCode = data.projectCode ?? data.access?.code ?? '';
+      console.log('DEBUG analyzing redirect:', { projectCode, token, data });
       if (destination === 'project' && projectCode) {
         window.location.href = `/client/${projectCode}?token=${token}`;
       } else {
