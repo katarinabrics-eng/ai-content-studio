@@ -8,6 +8,8 @@ import {
   createProject,
   createProjectAccessToken,
   generatePipelineProjectCode,
+  generateMagicToken,
+  hashToken,
   insertProjectFile,
 } from "./supabase-projects";
 import { projectStoragePrefix, fullPath, PATH } from "./project-paths";
@@ -107,6 +109,8 @@ export async function runStartPipeline(
   }
 
   const projectCode = generatePipelineProjectCode();
+  const magicToken = generateMagicToken();
+  const magicTokenHash = hashToken(magicToken);
   const storagePrefix = projectStoragePrefix(projectCode);
 
   const createParams = {
@@ -132,11 +136,11 @@ export async function runStartPipeline(
     brand_pdf_url: brief.brand_pdf_url,
     project_code: projectCode,
     storage_prefix: storagePrefix,
+    magic_token_hash: magicTokenHash,
   };
 
   let projectId: string;
   let pin: string | undefined;
-  let magicToken: string | undefined;
   let accessToken: string | undefined;
   let accessMode: AccessMode = "code_pin";
 
@@ -144,7 +148,6 @@ export async function runStartPipeline(
     const result = await createProject(createParams);
     projectId = result.project.id;
     pin = result.pin;
-    magicToken = result.magicToken;
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return { ok: false, errorCode: "PROJECT_CREATE_FAILED", errorMessage: msg };

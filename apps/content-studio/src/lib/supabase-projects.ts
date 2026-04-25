@@ -133,7 +133,7 @@ export function getBriefCompleteness(brief: ProjectBriefRow | null): {
   return { percent, missing };
 }
 
-function hashToken(token: string): string {
+export function hashToken(token: string): string {
   return createHash("sha256").update(token, "utf8").digest("hex");
 }
 
