@@ -284,11 +284,17 @@ function AnalyzingInner() {
     setCreating(true);
     try {
       const res = await fetch('/api/start', {
+        redirect: 'follow',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, name, website: url, analysisResult, generatedPosts: analysisResult?.generatedPosts ?? [] }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        console.error('API start error:', res.status, res.statusText, data);
+        setCreating(false);
+        return;
+      }
       const token = data.access?.magicToken ?? '';
       console.log('DEBUG token:', { magicToken: data.access?.magicToken, accessMode: data.accessMode, fullData: data });
       const projectCode = data.projectCode ?? data.access?.code ?? '';
