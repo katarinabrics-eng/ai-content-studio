@@ -791,7 +791,7 @@ function DashboardInner() {
                             display: 'grid',
                             gridTemplateColumns: 'repeat(3, 1fr)',
                             gridTemplateRows: 'repeat(3, 1fr)',
-                            aspectRatio: '1',
+                            height: 220,
                           }}>
                             {Array.from({ length: 9 }, (_, j) => (
                               <div key={j} style={{
@@ -832,7 +832,7 @@ function DashboardInner() {
                           borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden',
                         }}>
                           <div style={{
-                            aspectRatio: '4/3',
+                            height: 180,
                             backgroundImage: `url(${colImg(videoPosts.length * 9 + i)})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
