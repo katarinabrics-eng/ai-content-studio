@@ -306,6 +306,7 @@ function AnalyzingInner() {
         setCreating(false);
         return;
       }
+      console.log('FULL API RESPONSE:', JSON.stringify(data));
       const token = data.access?.magicToken ?? '';
       console.log('DEBUG token:', { magicToken: data.access?.magicToken, accessMode: data.accessMode, fullData: data });
       const projectCode = data.projectCode ?? data.access?.code ?? '';
