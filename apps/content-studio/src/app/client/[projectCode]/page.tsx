@@ -546,7 +546,7 @@ function DashboardInner() {
 
   // ── scraped images + generated posts → PostItem[]
   const scrapedImgs = ((project?.scan_result?.scrapedImages as string[]) ?? [])
-    .filter((url: string) => !url.toLowerCase().includes('logo'))
+    .filter((url: string) => !url.toLowerCase().includes('logo') && !url.toLowerCase().includes('lucifera-logo'))
   const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string; duration?: string; platform?: string; variant?: string; hook?: string }[] | undefined) ?? []
   const imgFor = (i: number) => scrapedImgs[i] ?? POSTS_SEED[i % POSTS_SEED.length]?.img ?? ''
 
@@ -753,7 +753,7 @@ function DashboardInner() {
                 Ochutnávka
               </div>
               <div>
-                <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12}}>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, alignItems:'start'}}>
                   {gp.slice(0,4).map((post, i) => {
                     const img = scrapedImgs[i] ?? POSTS_SEED[i]?.img ?? ''
                     const type = (post.type ?? post.label ?? 'GRAFIKA').toUpperCase()
@@ -762,7 +762,11 @@ function DashboardInner() {
                         key={i}
                         onClick={() => setSelectedPost(i)}
                         style={{
-                          height: 160, borderRadius: 12, overflow: 'hidden',
+                          height: 'auto',
+                          aspectRatio: type.includes('REEL') || type.includes('STORY') || type.includes('VIDEO') ? '9/16' :
+                                       type.includes('FB') || type.includes('FACEBOOK') ? '1/1' : '4/3',
+                          width: '100%',
+                          borderRadius: 12, overflow: 'hidden',
                           cursor: 'pointer', position: 'relative',
                           backgroundImage: `url(${img})`,
                           backgroundSize: 'cover', backgroundPosition: 'center',
