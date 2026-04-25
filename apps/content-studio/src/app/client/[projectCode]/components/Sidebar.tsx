@@ -34,7 +34,7 @@ export function Sidebar({
     { label: "Vizuální knihovna", href: `${base}/media-library${t}` },
     {
       label: "Příspěvky",
-      href: `${base}/rtg${t}`,
+      href: `${base}/prispevky${t}`,
       badge: pendingApprovals > 0 ? pendingApprovals : undefined,
     },
     { label: "Tarify & služby", href: `${base}/rtg/plans${t}` },
