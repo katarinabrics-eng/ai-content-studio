@@ -117,6 +117,7 @@ function PrispevkyInner() {
   }, [projectCode, token])
 
   const saveDraft = async (idx: number) => {
+    console.log('SAVE DRAFT CALLED:', { projectCode, token, idx, draft: drafts[idx] })
     const draft = drafts[idx]
     if (!draft) return
     await fetch('/api/client/post-status', {
