@@ -21,6 +21,11 @@ export async function GET(request: Request) {
       if (proj && proj.project_code.toUpperCase() === code.toUpperCase()) {
         const brief = proj.brief;
         const rawAnalysis = brief?.raw_analysis ?? null;
+        const rawAnalysisWithDrafts = rawAnalysis ? {
+          ...rawAnalysis,
+          postDrafts: (rawAnalysis as Record<string, unknown>).postDrafts ?? {},
+          postStatuses: (rawAnalysis as Record<string, unknown>).postStatuses ?? {},
+        } : null;
         console.log('DEBUG brief keys:', brief ? Object.keys(brief) : 'brief is null');
         console.log('DEBUG rawAnalysis:', typeof rawAnalysis, rawAnalysis ? Object.keys(rawAnalysis).slice(0, 5) : 'null');
         return NextResponse.json({
@@ -31,7 +36,7 @@ export async function GET(request: Request) {
             plan_id: proj.plan_id,
             status: proj.status,
             client_name: brief?.brand_name ?? null,
-            scan_result: rawAnalysis,
+            scan_result: rawAnalysisWithDrafts,
             pvi_active: false,
             rtg_plan: proj.rtg_plan ?? null,
             brief: brief ? { brand_name: brief.brand_name } : null,
@@ -73,6 +78,11 @@ export async function GET(request: Request) {
       : project.project_brief;
 
     const rawAnalysis = (brief as { raw_analysis?: unknown } | null)?.raw_analysis ?? null;
+    const rawAnalysisWithDrafts = rawAnalysis ? {
+      ...(rawAnalysis as Record<string, unknown>),
+      postDrafts: (rawAnalysis as Record<string, unknown>).postDrafts ?? {},
+      postStatuses: (rawAnalysis as Record<string, unknown>).postStatuses ?? {},
+    } : null;
 
     return NextResponse.json({
       ok: true,
@@ -82,7 +92,7 @@ export async function GET(request: Request) {
         plan_id: project.plan_id,
         status: project.status,
         client_name: (brief as { brand_name?: string } | null)?.brand_name ?? null,
-        scan_result: rawAnalysis,
+        scan_result: rawAnalysisWithDrafts,
         pvi_active: false,
         rtg_plan: project.rtg_plan ?? null,
         brief: brief ? { brand_name: (brief as { brand_name?: string }).brand_name } : null,
