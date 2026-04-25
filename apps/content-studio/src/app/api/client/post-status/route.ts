@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const { projectCode, token, postIndex, status } = body
+  console.log('POST-STATUS REQUEST:', { projectCode, postIndex, status, hasHook: !!body.hook, hasBody: !!body.body })
   if (!projectCode || !token || postIndex === undefined || !status) {
     return NextResponse.json({ ok: false, error: 'Chybí parametry' }, { status: 400 })
   }
@@ -43,6 +44,8 @@ export async function POST(req: NextRequest) {
     .from('project_brief')
     .update({ raw_analysis: { ...raw, postStatuses, postDrafts }, updated_at: new Date().toISOString() })
     .eq('project_id', proj.id)
+
+  console.log('POST-STATUS SAVED:', { projectId: proj?.id, postStatuses, postDrafts })
 
   return NextResponse.json({ ok: true })
 }
