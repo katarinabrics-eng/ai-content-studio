@@ -76,7 +76,7 @@ function PrispevkyInner() {
             aspect: isVideo ? '9:16' : '1:1',
             hook: p.hook ?? p.title ?? '',
             body: p.body ?? p.caption ?? p.style ?? '',
-            img: imgs[i] ?? '',
+            img: imgs.length > 0 ? imgs[i % imgs.length] : '',
             duration: p.duration,
           }
         })
@@ -165,92 +165,9 @@ function PrispevkyInner() {
       </div>
 
       {/* ── Hlavný grid ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 20, alignItems: 'start' }}>
 
-        {/* LEFT — zoznam */}
-        <div style={{
-          background: '#ffffff', border: '1px solid #e8e4dc',
-          borderRadius: 16, overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,.07)',
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: '#e8e4dc' }}>
-            {posts.map((post, i) => {
-              const isSel = selectedIdx === i
-              const status = statuses[i] ?? 'pending'
-              const isVideo = post.type.toLowerCase() === 'video'
-              return (
-                <div
-                  key={i}
-                  onClick={() => { setSelectedIdx(i); setEditing(false) }}
-                  style={{
-                    background: '#ffffff',
-                    cursor: 'pointer',
-                    padding: 16,
-                    display: 'flex',
-                    gap: 14,
-                    position: 'relative',
-                    outline: isSel ? '2px solid #b7e94c' : 'none',
-                    outlineOffset: '-2px',
-                  }}
-                >
-                  {/* Thumbnail */}
-                  <div style={{
-                    width: 70, height: 90, flexShrink: 0, borderRadius: 8,
-                    backgroundImage: post.img ? `url(${post.img})` : 'none',
-                    backgroundSize: 'cover', backgroundPosition: 'center',
-                    background: post.img ? undefined : '#f0efeb',
-                    border: '1px solid #e8e4dc',
-                  }} />
-
-                  {/* Text */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', gap: 5, marginBottom: 7, flexWrap: 'wrap' }}>
-                      <span style={{
-                        fontSize: 9.5, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
-                        background: isVideo ? '#111' : '#f0fce0',
-                        color: isVideo ? '#fff' : '#3d6b00',
-                        letterSpacing: '.04em', textTransform: 'uppercase',
-                      }}>{post.label}</span>
-                      <span style={{
-                        fontSize: 9.5, fontWeight: 600, padding: '2px 8px', borderRadius: 999,
-                        background: '#faf8f3', border: '1px solid #e8e4dc', color: '#888',
-                      }}>{post.aspect}</span>
-                    </div>
-                    <div style={{
-                      fontSize: 12.5, fontWeight: 600, color: '#111',
-                      marginBottom: 4, lineHeight: 1.3,
-                      display: '-webkit-box', WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical' as never,
-                      overflow: 'hidden',
-                    }}>
-                      {(drafts[i]?.hook) || post.hook}
-                    </div>
-                    {post.duration && (
-                      <div style={{ fontSize: 10.5, color: '#b0aea8' }}>{post.duration}</div>
-                    )}
-                  </div>
-
-                  {/* Status ikonka */}
-                  {status !== 'pending' && (
-                    <div style={{
-                      position: 'absolute', top: 12, right: 12,
-                      width: 20, height: 20, borderRadius: 50,
-                      background: status === 'approved' ? '#b7e94c' : '#f0efeb',
-                      border: status === 'rejected' ? '1px solid #ddd' : 'none',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700,
-                      color: status === 'approved' ? '#111' : '#888',
-                    }}>
-                      {status === 'approved' ? '✓' : '×'}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* RIGHT — detail */}
+        {/* LEFT — detail */}
         {sel && (
           <div style={{
             background: '#ffffff', border: '1px solid #e8e4dc',
@@ -366,6 +283,68 @@ function PrispevkyInner() {
 
           </div>
         )}
+
+        {/* RIGHT — zoznam náhľadov (1 stĺpec) */}
+        <div style={{
+          background: '#ffffff', border: '1px solid #e8e4dc',
+          borderRadius: 16, overflow: 'hidden',
+          boxShadow: '0 1px 3px rgba(0,0,0,.07)',
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 1, background: '#e8e4dc' }}>
+            {posts.map((post, i) => {
+              const isSel = selectedIdx === i
+              const status = statuses[i] ?? 'pending'
+              const isVideo = post.type.toLowerCase() === 'video'
+              return (
+                <div
+                  key={i}
+                  onClick={() => { setSelectedIdx(i); setEditing(false) }}
+                  style={{
+                    background: '#ffffff',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    outline: isSel ? '2px solid #b7e94c' : 'none',
+                    outlineOffset: '-2px',
+                  }}
+                >
+                  {/* Thumbnail — full width */}
+                  <div style={{
+                    width: '100%',
+                    height: isVideo ? 120 : 80,
+                    backgroundImage: post.img ? `url(${post.img})` : 'none',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    backgroundColor: post.img ? undefined : '#f0efeb',
+                    borderRadius: 8,
+                    position: 'relative',
+                  }}>
+                    {/* Type badge */}
+                    <span style={{
+                      position: 'absolute', top: 6, left: 6,
+                      fontSize: 8.5, fontWeight: 700, padding: '2px 6px', borderRadius: 999,
+                      background: isVideo ? '#111' : '#b7e94c',
+                      color: isVideo ? '#fff' : '#111',
+                      letterSpacing: '.04em', textTransform: 'uppercase' as const,
+                    }}>{post.label}</span>
+                    {/* Status ikonka */}
+                    {status !== 'pending' && (
+                      <div style={{
+                        position: 'absolute', top: 6, right: 6,
+                        width: 18, height: 18, borderRadius: 50,
+                        background: status === 'approved' ? '#b7e94c' : 'rgba(255,255,255,.85)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 10, fontWeight: 700,
+                        color: status === 'approved' ? '#111' : '#888',
+                      }}>
+                        {status === 'approved' ? '✓' : '×'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
       </div>
     </div>
   )
