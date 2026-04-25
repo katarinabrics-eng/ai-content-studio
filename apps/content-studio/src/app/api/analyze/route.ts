@@ -3,7 +3,7 @@ import { selectStrategists } from "@/lib/strategist-selector";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 const FIRECRAWL_V1 = "https://api.firecrawl.dev/v1";
 const FIRECRAWL_V2 = "https://api.firecrawl.dev/v2";
@@ -129,7 +129,7 @@ async function crawlWithFirecrawl(url: string, apiKey: string): Promise<{ markdo
 
   // Polling — max 25 iterácií × 2s = 50s
   let crawlResult: { status?: string; data?: CrawlPage[] } | null = null;
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 12; i++) {
     await new Promise(r => setTimeout(r, 2000));
     const statusRes = await fetch(
       `${FIRECRAWL_V1}/crawl/${crawlId}`,
@@ -690,7 +690,7 @@ Vráť JSON objekt s kľúčom posts: { "posts": [ ... ] }`;
           const openaiKeyPosts = process.env.OPENAI_API_KEY;
           console.log('Generating posts for:', url, 'brandDna:', !!result.brandDna, 'hasOpenAIKey:', !!openaiKeyPosts);
           if (openaiKeyPosts) {
-            const postsRes = await fetch('https://api.openai.com/v1/chat/completions', {
+            const postsRes = await fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -702,7 +702,7 @@ Vráť JSON objekt s kľúčom posts: { "posts": [ ... ] }`;
                 messages: [{ role: 'user', content: postsPrompt }],
                 response_format: { type: 'json_object' },
               }),
-            });
+            }, 30_000);
             const postsData = await postsRes.json() as { choices?: Array<{ message?: { content?: string } }> };
             console.log('Posts OpenAI response status:', postsRes.status);
             const postsText = postsData.choices?.[0]?.message?.content || '{"posts":[]}';
