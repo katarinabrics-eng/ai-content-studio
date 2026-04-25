@@ -94,16 +94,18 @@ const DEFAULT_PALETTE = [
 
 function parseBrand(project: Project): BrandData {
   const sr = (project.scan_result as Record<string, unknown>) ?? {}
-  const bs = (sr.brandScore as Record<string, unknown>) ?? {}
-  const dna = (sr.brandDna as Record<string, unknown>) ?? {}
-  const rawPillars = sr.pillars as Pillar[] | undefined
-  const rawPalette = sr.palette as { hex: string; label?: string }[] | undefined
-  const rawArchetype = (sr.archetype ?? dna.archetype) as string | undefined
+  // Handle both root-level (DEMO) and nested under result (pipeline projects)
+  const srData = (sr.result as Record<string, unknown>) ?? sr
+  const bs = (srData.brandScore as Record<string, unknown>) ?? {}
+  const dna = (srData.brandDna as Record<string, unknown>) ?? {}
+  const rawPillars = (srData.pillars ?? sr.pillars) as Pillar[] | undefined
+  const rawPalette = (srData.palette ?? sr.palette) as { hex: string; label?: string }[] | undefined
+  const rawArchetype = (srData.archetype ?? dna.archetype ?? sr.archetype) as string | undefined
 
   return {
     name: project.client_name ?? 'Studio Lucifera',
-    handle: (sr.website as string) ?? 'studiolucifera.cz',
-    score: (bs.total as number) ?? (sr.score as number) ?? (sr.brandScore as number) ?? 0,
+    handle: ((srData.website ?? sr.website) as string) ?? 'studiolucifera.cz',
+    score: (bs.total as number) ?? (srData.score as number) ?? 0,
     archetype: rawArchetype ?? 'Kreátor',
     pillars: rawPillars?.length ? rawPillars : DEFAULT_PILLARS,
     palette: rawPalette?.length ? rawPalette : DEFAULT_PALETTE,
