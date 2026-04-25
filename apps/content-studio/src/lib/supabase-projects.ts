@@ -487,7 +487,7 @@ export async function getProjectByMagicToken(token: string): Promise<(ProjectRow
     .eq("magic_token_hash", tokenHash)
     .single();
   if (error || !proj) return null;
-  const { data: brief } = await supabase.from("project_brief").select("*").eq("project_id", proj.id).single();
+  const { data: brief } = await supabase.from("project_brief").select("*, raw_analysis").eq("project_id", proj.id).single();
   return {
     ...(proj as ProjectRow),
     brief: (brief as ProjectBriefRow) ?? null,
