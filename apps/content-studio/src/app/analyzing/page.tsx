@@ -287,7 +287,18 @@ function AnalyzingInner() {
         redirect: 'follow',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, name, website: url, analysisResult, generatedPosts: analysisResult?.generatedPosts ?? [] }),
+        body: JSON.stringify({
+          url,
+          name,
+          website: url,
+          analysisResult,
+          generatedPosts: analysisResult?.generatedPosts ?? [],
+          brand_name: analysisResult?.result?.brandDna?.name ?? name ?? url,
+          industry: 'Ostatní',
+          communication_goal: analysisResult?.result?.brandDna?.positioning ?? analysisResult?.result?.brandDna?.uniqueValue ?? '',
+          tone_of_voice: analysisResult?.result?.brandDna?.tone ?? '',
+          platforms: ['instagram'],
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
