@@ -546,7 +546,7 @@ function DashboardInner() {
   // ── scraped images + generated posts → PostItem[]
   const scrapedImgs = ((project?.scan_result?.scrapedImages as string[]) ?? [])
     .filter((url: string) => !url.toLowerCase().includes('logo'))
-  const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string; duration?: string }[] | undefined) ?? []
+  const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string; duration?: string; platform?: string; variant?: string; hook?: string }[] | undefined) ?? []
   const imgFor = (i: number) => scrapedImgs[i] ?? POSTS_SEED[i % POSTS_SEED.length]?.img ?? ''
 
   const contentPosts: PostItem[] = gp.length > 0
@@ -752,27 +752,124 @@ function DashboardInner() {
               </div>
               {(() => {
                 console.log('DEBUG scan_result keys:', Object.keys(project?.scan_result ?? {}))
-                if (contentPosts.length > 0) {
+                if (gp.length === 0) {
                   return (
                     <>
-                      <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 14px' }}>
-                        Příspěvky připravené pro tvou značku
+                      <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 6px' }}>
+                        Příspěvky se připravují
                       </h3>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-                        {contentPosts.slice(0, 4).map((post) => (
-                          <PostThumb key={post.id} post={post} />
-                        ))}
+                      <div style={{ fontSize: 13, color: '#8a8680', lineHeight: 1.6 }}>
+                        Po dokončení diagnostiky zde uvidíš ukázku obsahu pro tvou značku.
                       </div>
                     </>
                   )
                 }
+
+                const videoPosts  = gp.filter(p => p.type === 'video').slice(0, 2)
+                const grafikaPosts = gp.filter(p => p.type !== 'video').slice(0, 2)
+                // helper: pick image from scrapedImgs with POSTS_SEED fallback
+                const colImg = (idx: number) =>
+                  scrapedImgs.length > 0
+                    ? scrapedImgs[idx % scrapedImgs.length]
+                    : POSTS_SEED[idx % POSTS_SEED.length].img
+
                 return (
                   <>
-                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 6px' }}>
-                      Příspěvky se připravují
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 500, color: '#111', margin: '4px 0 18px' }}>
+                      Příspěvky připravené pro tvou značku
                     </h3>
-                    <div style={{ fontSize: 13, color: '#8a8680', lineHeight: 1.6 }}>
-                      Po dokončení diagnostiky zde uvidíš ukázku obsahu pro tvou značku.
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+                      {/* VIDEO posts — split card: collage LEFT, text RIGHT */}
+                      {videoPosts.map((post, i) => (
+                        <div key={`video-${i}`} style={{
+                          display: 'grid', gridTemplateColumns: '1fr 1fr',
+                          borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden',
+                        }}>
+                          {/* 3×3 collage */}
+                          <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gridTemplateRows: 'repeat(3, 1fr)',
+                            aspectRatio: '1',
+                          }}>
+                            {Array.from({ length: 9 }, (_, j) => (
+                              <div key={j} style={{
+                                backgroundImage: `url(${colImg(i * 9 + j)})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                              }} />
+                            ))}
+                          </div>
+                          {/* text panel */}
+                          <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 10, background: '#faf9f7' }}>
+                            <span style={{
+                              alignSelf: 'flex-start', fontSize: 9, fontWeight: 700,
+                              letterSpacing: '.1em', padding: '3px 8px', borderRadius: 999,
+                              background: '#111', color: '#fff', textTransform: 'uppercase' as const,
+                            }}>VIDEO · REELS</span>
+                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 17, fontWeight: 500, color: '#111', lineHeight: 1.35 }}>
+                              {post.hook ?? post.title ?? ''}
+                            </div>
+                            <div style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>
+                              {post.body ?? post.style ?? ''}
+                            </div>
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const, marginTop: 'auto' }}>
+                              <span style={{ border: '1px solid #ddd', borderRadius: 20, padding: '3px 10px', fontSize: 12, color: '#555' }}>
+                                {post.platform ?? 'Instagram'}
+                              </span>
+                              <span style={{ border: '1px solid #ddd', borderRadius: 20, padding: '3px 10px', fontSize: 12, color: '#555' }}>
+                                {post.variant ?? 'Varianta A'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* GRAFIKA posts — full-width image + text below */}
+                      {grafikaPosts.map((post, i) => (
+                        <div key={`grafika-${i}`} style={{
+                          borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden',
+                        }}>
+                          <div style={{
+                            aspectRatio: '4/3',
+                            backgroundImage: `url(${colImg(videoPosts.length * 9 + i)})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }} />
+                          <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <span style={{
+                              alignSelf: 'flex-start', fontSize: 9, fontWeight: 700,
+                              letterSpacing: '.1em', padding: '3px 8px', borderRadius: 999,
+                              background: '#b7e94c', color: '#111', textTransform: 'uppercase' as const,
+                            }}>GRAFIKA</span>
+                            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 500, color: '#111', lineHeight: 1.35 }}>
+                              {post.title ?? post.hook ?? ''}
+                            </div>
+                            <div style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>
+                              {post.body ?? post.style ?? ''}
+                            </div>
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
+                              <span style={{ border: '1px solid #ddd', borderRadius: 20, padding: '3px 10px', fontSize: 12, color: '#555' }}>
+                                {post.platform ?? 'Instagram'}
+                              </span>
+                              <span style={{ border: '1px solid #ddd', borderRadius: 20, padding: '3px 10px', fontSize: 12, color: '#555' }}>
+                                {post.variant ?? 'Varianta A'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Fallback: if no typed posts were split, show PostThumb grid */}
+                      {videoPosts.length === 0 && grafikaPosts.length === 0 && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                          {contentPosts.slice(0, 4).map((post) => (
+                            <PostThumb key={post.id} post={post} />
+                          ))}
+                        </div>
+                      )}
+
                     </div>
                   </>
                 )
