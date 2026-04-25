@@ -21,6 +21,8 @@ export async function GET(request: Request) {
       if (proj && proj.project_code.toUpperCase() === code.toUpperCase()) {
         const brief = proj.brief;
         const rawAnalysis = brief?.raw_analysis ?? null;
+        console.log('DEBUG brief keys:', brief ? Object.keys(brief) : 'brief is null');
+        console.log('DEBUG rawAnalysis:', typeof rawAnalysis, rawAnalysis ? Object.keys(rawAnalysis).slice(0, 5) : 'null');
         return NextResponse.json({
           ok: true,
           project: {
