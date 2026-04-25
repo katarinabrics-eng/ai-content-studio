@@ -94,7 +94,13 @@ function PrispevkyInner() {
         })
 
         setPosts(mapped)
-        setStatuses(Object.fromEntries(mapped.map((_, i) => [i, 'pending' as Status])))
+        // Načti uložené statusy z DB (postStatuses v raw_analysis)
+        const savedStatuses = (sr.postStatuses as Record<string, string>) ?? {}
+        const initialStatuses: Record<number, Status> = {}
+        Object.entries(savedStatuses).forEach(([k, v]) => {
+          initialStatuses[Number(k)] = v as Status
+        })
+        setStatuses(initialStatuses)
         setDrafts(Object.fromEntries(mapped.map((p, i) => [i, { hook: p.hook, body: p.body }])))
       } catch {
         // fetch failed — empty state
@@ -104,13 +110,18 @@ function PrispevkyInner() {
     })()
   }, [projectCode, token])
 
-  const setStatus = (idx: number, s: Status) => {
+  const setStatus = async (idx: number, s: Status) => {
     setStatuses(prev => ({ ...prev, [idx]: s }))
     setEditing(false)
+    await fetch('/api/client/post-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectCode, token, postIndex: idx, status: s }),
+    })
   }
 
-  const pendingCount  = Object.values(statuses).filter(s => s === 'pending').length
-  const approvedCount = Object.values(statuses).filter(s => s === 'approved').length
+  const pendingCount  = posts.filter((_, i) => !statuses[i] || statuses[i] === 'pending').length
+  const approvedCount = posts.filter((_, i) => statuses[i] === 'approved').length
 
   const sel = posts[selectedIdx]
   const selStatus = statuses[selectedIdx] ?? 'pending'
