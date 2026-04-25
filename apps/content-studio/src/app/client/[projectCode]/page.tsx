@@ -98,7 +98,15 @@ function parseBrand(project: Project): BrandData {
   const srData = (sr.result as Record<string, unknown>) ?? sr
   const bs = (srData.brandScore as Record<string, unknown>) ?? {}
   const dna = (srData.brandDna as Record<string, unknown>) ?? {}
-  const rawPillars = (srData.pillars ?? sr.pillars) as Pillar[] | undefined
+  const pillarAnalysis = srData.pillarAnalysis as Record<string, { score?: number }> | undefined
+  const pillars = (srData.pillars as { key: string; label: string; score: number }[] | undefined)
+    ?? (pillarAnalysis ? [
+      { key: 'light',        label: 'Hodnota',      score: (pillarAnalysis.light?.score        ?? 0) * 10 },
+      { key: 'energy',       label: 'Energie',      score: (pillarAnalysis.energy?.score       ?? 0) * 10 },
+      { key: 'architecture', label: 'Architektura', score: (pillarAnalysis.architecture?.score ?? 0) * 10 },
+      { key: 'identity',     label: 'Identita',     score: (pillarAnalysis.identity?.score     ?? 0) * 10 },
+      { key: 'trust',        label: 'Důvěra',       score: (pillarAnalysis.trust?.score        ?? 0) * 10 },
+    ] : DEFAULT_PILLARS)
   const rawPalette = (srData.palette ?? sr.palette) as { hex: string; label?: string }[] | undefined
   const rawArchetype = (srData.archetype ?? dna.archetype ?? sr.archetype) as string | undefined
 
@@ -107,7 +115,7 @@ function parseBrand(project: Project): BrandData {
     handle: ((srData.website ?? sr.website) as string) ?? 'studiolucifera.cz',
     score: (bs.total as number) ?? (srData.score as number) ?? 0,
     archetype: rawArchetype ?? 'Kreátor',
-    pillars: rawPillars?.length ? rawPillars : DEFAULT_PILLARS,
+    pillars: pillars?.length ? pillars : DEFAULT_PILLARS,
     palette: rawPalette?.length ? rawPalette : DEFAULT_PALETTE,
     positioning: (dna.positioning as string) ?? 'Profesionální portréty pro herce a podnikatele',
     tone: (dna.tone as string) ?? 'Osobní a profesionální',
@@ -702,6 +710,7 @@ function DashboardInner() {
                 Ochutnávka
               </div>
               {(() => {
+                console.log('DEBUG scan_result keys:', Object.keys(project?.scan_result ?? {}))
                 const gp = (project?.scan_result?.generatedPosts as { type?: string; label?: string; title?: string; body?: string; style?: string }[] | undefined) ?? []
                 if (gp.length > 0) {
                   return (
