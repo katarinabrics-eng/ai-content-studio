@@ -281,6 +281,10 @@ function AnalyzingInner() {
 
   async function handleCreateProject(destination: 'project' | 'magnet') {
     if (creating) return;
+    if (!analysisResult) {
+      alert('Analýza ještě probíhá, počkejte prosím chvíli.');
+      return;
+    }
     setCreating(true);
     try {
       const res = await fetch('/api/start', {

@@ -68,16 +68,16 @@ export async function POST(request: Request) {
     // Ulož raw_analysis + generatedPosts do project_brief
     const analysisResult = (input.analysisResult as Record<string, unknown>) ?? {};
     const generatedPosts = (input.generatedPosts as unknown[]) ?? [];
-    if (Object.keys(analysisResult).length > 0) {
-      const supabase = getSupabaseClient();
-      await supabase
-        .from("project_brief")
-        .upsert({
-          project_id: result.projectId,
-          raw_analysis: { ...analysisResult, generatedPosts },
-          updated_at: new Date().toISOString(),
-        });
-    }
+    const supabase = getSupabaseClient();
+    await supabase
+      .from("project_brief")
+      .upsert({
+        project_id: result.projectId,
+        raw_analysis: Object.keys(analysisResult).length > 0
+          ? { ...analysisResult, generatedPosts }
+          : null,
+        updated_at: new Date().toISOString(),
+      });
 
     const baseUrl =
       request.headers.get("x-forwarded-proto") && request.headers.get("x-forwarded-host")
