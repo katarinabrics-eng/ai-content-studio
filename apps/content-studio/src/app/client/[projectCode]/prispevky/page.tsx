@@ -101,7 +101,13 @@ function PrispevkyInner() {
           initialStatuses[Number(k)] = v as Status
         })
         setStatuses(initialStatuses)
-        setDrafts(Object.fromEntries(mapped.map((p, i) => [i, { hook: p.hook, body: p.body }])))
+
+        const savedDrafts = (sr.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
+        const initialDrafts: Record<number, { hook: string; body: string }> = {}
+        mapped.forEach((p, i) => {
+          initialDrafts[i] = savedDrafts[String(i)] ?? { hook: p.hook, body: p.body }
+        })
+        setDrafts(initialDrafts)
       } catch {
         // fetch failed — empty state
       } finally {
@@ -109,6 +115,23 @@ function PrispevkyInner() {
       }
     })()
   }, [projectCode, token])
+
+  const saveDraft = async (idx: number) => {
+    const draft = drafts[idx]
+    if (!draft) return
+    await fetch('/api/client/post-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectCode,
+        token,
+        postIndex: idx,
+        status: statuses[idx] ?? 'pending',
+        hook: draft.hook,
+        body: draft.body,
+      }),
+    })
+  }
 
   const setStatus = async (idx: number, s: Status) => {
     setStatuses(prev => ({ ...prev, [idx]: s }))
@@ -411,7 +434,7 @@ function PrispevkyInner() {
 
               {/* Action buttons */}
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <button onClick={() => setEditing(e => !e)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
+                <button onClick={async () => { if (editing) await saveDraft(selectedIdx); setEditing(e => !e) }} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
                   ✎ {editing ? 'Hotovo' : 'Upravit text'}
                 </button>
                 <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>

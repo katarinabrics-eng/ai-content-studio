@@ -6,7 +6,8 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
-  const { projectCode, token, postIndex, status } = await req.json()
+  const body = await req.json()
+  const { projectCode, token, postIndex, status } = body
   if (!projectCode || !token || postIndex === undefined || !status) {
     return NextResponse.json({ ok: false, error: 'Chybí parametry' }, { status: 400 })
   }
@@ -30,9 +31,17 @@ export async function POST(req: NextRequest) {
   const postStatuses = (raw.postStatuses as Record<string, string>) ?? {}
   postStatuses[String(postIndex)] = status
 
+  const postDrafts = (raw.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
+  if (body.hook !== undefined || body.body !== undefined) {
+    postDrafts[String(postIndex)] = {
+      hook: body.hook ?? postDrafts[String(postIndex)]?.hook ?? '',
+      body: body.body ?? postDrafts[String(postIndex)]?.body ?? '',
+    }
+  }
+
   await supabase
     .from('project_brief')
-    .update({ raw_analysis: { ...raw, postStatuses }, updated_at: new Date().toISOString() })
+    .update({ raw_analysis: { ...raw, postStatuses, postDrafts }, updated_at: new Date().toISOString() })
     .eq('project_id', proj.id)
 
   return NextResponse.json({ ok: true })
