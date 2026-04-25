@@ -265,6 +265,8 @@ export async function createProject(params: CreateProjectParams): Promise<{
     projectCode = generateCode();
     pin = generatePin();
     pinHash = hashToken(pin);
+    magicToken = generateMagicToken();
+    magicTokenHash = hashToken(magicToken);
   }
 
   const pinExpiresAt = pinHash ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null;
