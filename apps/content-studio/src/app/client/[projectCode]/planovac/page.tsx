@@ -45,7 +45,8 @@ function PlanovacInner() {
     ;(async () => {
       try {
         const r = await fetch(
-          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}&_=${Date.now()}`,
+          { cache: 'no-store' }
         )
         const d = await r.json()
         const sr = d.project?.scan_result as Record<string, unknown> | undefined

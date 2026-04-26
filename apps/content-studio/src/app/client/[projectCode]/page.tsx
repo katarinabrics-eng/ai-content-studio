@@ -517,7 +517,7 @@ function DashboardInner() {
         }
       } catch { /* ignore */ }
       try {
-        const r = await fetch(`/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`)
+        const r = await fetch(`/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}&_=${Date.now()}`, { cache: 'no-store' })
         const d = await r.json()
         if (d.project) {
           result.scan_result = d.project.scan_result ?? null

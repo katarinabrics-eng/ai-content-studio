@@ -38,7 +38,8 @@ async function loadProjectInfo(projectCode: string, token: string): Promise<Proj
   // Krok 2: zkus magic link systém (client_token)
   try {
     const pvRes = await fetch(
-      `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+      `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}&_=${Date.now()}`,
+      { cache: 'no-store' }
     );
     const pvData = await pvRes.json();
     if (pvData.project) {
