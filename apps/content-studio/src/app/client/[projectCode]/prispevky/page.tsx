@@ -835,7 +835,10 @@ function PrispevkyInner() {
                       year: d.getFullYear(),
                       time: planTime,
                     }
-                    const updated = [...scheduledPosts.filter(s => s.postIdx !== idx), entry]
+                    const freshResp = await fetch(`/api/client/project?code=${projectCode}&token=${token}&_=${Date.now()}`, { cache: 'no-store' })
+                    const freshData = await freshResp.json()
+                    const freshScheduled = ((freshData?.project?.scan_result?.scheduledPosts as unknown[]) ?? []) as ScheduledPost[]
+                    const updated = [...freshScheduled.filter((s: ScheduledPost) => s.postIdx !== Number(idx)), entry]
                     setScheduledPosts(updated)
                     // Nejdřív ulož status 'published' s scheduledPosts najednou
                     setStatuses(prev => ({ ...prev, [Number(idx)]: 'published' }))
