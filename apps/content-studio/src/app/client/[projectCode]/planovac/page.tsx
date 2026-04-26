@@ -61,6 +61,7 @@ function PlanovacInner() {
           } as ScheduledPost
         })
         setScheduled(normalized)
+        console.log('PLANOVAC LOADED:', normalized)
       } catch {
         // fetch failed
       } finally {
@@ -138,6 +139,8 @@ function PlanovacInner() {
     fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
     textTransform: 'uppercase', color: '#8a8680',
   }
+
+  console.log('PLANOVAC RENDER scheduled:', scheduled.length, scheduled)
 
   return (
     <div style={{ padding: '28px 24px 80px', maxWidth: 1280, margin: '0 auto', background: '#f5f2ec', minHeight: '100vh' }}>
