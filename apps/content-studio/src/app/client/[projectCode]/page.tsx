@@ -622,9 +622,9 @@ function DashboardInner() {
           </button>
           <button
             onClick={() => setTweaksOpen(o => !o)}
-            style={{ padding: '6px 14px', borderRadius: 8, border: '0.5px solid #e0ddd8',
-              background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6 }}>
+            style={{ padding: '6px 14px', borderRadius: 8, border: '0.5px solid #ccc',
+              background: '#f5f2ec', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+              color: '#111', display: 'flex', alignItems: 'center', gap: 6 }}>
             ⚙ Tweaks
           </button>
         </div>
