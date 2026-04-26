@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -31,11 +31,14 @@ type Post = {
 
 type Status = 'pending' | 'approved' | 'rejected' | 'published' | 'downloaded'
 
+type ScheduledPost = { postIdx: number; hook: string; img: string; type: string; date: number; month: number; year: number; time: string }
+
 // ─── Inner component ──────────────────────────────────────────────────────────
 
 function PrispevkyInner() {
   const params = useParams()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const projectCode = params.projectCode as string
   const token = searchParams.get('token') ?? ''
 
@@ -52,7 +55,7 @@ function PrispevkyInner() {
   const [planModal, setPlanModal] = useState<number | null>(null)
   const [planDate, setPlanDate] = useState('')
   const [planTime, setPlanTime] = useState('09:00')
-  const [scheduledPosts, setScheduledPosts] = useState<Array<{ postIdx: number; hook: string; img: string; type: string; date: string; time: string }>>([])
+  const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([])
 
 
   useEffect(() => {
@@ -106,15 +109,21 @@ function PrispevkyInner() {
         Object.entries(savedStatuses).forEach(([k, v]) => {
           initialStatuses[Number(k)] = v as Status
         })
-        setStatuses(initialStatuses)
-
         const savedDrafts = (sr.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
         const initialDrafts: Record<number, { hook: string; body: string }> = {}
         mapped.forEach((p, i) => {
           initialDrafts[i] = savedDrafts[String(i)] ?? { hook: p.hook, body: p.body }
         })
         setDrafts(initialDrafts)
-        setScheduledPosts((sr.scheduledPosts as Array<{ postIdx: number; hook: string; img: string; type: string; date: string; time: string }>) ?? [])
+        const savedScheduled = (sr.scheduledPosts as unknown[]) ?? []
+        setScheduledPosts(savedScheduled as ScheduledPost[])
+        savedScheduled.forEach((sp: unknown) => {
+          const s = sp as ScheduledPost
+          if (s.postIdx !== undefined) {
+            initialStatuses[s.postIdx] = 'published'
+          }
+        })
+        setStatuses(initialStatuses)
       } catch {
         // fetch failed — empty state
       } finally {
@@ -432,7 +441,12 @@ function PrispevkyInner() {
                             color: statuses[i] === 'downloaded' ? '#555' : '#3d6b00',
                             fontSize: 8.5, fontWeight: 600,
                           }}>
-                            {statuses[i] === 'downloaded' ? 'Staženo' : 'Zveřejněno'}
+                            {statuses[i] === 'downloaded' ? 'Staženo' :
+                             statuses[i] === 'published' ? `Naplánováno · ${(() => {
+                               const sp = scheduledPosts.find((s: ScheduledPost) => s.postIdx === i)
+                               if (!sp) return ''
+                               return `${sp.date}. ${sp.month + 1}. ${sp.year} ${sp.time}`
+                             })()}` : 'Zveřejněno'}
                           </span>
                           {' · dnes'}
                         </div>
@@ -797,12 +811,15 @@ function PrispevkyInner() {
                   onClick={async () => {
                     if (!planDate) return
                     const idx = planModal
-                    const entry = {
+                    const d = new Date(planDate)
+                    const entry: ScheduledPost = {
                       postIdx: idx,
                       hook: draft.hook || p.hook,
                       img: p.img ?? '',
                       type: p.type,
-                      date: planDate,
+                      date: d.getDate(),
+                      month: d.getMonth(),
+                      year: d.getFullYear(),
                       time: planTime,
                     }
                     const updated = [...scheduledPosts.filter(s => s.postIdx !== idx), entry]
@@ -814,6 +831,9 @@ function PrispevkyInner() {
                     })
                     setStatus(idx, 'published')
                     setPlanModal(null)
+                    setTimeout(() => {
+                      router.push(`/client/${projectCode}/planovac?token=${token}`)
+                    }, 800)
                   }}
                   style={{ flex: 2, padding: '11px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
                 >
