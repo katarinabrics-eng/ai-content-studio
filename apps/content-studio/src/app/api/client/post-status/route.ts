@@ -45,9 +45,7 @@ export async function POST(req: NextRequest) {
     if (body.scheduledPosts !== undefined) {
       raw.scheduledPosts = Array.isArray(body.scheduledPosts)
         ? body.scheduledPosts
-        : (typeof body.scheduledPosts === 'string'
-            ? JSON.parse(body.scheduledPosts)
-            : [])
+        : []
     }
 
     await supabase
