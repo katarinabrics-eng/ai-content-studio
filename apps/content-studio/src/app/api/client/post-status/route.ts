@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseClient } from '@/lib/supabase-server'
+import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 
 export const runtime = 'nodejs'
@@ -12,7 +13,11 @@ export async function POST(req: NextRequest) {
   if (!projectCode || !token || postIndex === undefined || !status) {
     return NextResponse.json({ ok: false, error: 'Chybí parametry' }, { status: 400 })
   }
-  const supabase = getSupabaseClient()
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  )
   const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex')
   const { data: proj } = await supabase
     .from('projects')
