@@ -165,7 +165,6 @@ function PrispevkyInner() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         projectCode, token, postIndex: idx, status: s,
-        scheduledPosts: scheduledPosts
       }),
     })
     const resultJson = await result.json()
