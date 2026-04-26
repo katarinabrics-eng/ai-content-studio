@@ -29,7 +29,7 @@ type Post = {
   duration?: string
 }
 
-type Status = 'pending' | 'approved' | 'rejected'
+type Status = 'pending' | 'approved' | 'rejected' | 'published' | 'downloaded'
 
 // ─── Inner component ──────────────────────────────────────────────────────────
 
@@ -144,6 +144,31 @@ function PrispevkyInner() {
     })
   }
 
+  const handleDownload = (idx: number) => {
+    const post = posts[idx]
+    const draft = drafts[idx]
+    const text = `HOOK:\n${draft?.hook ?? post.hook ?? ''}\n\nCAPTION:\n${draft?.body ?? post.body ?? ''}`
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `prispevek-${idx + 1}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+    setStatus(idx, 'downloaded')
+  }
+
+  const handleDuplicate = (idx: number) => {
+    const post = posts[idx]
+    const draft = drafts[idx]
+    const newPost = { ...post, hook: draft?.hook ?? post.hook, body: draft?.body ?? post.body }
+    setPosts(prev => [...prev, newPost])
+    const newIdx = posts.length
+    setDrafts(prev => ({ ...prev, [newIdx]: { hook: newPost.hook ?? '', body: newPost.body ?? '' } }))
+    setStatuses(prev => ({ ...prev, [newIdx]: 'pending' }))
+    setSelectedIdx(newIdx)
+  }
+
   const pendingCount  = posts.filter((_, i) => !statuses[i] || statuses[i] === 'pending').length
   const approvedCount = posts.filter((_, i) => statuses[i] === 'approved').length
 
@@ -224,14 +249,14 @@ function PrispevkyInner() {
         {/* ── LEVÝ PANEL ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-          {/* Ke schválení */}
+          {/* A) Ke schválení — pending + rejected */}
           <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
             <div style={{ padding: '9px 12px 7px', ...eyebrowStyle, borderBottom: '1px solid #f0ece4' }}>
               Ke schválení
             </div>
             <div style={{ padding: '6px 4px' }}>
               {posts.map((post, i) => {
-                if (statuses[i] === 'approved') return null
+                if (statuses[i] === 'approved' || statuses[i] === 'published' || statuses[i] === 'downloaded') return null
                 const isSel = selectedIdx === i
                 const isVideo = post.type.toLowerCase() === 'video'
                 return (
@@ -279,19 +304,92 @@ function PrispevkyInner() {
             </div>
           </div>
 
-          {/* Historie · schváleno */}
+          {/* B) Schváleno · připraveno — approved */}
           <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
-            <div style={{ padding: '9px 12px 7px', ...eyebrowStyle, borderBottom: '1px solid #f0ece4' }}>
-              Historie · schváleno
+            <div style={{ padding: '9px 12px 7px', ...eyebrowStyle, borderBottom: '1px solid #f0ece4', color: '#3d6b00' }}>
+              Schváleno · připraveno
             </div>
             {approvedCount === 0 ? (
-              <div style={{ padding: '14px 12px', fontSize: 11, color: '#b0aea8', textAlign: 'center' }}>—</div>
+              <div style={{ padding: '12px', fontSize: 11, color: '#b0aea8', textAlign: 'center' }}>
+                Žádné schválené příspěvky
+              </div>
             ) : (
               <div style={{ padding: '6px 4px' }}>
                 {posts.map((post, i) => {
                   if (statuses[i] !== 'approved') return null
+                  const isSel = selectedIdx === i
+                  const isVideo = post.type.toLowerCase() === 'video'
                   return (
-                    <div key={i} style={{ display: 'flex', gap: 8, padding: '5px 8px', alignItems: 'center', opacity: 0.65 }}>
+                    <div
+                      key={i}
+                      onClick={() => { setSelectedIdx(i); setEditing(false) }}
+                      style={{
+                        display: 'flex', gap: 8, padding: '6px 8px', cursor: 'pointer',
+                        borderRadius: 8, margin: '0 0 2px',
+                        border: isSel ? '1.5px solid #b7e94c' : '1.5px solid transparent',
+                        background: isSel ? '#f9fce8' : 'transparent',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div style={{
+                        width: isVideo ? 30 : 36,
+                        height: isVideo ? 42 : 36,
+                        borderRadius: 4, flexShrink: 0,
+                        backgroundImage: post.img ? `url(${post.img})` : 'none',
+                        backgroundSize: 'cover', backgroundPosition: 'center',
+                        backgroundColor: '#2a1a3a',
+                      }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 11, fontWeight: 500, color: '#111', lineHeight: 1.3,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {drafts[i]?.hook || post.hook}
+                        </div>
+                        <div style={{ fontSize: 9.5, color: '#3d6b00', fontWeight: 600 }}>Schváleno ✓</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
+                        <button
+                          onClick={e => { e.stopPropagation(); handleDownload(i) }}
+                          title="Stáhnout"
+                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                        >↓</button>
+                        <button
+                          onClick={e => { e.stopPropagation(); setStatus(i, 'published') }}
+                          title="Naplánovat"
+                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                        >📅</button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* C) Historie — published + downloaded */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e8e4dc', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
+            <div style={{ padding: '9px 12px 7px', ...eyebrowStyle, borderBottom: '1px solid #f0ece4' }}>
+              Historie
+            </div>
+            {posts.every((_, i) => statuses[i] !== 'published' && statuses[i] !== 'downloaded') ? (
+              <div style={{ padding: '14px 12px', fontSize: 11, color: '#b0aea8', textAlign: 'center' }}>—</div>
+            ) : (
+              <div style={{ padding: '6px 4px' }}>
+                {posts.map((post, i) => {
+                  if (statuses[i] !== 'published' && statuses[i] !== 'downloaded') return null
+                  const isSel = selectedIdx === i
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => { setSelectedIdx(i); setEditing(false) }}
+                      style={{
+                        display: 'flex', gap: 8, padding: '5px 8px', alignItems: 'center', cursor: 'pointer',
+                        borderRadius: 8, margin: '0 0 2px', opacity: 0.75,
+                        border: isSel ? '1.5px solid #e8e4dc' : '1.5px solid transparent',
+                        background: isSel ? '#f9f8f5' : 'transparent',
+                      }}
+                    >
                       <div style={{
                         width: 28, height: 28, borderRadius: 4, flexShrink: 0,
                         backgroundImage: post.img ? `url(${post.img})` : 'none',
@@ -302,9 +400,24 @@ function PrispevkyInner() {
                         <div style={{ fontSize: 10, fontWeight: 500, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {drafts[i]?.hook || post.hook}
                         </div>
-                        <div style={{ fontSize: 9.5, color: '#8a8680' }}>Instagram · dnes</div>
+                        <div style={{ fontSize: 9, color: '#8a8680' }}>
+                          <span style={{
+                            display: 'inline-block', padding: '0 5px', borderRadius: 999,
+                            background: statuses[i] === 'downloaded' ? '#f0efeb' : '#f0fce0',
+                            color: statuses[i] === 'downloaded' ? '#555' : '#3d6b00',
+                            fontSize: 8.5, fontWeight: 600,
+                          }}>
+                            {statuses[i] === 'downloaded' ? 'Staženo' : 'Zveřejněno'}
+                          </span>
+                          {' · dnes'}
+                        </div>
                       </div>
-                      <div style={{ fontSize: 11, color: '#3d6b00', fontWeight: 700, flexShrink: 0 }}>✓</div>
+                      <button
+                        onClick={e => { e.stopPropagation(); handleDuplicate(i) }}
+                        style={{ fontSize: 9, padding: '2px 6px', borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', color: '#555', flexShrink: 0, whiteSpace: 'nowrap' }}
+                      >
+                        Duplikovat
+                      </button>
                     </div>
                   )
                 })}
@@ -446,21 +559,64 @@ function PrispevkyInner() {
                 </button>
               </div>
 
-              {/* Odmítnout / Schválit */}
-              <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 8 }}>
-                <button
-                  onClick={() => setStatus(selectedIdx, 'rejected')}
-                  style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: '1.5px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
-                >
-                  Odmítnout
-                </button>
-                <button
-                  onClick={() => setStatus(selectedIdx, 'approved')}
-                  style={{ flex: 2, padding: '11px 12px', borderRadius: 10, border: 'none', background: selStatus === 'approved' ? '#b7e94c' : '#111', color: selStatus === 'approved' ? '#111' : '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                >
-                  {selStatus === 'approved' ? 'Schváleno ✓' : 'Schválit ✓'}
-                </button>
-              </div>
+              {/* ── Podmíněná spodní tlačítka ── */}
+
+              {/* pending / rejected → Odmítnout + Schválit */}
+              {(selStatus === 'pending' || selStatus === 'rejected') && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 8 }}>
+                  <button
+                    onClick={() => setStatus(selectedIdx, 'rejected')}
+                    style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: '1.5px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
+                  >
+                    Odmítnout
+                  </button>
+                  <button
+                    onClick={() => setStatus(selectedIdx, 'approved')}
+                    style={{ flex: 2, padding: '11px 12px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    Schválit ✓
+                  </button>
+                </div>
+              )}
+
+              {/* approved → Odmítnout (vrátit) + Stáhnout + Naplánovat */}
+              {selStatus === 'approved' && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 8 }}>
+                  <button
+                    onClick={() => setStatus(selectedIdx, 'pending')}
+                    style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: '1.5px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
+                  >
+                    Odmítnout
+                  </button>
+                  <button
+                    onClick={() => handleDownload(selectedIdx)}
+                    style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    ↓ Stáhnout
+                  </button>
+                  <button
+                    onClick={() => setStatus(selectedIdx, 'published')}
+                    style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    📅 Naplánovat
+                  </button>
+                </div>
+              )}
+
+              {/* downloaded / published → Duplikovat */}
+              {(selStatus === 'downloaded' || selStatus === 'published') && (
+                <div style={{ marginTop: 'auto', paddingTop: 8 }}>
+                  <div style={{ fontSize: 11, color: '#8a8680', marginBottom: 8, textAlign: 'center' }}>
+                    Příspěvek byl použit · dnes
+                  </div>
+                  <button
+                    onClick={() => handleDuplicate(selectedIdx)}
+                    style={{ width: '100%', padding: '11px 12px', borderRadius: 10, border: '1.5px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#333' }}
+                  >
+                    Duplikovat příspěvek
+                  </button>
+                </div>
+              )}
 
             </div>
           </div>
