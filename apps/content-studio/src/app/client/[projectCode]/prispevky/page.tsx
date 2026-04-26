@@ -835,11 +835,18 @@ function PrispevkyInner() {
                     // Nejdřív ulož status 'published' s scheduledPosts najednou
                     setStatuses(prev => ({ ...prev, [Number(idx)]: 'published' }))
                     setEditing(false)
+                    console.log('PLAN MODAL SAVING:', {
+                      idx,
+                      entry,
+                      updated,
+                      scheduledPostsCount: scheduledPosts.length
+                    })
                     await fetch('/api/client/post-status', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ projectCode, token, postIndex: Number(idx), status: 'published', scheduledPosts: updated }),
                     })
+                    console.log('PLAN MODAL SAVED')
                     setPlanModal(null)
                     setTimeout(() => {
                       router.push(`/client/${projectCode}/planovac?token=${token}`)
