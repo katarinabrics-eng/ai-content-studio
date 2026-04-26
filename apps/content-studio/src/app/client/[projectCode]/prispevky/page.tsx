@@ -843,8 +843,8 @@ function PrispevkyInner() {
                       : []
                     const updated = [...freshScheduled.filter((s: ScheduledPost) => s.postIdx !== Number(idx)), entry]
                     setScheduledPosts(updated)
-                    // Nejdřív ulož status 'published' s scheduledPosts najednou
-                    setStatuses(prev => ({ ...prev, [Number(idx)]: 'published' }))
+                    // Ulož status 'approved' s scheduledPosts najednou
+                    setStatuses(prev => ({ ...prev, [Number(idx)]: 'approved' }))
                     setEditing(false)
                     console.log('PLAN MODAL SAVING:', {
                       idx,
@@ -861,7 +861,7 @@ function PrispevkyInner() {
                     await fetch('/api/client/post-status', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ projectCode, token, postIndex: Number(idx), status: 'published', scheduledPosts: updated }),
+                      body: JSON.stringify({ projectCode, token, postIndex: Number(idx), status: 'approved', scheduledPosts: updated }),
                     })
                     console.log('PLAN MODAL SAVED')
                     setPlanModal(null)
