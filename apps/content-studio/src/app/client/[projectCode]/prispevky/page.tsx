@@ -370,12 +370,12 @@ function PrispevkyInner() {
                         <button
                           onClick={e => { e.stopPropagation(); handleDownload(i) }}
                           title="Stáhnout"
-                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-                        >↓</button>
+                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                        >⬇</button>
                         <button
                           onClick={e => { e.stopPropagation(); setStatus(i, 'published') }}
                           title="Naplánovat"
-                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                         >📅</button>
                       </div>
                     </div>
