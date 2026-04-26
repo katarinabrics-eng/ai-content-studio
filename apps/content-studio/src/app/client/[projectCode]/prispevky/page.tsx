@@ -162,7 +162,10 @@ function PrispevkyInner() {
     const result = await fetch('/api/client/post-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectCode, token, postIndex: idx, status: s }),
+      body: JSON.stringify({
+        projectCode, token, postIndex: idx, status: s,
+        scheduledPosts: scheduledPosts
+      }),
     })
     const resultJson = await result.json()
     console.log('SET STATUS RESPONSE:', resultJson)
