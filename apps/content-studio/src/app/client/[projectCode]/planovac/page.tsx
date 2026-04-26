@@ -38,9 +38,7 @@ function PlanovacInner() {
   const [editModal, setEditModal] = useState<ScheduledPost | null>(null)
   const [editDate, setEditDate] = useState('')
   const [editTime, setEditTime] = useState('')
-  const [addModal, setAddModal] = useState<{ date: string } | null>(null)
-  const [addType, setAddType] = useState('Reel')
-  const [addTime, setAddTime] = useState('09:00')
+  const [addModal, setAddModal] = useState<{ date: string; month: number; year: number } | null>(null)
 
   useEffect(() => {
     if (!projectCode) return
@@ -51,10 +49,9 @@ function PlanovacInner() {
         )
         const d = await r.json()
         const sr = d.project?.scan_result as Record<string, unknown> | undefined
-        const sp = (sr?.scheduledPosts as ScheduledPost[] | undefined) ?? []
-        setScheduled(sp)
+        setScheduled((sr?.scheduledPosts as ScheduledPost[] | undefined) ?? [])
       } catch {
-        // fetch failed — empty state
+        // fetch failed
       } finally {
         setLoading(false)
       }
@@ -62,6 +59,7 @@ function PlanovacInner() {
   }, [projectCode, token])
 
   const saveSchedule = async (newScheduled: ScheduledPost[]) => {
+    setScheduled(newScheduled)
     await fetch('/api/client/post-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -75,31 +73,34 @@ function PlanovacInner() {
     })
   }
 
-  // ── Kalendář: generuj 42 buněk ──────────────────────────────────────────────
-  const firstWeekday = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7 // Po=0
+  const openEdit = (post: ScheduledPost) => {
+    setEditModal(post)
+    setEditDate(`${post.year}-${String(post.month + 1).padStart(2, '0')}-${String(post.date).padStart(2, '0')}`)
+    setEditTime(post.time)
+  }
+
+  // ── Kalendář: 42 buněk ─────────────────────────────────────────────────────
+  const firstWeekday = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7  // Po = 0
   const daysInMonth  = new Date(currentYear, currentMonth + 1, 0).getDate()
   const prevDays     = new Date(currentYear, currentMonth, 0).getDate()
-
   const prevM = currentMonth === 0  ? 11 : currentMonth - 1
   const prevY = currentMonth === 0  ? currentYear - 1 : currentYear
   const nextM = currentMonth === 11 ?  0 : currentMonth + 1
   const nextY = currentMonth === 11 ? currentYear + 1 : currentYear
 
-  type Cell = { day: string; month: number; year: number; inCurrent: boolean }
+  type Cell = { dayNum: number; month: number; year: number; inCurrent: boolean }
   const cells: Cell[] = []
-
   for (let i = firstWeekday - 1; i >= 0; i--)
-    cells.push({ day: String(prevDays - i), month: prevM, year: prevY, inCurrent: false })
+    cells.push({ dayNum: prevDays - i, month: prevM, year: prevY, inCurrent: false })
   for (let d = 1; d <= daysInMonth; d++)
-    cells.push({ day: String(d), month: currentMonth, year: currentYear, inCurrent: true })
+    cells.push({ dayNum: d, month: currentMonth, year: currentYear, inCurrent: true })
   let nd = 1
   while (cells.length < 42)
-    cells.push({ day: String(nd++), month: nextM, year: nextY, inCurrent: false })
+    cells.push({ dayNum: nd++, month: nextM, year: nextY, inCurrent: false })
 
-  const findPost = (day: string, month: number, year: number) =>
-    scheduled.find(s => s.date === day && s.month === month && s.year === year) ?? null
+  const findPost = (dayNum: number, month: number, year: number) =>
+    scheduled.find(s => s.date === String(dayNum) && s.month === month && s.year === year) ?? null
 
-  // ── Navigace měsíce ─────────────────────────────────────────────────────────
   const goPrev = () => {
     if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1) }
     else setCurrentMonth(m => m - 1)
@@ -107,12 +108,6 @@ function PlanovacInner() {
   const goNext = () => {
     if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1) }
     else setCurrentMonth(m => m + 1)
-  }
-
-  const openEdit = (post: ScheduledPost) => {
-    setEditModal(post)
-    setEditDate(`${post.year}-${String(post.month + 1).padStart(2, '0')}-${String(post.date).padStart(2, '0')}`)
-    setEditTime(post.time)
   }
 
   const scheduledThisMonth = scheduled.filter(s => s.month === currentMonth && s.year === currentYear).length
@@ -128,9 +123,9 @@ function PlanovacInner() {
     )
   }
 
-  const eyebrowStyle = {
+  const eyebrow: React.CSSProperties = {
     fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
-    textTransform: 'uppercase' as const, color: '#8a8680',
+    textTransform: 'uppercase', color: '#8a8680',
   }
 
   return (
@@ -139,21 +134,21 @@ function PlanovacInner() {
       {/* ── Hlavička ── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 24, marginBottom: 22 }}>
         <div>
-          <div style={{ ...eyebrowStyle, marginBottom: 6 }}>Plánovač</div>
+          <div style={{ ...eyebrow, marginBottom: 6 }}>Plánovač</div>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(24px, 2.8vw, 34px)', fontWeight: 500, color: '#111', margin: '0 0 6px', lineHeight: 1.1 }}>
             Kalendář obsahu
           </h1>
           <div style={{ fontSize: 13, color: '#8a8680', lineHeight: 1.5 }}>
-            Klikni na den s obrázkem pro úpravu, nebo na prázdný slot pro přidání postu.
+            Klikni na den s příspěvkem pro úpravu, nebo na prázdný slot pro přidání.
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0, paddingTop: 4 }}>
-          <button style={{ padding: '8px 14px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#333', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <button style={{ padding: '8px 14px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#333' }}>
             ⬇ Export .ics
           </button>
           <button
             onClick={() => router.push(`/client/${projectCode}/prispevky?token=${token}`)}
-            style={{ padding: '8px 14px', borderRadius: 9, border: 'none', background: '#111', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5 }}
+            style={{ padding: '8px 14px', borderRadius: 9, border: 'none', background: '#111', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
           >
             + Nový příspěvek
           </button>
@@ -165,17 +160,17 @@ function PlanovacInner() {
 
         {/* Navigace měsíce */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <button
               onClick={goPrev}
-              style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid #e8e4dc', background: '#fff', fontSize: 17, cursor: 'pointer', lineHeight: 1, color: '#555' }}
+              style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid #e8e4dc', background: '#fff', fontSize: 17, cursor: 'pointer', color: '#555', lineHeight: 1 }}
             >‹</button>
-            <div style={{ fontSize: 20, fontFamily: "'Playfair Display', serif", fontWeight: 500, color: '#111', minWidth: 220, textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontFamily: "'Playfair Display', serif", fontWeight: 500, color: '#111', minWidth: 180, textAlign: 'center' }}>
               {MESICE[currentMonth]} {currentYear}
             </div>
             <button
               onClick={goNext}
-              style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid #e8e4dc', background: '#fff', fontSize: 17, cursor: 'pointer', lineHeight: 1, color: '#555' }}
+              style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid #e8e4dc', background: '#fff', fontSize: 17, cursor: 'pointer', color: '#555', lineHeight: 1 }}
             >›</button>
           </div>
           <div style={{ display: 'flex', gap: 16, fontSize: 11, color: '#8a8680', alignItems: 'center' }}>
@@ -191,77 +186,50 @@ function PlanovacInner() {
         </div>
 
         {/* Hlavičky dní */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 6, fontWeight: 600 }}>
-          {DNY.map(d => (
-            <div key={d} style={{ textAlign: 'center', padding: '4px 0' }}>{d}</div>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 5, fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8a8680', marginBottom: 5, fontWeight: 600 }}>
+          {DNY.map(d => <div key={d} style={{ textAlign: 'center', padding: '3px 0' }}>{d}</div>)}
         </div>
 
-        {/* Grid buněk */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 5 }}>
           {cells.map((cell, ci) => {
-            const post = findPost(cell.day, cell.month, cell.year)
-            const clickable = !!(post || cell.inCurrent)
+            const post = findPost(cell.dayNum, cell.month, cell.year)
             return (
               <div
                 key={ci}
                 onClick={() => {
                   if (post) openEdit(post)
-                  else if (cell.inCurrent) { setAddModal({ date: cell.day }); setAddType('Reel'); setAddTime('09:00') }
+                  else if (cell.inCurrent) setAddModal({ date: String(cell.dayNum), month: currentMonth, year: currentYear })
                 }}
                 style={{
                   aspectRatio: '1',
-                  borderRadius: 10,
+                  borderRadius: 8,
                   overflow: 'hidden',
                   border: '1px solid #e8e4dc',
-                  background: post ? 'transparent' : '#f0efeb',
+                  background: post ? 'transparent' : '#f5f2ec',
                   position: 'relative',
-                  cursor: clickable ? 'pointer' : 'default',
-                  opacity: !cell.inCurrent ? 0.45 : 1,
-                  transition: 'transform .12s',
+                  cursor: post || cell.inCurrent ? 'pointer' : 'default',
+                  opacity: !cell.inCurrent ? 0.3 : 1,
+                  transition: 'transform .1s',
                 }}
-                onMouseEnter={e => { if (clickable) (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.03)' }}
+                onMouseEnter={e => { if (post || cell.inCurrent) (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.03)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)' }}
               >
                 {post ? (
                   <>
-                    {/* Obrázek */}
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      backgroundImage: post.img ? `url(${post.img})` : 'none',
-                      backgroundSize: 'cover', backgroundPosition: 'center',
-                      backgroundColor: '#1a0a2e',
-                    }} />
-                    {/* Gradient */}
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'linear-gradient(180deg, rgba(0,0,0,.45) 0%, transparent 38%, transparent 52%, rgba(0,0,0,.65) 100%)',
-                    }} />
-                    {/* Datum */}
-                    <div style={{ position: 'absolute', top: 6, left: 8, color: '#fff', fontSize: 13, fontWeight: 600, textShadow: '0 1px 2px rgba(0,0,0,.6)' }}>
-                      {cell.day}
-                    </div>
-                    {/* Type badge */}
-                    <div style={{
-                      position: 'absolute', top: 6, right: 6,
-                      background: '#b7e94c', color: '#1a2a00',
-                      fontSize: 8, fontWeight: 700, letterSpacing: '.04em',
-                      padding: '2px 5px', borderRadius: 4, textTransform: 'uppercase',
-                    }}>{post.type}</div>
-                    {/* Čas + hook */}
-                    <div style={{ position: 'absolute', bottom: 6, left: 8, right: 8, color: '#fff' }}>
-                      <div style={{ fontSize: 9.5, opacity: .85 }}>{post.time}</div>
-                      <div style={{
-                        fontSize: 10, lineHeight: 1.25, marginTop: 1,
-                        display: '-webkit-box', WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical' as never, overflow: 'hidden',
-                      }}>{post.hook}</div>
+                    {post.img && (
+                      <img src={post.img} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    )}
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.15))' }} />
+                    <div style={{ position: 'absolute', top: 5, left: 6, color: '#fff', fontSize: 12, fontWeight: 600 }}>{cell.dayNum}</div>
+                    <div style={{ position: 'absolute', top: 5, right: 5, background: '#b7e94c', color: '#1a2a00', fontSize: 8, fontWeight: 700, padding: '1px 4px', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '.03em' }}>{post.type}</div>
+                    <div style={{ position: 'absolute', bottom: 5, left: 5, right: 5 }}>
+                      <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginBottom: 1 }}>{post.time}</div>
+                      <div style={{ fontSize: 10, color: '#fff', lineHeight: 1.25, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as never, overflow: 'hidden' }}>{post.hook}</div>
                     </div>
                   </>
                 ) : (
-                  <div style={{ position: 'absolute', top: 8, left: 10, fontSize: 13, color: '#888', fontWeight: 500 }}>
-                    {cell.day}
-                  </div>
+                  <div style={{ position: 'absolute', top: 6, left: 8, fontSize: 12, color: '#888', fontWeight: 500 }}>{cell.dayNum}</div>
                 )}
               </div>
             )
@@ -273,93 +241,64 @@ function PlanovacInner() {
       {editModal && (
         <div
           onClick={() => setEditModal(null)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#fff', borderRadius: 16, width: 520, maxHeight: '85vh', overflowY: 'auto', padding: 24 }}
+            style={{ background: '#fff', borderRadius: 16, width: 480, overflow: 'hidden' }}
           >
-            {/* Hlavička */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-              <div>
-                <div style={{ ...eyebrowStyle, marginBottom: 4 }}>Upravit plán</div>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500, color: '#111', margin: 0 }}>
-                  {editModal.date}. {MESICE[editModal.month]} {editModal.year}
-                </h3>
-              </div>
-              <button onClick={() => setEditModal(null)} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888', padding: '4px 8px', lineHeight: 1 }}>×</button>
-            </div>
-
             {/* Obrázek */}
             {editModal.img && (
-              <div style={{
-                width: '100%', height: 200,
-                backgroundImage: `url(${editModal.img})`,
-                backgroundSize: 'cover', backgroundPosition: 'center',
-                borderRadius: 10, marginBottom: 14,
-              }} />
+              <div style={{ height: 180, backgroundImage: `url(${editModal.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
             )}
 
-            {/* Chips */}
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-              <span style={{ border: '1px solid #e8e4dc', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#555' }}>{editModal.type}</span>
-              <span style={{ border: '1px solid #e8e4dc', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#555' }}>{editModal.time}</span>
-            </div>
+            <div style={{ padding: 20 }}>
+              {/* Type badge + close */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ background: '#b7e94c', color: '#1a2a00', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 6, textTransform: 'uppercase' }}>{editModal.type}</span>
+                <button onClick={() => setEditModal(null)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#888', lineHeight: 1, padding: '2px 6px' }}>×</button>
+              </div>
 
-            {/* Hook */}
-            <div style={{ fontSize: 15, fontFamily: "'Playfair Display', serif", lineHeight: 1.35, color: '#111', marginBottom: 18 }}>
-              „{editModal.hook}"
-            </div>
+              {/* Hook */}
+              <div style={{ fontSize: 16, fontWeight: 500, color: '#111', lineHeight: 1.35, marginBottom: 16 }}>
+                {editModal.hook}
+              </div>
 
-            {/* Datum + čas inputs */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-              <label style={{ fontSize: 11, color: '#8a8680' }}>
-                Datum
+              {/* Datum + čas */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
                 <input
                   type="date"
                   value={editDate}
                   onChange={e => setEditDate(e.target.value)}
-                  style={{ width: '100%', padding: '8px 10px', marginTop: 4, border: '1px solid #e8e4dc', borderRadius: 8, background: '#faf8f3', fontSize: 13, color: '#111', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                  style={{ flex: 1, padding: '8px 10px', border: '1px solid #e8e4dc', borderRadius: 8, background: '#faf8f3', fontSize: 13, color: '#111', fontFamily: 'inherit' }}
                 />
-              </label>
-              <label style={{ fontSize: 11, color: '#8a8680' }}>
-                Čas
                 <input
                   type="time"
                   value={editTime}
                   onChange={e => setEditTime(e.target.value)}
-                  style={{ width: '100%', padding: '8px 10px', marginTop: 4, border: '1px solid #e8e4dc', borderRadius: 8, background: '#faf8f3', fontSize: 13, color: '#111', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                  style={{ flex: 1, padding: '8px 10px', border: '1px solid #e8e4dc', borderRadius: 8, background: '#faf8f3', fontSize: 13, color: '#111', fontFamily: 'inherit' }}
                 />
-              </label>
-            </div>
+              </div>
 
-            {/* Akce */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, paddingTop: 14, borderTop: '1px solid #f0ece4' }}>
-              <button
-                onClick={() => {
-                  const updated = scheduled.filter(
-                    s => !(s.date === editModal.date && s.month === editModal.month && s.year === editModal.year)
-                  )
-                  setScheduled(updated)
-                  saveSchedule(updated)
-                  setEditModal(null)
-                }}
-                style={{ padding: '10px 14px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#e05a5a' }}
-              >
-                Odstranit
-              </button>
+              {/* Akce */}
               <div style={{ display: 'flex', gap: 8 }}>
                 <button
-                  onClick={() => setEditModal(null)}
-                  style={{ padding: '10px 14px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
+                  onClick={() => {
+                    const updated = scheduled.filter(
+                      s => !(s.date === editModal.date && s.month === editModal.month && s.year === editModal.year)
+                    )
+                    saveSchedule(updated)
+                    setEditModal(null)
+                  }}
+                  style={{ flex: 1, padding: '11px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#e05a5a' }}
                 >
-                  Zrušit
+                  Odstranit
                 </button>
                 <button
                   onClick={() => {
+                    const parsed = editDate ? new Date(editDate) : null
                     const updated = scheduled.map(s => {
                       if (s.date === editModal.date && s.month === editModal.month && s.year === editModal.year) {
-                        const parsed = editDate ? new Date(editDate) : null
                         return {
                           ...s,
                           date: parsed ? String(parsed.getDate()) : s.date,
@@ -370,11 +309,10 @@ function PlanovacInner() {
                       }
                       return s
                     })
-                    setScheduled(updated)
                     saveSchedule(updated)
                     setEditModal(null)
                   }}
-                  style={{ padding: '10px 18px', borderRadius: 9, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                  style={{ flex: 2, padding: '11px', borderRadius: 9, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
                 >
                   Uložit změny
                 </button>
@@ -388,77 +326,38 @@ function PlanovacInner() {
       {addModal && (
         <div
           onClick={() => setAddModal(null)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#fff', borderRadius: 16, width: 460, padding: 24 }}
+            style={{ background: '#fff', borderRadius: 16, width: 440, padding: 24 }}
           >
-            {/* Hlavička */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
-                <div style={{ ...eyebrowStyle, marginBottom: 4 }}>Nový příspěvek</div>
+                <div style={{ ...eyebrow, marginBottom: 4 }}>Nový příspěvek</div>
                 <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500, color: '#111', margin: 0 }}>
-                  {addModal.date}. {MESICE[currentMonth]}
+                  Přidat příspěvek — {addModal.date}. {MESICE[addModal.month]}
                 </h3>
               </div>
-              <button onClick={() => setAddModal(null)} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888', padding: '4px 8px', lineHeight: 1 }}>×</button>
+              <button onClick={() => setAddModal(null)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#888', padding: '2px 6px', lineHeight: 1 }}>×</button>
             </div>
 
-            <div style={{ fontSize: 12, color: '#8a8680', marginBottom: 14 }}>
-              Naplánuj nový post — vyber typ a čas.
+            <div style={{ fontSize: 13, color: '#8a8680', marginBottom: 20, lineHeight: 1.5 }}>
+              Vyber příspěvek ze schválených nebo vytvoř nový.
             </div>
 
-            {/* Typ výběr */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
-              {['Reel', 'Carousel', 'Post', 'Story'].map(t => (
-                <button
-                  key={t}
-                  onClick={() => setAddType(t)}
-                  style={{
-                    padding: '10px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                    cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center',
-                    border: addType === t ? 'none' : '1px solid #e8e4dc',
-                    background: addType === t ? '#111' : '#fff',
-                    color: addType === t ? '#fff' : '#333',
-                    transition: 'all .12s',
-                  }}
-                >{t}</button>
-              ))}
-            </div>
-
-            {/* Čas */}
-            <label style={{ fontSize: 11, color: '#8a8680', display: 'block', marginBottom: 16 }}>
-              Čas
-              <input
-                type="time"
-                value={addTime}
-                onChange={e => setAddTime(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', marginTop: 4, border: '1px solid #e8e4dc', borderRadius: 8, background: '#faf8f3', fontSize: 13, color: '#111', boxSizing: 'border-box', fontFamily: 'inherit' }}
-              />
-            </label>
-
-            {/* Akce */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 14, borderTop: '1px solid #f0ece4' }}>
-              <button
-                onClick={() => setAddModal(null)}
-                style={{ padding: '10px 14px', borderRadius: 9, border: '1px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
-              >
-                Zrušit
-              </button>
-              <button
-                onClick={() => {
-                  router.push(
-                    `/client/${projectCode}/prispevky?token=${token}` +
-                    `&scheduleDate=${addModal.date}&scheduleMonth=${currentMonth}` +
-                    `&scheduleYear=${currentYear}&scheduleType=${addType}&scheduleTime=${encodeURIComponent(addTime)}`
-                  )
-                }}
-                style={{ padding: '10px 18px', borderRadius: 9, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-              >
-                Pokračovat →
-              </button>
-            </div>
+            <button
+              onClick={() => router.push(`/client/${projectCode}/prispevky?token=${token}&plan=${addModal.date}-${addModal.month}-${addModal.year}`)}
+              style={{ width: '100%', padding: '13px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}
+            >
+              Vybrat ze schválených →
+            </button>
+            <button
+              onClick={() => setAddModal(null)}
+              style={{ width: '100%', padding: '11px', borderRadius: 10, border: '1px solid #e8e4dc', background: '#fff', color: '#555', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              Zrušit
+            </button>
           </div>
         </div>
       )}

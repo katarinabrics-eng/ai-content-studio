@@ -37,6 +37,7 @@ export function Sidebar({
       href: `${base}/prispevky${t}`,
       badge: pendingApprovals > 0 ? pendingApprovals : undefined,
     },
+    { label: "Plánovač", href: `${base}/planovac${t}` },
     { label: "Tarify & služby", href: `${base}/rtg/plans${t}` },
   ];
 
