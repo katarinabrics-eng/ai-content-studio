@@ -371,7 +371,7 @@ function PrispevkyInner() {
                         <button
                           onClick={e => { e.stopPropagation(); handleDownload(i) }}
                           title="Stáhnout"
-                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 16, lineHeight: '1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#f0ede8', fontSize: 16, lineHeight: '1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: '#111' }}
                         >⬇</button>
                         <button
                           onClick={e => { e.stopPropagation(); setStatus(i, 'published') }}
