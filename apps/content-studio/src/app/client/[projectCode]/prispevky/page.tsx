@@ -841,6 +841,12 @@ function PrispevkyInner() {
                       updated,
                       scheduledPostsCount: scheduledPosts.length
                     })
+                    console.log('PLAN SAVING:', {
+                      idx: Number(idx),
+                      updatedCount: updated.length,
+                      updated,
+                      currentScheduled: scheduledPosts
+                    })
                     await fetch('/api/client/post-status', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
