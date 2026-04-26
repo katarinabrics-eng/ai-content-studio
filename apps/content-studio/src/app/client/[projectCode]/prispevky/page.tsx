@@ -125,6 +125,9 @@ function PrispevkyInner() {
           initialDrafts[i] = savedDrafts[String(i)] ?? { hook: p.hook, body: p.body }
         })
         setDrafts(initialDrafts)
+        console.log('FINAL STATUSES:', initialStatuses)
+        console.log('DB postStatuses:', savedStatuses)
+        console.log('Scheduled:', savedScheduled)
         setStatuses(initialStatuses)
       } catch {
         // fetch failed — empty state
