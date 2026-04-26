@@ -42,11 +42,10 @@ export async function POST(req: NextRequest) {
       raw.postDrafts = drafts
     }
 
-    if (body.scheduledPosts !== undefined) {
-      raw.scheduledPosts = Array.isArray(body.scheduledPosts)
-        ? body.scheduledPosts
-        : []
+    if (Array.isArray(body.scheduledPosts)) {
+      raw.scheduledPosts = body.scheduledPosts
     }
+    // Ak scheduledPosts nepríde — zachovaj existujúce z raw (nemeň nič)
 
     await supabase
       .from('project_brief')
