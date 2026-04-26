@@ -480,6 +480,8 @@ export async function getProjectByCodeAndPin(code: string, pin: string): Promise
 
 export async function getProjectByMagicToken(token: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
   const supabase = getSupabaseClient();
+  // Force fresh data
+  await supabase.from("project_brief").select("updated_at").eq("project_id", 'ping').limit(0)
   const tokenHash = hashToken(token.trim());
   const { data: proj, error } = await supabase
     .from("projects")
@@ -493,6 +495,7 @@ export async function getProjectByMagicToken(token: string): Promise<(ProjectRow
     .eq("project_id", proj.id)
     .order("updated_at", { ascending: false })
     .limit(1)
+    .throwOnError()
     .single();
 
   console.log('BRIEF LOADED:', {
