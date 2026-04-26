@@ -48,6 +48,7 @@ function PrispevkyInner() {
   // UI-only states
   const [showKampan, setShowKampan] = useState(false)
   const [visualSource, setVisualSource] = useState<'web' | 'drive' | 'ai'>('web')
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     if (!projectCode) return
@@ -456,14 +457,17 @@ function PrispevkyInner() {
             {/* VLEVO — náhled */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flexShrink: 0 }}>
 
-              {/* Preview image */}
+              {/* Preview image — kliknutí otevře fullscreen náhled */}
               {isSelVideo ? (
-                <div style={{
-                  width: 160, height: 284, borderRadius: 12, overflow: 'hidden',
-                  backgroundImage: sel.img ? `url(${sel.img})` : 'none',
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                  backgroundColor: '#1a0a2e', position: 'relative', flexShrink: 0,
-                }}>
+                <div
+                  onClick={() => setShowPreview(true)}
+                  style={{
+                    width: 160, height: 284, borderRadius: 12, overflow: 'hidden',
+                    backgroundImage: sel.img ? `url(${sel.img})` : 'none',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    backgroundColor: '#1a0a2e', position: 'relative', flexShrink: 0,
+                    cursor: 'pointer',
+                  }}>
                   <span style={{
                     position: 'absolute', top: 8, left: 8,
                     fontSize: 8.5, fontWeight: 700, padding: '2px 7px', borderRadius: 999,
@@ -482,14 +486,20 @@ function PrispevkyInner() {
                     position: 'absolute', bottom: 8, left: 8, right: 8,
                     color: '#fff', fontSize: 11, fontWeight: 600, lineHeight: 1.3,
                   }}>{selDraft.hook}</div>
+                  <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.45)', borderRadius: 4, padding: '2px 5px', fontSize: 11, color: '#fff' }}>⛶</div>
                 </div>
               ) : (
-                <div style={{
-                  width: 200, height: 200, borderRadius: 12, overflow: 'hidden',
-                  backgroundImage: sel.img ? `url(${sel.img})` : 'none',
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                  backgroundColor: '#f0efeb', flexShrink: 0,
-                }} />
+                <div
+                  onClick={() => setShowPreview(true)}
+                  style={{
+                    width: 200, height: 200, borderRadius: 12, overflow: 'hidden',
+                    backgroundImage: sel.img ? `url(${sel.img})` : 'none',
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    backgroundColor: '#f0efeb', flexShrink: 0,
+                    cursor: 'pointer', position: 'relative',
+                  }}>
+                  <div style={{ position: 'absolute', bottom: 6, right: 6, background: 'rgba(0,0,0,0.4)', borderRadius: 4, padding: '2px 5px', fontSize: 11, color: '#fff' }}>⛶</div>
+                </div>
               )}
 
               <div style={{ fontSize: 10, color: '#8a8680', fontWeight: 500 }}>
@@ -637,6 +647,80 @@ function PrispevkyInner() {
           </div>
         )}
       </div>
+
+      {/* ── Modal: Fullscreen náhled ── */}
+      {showPreview && sel && (
+        <div
+          onClick={() => setShowPreview(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}
+          >
+            {/* Zavřít */}
+            <button
+              onClick={() => setShowPreview(false)}
+              style={{ position: 'absolute', top: -48, right: 0, background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}
+            >×</button>
+
+            {/* Video / Reels */}
+            {isSelVideo && (
+              <div style={{ position: 'relative', height: 'min(82vh, 560px)', aspectRatio: '9/16', borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                {sel.img
+                  ? <img src={sel.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  : <div style={{ width: '100%', height: '100%', background: '#1a0a2e' }} />
+                }
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)' }} />
+                {/* Play button */}
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#fff', paddingLeft: 4 }}>▶</div>
+                </div>
+                {sel.duration && (
+                  <span style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 11, padding: '3px 8px', borderRadius: 6, fontWeight: 600 }}>▶ {sel.duration}</span>
+                )}
+                <div style={{ position: 'absolute', bottom: 14, left: 14, right: 14, color: '#fff', fontSize: 13, fontWeight: 600, lineHeight: 1.35 }}>
+                  {selDraft.hook}
+                </div>
+              </div>
+            )}
+
+            {/* Carousel */}
+            {!isSelVideo && sel.type.toLowerCase() === 'carousel' && (
+              <div style={{ position: 'relative', width: 'min(82vh, 540px)', aspectRatio: '1', borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                {sel.img
+                  ? <img src={sel.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  : <div style={{ width: '100%', height: '100%', background: '#f0efeb' }} />
+                }
+                {/* Slide dots */}
+                <div style={{ position: 'absolute', bottom: 12, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 5 }}>
+                  <div style={{ width: 20, height: 4, borderRadius: 2, background: '#fff' }} />
+                  <div style={{ width: 8, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.4)' }} />
+                  <div style={{ width: 8, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.4)' }} />
+                </div>
+                {/* Navigace šipky */}
+                <button style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: 38, height: 38, cursor: 'pointer', color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+                <button style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: 38, height: 38, cursor: 'pointer', color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+              </div>
+            )}
+
+            {/* Grafika 1:1 */}
+            {!isSelVideo && sel.type.toLowerCase() !== 'carousel' && (
+              <div style={{ width: 'min(82vh, 540px)', aspectRatio: '1', borderRadius: 16, overflow: 'hidden', flexShrink: 0 }}>
+                {sel.img
+                  ? <img src={sel.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  : <div style={{ width: '100%', height: '100%', background: '#f0efeb' }} />
+                }
+              </div>
+            )}
+
+            {/* Hook text pod obrázkem */}
+            <div style={{ color: '#fff', fontSize: 15, fontWeight: 500, maxWidth: 480, textAlign: 'center', lineHeight: 1.45, opacity: 0.92 }}>
+              {selDraft.hook}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Modal: Navrhnout kampaň ── */}
       {showKampan && (
