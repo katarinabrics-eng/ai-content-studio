@@ -40,6 +40,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (body.scheduledPosts !== undefined) {
+    raw.scheduledPosts = body.scheduledPosts
+  }
+
   await supabase
     .from('project_brief')
     .update({ raw_analysis: { ...raw, postStatuses, postDrafts }, updated_at: new Date().toISOString() })
