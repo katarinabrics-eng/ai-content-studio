@@ -26,6 +26,8 @@ export async function GET(request: NextRequest) {
       if (proj && proj.project_code.toUpperCase() === code.toUpperCase()) {
         const brief = proj.brief;
         const rawAnalysis = brief?.raw_analysis ?? null;
+        console.log('RAW ANALYSIS KEYS:', rawAnalysis ? Object.keys(rawAnalysis as Record<string, unknown>) : 'null')
+        console.log('SCHEDULED IN RAW:', (rawAnalysis as Record<string, unknown>)?.scheduledPosts)
         const rawAnalysisWithDrafts = rawAnalysis ? {
           ...rawAnalysis,
           postDrafts: (rawAnalysis as Record<string, unknown>).postDrafts ?? {},
