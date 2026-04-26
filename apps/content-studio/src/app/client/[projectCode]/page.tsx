@@ -484,6 +484,11 @@ function DashboardInner() {
   const [loading, setLoading] = useState(true)
   const [vbPreview, setVbPreview] = useState<{ id: string; thumbnailUrl: string }[]>([])
   const [selectedPost, setSelectedPost] = useState<number | null>(null)
+  const [tweaksOpen, setTweaksOpen] = useState(false)
+  const [tweakPlan, setTweakPlan] = useState<string>(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('luc_plan') ?? 'free'
+    return 'free'
+  })
 
   useEffect(() => {
     fetch('/api/client/visual-bank?limit=3')
@@ -536,7 +541,7 @@ function DashboardInner() {
     )
   }
 
-  const isFree  = !project?.rtg_plan && !project?.pvi_active
+  const isFree  = tweakPlan === 'free'
   const hasRtg  = !!(project?.rtg_plan)
   const hasPVI  = !!(project?.pvi_active)
   const brand   = parseBrand(project ?? { rtg_plan: null, pvi_active: false, scan_result: null, client_name: null, pendingCount: 0 })
@@ -614,6 +619,13 @@ function DashboardInner() {
             border: 'none', cursor: 'pointer', fontFamily: 'inherit',
           }}>
             ✦ Vytvořit příspěvek
+          </button>
+          <button
+            onClick={() => setTweaksOpen(o => !o)}
+            style={{ padding: '6px 14px', borderRadius: 8, border: '0.5px solid #e0ddd8',
+              background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6 }}>
+            ⚙ Tweaks
           </button>
         </div>
       </div>
@@ -893,6 +905,77 @@ function DashboardInner() {
         </div>
       </div>
     </div>
+
+    {/* Tweaks panel */}
+    {tweaksOpen && (
+      <div style={{ position: 'fixed', bottom: 24, right: 24, width: 260,
+        background: '#fff', borderRadius: 14, border: '0.5px solid #e0ddd8',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.10)', zIndex: 2000, padding: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', marginBottom: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#111' }}>Tweaks</div>
+          <button onClick={() => setTweaksOpen(false)}
+            style={{ background: 'none', border: 'none', fontSize: 18,
+              cursor: 'pointer', color: '#888', lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 10, color: '#888', textTransform: 'uppercase',
+            letterSpacing: 0.5, marginBottom: 8 }}>Plán klienta</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[['free','Free'],['start','Start'],['plus','Plus'],['pro','Pro'],['pvi','PVI']].map(([id,l]) => (
+              <div key={id}
+                onClick={() => { setTweakPlan(id); localStorage.setItem('luc_plan', id) }}
+                style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11,
+                  cursor: 'pointer', fontWeight: tweakPlan === id ? 500 : 400,
+                  background: tweakPlan === id ? '#111' : '#f5f2ec',
+                  color: tweakPlan === id ? '#fff' : '#555',
+                  border: tweakPlan === id ? 'none' : '0.5px solid #e0ddd8' }}>
+                {l}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 10, color: '#888', textTransform: 'uppercase',
+            letterSpacing: 0.5, marginBottom: 8 }}>Vizuální směr</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[['cream','Studio Cream'],['editorial','Editorial'],['midnight','Midnight']].map(([id,l]) => (
+              <div key={id}
+                style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+                  background: id === 'cream' ? '#111' : '#f5f2ec',
+                  color: id === 'cream' ? '#fff' : '#555',
+                  border: id === 'cream' ? 'none' : '0.5px solid #e0ddd8' }}>
+                {l}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize: 10, color: '#888', textTransform: 'uppercase',
+            letterSpacing: 0.5, marginBottom: 8 }}>Obrazovka</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {[['dashboard','Dashboard'],['prispevky','Příspěvky'],['planovac','Plánovač'],
+              ['media-library','Knihovna'],['rtg/plans','Tarify']].map(([id,l]) => (
+              <div key={id}
+                onClick={() => {
+                  if (id !== 'dashboard') {
+                    window.location.href = `/client/${projectCode}/${id}?token=${token}`
+                  }
+                }}
+                style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+                  background: id === 'dashboard' ? '#111' : '#f5f2ec',
+                  color: id === 'dashboard' ? '#fff' : '#555',
+                  border: id === 'dashboard' ? 'none' : '0.5px solid #e0ddd8' }}>
+                {l}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
 
     {/* Modal — detail příspěvku */}
     {selectedPost !== null && gp[selectedPost] && (() => {
