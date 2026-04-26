@@ -6,9 +6,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const code = request.nextUrl.searchParams.get('code') ?? ''
-  const token = request.nextUrl.searchParams.get('token') ?? ''
-  console.log('PROJECT ROUTE:', { code, hasToken: !!token, tokenLen: token.length })
   const headers = {
     'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
     'Pragma': 'no-cache',
