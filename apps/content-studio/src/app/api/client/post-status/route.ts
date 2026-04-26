@@ -6,9 +6,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const { projectCode, token, postIndex, status } = body
-    if (!projectCode || !token || postIndex === undefined || !status) {
-      return NextResponse.json({ ok: false, error: 'Chybí parametry' }, { status: 400 })
-    }
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,31 +15,44 @@ export async function POST(req: NextRequest) {
 
     const tokenHash = createHash('sha256').update(token.trim()).digest('hex')
     const { data: proj } = await supabase
-      .from('projects')
-      .select('id')
+      .from('projects').select('id')
       .eq('project_code', projectCode)
       .eq('magic_token_hash', tokenHash)
       .single()
 
-    if (!proj) return NextResponse.json({ ok: false, error: 'Neplatný přístup' }, { status: 401 })
+    if (!proj) return NextResponse.json({ ok: false }, { status: 401 })
 
-    const { error } = await supabase.rpc('merge_raw_analysis', {
-      p_project_id: proj.id,
-      p_post_index: postIndex,
-      p_status: status,
-      p_hook: body.hook ?? null,
-      p_body_text: body.body ?? null,
-      p_scheduled_posts: body.scheduledPosts ? JSON.stringify(body.scheduledPosts) : null,
-    })
+    const { data: brief } = await supabase
+      .from('project_brief')
+      .select('raw_analysis')
+      .eq('project_id', proj.id)
+      .single()
 
-    if (error) {
-      console.error('RPC error:', error)
-      return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
+    const raw = { ...((brief?.raw_analysis as Record<string, unknown>) ?? {}) }
+
+    if (postIndex >= 0) {
+      const statuses = { ...((raw.postStatuses as Record<string, string>) ?? {}) }
+      statuses[String(postIndex)] = status
+      raw.postStatuses = statuses
     }
+
+    if (body.hook !== undefined || body.body !== undefined) {
+      const drafts = { ...((raw.postDrafts as Record<string, unknown>) ?? {}) }
+      drafts[String(postIndex)] = { hook: body.hook ?? '', body: body.body ?? '' }
+      raw.postDrafts = drafts
+    }
+
+    if (Array.isArray(body.scheduledPosts)) {
+      raw.scheduledPosts = body.scheduledPosts
+    }
+
+    await supabase
+      .from('project_brief')
+      .update({ raw_analysis: raw, updated_at: new Date().toISOString() })
+      .eq('project_id', proj.id)
 
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error('POST-STATUS error:', err)
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500 })
   }
 }
