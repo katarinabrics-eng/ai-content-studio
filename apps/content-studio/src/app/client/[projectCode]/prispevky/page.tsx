@@ -151,7 +151,7 @@ function PrispevkyInner() {
         projectCode,
         token,
         postIndex: idx,
-        status: statuses[idx] ?? 'pending',
+        status: statuses[idx] === 'published' ? 'approved' : (statuses[idx] ?? 'pending'),
         hook: draft.hook,
         body: draft.body,
       }),
