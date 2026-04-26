@@ -370,7 +370,7 @@ function PrispevkyInner() {
                         <button
                           onClick={e => { e.stopPropagation(); handleDownload(i) }}
                           title="Stáhnout"
-                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                          style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 16, lineHeight: '1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                         >⬇</button>
                         <button
                           onClick={e => { e.stopPropagation(); setStatus(i, 'published') }}
@@ -568,9 +568,6 @@ function PrispevkyInner() {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button onClick={async () => { if (editing) await saveDraft(selectedIdx); setEditing(e => !e) }} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
                   ✎ {editing ? 'Hotovo' : 'Upravit text'}
-                </button>
-                <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
-                  ⬇ Stáhnout
                 </button>
                 <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
                   📅 Naplánovat
