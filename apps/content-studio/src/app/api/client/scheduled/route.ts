@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
     .eq('project_id', proj.id)
     .single()
   const raw = (brief?.raw_analysis as Record<string, unknown>) ?? {}
+  console.log('SCHEDULED ROUTE raw keys:', Object.keys(raw))
+  console.log('SCHEDULED ROUTE scheduledPosts:', raw.scheduledPosts)
   const sp = raw.scheduledPosts
   const scheduledPosts = Array.isArray(sp) ? sp
     : typeof sp === 'string' ? JSON.parse(sp)
