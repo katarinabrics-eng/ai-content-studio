@@ -487,7 +487,13 @@ export async function getProjectByMagicToken(token: string): Promise<(ProjectRow
     .eq("magic_token_hash", tokenHash)
     .single();
   if (error || !proj) return null;
-  const { data: brief } = await supabase.from("project_brief").select("*, raw_analysis").eq("project_id", proj.id).single();
+  const { data: brief } = await supabase
+    .from("project_brief")
+    .select("id, project_id, brand_name, raw_analysis, updated_at")
+    .eq("project_id", proj.id)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .single();
   return {
     ...(proj as ProjectRow),
     brief: (brief as ProjectBriefRow) ?? null,
