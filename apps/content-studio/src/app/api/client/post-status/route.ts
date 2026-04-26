@@ -54,8 +54,11 @@ export async function POST(req: NextRequest) {
 
   await supabase
     .from('project_brief')
-    .update({ raw_analysis: { ...raw, postStatuses, postDrafts, scheduledPosts: newScheduledPosts }, updated_at: new Date().toISOString() })
-    .eq('project_id', proj.id)
+    .upsert({
+      project_id: proj.id,
+      raw_analysis: { ...raw, postStatuses, postDrafts, scheduledPosts: newScheduledPosts },
+      updated_at: new Date().toISOString(),
+    })
 
   console.log('POST-STATUS SAVED:', { projectId: proj?.id, postStatuses, postDrafts })
 
