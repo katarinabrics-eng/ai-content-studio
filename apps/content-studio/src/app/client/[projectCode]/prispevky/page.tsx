@@ -109,6 +109,7 @@ function PrispevkyInner() {
         const initialStatuses: Record<number, Status> = {}
         const savedScheduled = (sr.scheduledPosts as unknown[]) ?? []
         setScheduledPosts(savedScheduled as ScheduledPost[])
+        console.log('LOADED SCHEDULED FROM DB:', savedScheduled.length, savedScheduled)
         savedScheduled.forEach((sp: unknown) => {
           const s = sp as ScheduledPost
           if (s.postIdx !== undefined && s.postIdx >= 0) {
@@ -820,6 +821,7 @@ function PrispevkyInner() {
                 </button>
                 <button
                   onClick={async () => {
+                    console.log('CURRENT SCHEDULED STATE:', scheduledPosts)
                     if (!planDate) return
                     const idx = planModal
                     const d = new Date(planDate)
