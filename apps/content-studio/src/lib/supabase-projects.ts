@@ -504,12 +504,9 @@ export async function getProjectByMagicToken(token: string): Promise<(ProjectRow
     .throwOnError()
     .single();
 
-  console.log('BRIEF LOADED:', {
-    id: brief?.id,
-    updatedAt: brief?.updated_at,
-    rawKeys: brief?.raw_analysis ? Object.keys(brief.raw_analysis as Record<string, unknown>) : 'null',
-    hasScheduled: !!(brief?.raw_analysis as Record<string, unknown>)?.scheduledPosts,
-  })
+  const rawKeys = brief?.raw_analysis ? Object.keys(brief.raw_analysis as Record<string, unknown>) : []
+  console.log('BRIEF LOADED keys:', rawKeys)
+  console.log('BRIEF LOADED scheduledPosts:', (brief?.raw_analysis as Record<string, unknown>)?.scheduledPosts)
 
   return {
     ...(proj as ProjectRow),
