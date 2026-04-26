@@ -27,38 +27,14 @@ export async function POST(req: NextRequest) {
     .single()
   if (!proj) return NextResponse.json({ ok: false, error: 'Neplatný přístup' }, { status: 401 })
 
-  const { data: brief } = await supabase
-    .from('project_brief')
-    .select('raw_analysis')
-    .eq('project_id', proj.id)
-    .single()
-
-  const raw = (brief?.raw_analysis as Record<string, unknown>) ?? {}
-  const postStatuses = (raw.postStatuses as Record<string, string>) ?? {}
-  if (postIndex >= 0) {
-    postStatuses[String(postIndex)] = status
-  }
-
-  const postDrafts = (raw.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
-  if (body.hook !== undefined || body.body !== undefined) {
-    postDrafts[String(postIndex)] = {
-      hook: body.hook ?? postDrafts[String(postIndex)]?.hook ?? '',
-      body: body.body ?? postDrafts[String(postIndex)]?.body ?? '',
-    }
-  }
-
-  // Zachovej existující scheduledPosts pokud přicházejí nové
-  const newScheduledPosts = body.scheduledPosts !== undefined
-    ? body.scheduledPosts
-    : (raw.scheduledPosts ?? [])
-
-  await supabase
-    .from('project_brief')
-    .upsert({
-      project_id: proj.id,
-      raw_analysis: { ...raw, postStatuses, postDrafts, scheduledPosts: newScheduledPosts },
-      updated_at: new Date().toISOString(),
-    })
+  await supabase.rpc('merge_raw_analysis', {
+    p_project_id: proj.id,
+    p_post_index: postIndex,
+    p_status: status,
+    p_hook: body.hook ?? null,
+    p_body_text: body.body ?? null,
+    p_scheduled_posts: body.scheduledPosts ?? null,
+  })
 
   console.log('POST-STATUS SAVED:', { projectId: proj?.id, postStatuses, postDrafts })
 
