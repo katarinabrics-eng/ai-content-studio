@@ -1,18 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase-server";
 import { getProjectByMagicToken } from "@/lib/supabase-projects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const headers = {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  }
   try {
     const { searchParams } = new URL(request.url);
     const code  = searchParams.get("code");
     const token = searchParams.get("token") ?? "";
 
     if (!code) {
-      return NextResponse.json({ ok: false, error: "Chybí kód projektu" }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "Chybí kód projektu" }, { status: 400, headers });
     }
 
     // 1. Pokud máme token → ověř přes magic_token_hash (vrátí project + brief)
@@ -43,7 +48,7 @@ export async function GET(request: Request) {
             rtg_plan: proj.rtg_plan ?? null,
             brief: brief ? { brand_name: brief.brand_name } : null,
           },
-        });
+        }, { headers });
       }
     }
 
@@ -72,7 +77,7 @@ export async function GET(request: Request) {
       .single();
 
     if (error || !project) {
-      return NextResponse.json({ ok: false, error: "Projekt nenalezen" }, { status: 404 });
+      return NextResponse.json({ ok: false, error: "Projekt nenalezen" }, { status: 404, headers });
     }
 
     const brief = Array.isArray(project.project_brief)
@@ -101,10 +106,10 @@ export async function GET(request: Request) {
         rtg_plan: project.rtg_plan ?? null,
         brief: brief ? { brand_name: (brief as { brand_name?: string }).brand_name } : null,
       },
-    });
+    }, { headers });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[api/client/project]", e);
-    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+    return NextResponse.json({ ok: false, error: msg }, { status: 500, headers });
   }
 }
