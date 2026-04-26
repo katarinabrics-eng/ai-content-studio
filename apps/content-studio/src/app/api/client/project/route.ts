@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
           scheduledPosts: (rawAnalysis as Record<string, unknown>).scheduledPosts ?? [],
         } : null;
         console.log('DEBUG brief keys:', brief ? Object.keys(brief) : 'brief is null');
-        console.log('DEBUG rawAnalysis:', typeof rawAnalysis, rawAnalysis ? Object.keys(rawAnalysis).slice(0, 5) : 'null');
+        console.log('DEBUG rawAnalysis v2:', typeof rawAnalysis, rawAnalysis ? Object.keys(rawAnalysis as Record<string, unknown>) : 'null');
         return NextResponse.json({
           ok: true,
           _ts: Date.now(),
