@@ -25,6 +25,7 @@ export async function GET(request: Request) {
           ...rawAnalysis,
           postDrafts: (rawAnalysis as Record<string, unknown>).postDrafts ?? {},
           postStatuses: (rawAnalysis as Record<string, unknown>).postStatuses ?? {},
+          scheduledPosts: (rawAnalysis as Record<string, unknown>).scheduledPosts ?? [],
         } : null;
         console.log('DEBUG brief keys:', brief ? Object.keys(brief) : 'brief is null');
         console.log('DEBUG rawAnalysis:', typeof rawAnalysis, rawAnalysis ? Object.keys(rawAnalysis).slice(0, 5) : 'null');
@@ -82,6 +83,7 @@ export async function GET(request: Request) {
       ...(rawAnalysis as Record<string, unknown>),
       postDrafts: (rawAnalysis as Record<string, unknown>).postDrafts ?? {},
       postStatuses: (rawAnalysis as Record<string, unknown>).postStatuses ?? {},
+      scheduledPosts: (rawAnalysis as Record<string, unknown>).scheduledPosts ?? [],
     } : null;
 
     return NextResponse.json({
