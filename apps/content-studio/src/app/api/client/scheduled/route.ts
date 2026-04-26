@@ -23,9 +23,13 @@ export async function GET(req: NextRequest) {
     .eq('project_id', proj.id)
     .single()
   const raw = (brief?.raw_analysis as Record<string, unknown>) ?? {}
+  const sp = raw.scheduledPosts
+  const scheduledPosts = Array.isArray(sp) ? sp
+    : typeof sp === 'string' ? JSON.parse(sp)
+    : []
   return NextResponse.json({
     ok: true,
-    scheduledPosts: raw.scheduledPosts ?? [],
+    scheduledPosts,
     postStatuses: raw.postStatuses ?? {},
   }, { headers: { 'Cache-Control': 'no-store' } })
 }
