@@ -110,15 +110,17 @@ function PrispevkyInner() {
         const savedScheduled = (sr.scheduledPosts as unknown[]) ?? []
         setScheduledPosts(savedScheduled as ScheduledPost[])
         console.log('LOADED SCHEDULED FROM DB:', savedScheduled.length, savedScheduled)
+        // 1. Najprv postStatuses z DB
+        Object.entries(savedStatuses).forEach(([k, v]) => {
+          const idx = Number(k)
+          if (idx >= 0) initialStatuses[idx] = v as Status
+        })
+        // 2. Scheduled overridne postStatuses — vyššia priorita
         savedScheduled.forEach((sp: unknown) => {
           const s = sp as ScheduledPost
           if (s.postIdx !== undefined && s.postIdx >= 0) {
             initialStatuses[s.postIdx] = 'published'
           }
-        })
-        Object.entries(savedStatuses).forEach(([k, v]) => {
-          const idx = Number(k)
-          if (idx >= 0) initialStatuses[idx] = v as Status
         })
         const savedDrafts = (sr.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
         const initialDrafts: Record<number, { hook: string; body: string }> = {}
