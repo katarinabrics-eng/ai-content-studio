@@ -42,13 +42,14 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  if (body.scheduledPosts !== undefined) {
-    raw.scheduledPosts = body.scheduledPosts
-  }
+  // Zachovej existující scheduledPosts pokud přicházejí nové
+  const newScheduledPosts = body.scheduledPosts !== undefined
+    ? body.scheduledPosts
+    : (raw.scheduledPosts ?? [])
 
   await supabase
     .from('project_brief')
-    .update({ raw_analysis: { ...raw, postStatuses, postDrafts }, updated_at: new Date().toISOString() })
+    .update({ raw_analysis: { ...raw, postStatuses, postDrafts, scheduledPosts: newScheduledPosts }, updated_at: new Date().toISOString() })
     .eq('project_id', proj.id)
 
   console.log('POST-STATUS SAVED:', { projectId: proj?.id, postStatuses, postDrafts })
