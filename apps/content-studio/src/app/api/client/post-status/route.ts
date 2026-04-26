@@ -30,7 +30,9 @@ export async function POST(req: NextRequest) {
 
   const raw = (brief?.raw_analysis as Record<string, unknown>) ?? {}
   const postStatuses = (raw.postStatuses as Record<string, string>) ?? {}
-  postStatuses[String(postIndex)] = status
+  if (postIndex >= 0) {
+    postStatuses[String(postIndex)] = status
+  }
 
   const postDrafts = (raw.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
   if (body.hook !== undefined || body.body !== undefined) {

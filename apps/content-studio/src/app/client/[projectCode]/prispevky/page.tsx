@@ -106,8 +106,17 @@ function PrispevkyInner() {
         // Načti uložené statusy z DB (postStatuses v raw_analysis)
         const savedStatuses = (sr.postStatuses as Record<string, string>) ?? {}
         const initialStatuses: Record<number, Status> = {}
+        const savedScheduled = (sr.scheduledPosts as unknown[]) ?? []
+        setScheduledPosts(savedScheduled as ScheduledPost[])
+        savedScheduled.forEach((sp: unknown) => {
+          const s = sp as ScheduledPost
+          if (s.postIdx !== undefined && s.postIdx >= 0) {
+            initialStatuses[s.postIdx] = 'published'
+          }
+        })
         Object.entries(savedStatuses).forEach(([k, v]) => {
-          initialStatuses[Number(k)] = v as Status
+          const idx = Number(k)
+          if (idx >= 0) initialStatuses[idx] = v as Status
         })
         const savedDrafts = (sr.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
         const initialDrafts: Record<number, { hook: string; body: string }> = {}
@@ -115,14 +124,6 @@ function PrispevkyInner() {
           initialDrafts[i] = savedDrafts[String(i)] ?? { hook: p.hook, body: p.body }
         })
         setDrafts(initialDrafts)
-        const savedScheduled = (sr.scheduledPosts as unknown[]) ?? []
-        setScheduledPosts(savedScheduled as ScheduledPost[])
-        savedScheduled.forEach((sp: unknown) => {
-          const s = sp as ScheduledPost
-          if (s.postIdx !== undefined) {
-            initialStatuses[s.postIdx] = 'published'
-          }
-        })
         setStatuses(initialStatuses)
       } catch {
         // fetch failed — empty state
