@@ -63,7 +63,8 @@ function PrispevkyInner() {
     ;(async () => {
       try {
         const r = await fetch(
-          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}`
+          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}&_=${Date.now()}`,
+          { cache: 'no-store' }
         )
         const d = await r.json()
         if (!d.project?.scan_result) { setLoading(false); return }

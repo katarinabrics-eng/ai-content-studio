@@ -31,6 +31,7 @@ export async function GET(request: Request) {
         console.log('DEBUG rawAnalysis:', typeof rawAnalysis, rawAnalysis ? Object.keys(rawAnalysis).slice(0, 5) : 'null');
         return NextResponse.json({
           ok: true,
+          _ts: Date.now(),
           project: {
             id: proj.id,
             project_code: proj.project_code,
@@ -88,6 +89,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       ok: true,
+      _ts: Date.now(),
       project: {
         id: project.id,
         project_code: project.project_code,
