@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
+import { createClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "./supabase-server";
 import type { ProjectStatus, ProjectStateForStatus } from "./project-status-engine";
 import { BUCKET_CLIENT_PROJECTS } from "./project-paths";
@@ -489,7 +490,12 @@ export async function getProjectByMagicToken(token: string): Promise<(ProjectRow
     .eq("magic_token_hash", tokenHash)
     .single();
   if (error || !proj) return null;
-  const { data: brief, error: briefError } = await supabase
+  const freshSupabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false }, db: { schema: 'public' } }
+  )
+  const { data: brief, error: briefError } = await freshSupabase
     .from("project_brief")
     .select("id, project_id, brand_name, raw_analysis, updated_at")
     .eq("project_id", proj.id)
