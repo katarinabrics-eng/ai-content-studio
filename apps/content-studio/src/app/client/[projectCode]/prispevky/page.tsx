@@ -837,7 +837,9 @@ function PrispevkyInner() {
                     }
                     const freshResp = await fetch(`/api/client/scheduled?code=${projectCode}&token=${token}`, { cache: 'no-store' })
                     const freshData = await freshResp.json()
-                    const freshScheduled = (freshData?.scheduledPosts ?? []) as ScheduledPost[]
+                    const freshScheduled = Array.isArray(freshData?.scheduledPosts)
+                      ? freshData.scheduledPosts as ScheduledPost[]
+                      : []
                     const updated = [...freshScheduled.filter((s: ScheduledPost) => s.postIdx !== Number(idx)), entry]
                     setScheduledPosts(updated)
                     // Nejdřív ulož status 'published' s scheduledPosts najednou
