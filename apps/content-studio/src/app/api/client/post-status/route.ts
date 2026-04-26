@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createHash } from 'crypto'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -47,13 +50,22 @@ export async function POST(req: NextRequest) {
     }
     // Ak scheduledPosts nepríde — zachovaj existujúce z raw (nemeň nič)
 
-    await supabase
+    console.log('POST-STATUS saving:', { projectId: proj.id, postIndex, status, postStatuses: raw.postStatuses })
+
+    const { error: updateError } = await supabase
       .from('project_brief')
       .update({ raw_analysis: raw, updated_at: new Date().toISOString() })
       .eq('project_id', proj.id)
 
+    if (updateError) {
+      console.error('POST-STATUS update error:', updateError)
+      return NextResponse.json({ ok: false, error: updateError.message }, { status: 500 })
+    }
+
+    console.log('POST-STATUS saved OK')
     return NextResponse.json({ ok: true })
   } catch (err) {
+    console.error('POST-STATUS catch:', err)
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500 })
   }
 }
