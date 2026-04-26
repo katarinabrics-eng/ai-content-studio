@@ -49,6 +49,11 @@ function PrispevkyInner() {
   const [showKampan, setShowKampan] = useState(false)
   const [visualSource, setVisualSource] = useState<'web' | 'drive' | 'ai'>('web')
   const [showPreview, setShowPreview] = useState(false)
+  const [planModal, setPlanModal] = useState<number | null>(null)
+  const [planDate, setPlanDate] = useState('')
+  const [planTime, setPlanTime] = useState('09:00')
+  const [scheduledPosts, setScheduledPosts] = useState<Array<{ postIdx: number; hook: string; img: string; type: string; date: string; time: string }>>([])
+
 
   useEffect(() => {
     if (!projectCode) return
@@ -109,6 +114,7 @@ function PrispevkyInner() {
           initialDrafts[i] = savedDrafts[String(i)] ?? { hook: p.hook, body: p.body }
         })
         setDrafts(initialDrafts)
+        setScheduledPosts((sr.scheduledPosts as Array<{ postIdx: number; hook: string; img: string; type: string; date: string; time: string }>) ?? [])
       } catch {
         // fetch failed — empty state
       } finally {
@@ -374,7 +380,7 @@ function PrispevkyInner() {
                           style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#f0ede8', fontSize: 16, lineHeight: '1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: '#111' }}
                         >⬇</button>
                         <button
-                          onClick={e => { e.stopPropagation(); setStatus(i, 'published') }}
+                          onClick={e => { e.stopPropagation(); setPlanModal(i) }}
                           title="Naplánovat"
                           style={{ width: 24, height: 24, borderRadius: 5, border: '1px solid #e8e4dc', background: '#fff', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                         >📅</button>
@@ -579,7 +585,7 @@ function PrispevkyInner() {
                 <button onClick={async () => { if (editing) await saveDraft(selectedIdx); setEditing(e => !e) }} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
                   ✎ {editing ? 'Hotovo' : 'Upravit text'}
                 </button>
-                <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
+                <button onClick={() => setPlanModal(selectedIdx)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
                   📅 Naplánovat
                 </button>
               </div>
@@ -620,7 +626,7 @@ function PrispevkyInner() {
                     ⬇ Stáhnout
                   </button>
                   <button
-                    onClick={() => setStatus(selectedIdx, 'published')}
+                    onClick={() => setPlanModal(selectedIdx)}
                     style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
                   >
                     📅 Naplánovat
@@ -721,6 +727,103 @@ function PrispevkyInner() {
           </div>
         </div>
       )}
+
+      {/* ── Modal: Naplánovat příspěvek ── */}
+      {planModal !== null && posts[planModal] && (() => {
+        const p = posts[planModal]
+        const draft = drafts[planModal] ?? { hook: p.hook, body: p.body }
+        return (
+          <div
+            onClick={() => setPlanModal(null)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{ background: '#fff', borderRadius: 16, width: 420, padding: 28, boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}
+            >
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
+                  <div style={{ ...eyebrowStyle, marginBottom: 5 }}>Naplánovat příspěvek</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#111', lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {draft.hook || p.hook}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPlanModal(null)}
+                  style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#888', padding: '0 0 0 8px', flexShrink: 0, lineHeight: 1 }}
+                >×</button>
+              </div>
+
+              {/* Thumbnail */}
+              {p.img && (
+                <div style={{
+                  width: '100%', height: 110, borderRadius: 10, overflow: 'hidden', marginBottom: 20,
+                  backgroundImage: `url(${p.img})`, backgroundSize: 'cover', backgroundPosition: 'center',
+                }} />
+              )}
+
+              {/* Datum + Čas */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 22 }}>
+                <div>
+                  <div style={{ ...eyebrowStyle, marginBottom: 6 }}>Datum</div>
+                  <input
+                    type="date"
+                    value={planDate}
+                    onChange={e => setPlanDate(e.target.value)}
+                    style={{ width: '100%', padding: '9px 12px', boxSizing: 'border-box', border: '1px solid #e8e4dc', borderRadius: 8, fontSize: 13, fontFamily: 'inherit', background: '#faf8f3', color: '#111', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <div style={{ ...eyebrowStyle, marginBottom: 6 }}>Čas</div>
+                  <input
+                    type="time"
+                    value={planTime}
+                    onChange={e => setPlanTime(e.target.value)}
+                    style={{ width: '100%', padding: '9px 12px', boxSizing: 'border-box', border: '1px solid #e8e4dc', borderRadius: 8, fontSize: 13, fontFamily: 'inherit', background: '#faf8f3', color: '#111', outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              {/* Tlačítka */}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => setPlanModal(null)}
+                  style={{ flex: 1, padding: '11px', borderRadius: 10, border: '1.5px solid #e8e4dc', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}
+                >
+                  Zrušit
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!planDate) return
+                    const idx = planModal
+                    const entry = {
+                      postIdx: idx,
+                      hook: draft.hook || p.hook,
+                      img: p.img ?? '',
+                      type: p.type,
+                      date: planDate,
+                      time: planTime,
+                    }
+                    const updated = [...scheduledPosts.filter(s => s.postIdx !== idx), entry]
+                    setScheduledPosts(updated)
+                    await fetch('/api/client/post-status', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ projectCode, token, postIndex: -1, status: 'pending', scheduledPosts: updated }),
+                    })
+                    setStatus(idx, 'published')
+                    setPlanModal(null)
+                  }}
+                  style={{ flex: 2, padding: '11px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  📅 Naplánovat
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── Modal: Navrhnout kampaň ── */}
       {showKampan && (
