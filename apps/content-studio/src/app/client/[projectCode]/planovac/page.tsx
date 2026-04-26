@@ -49,7 +49,18 @@ function PlanovacInner() {
         )
         const d = await r.json()
         const sr = d.project?.scan_result as Record<string, unknown> | undefined
-        setScheduled((sr?.scheduledPosts as ScheduledPost[] | undefined) ?? [])
+        const rawScheduled = (sr?.scheduledPosts as unknown[]) ?? []
+        const normalized = rawScheduled.map((s: unknown) => {
+          const sp = s as Record<string, unknown>
+          return {
+            ...sp,
+            date: String(sp.date),
+            month: Number(sp.month),
+            year: Number(sp.year),
+            postIdx: sp.postIdx !== undefined ? Number(sp.postIdx) : undefined,
+          } as ScheduledPost
+        })
+        setScheduled(normalized)
       } catch {
         // fetch failed
       } finally {
@@ -99,7 +110,7 @@ function PlanovacInner() {
     cells.push({ dayNum: nd++, month: nextM, year: nextY, inCurrent: false })
 
   const findPost = (dayNum: number, month: number, year: number) =>
-    scheduled.find(s => s.date === String(dayNum) && s.month === month && s.year === year) ?? null
+    scheduled.find(s => String(s.date) === String(dayNum) && s.month === month && s.year === year) ?? null
 
   const goPrev = () => {
     if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1) }

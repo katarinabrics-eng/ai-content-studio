@@ -31,7 +31,7 @@ type Post = {
 
 type Status = 'pending' | 'approved' | 'rejected' | 'published' | 'downloaded'
 
-type ScheduledPost = { postIdx: number; hook: string; img: string; type: string; date: number; month: number; year: number; time: string }
+type ScheduledPost = { postIdx: number; hook: string; img: string; type: string; date: string; month: number; year: number; time: string }
 
 // ─── Inner component ──────────────────────────────────────────────────────────
 
@@ -813,11 +813,11 @@ function PrispevkyInner() {
                     const idx = planModal
                     const d = new Date(planDate)
                     const entry: ScheduledPost = {
-                      postIdx: idx,
+                      postIdx: Number(idx),
                       hook: draft.hook || p.hook,
                       img: p.img ?? '',
                       type: p.type,
-                      date: d.getDate(),
+                      date: String(d.getDate()),
                       month: d.getMonth(),
                       year: d.getFullYear(),
                       time: planTime,
