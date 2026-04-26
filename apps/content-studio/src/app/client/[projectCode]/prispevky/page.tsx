@@ -832,12 +832,14 @@ function PrispevkyInner() {
                     }
                     const updated = [...scheduledPosts.filter(s => s.postIdx !== idx), entry]
                     setScheduledPosts(updated)
+                    // Nejdřív ulož status 'published' s scheduledPosts najednou
+                    setStatuses(prev => ({ ...prev, [Number(idx)]: 'published' }))
+                    setEditing(false)
                     await fetch('/api/client/post-status', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ projectCode, token, postIndex: -1, status: 'pending', scheduledPosts: updated }),
+                      body: JSON.stringify({ projectCode, token, postIndex: Number(idx), status: 'published', scheduledPosts: updated }),
                     })
-                    setStatus(idx, 'published')
                     setPlanModal(null)
                     setTimeout(() => {
                       router.push(`/client/${projectCode}/planovac?token=${token}`)
