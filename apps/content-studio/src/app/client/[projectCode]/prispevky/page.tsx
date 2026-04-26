@@ -152,13 +152,16 @@ function PrispevkyInner() {
   }
 
   const setStatus = async (idx: number, s: Status) => {
+    console.log('SET STATUS CALLED:', { idx, s, projectCode, token: token?.slice(0,8) })
     setStatuses(prev => ({ ...prev, [idx]: s }))
     setEditing(false)
-    await fetch('/api/client/post-status', {
+    const result = await fetch('/api/client/post-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ projectCode, token, postIndex: idx, status: s }),
     })
+    const resultJson = await result.json()
+    console.log('SET STATUS RESPONSE:', resultJson)
   }
 
   const handleDownload = async (idx: number) => {
