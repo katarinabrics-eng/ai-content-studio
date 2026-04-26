@@ -144,9 +144,12 @@ function PrispevkyInner() {
     })
   }
 
-  const handleDownload = (idx: number) => {
+  const handleDownload = async (idx: number) => {
     const post = posts[idx]
     const draft = drafts[idx]
+    const img = post.img ?? ''
+
+    // Stáhni text
     const text = `HOOK:\n${draft?.hook ?? post.hook ?? ''}\n\nCAPTION:\n${draft?.body ?? post.body ?? ''}`
     const blob = new Blob([text], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
@@ -155,6 +158,21 @@ function PrispevkyInner() {
     a.download = `prispevek-${idx + 1}.txt`
     a.click()
     URL.revokeObjectURL(url)
+
+    // Stáhni obrázek pokud existuje
+    if (img) {
+      try {
+        const res = await fetch(img)
+        const imgBlob = await res.blob()
+        const imgUrl = URL.createObjectURL(imgBlob)
+        const b = document.createElement('a')
+        b.href = imgUrl
+        b.download = `prispevek-${idx + 1}.jpg`
+        b.click()
+        URL.revokeObjectURL(imgUrl)
+      } catch {}
+    }
+
     setStatus(idx, 'downloaded')
   }
 
@@ -552,7 +570,7 @@ function PrispevkyInner() {
                   ✎ {editing ? 'Hotovo' : 'Upravit text'}
                 </button>
                 <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
-                  ↓ Stáhnout
+                  ⬇ Stáhnout
                 </button>
                 <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e8e4dc', background: '#fff', fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', color: '#555' }}>
                   📅 Naplánovat
@@ -592,7 +610,7 @@ function PrispevkyInner() {
                     onClick={() => handleDownload(selectedIdx)}
                     style={{ flex: 1, padding: '11px 12px', borderRadius: 10, border: 'none', background: '#111', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
                   >
-                    ↓ Stáhnout
+                    ⬇ Stáhnout
                   </button>
                   <button
                     onClick={() => setStatus(selectedIdx, 'published')}
