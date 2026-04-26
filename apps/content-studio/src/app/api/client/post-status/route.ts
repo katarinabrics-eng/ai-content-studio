@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { projectCode, token, postIndex, status } = body
+    const { token, postIndex, status } = body
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,21 +16,25 @@ export async function POST(req: NextRequest) {
       { auth: { persistSession: false } }
     )
 
+    // Auth: look up by magic_token_hash only — token uniquely identifies project
     const tokenHash = createHash('sha256').update(token.trim()).digest('hex')
     const { data: proj } = await supabase
       .from('projects').select('id')
-      .eq('project_code', projectCode)
       .eq('magic_token_hash', tokenHash)
-      .single()
+      .maybeSingle()
 
-    if (!proj) return NextResponse.json({ ok: false }, { status: 401 })
+    if (!proj) return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
 
-    const { data: brief } = await supabase
+    // Read current brief — order by updated_at DESC to handle multiple rows safely
+    const { data: briefs } = await supabase
       .from('project_brief')
-      .select('raw_analysis')
+      .select('id, raw_analysis')
       .eq('project_id', proj.id)
-      .single()
+      .order('updated_at', { ascending: false })
+      .limit(1)
 
+    const brief = briefs?.[0] ?? null
+    const briefId = (brief as Record<string, unknown> | null)?.id as string | undefined
     const raw = { ...((brief?.raw_analysis as Record<string, unknown>) ?? {}) }
 
     if (postIndex >= 0) {
@@ -48,14 +52,17 @@ export async function POST(req: NextRequest) {
     if (Array.isArray(body.scheduledPosts)) {
       raw.scheduledPosts = body.scheduledPosts
     }
-    // Ak scheduledPosts nepríde — zachovaj existujúce z raw (nemeň nič)
 
-    console.log('POST-STATUS saving:', { projectId: proj.id, postIndex, status, postStatuses: raw.postStatuses })
+    console.log('POST-STATUS saving:', { projectId: proj.id, briefId, postIndex, status, postStatuses: raw.postStatuses })
 
-    const { error: updateError } = await supabase
+    // Update the specific row by its id when possible, otherwise fall back to project_id
+    const updateQuery = supabase
       .from('project_brief')
       .update({ raw_analysis: raw, updated_at: new Date().toISOString() })
-      .eq('project_id', proj.id)
+
+    const { error: updateError } = briefId
+      ? await updateQuery.eq('id', briefId)
+      : await updateQuery.eq('project_id', proj.id)
 
     if (updateError) {
       console.error('POST-STATUS update error:', updateError)
