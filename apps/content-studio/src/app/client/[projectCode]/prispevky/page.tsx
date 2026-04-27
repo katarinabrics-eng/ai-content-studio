@@ -63,7 +63,7 @@ function PrispevkyInner() {
     ;(async () => {
       try {
         const r = await fetch(
-          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}&_=${Date.now()}`,
+          `/api/client/project?code=${encodeURIComponent(projectCode)}&token=${encodeURIComponent(token)}&_=${Date.now()}&bust=${Math.random()}`,
           { cache: 'no-store' }
         )
         const d = await r.json()
