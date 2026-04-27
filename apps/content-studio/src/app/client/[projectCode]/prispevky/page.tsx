@@ -119,7 +119,7 @@ function PrispevkyInner() {
         savedScheduled.forEach((sp: unknown) => {
           const s = sp as ScheduledPost
           if (s.postIdx !== undefined && s.postIdx >= 0) {
-            initialStatuses[s.postIdx] = 'published'
+            initialStatuses[s.postIdx] = 'approved'
           }
         })
         const savedDrafts = (sr.postDrafts as Record<string, { hook: string; body: string }>) ?? {}
