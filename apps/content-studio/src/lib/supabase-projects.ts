@@ -480,7 +480,11 @@ export async function getProjectByCodeAndPin(code: string, pin: string): Promise
 }
 
 export async function getProjectByMagicToken(token: string): Promise<(ProjectRow & { brief: ProjectBriefRow | null }) | null> {
-  const supabase = getSupabaseClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  );
   // Force fresh data
   await supabase.from("project_brief").select("updated_at").eq("project_id", 'ping').limit(0)
   const tokenHash = hashToken(token.trim());
