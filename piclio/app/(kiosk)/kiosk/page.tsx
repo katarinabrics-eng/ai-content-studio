@@ -1,296 +1,402 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
-type Step = 'email' | 'selfie' | 'confirm'
-
-function KioskFlow() {
-  const searchParams = useSearchParams()
-  const eventId = searchParams.get('eventId') ?? ''
-
-  const [step, setStep] = useState<Step>('email')
+export default function KioskPage() {
+  const [step, setStep] = useState<1 | 2 | 3>(1)
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
-  const [photoBase64, setPhotoBase64] = useState<string | null>(null)
-  const [hasCaptured, setHasCaptured] = useState(false)
   const [badgeNumber, setBadgeNumber] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [countdown, setCountdown] = useState(10)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [photoTaken, setPhotoTaken] = useState(false)
+  const [photoBase64, setPhotoBase64] = useState('')
   const streamRef = useRef<MediaStream | null>(null)
 
-  const stopCamera = useCallback(() => {
-    streamRef.current?.getTracks().forEach(t => t.stop())
-    streamRef.current = null
-  }, [])
-
-  const startCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-      })
-      streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        await videoRef.current.play()
-      }
-    } catch {
-      setError('Nepodařilo se spustit kameru. Zkontrolujte oprávnění.')
-    }
-  }, [])
-
-  // Start camera when entering selfie step (and not yet captured)
+  // Start camera when entering step 2
   useEffect(() => {
-    if (step === 'selfie' && !hasCaptured) {
-      startCamera()
-    }
-    return () => {
-      if (step === 'selfie') stopCamera()
-    }
-  }, [step, hasCaptured, startCamera, stopCamera])
+    if (step !== 2) return
+    startCamera()
+    return () => stopCamera()
+  }, [step])
 
-  // Countdown + auto-reset on confirm step
+  // Countdown + auto-reset on step 3
   useEffect(() => {
-    if (step !== 'confirm') return
+    if (step !== 3) return
     setCountdown(10)
     const id = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(id)
-          resetFlow()
-          return 0
+          resetAll()
+          return 10
         }
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
 
-  const resetFlow = () => {
-    setStep('email')
+  function resetAll() {
+    setStep(1)
     setEmail('')
     setEmailError('')
-    setPhotoBase64(null)
-    setHasCaptured(false)
     setBadgeNumber(null)
-    setError('')
+    setPhotoTaken(false)
+    setPhotoBase64('')
+    setCountdown(10)
   }
 
-  const handleEmailSubmit = () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError('Zadejte platnou e-mailovou adresu')
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
+      })
+      streamRef.current = stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+      }
+    } catch {
+      // camera permission denied — user can still skip
+    }
+  }
+
+  function stopCamera() {
+    streamRef.current?.getTracks().forEach(t => t.stop())
+    streamRef.current = null
+  }
+
+  function handleEmailContinue() {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError('Zadejte platný e-mail')
       return
     }
     setEmailError('')
-    setStep('selfie')
+    setStep(2)
   }
 
-  const capturePhoto = () => {
+  function capturePhoto() {
     const video = videoRef.current
     const canvas = canvasRef.current
     if (!video || !canvas) return
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    // Draw mirrored to match what user sees
+    canvas.width = video.videoWidth || 640
+    canvas.height = video.videoHeight || 480
     const ctx = canvas.getContext('2d')!
+    // Mirror to match what the user sees
     ctx.translate(canvas.width, 0)
     ctx.scale(-1, 1)
     ctx.drawImage(video, 0, 0)
-    setPhotoBase64(canvas.toDataURL('image/jpeg', 0.85))
-    setHasCaptured(true)
+    setPhotoBase64(canvas.toDataURL('image/jpeg', 0.8))
+    setPhotoTaken(true)
     stopCamera()
   }
 
-  const retakePhoto = () => {
-    setPhotoBase64(null)
-    setHasCaptured(false)
-    setError('')
-    startCamera()
+  async function retakePhoto() {
+    setPhotoTaken(false)
+    setPhotoBase64('')
+    await startCamera()
   }
 
-  const confirmPhoto = async () => {
-    setLoading(true)
-    setError('')
+  async function handleRegister() {
+    setIsLoading(true)
     try {
       const res = await fetch('/api/kiosk/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, eventId, faceBase64: photoBase64 }),
+        body: JSON.stringify({
+          email,
+          faceImageBase64: photoBase64 || null,
+        }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Chyba registrace')
-      setBadgeNumber(data.badgeNumber)
-      setStep('confirm')
-    } catch (err: any) {
-      setError(err.message)
+      if (data.badgeNumber) {
+        setBadgeNumber(data.badgeNumber)
+        stopCamera()
+        setStep(3)
+      }
+    } catch (e) {
+      console.error(e)
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
-  if (!eventId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#1a1225' }}>
-        <p className="text-white/50 text-xl">Chybí parametr eventId v URL</p>
-      </div>
-    )
+  const btnPrimary: React.CSSProperties = {
+    background: '#b7e94c',
+    color: '#1a1225',
+    border: 'none',
+    borderRadius: 16,
+    minHeight: 52,
+    fontSize: 18,
+    fontWeight: 700,
+    cursor: 'pointer',
+    width: '100%',
+  }
+
+  const btnSecondary: React.CSSProperties = {
+    flex: 1,
+    background: 'rgba(255,255,255,0.08)',
+    color: 'white',
+    border: '2px solid rgba(255,255,255,0.15)',
+    borderRadius: 16,
+    minHeight: 52,
+    fontSize: 16,
+    fontWeight: 600,
+    cursor: 'pointer',
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-between p-8 text-white select-none"
-      style={{ background: '#1a1225' }}
-    >
-      {/* Logo */}
-      <span className="mt-2 text-xl font-semibold tracking-[0.3em] text-white/40 uppercase">
-        Piclio
-      </span>
+    <div style={{ background: '#1a1225', minHeight: '100dvh', color: 'white' }}>
+      <div
+        style={{
+          maxWidth: 480,
+          margin: '0 auto',
+          padding: '24px 20px',
+          minHeight: '100dvh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Logo */}
+        <div style={{ textAlign: 'center', paddingTop: 8 }}>
+          <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: '0.2em' }}>PICLIO</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, letterSpacing: '0.05em' }}>
+            by Lucifera Studio
+          </div>
+        </div>
 
-      {/* Step content */}
-      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-lg gap-8">
-
-        {/* ── KROK 1: Email ── */}
-        {step === 'email' && (
-          <>
-            <h1 className="text-6xl font-bold text-center">Vítejte</h1>
-            <p className="text-xl text-white/50 text-center">
-              Zadejte svůj e-mail pro přijetí fotek
-            </p>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleEmailSubmit()}
-              placeholder="vas@email.cz"
-              autoFocus
-              autoComplete="off"
-              className="w-full text-2xl text-center bg-white/10 rounded-2xl px-6 py-5 outline-none border-2 border-transparent focus:border-[#b7e94c] placeholder:text-white/25 transition-colors"
+        {/* Progress dots */}
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '20px 0' }}>
+          {([1, 2, 3] as const).map(n => (
+            <div
+              key={n}
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: step === n ? '#b7e94c' : 'rgba(255,255,255,0.18)',
+                transition: 'background 0.3s',
+              }}
             />
-            {emailError && (
-              <p className="text-red-400 text-lg -mt-4">{emailError}</p>
-            )}
-            <button
-              onClick={handleEmailSubmit}
-              className="w-full text-2xl font-bold py-5 rounded-2xl transition active:scale-95"
-              style={{ background: '#b7e94c', color: '#1a1225' }}
-            >
-              Pokračovat
-            </button>
-          </>
-        )}
+          ))}
+        </div>
 
-        {/* ── KROK 2: Selfie ── */}
-        {step === 'selfie' && (
-          <>
-            <h1 className="text-6xl font-bold text-center">Nyní selfie</h1>
-            <p className="text-xl text-white/50 text-center">
-              Podívejte se do kamery
-            </p>
+        {/* Step content */}
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            gap: 20,
+          }}
+        >
+          {/* ── KROK 1: Email ── */}
+          {step === 1 && (
+            <>
+              <h1 style={{ fontSize: 42, fontWeight: 700, textAlign: 'center', margin: 0 }}>
+                Vítejte
+              </h1>
+              <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 18, margin: 0 }}>
+                Zadejte svůj e-mail pro přijetí fotek z večera
+              </p>
+              <input
+                type="email"
+                value={email}
+                onChange={e => { setEmail(e.target.value); setEmailError('') }}
+                onKeyDown={e => e.key === 'Enter' && handleEmailContinue()}
+                placeholder="vas@email.cz"
+                autoFocus
+                autoComplete="off"
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '2px solid rgba(255,255,255,0.12)',
+                  borderRadius: 16,
+                  padding: '0 20px',
+                  minHeight: 52,
+                  fontSize: 16,
+                  color: 'white',
+                  outline: 'none',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#b7e94c')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
+              />
+              {emailError && (
+                <p style={{ color: '#ff6b6b', textAlign: 'center', margin: 0, fontSize: 15 }}>
+                  {emailError}
+                </p>
+              )}
+              <button onClick={handleEmailContinue} style={btnPrimary}>
+                Pokračovat →
+              </button>
+            </>
+          )}
 
-            {/* Viewfinder */}
-            <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-black/50">
-              {!hasCaptured ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover scale-x-[-1]"
-                />
-              ) : (
-                photoBase64 && (
+          {/* ── KROK 2: Selfie ── */}
+          {step === 2 && (
+            <>
+              <h1 style={{ fontSize: 42, fontWeight: 700, textAlign: 'center', margin: 0 }}>
+                Nyní selfie
+              </h1>
+              <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 18, margin: 0 }}>
+                Podívejte se do kamery
+              </p>
+
+              {/* Viewfinder */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                {!photoTaken ? (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{
+                      width: 200,
+                      height: 200,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      transform: 'scaleX(-1)',
+                      border: '3px solid rgba(255,255,255,0.15)',
+                      background: 'rgba(0,0,0,0.3)',
+                    }}
+                  />
+                ) : (
                   <img
                     src={photoBase64}
-                    alt="náhled selfie"
-                    className="w-full h-full object-cover"
+                    alt="selfie náhled"
+                    style={{
+                      width: 200,
+                      height: 200,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      border: '3px solid #b7e94c',
+                    }}
                   />
-                )
-              )}
-              {/* Oval face guide */}
-              {!hasCaptured && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-48 h-64 rounded-full border-2 border-[#b7e94c]/60" />
+                )}
+              </div>
+
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+              {!photoTaken ? (
+                <button onClick={capturePhoto} style={btnPrimary}>
+                  Vyfotit
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={retakePhoto} style={btnSecondary}>
+                    Zkusit znovu
+                  </button>
+                  <button
+                    onClick={handleRegister}
+                    disabled={isLoading}
+                    style={{ ...btnPrimary, flex: 1, width: 'auto', opacity: isLoading ? 0.7 : 1 }}
+                  >
+                    {isLoading ? 'Ukládám…' : 'Potvrdit'}
+                  </button>
                 </div>
               )}
-            </div>
 
-            <canvas ref={canvasRef} className="hidden" />
-
-            {error && <p className="text-red-400 text-lg text-center">{error}</p>}
-
-            {!hasCaptured ? (
               <button
-                onClick={capturePhoto}
-                className="w-full text-2xl font-bold py-5 rounded-2xl transition active:scale-95"
-                style={{ background: '#b7e94c', color: '#1a1225' }}
+                onClick={() => handleRegister()}
+                disabled={isLoading}
+                style={{
+                  background: 'transparent',
+                  color: 'rgba(255,255,255,0.35)',
+                  border: 'none',
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  padding: 8,
+                  textDecoration: 'underline',
+                }}
               >
-                Vyfotit
+                Přeskočit
               </button>
-            ) : (
-              <div className="flex gap-4 w-full">
-                <button
-                  onClick={retakePhoto}
-                  className="flex-1 text-xl font-semibold py-5 rounded-2xl border-2 border-white/20 transition active:scale-95"
-                >
-                  Zkusit znovu
-                </button>
-                <button
-                  onClick={confirmPhoto}
-                  disabled={loading}
-                  className="flex-1 text-xl font-bold py-5 rounded-2xl transition active:scale-95 disabled:opacity-50"
-                  style={{ background: '#b7e94c', color: '#1a1225' }}
-                >
-                  {loading ? 'Ukládám…' : 'Potvrdit'}
-                </button>
+            </>
+          )}
+
+          {/* ── KROK 3: Potvrzení ── */}
+          {step === 3 && badgeNumber !== null && (
+            <>
+              {/* Check icon */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                  <circle cx="40" cy="40" r="38" stroke="#b7e94c" strokeWidth="4" />
+                  <polyline
+                    points="22,40 34,52 58,28"
+                    stroke="#b7e94c"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
-            )}
-          </>
-        )}
 
-        {/* ── KROK 3: Potvrzení ── */}
-        {step === 'confirm' && badgeNumber !== null && (
-          <>
-            <div
-              className="text-[10rem] font-black leading-none tabular-nums"
-              style={{ color: '#b7e94c' }}
-            >
-              {badgeNumber}
-            </div>
-            <h1 className="text-4xl font-bold text-center">
-              Vezměte si odznak č.&nbsp;{badgeNumber}
-            </h1>
-            <p className="text-xl text-white/50 text-center">
-              Zkontrolujte že číslo souhlasí
-            </p>
+              <h1 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center', margin: 0 }}>
+                Váš odznak
+              </h1>
 
-            {/* Progress bar */}
-            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
               <div
-                className="h-full rounded-full transition-[width] duration-1000 ease-linear"
-                style={{ background: '#b7e94c', width: `${(countdown / 10) * 100}%` }}
-              />
-            </div>
-            <p className="text-white/30 text-lg -mt-4">
-              Resetuje se za {countdown} s
-            </p>
-          </>
-        )}
+                style={{
+                  fontSize: 80,
+                  fontWeight: 800,
+                  color: '#b7e94c',
+                  textAlign: 'center',
+                  lineHeight: 1,
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {badgeNumber}
+              </div>
+
+              <p style={{ textAlign: 'center', fontSize: 20, margin: 0 }}>
+                Vezměte si odznak č.&nbsp;<strong>{badgeNumber}</strong> ze stojanu
+              </p>
+              <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0 }}>
+                Zkontrolujte že číslo souhlasí
+              </p>
+
+              {/* Progress bar countdown */}
+              <div>
+                <p
+                  style={{
+                    textAlign: 'center',
+                    color: 'rgba(255,255,255,0.35)',
+                    fontSize: 13,
+                    marginBottom: 10,
+                  }}
+                >
+                  Automatický reset za {countdown} sekund
+                </p>
+                <div
+                  style={{
+                    background: 'rgba(255,255,255,0.1)',
+                    borderRadius: 4,
+                    height: 6,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      background: '#b7e94c',
+                      height: '100%',
+                      width: `${(countdown / 10) * 100}%`,
+                      transition: 'width 1s linear',
+                      borderRadius: 4,
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div style={{ height: 32 }} />
       </div>
-
-      <div className="h-10" />
     </div>
-  )
-}
-
-export default function KioskPage() {
-  return (
-    <Suspense>
-      <KioskFlow />
-    </Suspense>
   )
 }
