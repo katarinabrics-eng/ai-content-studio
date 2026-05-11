@@ -638,11 +638,23 @@
   <!-- Text vlevo -->
   <div class="hero-content">
     <h1 class="hero-stack impact">
-      <span class="row">PŘIJDEŠ JAKO</span>
-      <span class="row">PODNIKATEL.</span>
-      <span class="serif">Odejdeš jako značka.</span>
+      <span style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(28px,4.2vw,62px);line-height:1.1;color:#000;display:block;">TVOJE PRÁCE</span>
+      <span style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(28px,4.2vw,62px);line-height:1.1;color:#000;display:block;">MÁ HODNOTU</span>
+      <span style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(56px,9vw,132px);line-height:1.05;color:#000;display:block;">MILIONŮ,</span>
+      <span class="serif" style="font-size:clamp(28px,4.5vw,64px);line-height:1.15;margin-top:12px;display:block;">ale tvůj brand</span>
+      <span class="serif" style="font-size:clamp(28px,4.5vw,64px);line-height:1.15;display:block;">vypadá jako
+        <span style="display:inline-block;background:var(--acid);border:2.5px solid #000;padding:2px 16px 4px;transform:rotate(-2deg);transform-origin:center;box-shadow:3px 3px 0 #000;margin-left:6px;position:relative;top:-2px;font-style:italic;">z výprodeje.</span>
+      </span>
     </h1>
-    <p class="hero-sub">Tvoje práce mluví za tebe. Tvůj brand zatím mlčí. Většina expertů totiž působí online mnohem menší, než ve skutečnosti jsou.</p>
+    <p class="hero-sub">Většina expertů trpí online podvýživou. Ne proto, že by nebyli dobří. Ale proto, že jejich vizuální identita je jen <strong>šum. Chaos. Průměr.</strong></p>
+    <p class="hero-sub" style="margin-top:12px;">Klient se o tobě rozhodne během tří sekund:</p>
+    <p style="margin-top:8px;font-family:'Caveat',cursive;font-size:26px;color:#e00;font-weight:700;line-height:1.3;max-width:420px;">
+      <span style="display:inline;overflow:hidden;white-space:nowrap;animation:typewriter 2s steps(22,end) 1s both;">Ignoruji. Jdu dál. Nezájem.</span><span style="animation:blink .6s step-end infinite 1s;color:#e00;font-weight:300;margin-left:1px;">|</span>
+    </p>
+    <style>
+      @keyframes typewriter{from{max-width:0;display:inline-block}to{max-width:400px;display:inline-block}}
+      @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    </style>
     <div class="hero-cta-row">
       <span class="lipstick-prop"><svg viewBox="0 0 100 200" style="width:100%;height:auto;display:block;"><use href="#lipstick"/></svg></span>
       <a href="#scan" class="hero-cta">Chci přestat splývat s davem →</a>
@@ -668,143 +680,222 @@
   </div>
 </div>
 
-<!-- ===== DIAGNOSIS ===== -->
-<section class="diag" id="diag" data-screen-label="02 Diagnóza">
-  <div class="ht-corner ht-tl" style="opacity:.55;"></div>
+<!-- ===== 3 PILÍŘE ===== -->
+<section style="background:var(--paper);padding:88px 0;border-bottom:3px solid #000;" data-screen-label="02 Pilíře">
   <div class="container">
-    <h2>Vidí tě vůbec někdo?</h2>
-    <div class="sub">Pokud ne — není to tvoje chyba. Je to chyba tvého brandu.</div>
-    <div class="diag-grid">
-      <div class="diag-card">
-        <svg viewBox="0 0 200 160"><use href="#brain"/></svg>
-        <h3>Strategii</h3>
-        <p>Chaos nevzniká z lenosti. Vzniká z toho, že nikdo nikdy neurčil směr. My ho určíme.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:3px solid #000;">
+
+      <div style="padding:44px 36px;border-right:3px solid #000;position:relative;">
+        <div style="width:100%;aspect-ratio:4/3;background:#e8e5dc;border:2px solid #000;margin-bottom:28px;display:flex;align-items:center;justify-content:center;">
+          <image-slot id="pilir-strategie" placeholder="Ilustrace — Strategie"></image-slot>
+        </div>
+        <div style="font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.02em;color:#000;text-transform:uppercase;margin-bottom:14px;">Strategie</div>
+        <p style="font-family:'Special Elite',monospace;font-size:15px;line-height:1.7;color:#555;">Chaos nevzniká z lenosti. Vzniká z toho, že nikdo nikdy neurčil směr. My ho určíme.</p>
       </div>
-      <div class="diag-card">
-        <svg viewBox="0 0 200 160"><use href="#brush"/></svg>
-        <h3>Designem</h3>
-        <p>Logo nestačí. Chceš, aby tě klient poznal dřív, než dočte první větu.</p>
+
+      <div style="padding:44px 36px;border-right:3px solid #000;background:var(--acid);position:relative;">
+        <div style="width:100%;aspect-ratio:4/3;background:rgba(0,0,0,.08);border:2px solid #000;margin-bottom:28px;display:flex;align-items:center;justify-content:center;">
+          <image-slot id="pilir-design" placeholder="Ilustrace — Design"></image-slot>
+        </div>
+        <div style="font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.02em;color:#000;text-transform:uppercase;margin-bottom:14px;">Design</div>
+        <p style="font-family:'Special Elite',monospace;font-size:15px;line-height:1.7;color:#222;">Logo nestačí. Chceš, aby tě klient poznal dřív, než dočte první větu.</p>
       </div>
-      <div class="diag-card">
-        <svg viewBox="0 0 200 160"><use href="#megaphone"/></svg>
-        <h3>Obsahem</h3>
-        <p>Tvořit každý týden znovu od nuly tě stojí čas i energii. Jednou to vyřešíme na měsíce dopředu.</p>
+
+      <div style="padding:44px 36px;position:relative;">
+        <div style="width:100%;aspect-ratio:4/3;background:#e8e5dc;border:2px solid #000;margin-bottom:28px;display:flex;align-items:center;justify-content:center;">
+          <image-slot id="pilir-obsah" placeholder="Ilustrace — Obsah"></image-slot>
+        </div>
+        <div style="font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.02em;color:#000;text-transform:uppercase;margin-bottom:14px;">Obsah</div>
+        <p style="font-family:'Special Elite',monospace;font-size:15px;line-height:1.7;color:#555;">Tvořit každý týden znovu od nuly tě stojí čas i energii. Jednou to vyřešíme na měsíce dopředu.</p>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- ===== STICKER ===== -->
-<div class="sticker-wrap">
-  <div class="magnetic">
-    <div class="tape-1">Nebuď šedá myška</div>
-    <div class="tape-2">Staň se magnetická</div>
-  </div>
-</div>
 
-<!-- ===== REALITA TRHU ===== -->
-<section style="background:var(--paper);padding:80px 0;border-top:3px solid #000;" data-screen-label="02b Realita trhu">
+<section style="background:#000;color:#fff;padding:100px 0;" data-screen-label="02 Manifesto">
   <div class="container">
+    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(36px,5.5vw,88px);line-height:1.0;margin:0 0 0;color:#fff;">JDEME PROTI</h2>
+    <div style="font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:clamp(28px,4vw,60px);color:var(--acid);margin:0 0 52px;">digitálnímu hluku.</div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;">
       <div>
-        <p style="font-family:'Special Elite',monospace;font-size:18px;line-height:1.7;color:#222;margin:0 0 22px;">Neviditelnost dnes nevypadá jako prázdný profil. Vypadá jako <strong>generický branding</strong>. Pokud splýváš s davem a vypadáš jako dalších tisíc účtů, tvoje značka tě aktivně zmenšuje.</p>
-        <p style="font-family:'Special Elite',monospace;font-size:18px;line-height:1.7;color:#222;margin:0;">Vypadat důvěryhodně je dnes <strong>business skill</strong>. Není to o tom, jestli jsi v tom, co děláš, dobrý. Je to o tom, jestli tak vypadáš. Chaotická značka totiž stojí důvěru.</p>
+        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.8;color:#ccc;margin:0 0 20px;">Nesnášíme sterilní weby, které vypadají jako z generátoru na klišé. Odmítáme falešnou dokonalost, za kterou není vidět člověk.</p>
+        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.8;color:#fff;margin:0 0 40px;">Constantina není pro ty, co chtějí „hezčí fotky". Je pro ty, co chtějí konečně působit tak silně, jak silní skutečně jsou.</p>
+
+        <p style="font-family:'Anton',sans-serif;font-size:12px;letter-spacing:.18em;color:var(--acid);text-transform:uppercase;margin:0 0 16px;">Jdeme proti:</p>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:14px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Obsahu, který působí jako algoritmický odpad.</li>
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:14px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Designu bez identity, který je jen prázdnou dekorací.</li>
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;display:flex;gap:14px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Generickým značkám bez kousku osobnosti.</li>
+        </ul>
       </div>
-      <div style="background:#000;padding:40px;border:3px solid #000;">
-        <p style="font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.1em;color:var(--acid);text-transform:uppercase;margin:0 0 20px;">Klient se o tobě rozhodne během tří sekund:</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div style="border:2px solid var(--acid);padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:var(--acid);text-align:center;letter-spacing:.05em;">Důvěřuji?</div>
-          <div style="border:2px solid #444;padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:#555;text-align:center;letter-spacing:.05em;">Ignoruji?</div>
-          <div style="border:2px solid var(--acid);padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:var(--acid);text-align:center;letter-spacing:.05em;">Pamatuji si?</div>
-          <div style="border:2px solid #444;padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:#555;text-align:center;letter-spacing:.05em;">Zapomínám?</div>
+
+      <div style="background:#111;border:3px solid var(--acid);padding:44px;display:flex;flex-direction:column;gap:28px;">
+        <div>
+          <p style="font-family:'Anton',sans-serif;font-size:12px;letter-spacing:.18em;color:var(--acid);text-transform:uppercase;margin:0 0 16px;">Věříme, že:</p>
+          <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(22px,2.8vw,36px);color:#fff;line-height:1.3;margin:0;">Vizuální identita není dekorace. Je to psychologie v praxi.</p>
+        </div>
+        <div style="border-top:1px solid #333;padding-top:28px;">
+          <p style="font-family:'Special Elite',monospace;font-size:15px;color:#aaa;line-height:1.75;margin:0;">Vypadat důvěryhodně je dnes <strong style="color:#fff;">business skill</strong>. Buď k sobě pozornost přitáhneš, nebo ji nevědomky odrazuješ.<br/><br/>Nic mezi tím neexistuje.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== MANIFESTO ===== -->
-<section style="background:#000;color:#fff;padding:100px 0;" data-screen-label="03 Manifesto">
-  <div class="container">
-    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(36px,5vw,80px);line-height:1.0;margin:0 0 12px;color:#fff;">Nejsme továrna na šablony.</h2>
-    <div style="font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:clamp(28px,4vw,56px);color:var(--acid);margin:0 0 60px;">Jsme konec tvé improvizace.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;">
-      <div>
-        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.75;color:#ccc;margin:0 0 36px;">Nesnášíme, když silní lidé vypadají online slabě. Když expert s hlubokou hodnotou působí levně jen proto, že jeho značka nemá směr.</p>
-        <p style="font-family:'Anton',sans-serif;font-size:13px;letter-spacing:.15em;color:var(--acid);text-transform:uppercase;margin:0 0 18px;">Jdeme proti:</p>
-        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0;">
-          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Generickým značkám bez kouska osobnosti.</li>
-          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Obsahu, který působí jako algoritmický odpad.</li>
-          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Sterilním webům a falešné dokonalosti, za kterou nikdo nevidí člověka.</li>
-          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Designu bez identity, který je jen prázdnou dekorací.</li>
-        </ul>
+<!-- ===== COLLAGE / GALLERY ===== -->
+<section style="background:var(--paper);padding:60px 0 80px;overflow:hidden;position:relative;" data-screen-label="03 Koláž">
+  <div class="ht-corner ht-tr" style="opacity:.4;"></div>
+  <div class="ht-corner ht-bl" style="opacity:.4;"></div>
+
+  <!-- Nebuď šedá myška sticker -->
+  <div style="text-align:center;margin-bottom:48px;position:relative;z-index:2;">
+    <div style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;transform:rotate(-1.5deg);">
+      <div style="background:#fff;border:3px solid #000;padding:10px 36px;border-radius:10px;box-shadow:5px 5px 0 #000;font-family:'Italianno',cursive;font-size:40px;line-height:.9;color:#000;position:relative;">
+        Nebuď šedá myška
+        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
+        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
       </div>
-      <div style="background:#111;border:3px solid var(--acid);padding:44px;">
-        <p style="font-family:'Anton',sans-serif;font-size:14px;letter-spacing:.15em;color:var(--acid);text-transform:uppercase;margin:0 0 24px;">Věříme, že:</p>
-        <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(22px,3vw,34px);color:#fff;line-height:1.3;margin:0 0 24px;">Vizuální identita není dekorace. Je to psychologie v praxi.</p>
-        <p style="font-family:'Special Elite',monospace;font-size:16px;color:#aaa;line-height:1.7;margin:0;">Krásný feed ještě nikdy nevytvořil silnou značku — směr a pravdivá identita ano.</p>
+      <div style="background:var(--acid);border:3px solid #000;padding:12px 42px;border-radius:10px;box-shadow:5px 5px 0 #000;font-family:'Anton',sans-serif;font-size:32px;letter-spacing:.05em;color:#000;transform:rotate(-1deg);margin-left:24px;position:relative;">
+        STAŇ SE MAGNETICKÁ
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
+        <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ===== COLLAGE ===== -->
-<section class="collage" data-screen-label="03 Koláž">
-  <div class="ht-corner ht-tr" style="opacity:.5;"></div>
-  <div class="ht-corner ht-bl" style="opacity:.5;"></div>
-  <div class="container">
-    <div class="collage-grid">
-      <div class="col-speech">
-        <svg viewBox="0 0 240 160" style="width:100%;display:block;filter:drop-shadow(4px 4px 0 #000);"><use href="#speech"/></svg>
-        <div class="col-speech-text">„PRVNÍ DOJEM.<br/>MÁŠ JEN JEDEN."</div>
-      </div>
-      <div class="col-sparkle-1"><svg style="width:100%;height:100%;"><use href="#sparkle4"/></svg></div>
-      <div class="col-sparkle-2"><svg style="width:100%;height:100%;"><use href="#sparkle4"/></svg></div>
+  <!-- Chaotický collage -->
+  <div style="position:relative;max-width:1100px;margin:0 auto;height:780px;">
 
-      <div class="col-mood-l"><image-slot id="col-mood-l" placeholder="Carousel mockup"></image-slot></div>
-      <div class="col-mood-r"><image-slot id="col-mood-r" placeholder="Carousel mockup"></image-slot></div>
-      <div class="col-phones"><image-slot id="col-phones" placeholder="Mobil mockup"></image-slot></div>
-
-      <div class="col-portrait"><image-slot id="col-portrait" placeholder="Portrét hrdinky"></image-slot></div>
-
-      <div class="col-pow" style="position:absolute;">
-        <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:34px;color:#000;">POW!</div>
-      </div>
-      <div class="col-pop" style="position:absolute;">
-        <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:32px;color:#000;">POP!</div>
-      </div>
-
-      <div class="col-reels-burst" style="position:absolute;">
-        <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;color:#0a0a0a;"><use href="#starburst"/></svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-family:'Anton',sans-serif;font-size:18px;line-height:1.05;">REELS<br/>POSTY<br/>FOTKY</div>
-      </div>
-
-      <div class="col-brand">
-        BRAND<span class="dot"></span><br/>
-        IDENTITY<span class="dot"></span><br/>
-        CONTENT<span class="dot"></span>
-      </div>
-
-      <div class="col-lipstick">
-        <svg viewBox="0 0 100 200" style="width:100%;height:100%;"><use href="#lipstick"/></svg>
-      </div>
-
-      <div class="col-arrow-1"><svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#arrow-curl"/></svg></div>
-      <div class="col-arrow-2"><svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#arrow-curl"/></svg></div>
-
-      <div class="col-deck"><image-slot id="col-deck" placeholder="Deck / brand strategy"></image-slot></div>
-
-      <div class="col-scan">
-        <svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#cloud"/></svg>
-        <div class="text">BRAND SCAN<br/>STRATEGIE</div>
-      </div>
-
-      <div class="col-heel"><svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#heel"/></svg></div>
+    <!-- Speech bubble - vpravo nahoře -->
+    <div style="position:absolute;right:60px;top:0;width:260px;z-index:5;">
+      <svg viewBox="0 0 240 160" style="width:100%;display:block;filter:drop-shadow(3px 3px 0 #000);"><use href="#speech"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:19px;letter-spacing:.02em;color:#000;text-align:center;padding:0 28px 28px;">„PRVNÍ DOJEM.<br/>MÁŠ JEN JEDEN."</div>
     </div>
+
+    <!-- Sparkle dekorace -->
+    <div style="position:absolute;left:340px;top:20px;width:48px;height:48px;color:#000;z-index:4;"><svg style="width:100%;height:100%;"><use href="#sparkle4"/></svg></div>
+    <div style="position:absolute;left:300px;top:60px;width:32px;height:32px;color:#000;z-index:4;"><svg style="width:100%;height:100%;"><use href="#sparkle4"/></svg></div>
+
+    <!-- Slide vlevo nahoře — landscape -->
+    <div style="position:absolute;left:0;top:40px;width:280px;height:200px;border:3px solid #000;overflow:hidden;transform:rotate(-2deg);z-index:3;box-shadow:4px 4px 0 #000;">
+      <div class="slides" data-group="A" style="width:100%;height:100%;position:relative;"></div>
+    </div>
+
+    <!-- Slide vlevo dole -->
+    <div style="position:absolute;left:20px;top:270px;width:220px;height:180px;border:3px solid #000;overflow:hidden;transform:rotate(1.5deg);z-index:3;box-shadow:4px 4px 0 #000;">
+      <div class="slides" data-group="B" style="width:100%;height:100%;position:relative;"></div>
+    </div>
+
+    <!-- Slide vlevo dole 2 -->
+    <div style="position:absolute;left:0;top:480px;width:260px;height:200px;border:3px solid #000;overflow:hidden;transform:rotate(-1deg);z-index:3;box-shadow:4px 4px 0 #000;">
+      <div class="slides" data-group="C" style="width:100%;height:100%;position:relative;"></div>
+    </div>
+
+    <!-- CENTRÁLNÍ PORTRÉT -->
+    <div style="position:absolute;left:50%;top:60px;transform:translateX(-50%);width:340px;z-index:6;">
+      <img src="portrait.png" alt="Constantina" style="width:100%;display:block;"/>
+    </div>
+
+    <!-- POW! burst -->
+    <div style="position:absolute;left:360px;top:300px;width:100px;height:100px;z-index:7;">
+      <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:22px;color:#000;">POW!</div>
+    </div>
+
+    <!-- VŠECHNO CO POTŘEBUJEŠ burst -->
+    <div style="position:absolute;right:310px;top:280px;width:130px;height:130px;z-index:7;">
+      <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:13px;color:#000;text-align:center;padding:8px;line-height:1.2;">VŠECHNO CO<br/>POTŘEBUJEŠ<br/>NA JEDNOM<br/>MÍSTĚ!</div>
+    </div>
+
+    <!-- POP! burst -->
+    <div style="position:absolute;right:200px;top:480px;width:90px;height:90px;z-index:7;">
+      <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:20px;color:#000;">POP!</div>
+    </div>
+
+    <!-- Slide vpravo nahoře -->
+    <div style="position:absolute;right:0;top:60px;width:240px;height:190px;border:3px solid #000;overflow:hidden;transform:rotate(2deg);z-index:3;box-shadow:4px 4px 0 #000;">
+      <div class="slides" data-group="D" style="width:100%;height:100%;position:relative;"></div>
+    </div>
+
+    <!-- Slide vpravo střed — phones/vertical -->
+    <div style="position:absolute;right:10px;top:280px;width:180px;height:300px;border:3px solid #000;overflow:hidden;transform:rotate(-1.5deg);z-index:3;box-shadow:4px 4px 0 #000;">
+      <div class="slides" data-group="E" style="width:100%;height:100%;position:relative;"></div>
+    </div>
+
+    <!-- REELS POSTY FOTKY burst -->
+    <div style="position:absolute;left:220px;top:480px;width:110px;height:110px;z-index:5;">
+      <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;color:#0a0a0a;"><use href="#starburst"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-family:'Anton',sans-serif;font-size:14px;line-height:1.1;">REELS<br/>POSTY<br/>FOTKY</div>
+    </div>
+
+    <!-- Lipstick -->
+    <div style="position:absolute;left:100px;top:520px;width:56px;height:112px;transform:rotate(-15deg);z-index:5;">
+      <svg viewBox="0 0 100 200" style="width:100%;height:100%;"><use href="#lipstick"/></svg>
+    </div>
+
+    <!-- BRAND IDENTITY CONTENT -->
+    <div style="position:absolute;left:160px;top:620px;font-family:'Anton',sans-serif;font-size:24px;letter-spacing:.04em;color:#000;line-height:1.15;z-index:5;">
+      BRAND<span style="display:inline-block;width:5px;height:5px;background:#000;border-radius:50%;margin:0 3px 3px;"></span><br/>
+      IDENTITY<span style="display:inline-block;width:5px;height:5px;background:#000;border-radius:50%;margin:0 3px 3px;"></span><br/>
+      CONTENT<span style="display:inline-block;width:5px;height:5px;background:#000;border-radius:50%;margin:0 3px 3px;"></span>
+    </div>
+
+    <!-- Heel vpravo dole -->
+    <div style="position:absolute;right:0;bottom:0;width:140px;height:100px;z-index:4;">
+      <svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#heel"/></svg>
+    </div>
+
+    <!-- BRAND SCAN STRATEGIE cloud -->
+    <div style="position:absolute;right:160px;bottom:20px;width:140px;height:110px;z-index:5;">
+      <svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#cloud"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:13px;color:#000;text-align:center;line-height:1.3;padding-bottom:16px;">BRAND SCAN<br/>STRATEGIE</div>
+    </div>
+
+    <!-- Arrow curl dekorace -->
+    <div style="position:absolute;left:340px;top:560px;width:100px;height:70px;transform:rotate(15deg);z-index:4;">
+      <svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#arrow-curl"/></svg>
+    </div>
+
   </div>
 </section>
+
+<script>
+(function(){
+  const slides = [
+    'gallery/slide-01.jpeg',
+    'gallery/slide-02.png',
+    'gallery/slide-03.jpeg',
+    'gallery/slide-04.jpeg',
+    'gallery/slide-05.jpeg',
+    'gallery/slide-06.png'
+  ];
+  const offsets = {A:0,B:2,C:4,D:1,E:3};
+  document.querySelectorAll('.slides').forEach(function(container){
+    const group = container.dataset.group;
+    const offset = offsets[group]||0;
+    slides.forEach(function(src,i){
+      const img=document.createElement('img');
+      img.src=src;
+      img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.9s ease;';
+      if(i===offset%slides.length) img.style.opacity='1';
+      container.appendChild(img);
+    });
+    let current=offset%slides.length;
+    setInterval(function(){
+      const imgs=container.querySelectorAll('img');
+      imgs[current].style.opacity='0';
+      current=(current+1)%slides.length;
+      imgs[current].style.opacity='1';
+    }, 2600+offset*350);
+  });
+})();
+</script>
+
 
 <!-- ===== TICKER 2 ===== -->
 <div class="ticker" aria-hidden="true">
@@ -842,24 +933,25 @@
   </div>
 </section>
 
-<!-- ===== IDENTITY ===== -->
-<section class="identity" data-screen-label="05 Content Day">
+<!-- ===== CONTENT DAY ===== -->
+<section class="identity" data-screen-label="03 Content Day">
   <div class="container">
-    <h2>Jeden den. Obsah na měsíce.</h2>
-    <div class="sub serif-i">Přijdeš jednou. Odejdeš jako značka.</div>
+    <h2>JEDEN DEN. OBSAH NA MĚSÍCE.</h2>
+    <div class="sub serif-i">Žádná improvizace.</div>
     <div class="identity-grid">
       <div class="identity-portrait">
         <image-slot id="identity-portrait" placeholder="Portrét — žena v sluníčkách, vizitka"></image-slot>
       </div>
       <div>
-        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.7;color:#444;margin:0 0 36px;">Přijdeš jednou. Odejdeš s kompletním vizuálním systémem, který pracuje za tebe. Už nikdy nebudeš stát nad prázdnou stránkou a přemýšlet, co publikovat.</p>
+        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.8;color:#444;margin:0 0 16px;">Přijdeš jednou. Odejdeš jako značka.</p>
+        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.8;color:#444;margin:0 0 36px;">Zastavíme tvůj nekonečný kolotoč vymýšlení „co tam dneska dát". Dostaneš systém, který pracuje za tebe — ne další seznam úkolů.</p>
         <ul class="identity-list">
-          <li><span class="num">01</span><span>Brand DNA — tvůj strategický kompas. Kdo jsi, jak mluvíš a proč ti mají věřit.</span></li>
-          <li><span class="num">02</span><span>150 fotografií — žádné strojené pózy. Obraz, který konečně odpovídá tvé hodnotě.</span></li>
-          <li><span class="num">03</span><span>Reels a video záběry — autenticita bez přehrávání. Signál, který zastaví scroll.</span></li>
-          <li><span class="num">04</span><span>Vizuální banka — tvoje knihovna identity.</span></li>
+          <li><span class="num">01</span><span><strong>Brand DNA</strong> — tvůj strategický kompas. Kdo jsi, jak mluvíš a proč ti mají věřit.</span></li>
+          <li><span class="num">02</span><span><strong>150 fotek</strong> — tvoje zbraň. Žádné strojené pózy. Obraz, který odpovídá tvé skutečné hodnotě.</span></li>
+          <li><span class="num">03</span><span><strong>Reels a video záběry</strong> — autenticita bez přehrávání. Signál, který zastaví scroll.</span></li>
+          <li><span class="num">04</span><span><strong>Vizuální banka</strong> — tvoje knihovna identity. Jednou vyřešíš, měsíce čerpáš.</span></li>
         </ul>
-        <p style="font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.03em;color:#000;margin:36px 0 0;text-transform:uppercase;">Výsledek? Neřešíš, co přidat. Jen vybíráš.</p>
+        <p style="font-family:'Anton',sans-serif;font-size:clamp(20px,2.5vw,32px);letter-spacing:.02em;color:#000;margin:36px 0 0;text-transform:uppercase;line-height:1.1;">Neřešíš, co přidat.<br/>Jen vybíráš.</p>
       </div>
     </div>
   </div>
