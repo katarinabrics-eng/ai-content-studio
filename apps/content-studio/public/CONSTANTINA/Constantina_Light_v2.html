@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8" />
+<title>Constantina — Finally You.</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Playfair+Display:ital,wght@0,500;1,500;1,700&family=Italianno&family=Caveat:wght@500;700&family=Special+Elite&family=Bebas+Neue&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#fafaf6;
+    --paper-2:#f3f1e8;
+    --ink:#0a0a0a;
+    --acid:#c9f31d;
+    --acid-2:#b6dd14;
+    --red:#ff2a2a;
+    --muted:#6e6e68;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);}
+  body{font-family:'Special Elite',monospace;-webkit-font-smoothing:antialiased;}
+  .impact{font-family:'Anton','Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:-0.005em;line-height:.95;}
+  .serif-i{font-family:'Playfair Display',serif;font-style:italic;font-weight:500;}
+  .script{font-family:'Italianno',cursive;}
+  .mono{font-family:'Special Elite',monospace;}
+  .container{max-width:1280px;margin:0 auto;padding:0 32px;}
+
+  /* ===== HALFTONE DECORATIONS ===== */
+  .ht-corner{position:absolute;width:280px;height:280px;pointer-events:none;
+    background-image:radial-gradient(circle,#0a0a0a 1.2px,transparent 1.8px);
+    background-size:10px 10px;z-index:0;}
+  .ht-tl{top:0;left:0;-webkit-mask-image:radial-gradient(circle at 0 0,#000 0%,transparent 70%);mask-image:radial-gradient(circle at 0 0,#000 0%,transparent 70%);}
+  .ht-tr{top:0;right:0;-webkit-mask-image:radial-gradient(circle at 100% 0,#000 0%,transparent 70%);mask-image:radial-gradient(circle at 100% 0,#000 0%,transparent 70%);}
+  .ht-bl{bottom:0;left:0;-webkit-mask-image:radial-gradient(circle at 0 100%,#000 0%,transparent 70%);mask-image:radial-gradient(circle at 0 100%,#000 0%,transparent 70%);}
+  .ht-br{bottom:0;right:0;-webkit-mask-image:radial-gradient(circle at 100% 100%,#000 0%,transparent 70%);mask-image:radial-gradient(circle at 100% 100%,#000 0%,transparent 70%);}
+
+  /* ===== NAV ===== */
+  .nav{
+    position:relative;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 40px;
+  }
+  .nav-logo{font-family:'Italianno',cursive;font-size:42px;line-height:.7;color:var(--ink);}
+  .nav-logo small{display:block;font-family:'Special Elite',monospace;font-size:9px;letter-spacing:.45em;color:var(--ink);margin-top:6px;text-align:center;}
+  .nav-links{display:flex;gap:46px;align-items:center;}
+  .nav-links a{font-family:'Special Elite',monospace;font-size:19px;color:var(--ink);text-decoration:none;}
+  .nav-links a:hover{color:var(--acid-2);}
+  .nav-cta{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--acid);color:#000;border:2px solid #000;
+    padding:14px 36px;border-radius:999px;
+    font-family:'Special Elite',monospace;font-size:20px;font-weight:bold;
+    text-decoration:none;white-space:nowrap;
+    box-shadow:4px 4px 0 #000;
+    transition:transform .15s,box-shadow .15s;
+  }
+  .nav-cta:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #000;}
+
+  /* ===== HERO ===== */
+  .hero{
+    position:relative;
+    width:100%;min-height:600px;
+    background:#fff;
+    overflow:hidden;
+    display:flex;align-items:stretch;
+  }
+  .hero-bg{
+    position:absolute;top:0;right:0;bottom:0;
+    width:72%;
+    background:url('WEB_CONSTANTINA_cover.png') center right / cover no-repeat;
+    z-index:1;
+  }
+  .hero-bg::before{
+    content:'';position:absolute;top:0;left:0;bottom:0;
+    width:50%;
+    background:linear-gradient(to right,#fff 40%,transparent 100%);
+    z-index:2;
+  }
+  .hero-content{
+    position:relative;z-index:10;
+    width:52%;flex-shrink:0;
+    padding:56px 0 56px 48px;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  .hero-grid{display:contents;}
+  .hero-stack{
+    font-size:clamp(56px,8.5vw,120px);
+    margin:0;
+  }
+  .hero-stack .row{display:block;}
+  .hero-stack .serif{font-family:'Playfair Display',serif;font-style:italic;font-weight:500;text-transform:none;letter-spacing:-0.01em;font-size:.78em;display:block;margin-top:12px;}
+  .hero-sub{
+    margin:28px 0 0;color:#444;font-family:'Special Elite',monospace;font-size:14px;line-height:1.6;
+    max-width:420px;
+  }
+  .hero-cta-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:28px;}
+  .hero-cta{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--acid);color:#000;border:2.5px solid #000;
+    padding:18px 40px;border-radius:999px;
+    font-family:'Special Elite',monospace;font-weight:bold;font-size:20px;
+    text-decoration:none;box-shadow:5px 5px 0 #000;
+    transition:transform .15s,box-shadow .15s;
+    white-space:nowrap;
+  }
+  .hero-cta:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 #000;}
+  .lipstick-prop{width:72px;height:auto;display:inline-block;transform:rotate(-12deg);}
+  .hero-art{display:none;}
+  .hero-portrait{display:none;}
+  .hero-portrait image-slot{display:none;}
+  .hero-burst{
+    position:absolute;left:-30px;top:-10px;width:200px;height:200px;color:var(--acid);z-index:1;
+    filter:drop-shadow(2px 2px 0 #0a0a0a);
+  }
+  .hero-bubble{
+    position:absolute;right:-30px;top:30px;width:260px;z-index:3;
+  }
+  .hero-bubble-text{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:.02em;
+    padding:0 30px 30px;
+    color:#000;
+  }
+  .hero-pop{
+    position:absolute;right:-50px;top:230px;width:130px;height:130px;z-index:3;
+  }
+  .comic-panel{
+    position:absolute;right:-110px;top:200px;width:230px;height:300px;
+    border:3px solid #000;background:#fff;overflow:hidden;z-index:2;
+  }
+  .comic-panel-2{
+    position:absolute;right:-90px;bottom:-20px;width:190px;height:170px;
+    border:3px solid #000;background:var(--acid);z-index:2;
+  }
+  .comic-cloud{
+    position:absolute;left:-40px;bottom:60px;width:120px;height:90px;color:#fff;z-index:2;
+    filter:drop-shadow(2px 2px 0 #000);
+  }
+  .heel-prop{
+    position:absolute;right:-70px;bottom:-30px;width:130px;height:90px;z-index:4;
+  }
+  .lightning-prop{
+    position:absolute;left:-40px;top:120px;width:60px;height:120px;color:var(--acid);z-index:3;
+    filter:drop-shadow(2px 2px 0 #000);
+  }
+  .camera-prop{
+    position:absolute;left:30%;bottom:-40px;width:180px;height:130px;z-index:4;
+    filter:drop-shadow(3px 3px 0 #0a0a0a);
+  }
+  .sparkle-1{position:absolute;left:-10px;top:30%;width:50px;height:50px;color:#000;z-index:3;}
+  .sparkle-2{position:absolute;right:30%;top:80px;width:40px;height:40px;color:#000;z-index:3;}
+
+  /* ===== TICKERS ===== */
+  .ticker{
+    background:var(--acid);color:#000;border-top:3px solid #000;border-bottom:3px solid #000;
+    overflow:hidden;font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:28px;letter-spacing:.04em;
+    padding:14px 0;
+  }
+  .ticker.dark{background:#0a0a0a;color:var(--acid);}
+  .ticker-track{
+    display:flex;gap:32px;align-items:center;white-space:nowrap;
+    animation:tick 38s linear infinite;
+  }
+  .ticker .star{color:var(--ink);font-size:24px;}
+  .ticker.dark .star{color:var(--acid);}
+  @keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ===== DIAGNOSIS ===== */
+  .diag{
+    background:var(--paper);padding:100px 0 80px;position:relative;text-align:center;
+  }
+  .diag h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(48px,7vw,108px);line-height:1.0;margin:0;
+  }
+  .diag .sub{
+    font-family:'Playfair Display',serif;font-style:italic;font-weight:500;
+    font-size:clamp(28px,4vw,52px);margin:14px 0 60px;
+  }
+  .diag-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
+  }
+  .diag-card{
+    position:relative;background:#fff;
+    border:3px solid #000;border-radius:6px;
+    padding:36px 26px 28px;text-align:center;
+    transform:rotate(-.4deg);
+    transition:transform .2s;
+  }
+  .diag-card:nth-child(2){background:var(--acid);transform:rotate(.4deg);}
+  .diag-card:nth-child(3){transform:rotate(-.7deg);}
+  .diag-card:hover{transform:rotate(0) translateY(-4px);}
+  .diag-card svg{width:90px;height:90px;margin:0 auto;display:block;}
+  .diag-card h3{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:36px;margin:14px 0 0;letter-spacing:.01em;
+  }
+  .diag-card p{
+    font-family:'Special Elite',monospace;font-size:13px;line-height:1.5;color:#444;
+    margin:14px 0 0;
+  }
+
+  /* ===== STICKER TAG ===== */
+  .sticker-wrap{
+    background:var(--paper);padding:80px 0;text-align:center;position:relative;
+  }
+  .magnetic{
+    display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;
+    transform:rotate(-2deg);
+  }
+  .tape-1{
+    background:#fff;border:3px solid #000;padding:14px 44px;border-radius:10px;
+    box-shadow:6px 6px 0 #0a0a0a;
+    font-family:'Italianno',cursive;font-size:50px;line-height:.85;color:#0a0a0a;
+    position:relative;
+  }
+  .tape-1::before,.tape-1::after{content:"";position:absolute;width:11px;height:11px;background:#000;border-radius:50%;top:50%;transform:translateY(-50%);}
+  .tape-1::before{left:10px;} .tape-1::after{right:10px;}
+  .tape-2{
+    background:var(--acid);border:3px solid #000;padding:16px 50px;border-radius:10px;
+    box-shadow:6px 6px 0 #0a0a0a;
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:42px;letter-spacing:.04em;color:#000;
+    position:relative;transform:rotate(-1deg);margin-left:30px;
+  }
+  .tape-2::before,.tape-2::after{content:"";position:absolute;width:11px;height:11px;background:#000;border-radius:50%;top:50%;transform:translateY(-50%);}
+  .tape-2::before{left:12px;} .tape-2::after{right:12px;}
+
+  /* ===== COLLAGE ===== */
+  .collage{
+    background:var(--paper);padding:80px 0 120px;position:relative;overflow:hidden;
+  }
+  .collage-grid{
+    position:relative;height:760px;
+  }
+  .col-item{position:absolute;}
+  .col-portrait{
+    left:30%;top:60px;width:380px;height:520px;
+    background:#fff;
+  }
+  .col-portrait image-slot{width:100%;height:100%;display:block;}
+  .col-speech{
+    left:42%;top:-20px;width:340px;z-index:5;
+  }
+  .col-speech-text{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:26px;color:#000;
+    padding:10px 40px 40px;line-height:1.05;
+  }
+  .col-mood-l{
+    left:0;top:140px;width:200px;height:150px;border:3px solid #000;background:#fff;
+    overflow:hidden;transform:rotate(-3deg);
+  }
+  .col-mood-l image-slot{width:100%;height:100%;display:block;}
+  .col-mood-r{
+    right:6%;top:90px;width:220px;height:160px;border:3px solid #000;background:#fff;
+    overflow:hidden;transform:rotate(2deg);
+  }
+  .col-mood-r image-slot{width:100%;height:100%;display:block;}
+  .col-phones{
+    right:2%;top:280px;width:230px;height:200px;border:3px solid #000;background:#fff;
+    overflow:hidden;transform:rotate(-1deg);
+  }
+  .col-phones image-slot{width:100%;height:100%;display:block;}
+  .col-pow{
+    left:14%;top:240px;width:130px;height:130px;z-index:5;
+  }
+  .col-pop{
+    right:18%;top:240px;width:120px;height:120px;z-index:5;
+  }
+  .col-brand{
+    left:4%;bottom:80px;width:220px;
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:34px;line-height:1.0;color:#000;
+    z-index:4;
+  }
+  .col-brand .dot{display:inline-block;width:10px;height:10px;background:#000;border-radius:50%;vertical-align:middle;margin:0 4px;}
+  .col-lipstick{
+    left:-20px;top:340px;width:130px;height:240px;z-index:5;
+  }
+  .col-reels-burst{
+    left:140px;top:280px;width:160px;height:160px;z-index:4;
+  }
+  .col-arrow-1{
+    left:30%;top:240px;width:90px;height:90px;color:#000;z-index:4;
+  }
+  .col-arrow-2{
+    right:32%;bottom:160px;width:120px;height:80px;color:#000;z-index:4;
+  }
+  .col-scan{
+    right:8%;bottom:60px;width:170px;height:130px;z-index:4;
+  }
+  .col-scan .text{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:22px;color:#000;padding:10px 22px 30px;line-height:1.1;
+  }
+  .col-heel{
+    right:0;bottom:0;width:200px;height:140px;z-index:5;
+  }
+  .col-deck{
+    left:24%;bottom:0;width:280px;height:160px;border:3px solid #000;background:#fff;
+    overflow:hidden;transform:rotate(-2deg);
+  }
+  .col-deck image-slot{width:100%;height:100%;display:block;}
+  .col-sparkle-1{left:34%;top:20px;width:60px;height:60px;color:#000;}
+  .col-sparkle-2{left:42%;top:50px;width:46px;height:46px;color:#000;}
+
+  /* ===== SCAN ===== */
+  .scan{
+    background:var(--paper);padding:90px 0 80px;position:relative;text-align:center;
+  }
+  .scan h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(56px,8vw,128px);line-height:1.0;margin:0;
+  }
+  .scan .sub{
+    font-family:'Caveat',cursive;font-size:32px;color:#0a0a0a;margin:12px 0 36px;
+  }
+  .scan-form{
+    display:flex;align-items:stretch;max-width:660px;margin:0 auto;
+    background:#fff;border:3px solid #000;border-radius:999px;
+    box-shadow:6px 6px 0 #0a0a0a;
+    overflow:hidden;position:relative;
+  }
+  .scan-form input{
+    flex:1;border:0;outline:0;background:transparent;
+    padding:18px 28px;font-family:'Special Elite',monospace;font-size:17px;
+  }
+  .scan-form button{
+    background:var(--acid);border:0;border-left:3px solid #000;
+    padding:0 30px;font-family:'Special Elite',monospace;font-weight:bold;font-size:20px;cursor:pointer;
+  }
+  .scan-bubble{
+    position:absolute;left:50%;top:-26px;transform:translateX(20px);
+    background:#fff;border:3px solid #000;padding:6px 16px;border-radius:999px;
+    font-family:'Special Elite',monospace;font-size:13px;
+    z-index:2;
+  }
+  .scan-bubble::after{content:"";position:absolute;left:30%;bottom:-12px;width:0;height:0;border:8px solid transparent;border-top-color:#000;}
+  .scan-bubble::before{content:"";position:absolute;left:30%;bottom:-7px;margin-left:2px;width:0;height:0;border:6px solid transparent;border-top-color:#fff;z-index:3;}
+
+  /* ===== IDENTITY ===== */
+  .identity{
+    background:var(--paper);padding:120px 0 100px;position:relative;
+  }
+  .identity h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(48px,7vw,108px);line-height:1.0;margin:0;text-align:center;
+  }
+  .identity .sub{
+    font-family:'Playfair Display',serif;font-style:italic;font-weight:500;
+    font-size:clamp(36px,5vw,72px);text-align:center;margin:10px 0 60px;color:var(--acid-2);
+    text-shadow:0 0 0 #0a0a0a;
+  }
+  .identity-grid{
+    display:grid;grid-template-columns:1fr 1.2fr;gap:60px;align-items:center;max-width:1000px;margin:0 auto;
+  }
+  .identity-portrait{
+    position:relative;aspect-ratio:3/4;background:#fff;
+  }
+  .identity-portrait image-slot{width:100%;height:100%;display:block;}
+  .identity-list{list-style:none;padding:0;margin:0;}
+  .identity-list li{
+    display:flex;align-items:baseline;gap:24px;
+    font-family:'Special Elite',monospace;font-size:28px;color:#0a0a0a;
+    padding:14px 0;
+  }
+  .identity-list .num{
+    font-family:'Anton',sans-serif;color:var(--acid-2);font-size:36px;line-height:1;
+  }
+
+  /* ===== TESTIMONIAL ===== */
+  .testimonial{
+    background:var(--paper);padding:80px 0 100px;text-align:center;position:relative;
+  }
+  .testi-bubble{
+    position:relative;display:inline-block;max-width:760px;
+    background:#fff;border:3px solid #000;border-radius:30px;
+    padding:50px 60px;
+    box-shadow:8px 8px 0 #0a0a0a;
+  }
+  .testi-bubble::after{
+    content:"";position:absolute;left:60px;bottom:-22px;
+    width:36px;height:26px;background:#fff;border-right:3px solid #000;border-bottom:3px solid #000;
+    border-radius:0 0 24px 0;transform:skewX(-12deg);
+  }
+  .testi-bubble blockquote{
+    margin:0;font-family:'Playfair Display',serif;font-style:italic;font-weight:500;
+    font-size:clamp(28px,4vw,48px);line-height:1.15;color:#0a0a0a;
+  }
+  .testi-bubble cite{
+    display:block;margin-top:24px;font-style:normal;
+    font-family:'Special Elite',monospace;font-size:14px;color:#444;
+  }
+  .testi-lines{
+    position:absolute;left:-28px;top:50%;width:50px;height:60px;
+    background-image:repeating-linear-gradient(45deg,#000 0 2px,transparent 2px 9px);
+  }
+
+  /* ===== CONTENT GALLERY ===== */
+  .gallery{
+    background:var(--paper);padding:100px 0;position:relative;
+  }
+  .gallery h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(40px,5vw,68px);text-align:center;margin:0 0 40px;letter-spacing:.01em;
+  }
+  .gallery-cards{
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px;
+  }
+  .gcard{
+    background:#fff;border:3px solid #000;
+    box-shadow:8px 8px 0 #0a0a0a;
+    display:grid;grid-template-columns:200px 1fr;gap:0;overflow:hidden;
+  }
+  .gcard .img{background:#eee;position:relative;overflow:hidden;}
+  .gcard .img image-slot{width:100%;height:100%;display:block;}
+  .gcard .play{
+    position:absolute;left:8px;bottom:8px;background:#fff;border:2px solid #000;border-radius:999px;
+    padding:3px 10px;font-family:'Special Elite',monospace;font-size:12px;
+  }
+  .gcard .body{padding:18px 22px;display:flex;flex-direction:column;gap:8px;}
+  .gcard .tag{display:inline-block;background:#000;color:var(--acid);padding:3px 10px;font-family:'Anton',sans-serif;text-transform:uppercase;font-size:11px;letter-spacing:.1em;align-self:flex-start;}
+  .gcard h4{margin:0;font-family:'Playfair Display',serif;font-style:italic;font-size:20px;}
+  .gcard h5{margin:0;font-family:'Special Elite',monospace;font-size:13px;color:#444;font-weight:normal;}
+  .gcard p{margin:8px 0 14px;font-family:'Special Elite',monospace;font-size:12px;line-height:1.55;color:#222;}
+  .gcard .pills{display:flex;gap:8px;}
+  .gcard .pill{background:var(--acid);border:2px solid #000;padding:4px 12px;border-radius:999px;font-family:'Special Elite',monospace;font-size:11px;}
+
+  .gallery-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  }
+  .gthumb{
+    aspect-ratio:1;background:#eee;border:2px solid #000;overflow:hidden;
+  }
+  .gthumb image-slot{width:100%;height:100%;display:block;}
+
+  /* ===== TEAM ===== */
+  .team{
+    background:var(--paper-2);padding:100px 0;text-align:center;
+  }
+  .team h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(48px,7vw,96px);margin:0 0 12px;
+  }
+  .team .logo{font-family:'Italianno',cursive;font-size:80px;line-height:.6;}
+  .team .logo small{display:block;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:.4em;margin-top:14px;}
+  .team-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;
+  }
+  .tcard{background:#fff;border:3px solid #000;padding:0;text-align:left;overflow:hidden;}
+  .tcard .photo{aspect-ratio:1;background:#eee;border-bottom:3px solid #000;position:relative;}
+  .tcard .photo image-slot{width:100%;height:100%;display:block;}
+  .tcard .name{
+    background:#fff;display:inline-block;padding:8px 22px;border:3px solid #000;
+    font-family:'Special Elite',monospace;font-size:22px;margin:-22px 0 0 22px;position:relative;z-index:2;
+  }
+  .tcard .body{padding:20px 22px 26px;}
+  .tcard h4{margin:0 0 6px;font-family:'Special Elite',monospace;font-size:22px;}
+  .tcard p{margin:14px 0 0;font-family:'Special Elite',monospace;font-size:13px;line-height:1.5;color:#444;}
+
+  /* ===== FINAL HERO ===== */
+  .final{
+    background:#fff;padding:0;position:relative;overflow:hidden;
+    border-top:3px solid #000;border-bottom:3px solid #000;
+  }
+  .final-bg{
+    position:absolute;inset:0;
+    background-image:
+      repeating-linear-gradient(50deg,#000 0 2px,transparent 2px 14px),
+      radial-gradient(circle at 80% 50%,#000 0%,#000 28%,transparent 30%);
+    opacity:.05;
+  }
+  .final-stars{position:absolute;inset:0;pointer-events:none;}
+  .final-stars svg{position:absolute;}
+  .final-inner{
+    position:relative;z-index:2;
+    padding:90px 40px 70px;
+    display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center;
+    max-width:1280px;margin:0 auto;
+  }
+  .final h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(48px,7vw,108px);line-height:1.0;margin:0;
+  }
+  .final .bic{font-family:'Anton',sans-serif;font-size:clamp(36px,5vw,72px);margin:30px 0 0;text-transform:uppercase;}
+  .final .bic .b1{color:#000;}
+  .final .bic .b2{color:#000;}
+  .final .bic .b3{color:#000;}
+  .final-portrait{position:relative;aspect-ratio:1;background:#fff;}
+  .final-portrait image-slot{width:100%;height:100%;display:block;}
+  .final-card{
+    position:absolute;right:30px;bottom:30px;
+    background:var(--acid);border:2px solid #000;padding:12px 24px;border-radius:6px;
+    font-family:'Italianno',cursive;font-size:36px;line-height:.7;color:#0a0a0a;
+    box-shadow:4px 4px 0 #000;
+  }
+  .final-card small{display:block;font-family:'Special Elite',monospace;font-size:9px;letter-spacing:.3em;margin-top:10px;text-align:center;}
+
+  /* ===== PRICING ===== */
+  .pricing{
+    background:var(--paper);padding:100px 0 80px;position:relative;
+  }
+  .pricing-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:880px;margin:0 auto;
+    border:3px solid #000;background:#fff;
+  }
+  .price{
+    padding:30px 24px 26px;border-right:3px solid #000;
+    text-align:center;background:var(--acid);
+  }
+  .price:last-child{border-right:0;}
+  .price.standard{background:var(--acid);}
+  .price h3{
+    margin:0;font-family:'Anton',sans-serif;text-transform:uppercase;font-size:18px;letter-spacing:.1em;
+  }
+  .price .amt{
+    font-family:'Anton',sans-serif;font-size:30px;margin:10px 0 4px;
+  }
+  .price ul{list-style:none;padding:0;margin:14px 0;text-align:left;}
+  .price li{font-family:'Special Elite',monospace;font-size:12px;padding:3px 0;}
+  .price .term{font-family:'Special Elite',monospace;font-size:11px;color:#000;margin-top:10px;border-top:2px solid #000;padding-top:8px;}
+
+  /* ===== FOOTER ===== */
+  .foot{
+    background:var(--paper);padding:50px 0 60px;border-top:3px solid #000;
+  }
+  .foot-grid{
+    display:grid;grid-template-columns:auto 1fr auto;gap:30px;align-items:center;
+  }
+  .foot-social{display:flex;gap:12px;align-items:center;}
+  .foot-social a{width:32px;height:32px;border:2px solid #000;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;text-decoration:none;font-size:14px;}
+  .foot-logo{font-family:'Italianno',cursive;font-size:38px;line-height:.7;text-align:center;}
+  .foot-logo small{display:block;font-family:'Special Elite',monospace;font-size:9px;letter-spacing:.4em;margin-top:8px;}
+  .foot-meta{font-family:'Special Elite',monospace;font-size:11px;color:#444;text-align:center;margin-top:18px;}
+
+  /* responsive */
+  @media (max-width:1100px){
+    .nav-links{display:none;}
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-art{margin-top:30px;min-height:480px;}
+    .identity-grid{grid-template-columns:1fr;}
+    .final-inner{grid-template-columns:1fr;}
+    .gallery-cards{grid-template-columns:1fr;}
+    .team-grid{grid-template-columns:1fr 1fr;}
+    .diag-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:1fr 1fr;}
+    .collage-grid{height:auto;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .collage-grid > *{position:relative;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SVG SPRITE ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="starburst" viewBox="-50 -50 100 100">
+      <polygon points="0,-48 9,-14 38,-32 18,-6 48,0 18,6 38,32 9,14 0,48 -9,14 -38,32 -18,6 -48,0 -18,-6 -38,-32 -9,-14" fill="currentColor" stroke="#000" stroke-width="2.5" stroke-linejoin="miter"/>
+    </symbol>
+    <symbol id="sparkle4" viewBox="-50 -50 100 100">
+      <polygon points="0,-46 6,-6 46,0 6,6 0,46 -6,6 -46,0 -6,-6" fill="currentColor" stroke="#000" stroke-width="2" stroke-linejoin="miter"/>
+    </symbol>
+    <symbol id="bolt" viewBox="0 0 60 100">
+      <polygon points="32,0 6,52 24,52 16,100 54,38 34,38 50,4" fill="currentColor" stroke="#000" stroke-width="3" stroke-linejoin="miter"/>
+    </symbol>
+    <symbol id="speech" viewBox="0 0 240 160">
+      <path d="M16 20 Q16 8 30 8 L210 8 Q224 8 224 22 L224 110 Q224 124 210 124 L86 124 L60 152 L70 124 L30 124 Q16 124 16 110 Z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="miter"/>
+    </symbol>
+    <symbol id="pop-burst" viewBox="-60 -60 120 120">
+      <polygon points="-56,0 -38,18 -44,40 -22,30 -10,52 0,32 14,56 22,30 42,42 28,18 56,8 32,0 56,-8 28,-18 42,-42 22,-30 14,-56 0,-32 -10,-52 -22,-30 -44,-40 -38,-18" fill="var(--acid)" stroke="#000" stroke-width="3"/>
+    </symbol>
+    <symbol id="action-burst" viewBox="-60 -60 120 120">
+      <polygon points="-58,2 -36,14 -38,36 -16,28 -8,50 4,32 18,56 22,32 44,40 30,20 58,12 32,2 56,-10 30,-20 42,-44 20,-30 12,-58 0,-32 -12,-54 -22,-32 -42,-40 -34,-18" fill="var(--acid)" stroke="#000" stroke-width="3"/>
+    </symbol>
+    <symbol id="lipstick" viewBox="0 0 100 200">
+      <path d="M30 10 Q50 -4 70 10 L66 64 L34 64 Z" fill="var(--acid)" stroke="#000" stroke-width="3"/>
+      <rect x="26" y="62" width="48" height="18" fill="#fff" stroke="#000" stroke-width="3"/>
+      <rect x="22" y="78" width="56" height="110" fill="#0a0a0a" stroke="#000" stroke-width="3"/>
+      <rect x="28" y="84" width="6" height="98" fill="rgba(255,255,255,.2)"/>
+    </symbol>
+    <symbol id="heel" viewBox="0 0 200 140">
+      <path d="M10 100 Q60 70 130 70 L150 80 L150 100 Q150 110 138 110 L60 110 Q30 110 10 100 Z" fill="#0a0a0a" stroke="#000" stroke-width="3"/>
+      <path d="M150 80 L160 110 L168 130 L150 130 L138 110 Z" fill="#0a0a0a" stroke="#000" stroke-width="3"/>
+      <path d="M150 100 Q165 100 170 110" fill="none" stroke="var(--acid)" stroke-width="4"/>
+    </symbol>
+    <symbol id="camera" viewBox="0 0 200 140">
+      <rect x="6" y="30" width="188" height="100" fill="#0a0a0a" stroke="#000" stroke-width="4"/>
+      <rect x="56" y="14" width="60" height="22" fill="#0a0a0a" stroke="#000" stroke-width="4"/>
+      <circle cx="100" cy="80" r="36" fill="#fff" stroke="#000" stroke-width="4"/>
+      <circle cx="100" cy="80" r="22" fill="#0a0a0a" stroke="#000" stroke-width="3"/>
+      <circle cx="100" cy="80" r="10" fill="var(--acid)"/>
+      <rect x="160" y="44" width="22" height="14" fill="var(--acid)" stroke="#000" stroke-width="3"/>
+    </symbol>
+    <symbol id="brain" viewBox="0 0 200 160">
+      <path d="M70 30 Q40 30 36 60 Q14 70 28 96 Q20 124 50 130 Q66 150 92 142 L92 30 Q82 22 70 30 Z M130 30 Q160 30 164 60 Q186 70 172 96 Q180 124 150 130 Q134 150 108 142 L108 30 Q118 22 130 30 Z" fill="#fff" stroke="#000" stroke-width="3.5"/>
+      <path d="M50 70 Q70 60 80 80 M50 100 Q70 90 80 110 M150 70 Q130 60 120 80 M150 100 Q130 90 120 110 M100 30 L100 142" fill="none" stroke="#000" stroke-width="2.5"/>
+    </symbol>
+    <symbol id="brush" viewBox="0 0 200 160">
+      <rect x="6" y="76" width="120" height="22" rx="2" fill="#fff" stroke="#000" stroke-width="3" transform="rotate(-20 66 87)"/>
+      <path d="M125 60 L185 50 L190 80 L170 110 L120 90 Z" fill="#0a0a0a" stroke="#000" stroke-width="3"/>
+      <path d="M125 60 L120 90 L100 110 Q90 120 80 110 L100 80 Z" fill="#fff" stroke="#000" stroke-width="3"/>
+    </symbol>
+    <symbol id="megaphone" viewBox="0 0 200 140">
+      <path d="M20 50 L20 90 L70 90 L150 130 L150 10 L70 50 Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linejoin="miter"/>
+      <rect x="150" y="40" width="22" height="60" fill="var(--acid)" stroke="#000" stroke-width="4"/>
+      <line x1="180" y1="20" x2="195" y2="10" stroke="#000" stroke-width="3"/>
+      <line x1="180" y1="70" x2="200" y2="70" stroke="#000" stroke-width="3"/>
+      <line x1="180" y1="120" x2="195" y2="130" stroke="#000" stroke-width="3"/>
+    </symbol>
+    <symbol id="arrow-curl" viewBox="0 0 200 140">
+      <path d="M20 80 Q20 20 80 30 Q140 40 130 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+      <polygon points="130,100 118,86 144,90" fill="currentColor"/>
+    </symbol>
+    <symbol id="cloud" viewBox="0 0 200 140">
+      <path d="M40 100 Q10 100 14 76 Q-4 60 18 46 Q14 24 42 26 Q56 6 78 18 Q98 4 116 22 Q138 8 150 30 Q180 30 178 56 Q198 70 178 90 Q188 116 158 116 Q140 134 116 122 Q92 134 76 118 Q56 130 40 116 Q24 116 28 100 Z" fill="#fff" stroke="#000" stroke-width="3"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" data-screen-label="Navigation">
+  <div class="nav-logo"><img src="Constant_logo_black.png" alt="Constantina — Finally You." style="height:52px;width:auto;display:block;"></div>
+  <div class="nav-links">
+    <a href="#diag">Služby</a>
+    <a href="#gallery">Projekty</a>
+    <a href="#team">O nás</a>
+    <a href="#scan">Kontakt</a>
+  </div>
+  <a href="#scan" class="nav-cta">Začít →</a>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" data-screen-label="01 Hero">
+  <div class="ht-corner ht-bl" style="opacity:.6;z-index:5;"></div>
+  <!-- Background obrázek -->
+  <div class="hero-bg"></div>
+  <!-- Text vlevo -->
+  <div class="hero-content">
+    <h1 class="hero-stack impact">
+      <span class="row">PŘIJDEŠ JAKO</span>
+      <span class="row">PODNIKATEL.</span>
+      <span class="serif">Odejdeš jako značka.</span>
+    </h1>
+    <p class="hero-sub">Tvoje práce mluví za tebe. Tvůj brand zatím mlčí. Většina expertů totiž působí online mnohem menší, než ve skutečnosti jsou.</p>
+    <div class="hero-cta-row">
+      <span class="lipstick-prop"><svg viewBox="0 0 100 200" style="width:100%;height:auto;display:block;"><use href="#lipstick"/></svg></span>
+      <a href="#scan" class="hero-cta">Chci přestat splývat s davem →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TICKER ===== -->
+<div class="ticker dark" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="star">✦</span><span>Brand</span>
+    <span class="star">✦</span><span>Identity</span>
+    <span class="star">✦</span><span>Content</span>
+    <span class="star">✦</span><span>Strategie</span>
+    <span class="star">✦</span><span>Design</span>
+    <span class="star">✦</span><span>Social Media</span>
+    <span class="star">✦</span><span>Brand</span>
+    <span class="star">✦</span><span>Identity</span>
+    <span class="star">✦</span><span>Content</span>
+    <span class="star">✦</span><span>Strategie</span>
+    <span class="star">✦</span><span>Design</span>
+    <span class="star">✦</span><span>Social Media</span>
+  </div>
+</div>
+
+<!-- ===== DIAGNOSIS ===== -->
+<section class="diag" id="diag" data-screen-label="02 Diagnóza">
+  <div class="ht-corner ht-tl" style="opacity:.55;"></div>
+  <div class="container">
+    <h2>Vidí tě vůbec někdo?</h2>
+    <div class="sub">Pokud ne — není to tvoje chyba. Je to chyba tvého brandu.</div>
+    <div class="diag-grid">
+      <div class="diag-card">
+        <svg viewBox="0 0 200 160"><use href="#brain"/></svg>
+        <h3>Strategii</h3>
+        <p>Chaos nevzniká z lenosti. Vzniká z toho, že nikdo nikdy neurčil směr. My ho určíme.</p>
+      </div>
+      <div class="diag-card">
+        <svg viewBox="0 0 200 160"><use href="#brush"/></svg>
+        <h3>Designem</h3>
+        <p>Logo nestačí. Chceš, aby tě klient poznal dřív, než dočte první větu.</p>
+      </div>
+      <div class="diag-card">
+        <svg viewBox="0 0 200 160"><use href="#megaphone"/></svg>
+        <h3>Obsahem</h3>
+        <p>Tvořit každý týden znovu od nuly tě stojí čas i energii. Jednou to vyřešíme na měsíce dopředu.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STICKER ===== -->
+<div class="sticker-wrap">
+  <div class="magnetic">
+    <div class="tape-1">Nebuď šedá myška</div>
+    <div class="tape-2">Staň se magnetická</div>
+  </div>
+</div>
+
+<!-- ===== REALITA TRHU ===== -->
+<section style="background:var(--paper);padding:80px 0;border-top:3px solid #000;" data-screen-label="02b Realita trhu">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;">
+      <div>
+        <p style="font-family:'Special Elite',monospace;font-size:18px;line-height:1.7;color:#222;margin:0 0 22px;">Neviditelnost dnes nevypadá jako prázdný profil. Vypadá jako <strong>generický branding</strong>. Pokud splýváš s davem a vypadáš jako dalších tisíc účtů, tvoje značka tě aktivně zmenšuje.</p>
+        <p style="font-family:'Special Elite',monospace;font-size:18px;line-height:1.7;color:#222;margin:0;">Vypadat důvěryhodně je dnes <strong>business skill</strong>. Není to o tom, jestli jsi v tom, co děláš, dobrý. Je to o tom, jestli tak vypadáš. Chaotická značka totiž stojí důvěru.</p>
+      </div>
+      <div style="background:#000;padding:40px;border:3px solid #000;">
+        <p style="font-family:'Anton',sans-serif;font-size:16px;letter-spacing:.1em;color:var(--acid);text-transform:uppercase;margin:0 0 20px;">Klient se o tobě rozhodne během tří sekund:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="border:2px solid var(--acid);padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:var(--acid);text-align:center;letter-spacing:.05em;">Důvěřuji?</div>
+          <div style="border:2px solid #444;padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:#555;text-align:center;letter-spacing:.05em;">Ignoruji?</div>
+          <div style="border:2px solid var(--acid);padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:var(--acid);text-align:center;letter-spacing:.05em;">Pamatuji si?</div>
+          <div style="border:2px solid #444;padding:16px;font-family:'Anton',sans-serif;font-size:20px;color:#555;text-align:center;letter-spacing:.05em;">Zapomínám?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MANIFESTO ===== -->
+<section style="background:#000;color:#fff;padding:100px 0;" data-screen-label="03 Manifesto">
+  <div class="container">
+    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(36px,5vw,80px);line-height:1.0;margin:0 0 12px;color:#fff;">Nejsme továrna na šablony.</h2>
+    <div style="font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:clamp(28px,4vw,56px);color:var(--acid);margin:0 0 60px;">Jsme konec tvé improvizace.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;">
+      <div>
+        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.75;color:#ccc;margin:0 0 36px;">Nesnášíme, když silní lidé vypadají online slabě. Když expert s hlubokou hodnotou působí levně jen proto, že jeho značka nemá směr.</p>
+        <p style="font-family:'Anton',sans-serif;font-size:13px;letter-spacing:.15em;color:var(--acid);text-transform:uppercase;margin:0 0 18px;">Jdeme proti:</p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0;">
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Generickým značkám bez kouska osobnosti.</li>
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Obsahu, který působí jako algoritmický odpad.</li>
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;border-bottom:1px solid #222;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Sterilním webům a falešné dokonalosti, za kterou nikdo nevidí člověka.</li>
+          <li style="font-family:'Special Elite',monospace;font-size:16px;color:#ccc;padding:16px 0;display:flex;gap:16px;align-items:flex-start;line-height:1.5;"><span style="color:var(--acid);font-family:'Anton',sans-serif;font-size:18px;flex-shrink:0;">✕</span>Designu bez identity, který je jen prázdnou dekorací.</li>
+        </ul>
+      </div>
+      <div style="background:#111;border:3px solid var(--acid);padding:44px;">
+        <p style="font-family:'Anton',sans-serif;font-size:14px;letter-spacing:.15em;color:var(--acid);text-transform:uppercase;margin:0 0 24px;">Věříme, že:</p>
+        <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(22px,3vw,34px);color:#fff;line-height:1.3;margin:0 0 24px;">Vizuální identita není dekorace. Je to psychologie v praxi.</p>
+        <p style="font-family:'Special Elite',monospace;font-size:16px;color:#aaa;line-height:1.7;margin:0;">Krásný feed ještě nikdy nevytvořil silnou značku — směr a pravdivá identita ano.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COLLAGE ===== -->
+<section class="collage" data-screen-label="03 Koláž">
+  <div class="ht-corner ht-tr" style="opacity:.5;"></div>
+  <div class="ht-corner ht-bl" style="opacity:.5;"></div>
+  <div class="container">
+    <div class="collage-grid">
+      <div class="col-speech">
+        <svg viewBox="0 0 240 160" style="width:100%;display:block;filter:drop-shadow(4px 4px 0 #000);"><use href="#speech"/></svg>
+        <div class="col-speech-text">„PRVNÍ DOJEM.<br/>MÁŠ JEN JEDEN."</div>
+      </div>
+      <div class="col-sparkle-1"><svg style="width:100%;height:100%;"><use href="#sparkle4"/></svg></div>
+      <div class="col-sparkle-2"><svg style="width:100%;height:100%;"><use href="#sparkle4"/></svg></div>
+
+      <div class="col-mood-l"><image-slot id="col-mood-l" placeholder="Carousel mockup"></image-slot></div>
+      <div class="col-mood-r"><image-slot id="col-mood-r" placeholder="Carousel mockup"></image-slot></div>
+      <div class="col-phones"><image-slot id="col-phones" placeholder="Mobil mockup"></image-slot></div>
+
+      <div class="col-portrait"><image-slot id="col-portrait" placeholder="Portrét hrdinky"></image-slot></div>
+
+      <div class="col-pow" style="position:absolute;">
+        <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:34px;color:#000;">POW!</div>
+      </div>
+      <div class="col-pop" style="position:absolute;">
+        <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;filter:drop-shadow(2px 2px 0 #000);"><use href="#action-burst"/></svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:32px;color:#000;">POP!</div>
+      </div>
+
+      <div class="col-reels-burst" style="position:absolute;">
+        <svg viewBox="-60 -60 120 120" style="width:100%;height:100%;color:#0a0a0a;"><use href="#starburst"/></svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-family:'Anton',sans-serif;font-size:18px;line-height:1.05;">REELS<br/>POSTY<br/>FOTKY</div>
+      </div>
+
+      <div class="col-brand">
+        BRAND<span class="dot"></span><br/>
+        IDENTITY<span class="dot"></span><br/>
+        CONTENT<span class="dot"></span>
+      </div>
+
+      <div class="col-lipstick">
+        <svg viewBox="0 0 100 200" style="width:100%;height:100%;"><use href="#lipstick"/></svg>
+      </div>
+
+      <div class="col-arrow-1"><svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#arrow-curl"/></svg></div>
+      <div class="col-arrow-2"><svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#arrow-curl"/></svg></div>
+
+      <div class="col-deck"><image-slot id="col-deck" placeholder="Deck / brand strategy"></image-slot></div>
+
+      <div class="col-scan">
+        <svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#cloud"/></svg>
+        <div class="text">BRAND SCAN<br/>STRATEGIE</div>
+      </div>
+
+      <div class="col-heel"><svg viewBox="0 0 200 140" style="width:100%;height:100%;"><use href="#heel"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TICKER 2 ===== -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="star">✦</span><span>Brand</span>
+    <span class="star">✦</span><span>Identity</span>
+    <span class="star">✦</span><span>Content</span>
+    <span class="star">✦</span><span>Strategie</span>
+    <span class="star">✦</span><span>Design</span>
+    <span class="star">✦</span><span>Social Media</span>
+    <span class="star">✦</span><span>Brand</span>
+    <span class="star">✦</span><span>Identity</span>
+    <span class="star">✦</span><span>Content</span>
+    <span class="star">✦</span><span>Strategie</span>
+    <span class="star">✦</span><span>Design</span>
+    <span class="star">✦</span><span>Social Media</span>
+  </div>
+</div>
+
+<!-- ===== SCAN ===== -->
+<section class="scan" id="scan" data-screen-label="04 Brand Scan">
+  <div class="ht-corner ht-tl" style="opacity:.5;"></div>
+  <div class="ht-corner ht-br" style="opacity:.5;"></div>
+  <div class="container">
+    <h2>Zadej svůj web.</h2>
+    <div class="sub">A dozvíš se jak obstál v našem hodnocení</div>
+    <form class="scan-form" onsubmit="event.preventDefault();this.querySelector('input').value='⌛ skenuji…';">
+      <div class="scan-bubble">do 90 sec máš jasno</div>
+      <input type="text" placeholder="https://tvujweb.cz" />
+      <button type="submit">Skenovat →</button>
+    </form>
+    <p style="margin-top:60px;font-family:'Special Elite',monospace;font-size:13px;color:#444;">
+      Zanechej nám svůj mail a my ti zašleme do 48h PDF dokument s brand DNA analýzou a vizuál boardem na míru.
+    </p>
+  </div>
+</section>
+
+<!-- ===== IDENTITY ===== -->
+<section class="identity" data-screen-label="05 Content Day">
+  <div class="container">
+    <h2>Jeden den. Obsah na měsíce.</h2>
+    <div class="sub serif-i">Přijdeš jednou. Odejdeš jako značka.</div>
+    <div class="identity-grid">
+      <div class="identity-portrait">
+        <image-slot id="identity-portrait" placeholder="Portrét — žena v sluníčkách, vizitka"></image-slot>
+      </div>
+      <div>
+        <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.7;color:#444;margin:0 0 36px;">Přijdeš jednou. Odejdeš s kompletním vizuálním systémem, který pracuje za tebe. Už nikdy nebudeš stát nad prázdnou stránkou a přemýšlet, co publikovat.</p>
+        <ul class="identity-list">
+          <li><span class="num">01</span><span>Brand DNA — tvůj strategický kompas. Kdo jsi, jak mluvíš a proč ti mají věřit.</span></li>
+          <li><span class="num">02</span><span>150 fotografií — žádné strojené pózy. Obraz, který konečně odpovídá tvé hodnotě.</span></li>
+          <li><span class="num">03</span><span>Reels a video záběry — autenticita bez přehrávání. Signál, který zastaví scroll.</span></li>
+          <li><span class="num">04</span><span>Vizuální banka — tvoje knihovna identity.</span></li>
+        </ul>
+        <p style="font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.03em;color:#000;margin:36px 0 0;text-transform:uppercase;">Výsledek? Neřešíš, co přidat. Jen vybíráš.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIAL ===== -->
+<section class="testimonial" data-screen-label="06 Reference">
+  <div class="container">
+    <div class="testi-bubble">
+      <div class="testi-lines"></div>
+      <blockquote>Konečně vypadám jak cítím že jsem.</blockquote>
+      <cite>— Veronika N., klientka</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALLERY ===== -->
+<section class="gallery" id="gallery" data-screen-label="07 Galerie">
+  <div class="container">
+    <h2>TVŮJ OBSAH PŘIPRAVENÝ K POUŽITÍ</h2>
+    <div class="gallery-cards">
+      <div class="gcard">
+        <div class="img">
+          <image-slot id="g1" placeholder="Reels obálka"></image-slot>
+          <div class="play">▶ 15s · Reels</div>
+        </div>
+        <div class="body">
+          <span class="tag">VIDEO · REELS</span>
+          <h4>"Osvetlenie vašej vnútornej žiary"</h4>
+          <h5>Autenticita a spontánnosť</h5>
+          <p>Každý z nás má v sebe unikátnu esenciu, ktorá čaká, aby bola zachytená. Vo Studio Lucifera vieme, že portrét nie je len o vonkajšej kráse, ale o tom, čo nesieme vo vnútri.</p>
+          <div class="pills"><span class="pill">Varianta A</span><span class="pill">Instagram</span></div>
+        </div>
+      </div>
+      <div class="gcard">
+        <div class="img">
+          <image-slot id="g2" placeholder="Reels obálka 2"></image-slot>
+          <div class="play">▶ 12s · Reels</div>
+        </div>
+        <div class="body">
+          <span class="tag">VIDEO · REELS</span>
+          <h4>"Vaša kariéra začína obrazom"</h4>
+          <h5>Profesionálnosť s dotykom umenia</h5>
+          <p>V dnešnom svete sa prvý dojem počíta viac než kedykoľvek predtým. Profesionálny portrét je kľúčovým faktorom pri budovaní dôvery a spoľahlivosti.</p>
+          <div class="pills"><span class="pill">Varianta B</span><span class="pill">Instagram</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-grid">
+      <div class="gthumb"><image-slot id="t1" placeholder="Carousel"></image-slot></div>
+      <div class="gthumb"><image-slot id="t2" placeholder="Mockup"></image-slot></div>
+      <div class="gthumb"><image-slot id="t3" placeholder="Phones"></image-slot></div>
+      <div class="gthumb"><image-slot id="t4" placeholder="Brand board"></image-slot></div>
+      <div class="gthumb"><image-slot id="t5" placeholder="Print"></image-slot></div>
+      <div class="gthumb"><image-slot id="t6" placeholder="Tablet"></image-slot></div>
+      <div class="gthumb"><image-slot id="t7" placeholder="Story"></image-slot></div>
+      <div class="gthumb"><image-slot id="t8" placeholder="Desktop"></image-slot></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TEAM ===== -->
+<section class="team" id="team" data-screen-label="08 Tým">
+  <div class="container">
+    <h2>Kdo stojí za službou</h2>
+    <div class="logo"><img src="Constant_logo_black.png" alt="Constantina — Finally You." style="height:80px;width:auto;display:block;margin:0 auto;"></div>
+    <div class="team-grid">
+      <div class="tcard">
+        <div class="photo"><image-slot id="t-lubos" placeholder="Luboš portrét"></image-slot></div>
+        <div class="name">Luboš</div>
+        <div class="body">
+          <p>Stratég. Stará se o směr, pozici a o to, aby tvá značka říkala jen jednu jasnou věc. Konec mluvení ke všem.</p>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="photo"><image-slot id="t-kristina" placeholder="Kristína portrét"></image-slot></div>
+        <div class="name">Kristína</div>
+        <div class="body">
+          <h4></h4>
+          <p>Designérka. Tvoří identitu, která nekopíruje. Kombinuje psychologii brandu s editorial citem pro detail.</p>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="photo"><image-slot id="t-katarina" placeholder="Katarína portrét"></image-slot></div>
+        <div class="name">Katarína</div>
+        <div class="body">
+          <p>Tvář a obsah. Ladí vizuální stránku do živé řeči — reels, posty, story. Tvůj brand v pohybu.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL HERO ===== -->
+<section class="final" data-screen-label="09 Final CTA">
+  <div class="final-bg"></div>
+  <div class="final-stars">
+    <svg style="left:6%;top:50px;width:60px;height:60px;color:#000;"><use href="#sparkle4"/></svg>
+    <svg style="right:30%;top:30px;width:50px;height:50px;color:#000;"><use href="#sparkle4"/></svg>
+    <svg style="left:40%;bottom:30px;width:40px;height:40px;color:#000;"><use href="#sparkle4"/></svg>
+  </div>
+  <div class="final-inner">
+    <div>
+      <h2>
+        Konečně značka,<br/>
+        která působí jako ty.
+      </h2>
+      <div class="bic">
+        <span class="b1">Brand.</span> <span class="b2">Identity.</span><br/>
+        <span class="b3">Content.</span>
+      </div>
+      <p style="font-family:'Special Elite',monospace;font-size:17px;color:#444;line-height:1.7;margin:30px 0 36px;max-width:480px;">Tvoje práce si zaslouží být vidět správně. Začni Brand Scanem a zjisti, kde tvá značka zbytečně ztrácí pozornost.</p>
+      <a href="#scan" style="display:inline-flex;align-items:center;gap:10px;background:var(--acid);color:#000;border:2px solid #000;padding:18px 40px;border-radius:999px;font-family:'Special Elite',monospace;font-weight:bold;font-size:20px;text-decoration:none;box-shadow:5px 5px 0 #000;transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translate(-2px,-2px)';this.style.boxShadow='7px 7px 0 #000';" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 #000';">Spustit Brand Scan zdarma →</a>
+    </div>
+    <div class="final-portrait">
+      <image-slot id="final-portrait" placeholder="Pin-up portrét s vizitkou"></image-slot>
+      <div class="final-card">
+        <img src="Constant_logo_black.png" alt="Constantina" style="height:36px;width:auto;display:block;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TICKER 3 ===== -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="star">✦</span><span>Brand</span>
+    <span class="star">✦</span><span>Identity</span>
+    <span class="star">✦</span><span>Content</span>
+    <span class="star">✦</span><span>Strategie</span>
+    <span class="star">✦</span><span>Design</span>
+    <span class="star">✦</span><span>Social Media</span>
+    <span class="star">✦</span><span>Brand</span>
+    <span class="star">✦</span><span>Identity</span>
+    <span class="star">✦</span><span>Content</span>
+    <span class="star">✦</span><span>Strategie</span>
+    <span class="star">✦</span><span>Design</span>
+    <span class="star">✦</span><span>Social Media</span>
+  </div>
+</div>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing" data-screen-label="10 Ceník">
+  <div class="container">
+    <div class="pricing-grid">
+      <div class="price" style="background:var(--paper);">
+        <h3>BRAND SCAN</h3>
+        <div class="amt">Zdarma</div>
+        <small style="font-family:'Special Elite',monospace;font-size:12px;">Bez registrace · do 90 sekund</small>
+        <ul>
+          <li>Okamžitá analýza webu</li>
+          <li>Zjistíš kde ztrácíš pozornost</li>
+          <li>Žádná registrace</li>
+          <li>Výsledek do 90 sekund</li>
+        </ul>
+        <div class="term">
+          <a href="#scan" style="font-family:'Special Elite',monospace;font-size:13px;font-weight:bold;color:#000;text-decoration:none;">Spustit zdarma →</a>
+        </div>
+      </div>
+      <div class="price standard">
+        <h3>SCAN REPORT</h3>
+        <div class="amt">990 Kč</div>
+        <small style="font-family:'Special Elite',monospace;font-size:12px;">Kompletní analýza na míru</small>
+        <ul>
+          <li>10stránkový PDF report</li>
+          <li>Brand DNA analýza</li>
+          <li>Vizuál board na míru</li>
+          <li>Doručení do 48 hodin</li>
+        </ul>
+        <div class="term">Obdržíš do 48 hodin na mail</div>
+      </div>
+      <div class="price" style="background:var(--paper);">
+        <h3>CONTENT DAY</h3>
+        <div class="amt">od 39 900 Kč</div>
+        <small style="font-family:'Special Elite',monospace;font-size:12px;">Kompletní vizuální systém</small>
+        <ul>
+          <li>Brand DNA dokument</li>
+          <li>150 fotografií</li>
+          <li>Reels a video záběry</li>
+          <li>Vizuální banka</li>
+          <li>Focení Praha Kampa</li>
+        </ul>
+        <div class="term">Obsah na 3–6 měsíců · 1 den</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="foot">
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-social">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="Twitter">t</a>
+      </div>
+      <div class="foot-logo"><img src="Constant_logo_black.png" alt="Constantina — Finally You." style="height:56px;width:auto;display:block;margin:0 auto;"></div>
+      <div class="foot-social">
+        <a href="#" aria-label="Instagram">ig</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+        <a href="#" aria-label="YouTube">yt</a>
+      </div>
+    </div>
+    <div class="foot-meta">© 2026 Constantina. Vlastní práva vyhrazena. · Kontakt: hi@constantina.cz · Instagram · LinkedIn</div>
+  </div>
+</footer>
+
+<script src="image-slot.js"></script>
+</body>
+</html>
