@@ -68,7 +68,6 @@
   .hero-bg{
     position:absolute;top:-80px;right:-20px;bottom:0;
     width:88%;
-    background:url('WEB_CONSTANTINA_cover.png') top right / contain no-repeat;
     z-index:1;
   }
   .hero-bg::before{
@@ -83,6 +82,18 @@
     background:none;
     z-index:2;
   }
+  .hero-woman{
+    position:absolute;top:-80px;right:-20px;
+    height:calc(100% + 80px);width:88%;
+    object-fit:contain;object-position:top right;
+    z-index:3;pointer-events:none;
+  }
+  .hero-deco{
+    position:absolute;
+    transition:transform 0.3s ease;
+    cursor:default;
+  }
+  .hero-deco:hover{transform:scale(1.15) rotate(5deg);}
   .hero-content{
     position:relative;z-index:10;
     width:50%;flex-shrink:0;
@@ -639,8 +650,17 @@
 <!-- ===== HERO ===== -->
 <section class="hero" data-screen-label="01 Hero">
   <div class="ht-corner ht-bl" style="opacity:.6;z-index:5;"></div>
-  <!-- Background obrázek -->
+  <!-- Fade gradient -->
   <div class="hero-bg"></div>
+  <!-- Žena jako PNG -->
+  <img src="ikonky bez pozadi/zena_WEB_CONSTANTINA_cover.png" class="hero-woman" alt="">
+  <!-- Dekorativní elementy (město nejníž, ostatní nahoře) -->
+  <img src="ikonky bez pozadi/20.png" class="hero-deco" alt="" style="right:0;bottom:0;width:200px;opacity:0.7;z-index:2;">
+  <img src="ikonky bez pozadi/01.png" class="hero-deco" alt="" style="right:24%;top:40px;width:120px;transform:rotate(-10deg);z-index:5;">
+  <img src="ikonky bez pozadi/12.png" class="hero-deco" alt="" style="right:4%;top:20px;width:200px;z-index:5;">
+  <img src="ikonky bez pozadi/03.png" class="hero-deco" alt="" style="right:47%;bottom:80px;width:60px;z-index:5;">
+  <img src="ikonky bez pozadi/21.png" class="hero-deco" alt="" style="right:24%;top:48%;width:100px;z-index:5;">
+  <img src="ikonky bez pozadi/19.png" class="hero-deco" alt="" style="right:6%;bottom:20px;width:110px;z-index:5;">
   <!-- Text vlevo -->
   <div class="hero-content">
     <h1 class="hero-stack impact">
@@ -657,7 +677,7 @@
       @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
     </style>
     <div class="hero-cta-row" style="margin-top:20px;">
-      <span class="lipstick-prop"><svg viewBox="0 0 100 200" style="width:100%;height:auto;display:block;"><use href="#lipstick"/></svg></span>
+      <img src="ikonky bez pozadi/14.png" alt="" style="width:70px;transform:rotate(-12deg);transition:transform 0.3s ease;flex-shrink:0;" onmouseover="this.style.transform='scale(1.15) rotate(5deg)'" onmouseout="this.style.transform='rotate(-12deg)'">
       <a href="#scan" class="hero-cta" style="font-size:15px;padding:13px 28px;">Chci přestat splývat s davem →</a>
     </div>
   </div>
