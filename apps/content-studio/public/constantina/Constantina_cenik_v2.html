@@ -374,7 +374,7 @@ footer{background:#000;border-top:3px solid var(--acid);padding:28px 40px;displa
           <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:20px;" id="qr-delivery"></div>
           <div class="quiz-cta-row">
             <a href="#packages" class="btn-primary">Zobrazit detail balíčku →</a>
-            <a href="#kalkulator" class="btn-dark">Spočítat investici</a>
+            <button class="btn-dark" onclick="qGoKalkulacka()">Spočítat investici →</button>
             <button class="quiz-btn-ghost" onclick="qReset()" style="margin-left:auto;">Začít znovu</button>
           </div>
         </div>
@@ -806,12 +806,24 @@ footer{background:#000;border-top:3px solid var(--acid);padding:28px 40px;displa
 // ===== QUIZ =====
 var qAnswers=[null,null,null,null];
 var PACKAGES={
-  0:{title:'Začínající značka',desc:'Nemáš nic — začneme od základů. Brand diagnostika, logo, landing page a šablony pro okamžitou tvorbu obsahu.',price:'od 38 900 Kč',delivery:'Dodání: 4–6 týdnů',includes:['Brand diagnostika + positioning','Logo systém — 3 varianty','Barevná paleta + brand book základ','Landing page (mobilní + SEO)','10 Canva šablon Instagram','Copywriting klíčových textů']},
-  1:{title:'Rebrand lektorky & odborníka',desc:'Máš zákazníky, kurzy jedou — ale brand nereprezentuje tvoji skutečnou hodnotu. Čas na změnu.',price:'od 54 900 Kč',delivery:'Dodání: 6–8 týdnů',includes:['Kompletní rebrand + brand book','Nový web (4–6 stránek)','Brand fotosession studio + exteriér','Copywriting celého webu','15 Canva šablon','Email welcome sekvence (5 emailů)']},
-  2:{title:'Vzdělávací platforma & akademie',desc:'Máš znalosti, chceš je prodat online. Postavíme platformu, natočíme lekce a spustíme launch.',price:'od 89 900 Kč',delivery:'Dodání: 8–12 týdnů',includes:['Kompletní web + členská sekce (LMS)','5 kompletních video lekcí A–Z','Landing page kurzu + copy + CTA','Brand vizuál — thumbnaily, grafika','Email sekvence pro launch','Launch strategie 30 dní']},
-  3:{title:'Sprint — rychlý start do 30 dní',desc:'Máš deadline. Potřebuješ okamžitě vypadat profesionálně a mít kde prodávat.',price:'od 24 900 Kč',delivery:'Dodání: do 30 dní',includes:['Landing page do 7 dní','Logo + základní identita do 5 dní','8 Instagram šablon (Canva)','Klíčové texty webu + bio','Email notifikace + potvrzení']},
-  4:{title:'Paušál Growth — dlouhodobá péče',desc:'Mám vše — chci outsourcovat marketing. Věnuji se výuce, Constantina se stará o zbytek.',price:'od 26 900 Kč / měsíc',delivery:'Start: do 2 týdnů',includes:['16 Instagram postů + stories + community','2 video reels / měsíc','2 newslettery / měsíc','Webový servis 8 hod. + vývoj','1 lekce do kurzu / měsíc','Správa členské sekce']},
-  5:{title:'Full Identity & Production',desc:'Stavíme impérium. Kompletní brand, web, fotky, kurzy, obsah. Žádné kompromisy.',price:'od 150 000 Kč',delivery:'Dodání: 12 týdnů',includes:['Kompletní Brand DNA + logo systém','Webová platforma na klíč + LMS','Produkce kurzů (scénář + střih)','Brand fotosession + promo video','Roční správa obsahu (Paušál Strom)','Prioritní přístup + dedikovaný PM']}
+  0:{title:'Začínající značka',desc:'Nemáš nic — začneme od základů. Brand diagnostika, logo, landing page a šablony pro okamžitou tvorbu obsahu.',price:'od 38 900 Kč',delivery:'Dodání: 4–6 týdnů',
+     includes:['Brand diagnostika + positioning','Logo systém — 3 varianty','Barevná paleta + brand book základ','Landing page (mobilní + SEO)','10 Canva šablon Instagram','Copywriting klíčových textů'],
+     kalkItems:['Brand diagnostika','Logo systém','Copywriting webu','Canva šablony Instagram']},
+  1:{title:'Rebrand lektorky & odborníka',desc:'Máš zákazníky, kurzy jedou — ale brand nereprezentuje tvoji skutečnou hodnotu. Čas na změnu.',price:'od 54 900 Kč',delivery:'Dodání: 6–8 týdnů',
+     includes:['Kompletní rebrand + brand book','Nový web (4–6 stránek)','Brand fotosession studio + exteriér','Copywriting celého webu','15 Canva šablon','Email welcome sekvence (5 emailů)'],
+     kalkItems:['Kompletní brand book','Brand fotosession — exteriér','Copywriting webu','Canva šablony Instagram','Email marketing setup']},
+  2:{title:'Vzdělávací platforma & akademie',desc:'Máš znalosti, chceš je prodat online. Postavíme platformu, natočíme lekce a spustíme launch.',price:'od 89 900 Kč',delivery:'Dodání: 8–12 týdnů',
+     includes:['Kompletní web + členská sekce (LMS)','5 kompletních video lekcí A–Z','Landing page kurzu + copy + CTA','Brand vizuál — thumbnaily, grafika','Email sekvence pro launch','Launch strategie 30 dní'],
+     kalkItems:['Kompletní web','Členská sekce / LMS','Kompletní modul (5 lekcí)','Email marketing setup']},
+  3:{title:'Sprint — rychlý start do 30 dní',desc:'Máš deadline. Potřebuješ okamžitě vypadat profesionálně a mít kde prodávat.',price:'od 24 900 Kč',delivery:'Dodání: do 30 dní',
+     includes:['Landing page do 7 dní','Logo + základní identita do 5 dní','8 Instagram šablon (Canva)','Klíčové texty webu + bio','Email notifikace + potvrzení'],
+     kalkItems:['Landing page','Logo systém','Canva šablony Instagram']},
+  4:{title:'Paušál Growth — dlouhodobá péče',desc:'Mám vše — chci outsourcovat marketing. Věnuji se výuce, Constantina se stará o zbytek.',price:'od 26 900 Kč / měsíc',delivery:'Start: do 2 týdnů',
+     includes:['16 Instagram postů + stories + community','2 video reels / měsíc','2 newslettery / měsíc','Webový servis 8 hod. + vývoj','1 lekce do kurzu / měsíc','Správa členské sekce'],
+     kalkItems:['Instagram management plný','Webový servis','Instagram management základní']},
+  5:{title:'Full Identity & Production',desc:'Stavíme impérium. Kompletní brand, web, fotky, kurzy, obsah. Žádné kompromisy.',price:'od 150 000 Kč',delivery:'Dodání: 12 týdnů',
+     includes:['Kompletní Brand DNA + logo systém','Webová platforma na klíč + LMS','Produkce kurzů (scénář + střih)','Brand fotosession + promo video','Roční správa obsahu (Paušál Strom)','Prioritní přístup + dedikovaný PM'],
+     kalkItems:['Kompletní brand book','Kompletní web','Členská sekce / LMS','Brand fotosession — exteriér','Kompletní modul (5 lekcí)','Reel / Story série']}
 };
 
 function qSelect(step,val,el){
@@ -834,12 +846,21 @@ function qPrev(step){
   document.getElementById('qp'+(step-1)).classList.add('active');
   document.getElementById('qp'+step).classList.remove('active');
 }
+function qGetPkg(s,p,b,t){
+  if(t===0) return 3;
+  if(t===2) return 4;
+  var matrix={'0-0':0,'0-1':0,'0-2':0,'0-3':0,'1-0':1,'1-1':1,'1-2':1,'1-3':1,'2-0':2,'2-1':2,'2-2':2,'2-3':2,'3-0':3,'3-1':3,'3-2':3,'3-3':3,'4-0':4,'4-1':4,'4-2':4,'4-3':4,'5-0':5,'5-1':5,'5-2':5,'5-3':5};
+  var pkg=matrix[s+'-'+p]!==undefined?matrix[s+'-'+p]:s;
+  if(b===0&&pkg===1) pkg=0;
+  if(b===0&&pkg>3) pkg=3;
+  if(b===2&&pkg===0) pkg=1;
+  if(b===3) pkg=5;
+  return pkg;
+}
 function qShowResult(){
-  var pkg=qAnswers[0];
-  if(qAnswers[3]===0&&pkg!==3)pkg=3;
-  if(qAnswers[3]===2&&pkg!==4)pkg=4;
-  if(qAnswers[2]===3&&pkg===0)pkg=5;
+  var pkg=qGetPkg(qAnswers[0],qAnswers[1],qAnswers[2],qAnswers[3]);
   var p=PACKAGES[pkg];
+  window._qKalkItems=p.kalkItems||[];
   document.getElementById('qr-title').textContent=p.title;
   document.getElementById('qr-desc').textContent=p.desc;
   document.getElementById('qr-price').textContent=p.price;
@@ -848,6 +869,14 @@ function qShowResult(){
   p.includes.forEach(function(i){ul.innerHTML+='<li>'+i+'</li>';});
   document.getElementById('qs3').classList.remove('active');
   document.getElementById('qs-result').classList.add('active');
+}
+function qGoKalkulacka(){
+  kalkReset();
+  (window._qKalkItems||[]).forEach(function(name){
+    var el=document.querySelector('.kalk-item[data-name="'+name+'"]');
+    if(el&&!el.classList.contains('on')) kalkToggle(el);
+  });
+  document.getElementById('kalkulator').scrollIntoView({behavior:'smooth'});
 }
 function qReset(){
   qAnswers=[null,null,null,null];
