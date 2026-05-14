@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<title>Ceník — Constantina</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,500;1,500;1,700&family=Italianno&family=Special+Elite&family=Caveat:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#fafaf6;--paper-2:#f3f1e8;--ink:#0a0a0a;--acid:#c9f31d;--acid-2:#b6dd14;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--paper);color:var(--ink);font-family:'Special Elite',monospace;-webkit-font-smoothing:antialiased;}
+.container{max-width:1140px;margin:0 auto;padding:0 40px;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:var(--paper);border-bottom:3px solid #000;position:sticky;top:0;z-index:100;}
+.nav-logo img{height:52px;width:auto;display:block;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{font-family:'Special Elite',monospace;font-size:14px;color:#000;text-decoration:none;}
+.nav-cta{background:var(--acid);color:#000;border:2.5px solid #000;padding:10px 24px;border-radius:999px;font-family:'Special Elite',monospace;font-size:14px;font-weight:bold;text-decoration:none;box-shadow:4px 4px 0 #000;}
+
+/* TICKER */
+.ticker{background:#000;overflow:hidden;padding:12px 0;border-bottom:3px solid #000;}
+.ticker-track{display:flex;white-space:nowrap;animation:tick 32s linear infinite;}
+.ticker-track span{font-family:'Anton',sans-serif;font-size:17px;letter-spacing:.06em;color:var(--acid);padding:0 20px;text-transform:uppercase;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* PAGE HERO */
+.page-hero{padding:72px 0 56px;text-align:center;border-bottom:3px solid #000;position:relative;overflow:hidden;}
+.page-hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,#000 1px,transparent 1px);background-size:18px 18px;opacity:.04;pointer-events:none;}
+.page-hero h1{font-family:'Anton',sans-serif;font-size:clamp(40px,7vw,96px);text-transform:uppercase;line-height:.92;margin-bottom:12px;}
+.page-hero h1 em{font-family:'Playfair Display',serif;font-style:italic;font-weight:500;text-transform:none;display:block;font-size:.6em;color:#555;margin-top:10px;}
+.page-hero-sub{font-family:'Special Elite',monospace;font-size:16px;color:#666;max-width:520px;margin:0 auto 32px;line-height:1.7;}
+.nav-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.nav-pill{background:#fff;border:2px solid #000;padding:8px 20px;font-family:'Special Elite',monospace;font-size:13px;cursor:pointer;text-decoration:none;color:#000;transition:all .15s;}
+.nav-pill:hover,.nav-pill.active{background:#000;color:var(--acid);}
+
+/* SECTION COMMON */
+.section{padding:72px 0;border-bottom:3px solid #000;}
+.section-label{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--acid);background:#000;padding:5px 16px;display:inline-block;margin-bottom:16px;}
+.section-title{font-family:'Anton',sans-serif;font-size:clamp(32px,5vw,68px);text-transform:uppercase;line-height:.95;margin-bottom:8px;}
+.section-sub{font-family:'Special Elite',monospace;font-size:15px;color:#666;max-width:560px;line-height:1.7;margin-bottom:40px;}
+
+/* ===== QUIZ ===== */
+.quiz-wrap{max-width:760px;margin:0 auto;}
+.quiz-step{display:none;}
+.quiz-step.active{display:block;}
+.quiz-progress{display:flex;gap:0;margin-bottom:40px;}
+.quiz-progress-dot{flex:1;height:4px;background:#e0ddd4;transition:background .3s;}
+.quiz-progress-dot.done{background:#000;}
+.quiz-progress-dot.active{background:var(--acid);}
+.quiz-q{font-family:'Anton',sans-serif;font-size:clamp(22px,3.5vw,40px);text-transform:uppercase;line-height:1;margin-bottom:8px;}
+.quiz-q-sub{font-family:'Special Elite',monospace;font-size:14px;color:#666;margin-bottom:28px;line-height:1.6;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;}
+.quiz-opt{border:3px solid #000;padding:20px 24px;cursor:pointer;background:#fff;transition:all .15s;text-align:left;}
+.quiz-opt:hover{background:var(--paper-2);transform:translate(-2px,-2px);box-shadow:4px 4px 0 #000;}
+.quiz-opt.selected{background:var(--acid);box-shadow:4px 4px 0 #000;}
+.quiz-opt-icon{font-size:24px;margin-bottom:8px;display:block;}
+.quiz-opt-title{font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;color:#000;margin-bottom:4px;}
+.quiz-opt-desc{font-family:'Special Elite',monospace;font-size:12px;color:#555;line-height:1.5;}
+.quiz-nav{display:flex;gap:12px;align-items:center;}
+.quiz-btn{background:#000;color:#fff;border:3px solid #000;padding:14px 32px;font-family:'Special Elite',monospace;font-weight:bold;font-size:15px;cursor:pointer;transition:all .15s;}
+.quiz-btn:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 #000;}
+.quiz-btn-ghost{background:#fff;color:#000;border:3px solid #000;padding:14px 24px;font-family:'Special Elite',monospace;font-size:14px;cursor:pointer;}
+.quiz-result{border:3px solid #000;padding:40px;background:#fff;box-shadow:8px 8px 0 #000;}
+.quiz-result-badge{background:var(--acid);border:2px solid #000;padding:6px 16px;font-family:'Anton',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#000;display:inline-block;margin-bottom:16px;}
+.quiz-result-title{font-family:'Anton',sans-serif;font-size:clamp(28px,4vw,52px);text-transform:uppercase;line-height:.95;margin-bottom:8px;}
+.quiz-result-price{font-family:'Anton',sans-serif;font-size:clamp(28px,4vw,48px);color:#000;margin:16px 0;}
+.quiz-result-includes{list-style:none;margin:20px 0 28px;}
+.quiz-result-includes li{font-family:'Special Elite',monospace;font-size:14px;color:#444;padding:8px 0;border-bottom:1px solid #e8e5dc;display:flex;gap:12px;align-items:flex-start;line-height:1.5;}
+.quiz-result-includes li::before{content:'→';color:var(--acid);font-weight:bold;flex-shrink:0;font-family:'Anton',sans-serif;}
+.quiz-cta-row{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-primary{background:var(--acid);color:#000;border:3px solid #000;padding:14px 32px;font-family:'Special Elite',monospace;font-weight:bold;font-size:15px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block;}
+.btn-primary:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 #000;}
+.btn-dark{background:#000;color:#fff;border:3px solid #000;padding:14px 32px;font-family:'Special Elite',monospace;font-weight:bold;font-size:15px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block;}
+.btn-dark:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--acid);}
+
+/* ===== SITUAČNÍ BALÍČKY ===== */
+.packages-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:3px solid #000;}
+.pkg-card{padding:40px 36px;border-right:3px solid #000;border-bottom:3px solid #000;position:relative;background:#fff;transition:background .2s;}
+.pkg-card:nth-child(2n){border-right:none;}
+.pkg-card:hover{background:var(--paper-2);}
+.pkg-card.featured{background:var(--acid);}
+.pkg-card.dark{background:#000;color:#fff;}
+.pkg-card.full{grid-column:1/-1;border-right:none;}
+.pkg-badge{position:absolute;top:20px;right:20px;background:#000;color:var(--acid);font-family:'Anton',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;}
+.pkg-card.featured .pkg-badge{background:#fff;color:#000;}
+.pkg-icon{font-size:32px;margin-bottom:16px;display:block;}
+.pkg-situation{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:6px;}
+.pkg-card.featured .pkg-situation{color:#333;}
+.pkg-card.dark .pkg-situation{color:#666;}
+.pkg-name{font-family:'Anton',sans-serif;font-size:clamp(22px,3vw,36px);text-transform:uppercase;line-height:1;margin-bottom:8px;color:#000;}
+.pkg-card.dark .pkg-name{color:#fff;}
+.pkg-tagline{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:#555;margin-bottom:16px;line-height:1.4;}
+.pkg-card.featured .pkg-tagline{color:#222;}
+.pkg-card.dark .pkg-tagline{color:#aaa;}
+.pkg-pain{font-family:'Special Elite',monospace;font-size:13px;color:#777;font-style:italic;margin-bottom:20px;line-height:1.6;border-left:3px solid #000;padding-left:14px;}
+.pkg-card.featured .pkg-pain{color:#333;border-color:#000;}
+.pkg-card.dark .pkg-pain{color:#888;border-color:var(--acid);}
+.pkg-includes{list-style:none;margin-bottom:24px;}
+.pkg-includes li{font-family:'Special Elite',monospace;font-size:13px;color:#444;padding:6px 0;border-bottom:1px solid #e8e5dc;display:flex;gap:10px;line-height:1.5;}
+.pkg-includes li::before{content:'✓';color:var(--acid);font-weight:bold;font-family:'Anton',sans-serif;flex-shrink:0;}
+.pkg-card.dark .pkg-includes li{color:#ccc;border-color:#222;}
+.pkg-card.dark .pkg-includes li::before{color:var(--acid);}
+.pkg-card.featured .pkg-includes li{border-color:rgba(0,0,0,.15);}
+.pkg-price{font-family:'Anton',sans-serif;font-size:clamp(28px,3.5vw,44px);color:#000;margin-bottom:4px;}
+.pkg-card.dark .pkg-price{color:var(--acid);}
+.pkg-price-note{font-family:'Special Elite',monospace;font-size:12px;color:#888;margin-bottom:20px;}
+.pkg-card.dark .pkg-price-note{color:#555;}
+.pkg-delivery{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-top:16px;}
+.pkg-card.dark .pkg-delivery{color:#555;}
+
+/* ===== CENÍK DETAILNÍ ===== */
+.cat-tabs{display:flex;flex-wrap:wrap;gap:0;border:3px solid #000;margin-bottom:0;}
+.cat-tab{padding:12px 20px;font-family:'Anton',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:#fff;border-right:3px solid #000;color:#000;transition:all .15s;flex:1;text-align:center;white-space:nowrap;}
+.cat-tab:last-child{border-right:none;}
+.cat-tab:hover{background:var(--paper-2);}
+.cat-tab.active{background:#000;color:var(--acid);}
+.cat-content{display:none;border:3px solid #000;border-top:none;}
+.cat-content.active{display:block;}
+.cat-header{background:#000;padding:24px 32px;display:flex;align-items:center;gap:16px;}
+.cat-header-icon{font-size:28px;}
+.cat-header-title{font-family:'Anton',sans-serif;font-size:clamp(20px,3vw,36px);text-transform:uppercase;color:#fff;}
+.cat-header-desc{font-family:'Special Elite',monospace;font-size:13px;color:#aaa;margin-top:4px;line-height:1.5;}
+.price-table{width:100%;border-collapse:collapse;}
+.price-table th{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;padding:12px 24px;border-bottom:2px solid #000;text-align:left;background:var(--paper-2);}
+.price-table td{font-family:'Special Elite',monospace;font-size:14px;padding:16px 24px;border-bottom:1px solid #e8e5dc;vertical-align:top;color:#333;}
+.price-table tr:last-child td{border-bottom:none;}
+.price-table tr:hover td{background:var(--paper-2);}
+.price-table .name{font-weight:bold;color:#000;}
+.price-table .name small{display:block;font-size:12px;color:#888;font-weight:normal;margin-top:2px;}
+.price-table .price{font-family:'Anton',sans-serif;font-size:18px;color:#000;white-space:nowrap;}
+.price-table .badge{display:inline-block;background:var(--acid);border:1.5px solid #000;padding:2px 8px;font-family:'Anton',sans-serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#000;margin-left:6px;vertical-align:middle;}
+
+/* ===== KALKULAČKA ===== */
+.kalk-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:3px solid #000;}
+.kalk-col-header{font-family:'Anton',sans-serif;font-size:12px;letter-spacing:.15em;text-transform:uppercase;background:#000;color:var(--acid);padding:12px 24px;}
+.kalk-item{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e8e5dc;gap:12px;cursor:pointer;transition:background .15s;}
+.kalk-item:last-child{border-bottom:none;}
+.kalk-item:hover{background:var(--paper-2);}
+.kalk-item.on{background:var(--acid);}
+.kalk-cb{width:18px;height:18px;border:2.5px solid #000;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:12px;background:#fff;}
+.kalk-item.on .kalk-cb{background:#000;color:var(--acid);}
+.kalk-name{font-family:'Special Elite',monospace;font-size:13px;color:#000;flex:1;line-height:1.4;}
+.kalk-name small{display:block;font-size:11px;color:#888;margin-top:1px;}
+.kalk-item.on .kalk-name small{color:#333;}
+.kalk-p{font-family:'Anton',sans-serif;font-size:14px;color:#000;white-space:nowrap;flex-shrink:0;}
+.kalk-result-bar{border:3px solid #000;border-top:none;background:#000;padding:28px 32px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;}
+.kalk-sel{font-family:'Special Elite',monospace;font-size:13px;color:#666;line-height:1.8;min-height:20px;}
+.kalk-sel strong{color:var(--acid);font-size:11px;font-family:'Anton',sans-serif;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:8px;}
+.kalk-total{text-align:right;}
+.kalk-total-lbl{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:4px;}
+.kalk-total-num{font-family:'Anton',sans-serif;font-size:clamp(32px,4vw,56px);color:var(--acid);line-height:1;}
+.kalk-total-note{font-family:'Special Elite',monospace;font-size:11px;color:#444;margin-top:4px;}
+.kalk-discount{display:none;background:var(--acid);border:3px solid #000;border-top:none;padding:14px 32px;font-family:'Special Elite',monospace;font-size:14px;color:#000;}
+.kalk-cta-bar{border:3px solid #000;border-top:none;padding:20px 32px;display:flex;gap:12px;background:var(--paper-2);}
+
+/* ===== PODMÍNKY ===== */
+.terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:3px solid #000;}
+.term-card{padding:32px 28px;border-right:3px solid #000;border-bottom:3px solid #000;}
+.term-card:nth-child(2n){border-right:none;}
+.term-card:nth-last-child(-n+2){border-bottom:none;}
+.term-icon{font-size:28px;margin-bottom:12px;display:block;}
+.term-title{font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;color:#000;margin-bottom:10px;}
+.term-text{font-family:'Special Elite',monospace;font-size:13px;color:#555;line-height:1.75;}
+.term-text strong{color:#000;}
+
+/* FINAL CTA */
+.final-cta{background:#000;padding:80px 0;text-align:center;}
+.final-cta h2{font-family:'Anton',sans-serif;font-size:clamp(36px,6vw,88px);text-transform:uppercase;line-height:.92;color:#fff;margin-bottom:12px;}
+.final-cta h2 em{color:var(--acid);font-style:normal;display:block;}
+.final-cta p{font-family:'Special Elite',monospace;font-size:16px;color:#aaa;max-width:480px;margin:0 auto 36px;line-height:1.7;}
+.final-cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+
+/* FOOTER */
+footer{background:#000;border-top:3px solid var(--acid);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;}
+.f-logo img{height:44px;width:auto;filter:invert(1);}
+.f-links{display:flex;gap:20px;}
+.f-links a{font-family:'Special Elite',monospace;font-size:11px;color:#555;text-decoration:none;text-transform:uppercase;letter-spacing:.05em;}
+.f-links a:hover{color:var(--acid);}
+.f-copy{font-family:'Special Elite',monospace;font-size:11px;color:#444;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><img src="Constant_logo_black.png" alt="Constantina"/></div>
+  <div class="nav-links">
+    <a href="Constantina_Light_v2.html">← Hlavní stránka</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#packages">Balíčky</a>
+    <a href="#cenik">Ceník</a>
+    <a href="#kalkulator">Kalkulačka</a>
+  </div>
+  <a href="Constantina_Light_v2.html#scan" class="nav-cta">Brand Scan zdarma →</a>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker"><div class="ticker-track">
+  <span>✦</span><span>Brand</span><span>✦</span><span>Identity</span><span>✦</span><span>Content</span><span>✦</span><span>Strategie</span><span>✦</span><span>Design</span><span>✦</span><span>Social Media</span><span>✦</span><span>Brand</span><span>✦</span><span>Identity</span><span>✦</span><span>Content</span><span>✦</span><span>Strategie</span><span>✦</span><span>Design</span><span>✦</span><span>Social Media</span>
+</div></div>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container">
+    <h1>Ceník transformace.<em>Konec tvé neviditelnosti.</em></h1>
+    <p class="page-hero-sub">Vyber situaci která ti teď nedá spát — nebo si spočítej investici sám.</p>
+    <div class="nav-pills">
+      <a href="#quiz" class="nav-pill">🎯 Najít správný balíček</a>
+      <a href="#packages" class="nav-pill">📦 Situační balíčky</a>
+      <a href="#cenik" class="nav-pill">📋 Kompletní ceník</a>
+      <a href="#kalkulator" class="nav-pill">🧮 Kalkulačka</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== QUIZ ===== -->
+<section class="section" id="quiz">
+  <div class="container">
+    <span class="section-label">Krok 1</span>
+    <h2 class="section-title">Najdi správný balíček</h2>
+    <p class="section-sub">4 otázky. Doporučíme přesně to, co potřebuješ.</p>
+
+    <div class="quiz-wrap">
+      <div class="quiz-progress">
+        <div class="quiz-progress-dot active" id="qp0"></div>
+        <div class="quiz-progress-dot" id="qp1"></div>
+        <div class="quiz-progress-dot" id="qp2"></div>
+        <div class="quiz-progress-dot" id="qp3"></div>
+      </div>
+
+      <!-- Q1 -->
+      <div class="quiz-step active" id="qs0">
+        <div class="quiz-q">Kde se právě nacházíš?</div>
+        <div class="quiz-q-sub">Vyber situaci která tě nejvíce vystihuje.</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="qSelect(0,0,this)">
+            <span class="quiz-opt-icon">🌱</span>
+            <div class="quiz-opt-title">Začínám od nuly</div>
+            <div class="quiz-opt-desc">Nemám logo, web ani jasnou identitu. Chci začít správně.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(0,1,this)">
+            <span class="quiz-opt-icon">🌿</span>
+            <div class="quiz-opt-title">Mám zákazníky, ale nevypadám dobře</div>
+            <div class="quiz-opt-desc">Kurzy jedou, reference mám — ale web a Instagram nereprezentují moji hodnotu.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(0,2,this)">
+            <span class="quiz-opt-icon">📖</span>
+            <div class="quiz-opt-title">Chci spustit online kurz</div>
+            <div class="quiz-opt-desc">Mám znalosti, chci je prodat online. Potřebuji platformu a celou produkci.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(0,3,this)">
+            <span class="quiz-opt-icon">⚡</span>
+            <div class="quiz-opt-title">Potřebuji výsledky rychle</div>
+            <div class="quiz-opt-desc">Mám deadline — kurz, launch nebo konferenci do 30 dní.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(0,4,this)">
+            <span class="quiz-opt-icon">🌳</span>
+            <div class="quiz-opt-title">Mám vše — chci outsourcovat</div>
+            <div class="quiz-opt-desc">Brand je dobrý, kurzy jedou. Ale nestíhám obsah a správu sítí.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(0,5,this)">
+            <span class="quiz-opt-icon">🔥</span>
+            <div class="quiz-opt-title">Chci kompletní transformaci</div>
+            <div class="quiz-opt-desc">Chci vše — brand, web, fotky, obsah. Nechci kompromisy.</div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn" onclick="qNext(0)" id="qnext0" disabled>Další →</button>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-step" id="qs1">
+        <div class="quiz-q">Co je pro tebe nejdůležitější?</div>
+        <div class="quiz-q-sub">Vyber jednu prioritu.</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="qSelect(1,0,this)">
+            <span class="quiz-opt-icon">📸</span>
+            <div class="quiz-opt-title">Vizuální identita & fotky</div>
+            <div class="quiz-opt-desc">Chci vypadat profesionálně a mít fotky které mě reprezentují.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(1,1,this)">
+            <span class="quiz-opt-icon">🌐</span>
+            <div class="quiz-opt-title">Web & technologie</div>
+            <div class="quiz-opt-desc">Potřebuji fungující web, platby, rezervace nebo členskou sekci.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(1,2,this)">
+            <span class="quiz-opt-icon">📱</span>
+            <div class="quiz-opt-title">Obsah & sociální sítě</div>
+            <div class="quiz-opt-desc">Chci mít obsah připravený — posty, reels, newsletter, šablony.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(1,3,this)">
+            <span class="quiz-opt-icon">🧠</span>
+            <div class="quiz-opt-title">Strategie & positioning</div>
+            <div class="quiz-opt-desc">Potřebuji jasno v tom kdo jsem, pro koho jsem a jak mluvím.</div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-ghost" onclick="qPrev(1)">← Zpět</button>
+          <button class="quiz-btn" onclick="qNext(1)" id="qnext1" disabled>Další →</button>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-step" id="qs2">
+        <div class="quiz-q">Jaký máš budget?</div>
+        <div class="quiz-q-sub">Orientační rozsah investice pro první spolupráci.</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="qSelect(2,0,this)">
+            <span class="quiz-opt-icon">💫</span>
+            <div class="quiz-opt-title">Do 30 000 Kč</div>
+            <div class="quiz-opt-desc">Chci začít efektivně s omezeným rozpočtem.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(2,1,this)">
+            <span class="quiz-opt-icon">💎</span>
+            <div class="quiz-opt-title">30 000 — 60 000 Kč</div>
+            <div class="quiz-opt-desc">Jsem připraven/a investovat do solidního základu.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(2,2,this)">
+            <span class="quiz-opt-icon">🏆</span>
+            <div class="quiz-opt-title">60 000 — 100 000 Kč</div>
+            <div class="quiz-opt-desc">Chci komplexní řešení bez kompromisů.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(2,3,this)">
+            <span class="quiz-opt-icon">🌟</span>
+            <div class="quiz-opt-title">100 000 Kč+</div>
+            <div class="quiz-opt-desc">Stavíme impérium. Žádné limity.</div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-ghost" onclick="qPrev(2)">← Zpět</button>
+          <button class="quiz-btn" onclick="qNext(2)" id="qnext2" disabled>Další →</button>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-step" id="qs3">
+        <div class="quiz-q">Jak rychle potřebuješ výsledky?</div>
+        <div class="quiz-q-sub">Termín ovlivňuje výběr balíčku.</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="qSelect(3,0,this)">
+            <span class="quiz-opt-icon">🚀</span>
+            <div class="quiz-opt-title">Do 30 dní</div>
+            <div class="quiz-opt-desc">Mám deadline — potřebuji sprint.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(3,1,this)">
+            <span class="quiz-opt-icon">📅</span>
+            <div class="quiz-opt-title">1–3 měsíce</div>
+            <div class="quiz-opt-desc">Chci kvalitu, mám trochu čas.</div>
+          </div>
+          <div class="quiz-opt" onclick="qSelect(3,2,this)">
+            <span class="quiz-opt-icon">🌱</span>
+            <div class="quiz-opt-title">Dlouhodobě</div>
+            <div class="quiz-opt-desc">Chci pravidelnou spolupráci a růst postupně.</div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-ghost" onclick="qPrev(3)">← Zpět</button>
+          <button class="quiz-btn" onclick="qShowResult()" id="qnext3" disabled>Zobrazit doporučení →</button>
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div class="quiz-step" id="qs-result">
+        <div class="quiz-result">
+          <div class="quiz-result-badge">⭐ Doporučení Constantiny</div>
+          <h3 class="quiz-result-title" id="qr-title">Loading...</h3>
+          <p style="font-family:'Special Elite',monospace;font-size:14px;color:#555;line-height:1.7;margin-bottom:12px;" id="qr-desc"></p>
+          <div class="quiz-result-price" id="qr-price"></div>
+          <ul class="quiz-result-includes" id="qr-includes"></ul>
+          <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:20px;" id="qr-delivery"></div>
+          <div class="quiz-cta-row">
+            <a href="#packages" class="btn-primary">Zobrazit detail balíčku →</a>
+            <a href="#kalkulator" class="btn-dark">Spočítat investici</a>
+            <button class="quiz-btn-ghost" onclick="qReset()" style="margin-left:auto;">Začít znovu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SITUAČNÍ BALÍČKY ===== -->
+<section class="section" id="packages">
+  <div class="container">
+    <span class="section-label">Situační balíčky</span>
+    <h2 class="section-title">Rozpoznej svoji situaci</h2>
+    <p class="section-sub">Každý klient přichází z jiného místa. Vyber situaci, která ti teď nedá spát.</p>
+
+    <div class="packages-grid">
+
+      <!-- 1 Začínám -->
+      <div class="pkg-card">
+        <span class="pkg-icon">🌱</span>
+        <div class="pkg-situation">Začínající značka</div>
+        <div class="pkg-name">Teprve začínám</div>
+        <div class="pkg-tagline">Nemám nic — chci začít správně.</div>
+        <div class="pkg-pain">„Mám odbornost, vím co chci dělat, ale nemám logo, web, ani jasno v prezentaci."</div>
+        <ul class="pkg-includes">
+          <li>Brand diagnostika + positioning (archetyp, messaging)</li>
+          <li>Logo systém — 3 varianty + favicon</li>
+          <li>Barevná paleta + typografie + brand book základ</li>
+          <li>Landing page — mobilní verze, SEO základ</li>
+          <li>10 Canva šablon pro Instagram</li>
+          <li>Copywriting — bio, headline, about</li>
+        </ul>
+        <div class="pkg-price">od 38 900 Kč</div>
+        <div class="pkg-price-note">jednorázově · bez DPH</div>
+        <a href="Constantina_Light_v2.html#scan" class="btn-primary" style="font-size:13px;padding:11px 22px;">Chci tento balíček →</a>
+        <div class="pkg-delivery">⏱ Dodání: 4–6 týdnů</div>
+      </div>
+
+      <!-- 2 Lektorka -->
+      <div class="pkg-card featured">
+        <span class="pkg-badge">Nejčastější</span>
+        <span class="pkg-icon">🌿</span>
+        <div class="pkg-situation">Lektorka & odborník</div>
+        <div class="pkg-name">Mám zákazníky, ale nevypadám dobře</div>
+        <div class="pkg-tagline">Kurzy jedou — brand nereprezentuje moji hodnotu.</div>
+        <div class="pkg-pain">„Učím roky, mám reference, kurzy jedou. Ale web je starý, Instagram je chaos."</div>
+        <ul class="pkg-includes">
+          <li>Kompletní rebrand — identita, paleta, logo, prvky</li>
+          <li>Nový web (4–6 stránek) — kurzy, o mně, blog</li>
+          <li>Brand fotosession — studio + exteriér, 50+ fotek</li>
+          <li>Copywriting celého webu v brand voice</li>
+          <li>15 Canva šablon — post, story, reel cover</li>
+          <li>Email welcome sekvence — 5 emailů</li>
+        </ul>
+        <div class="pkg-price">od 54 900 Kč</div>
+        <div class="pkg-price-note">jednorázově · bez DPH</div>
+        <a href="Constantina_Light_v2.html#scan" class="btn-dark" style="font-size:13px;padding:11px 22px;">Chci tento balíček →</a>
+        <div class="pkg-delivery">⏱ Dodání: 6–8 týdnů</div>
+      </div>
+
+      <!-- 3 Akademie -->
+      <div class="pkg-card">
+        <span class="pkg-icon">📖</span>
+        <div class="pkg-situation">Vzdělávací platforma</div>
+        <div class="pkg-name">Chci spustit online kurz</div>
+        <div class="pkg-tagline">Mám znalosti — potřebuji platformu a celou produkci.</div>
+        <div class="pkg-pain">„Vím co chci učit, ale technika mě děsí. Nemám platformu ani lekce natočené."</div>
+        <ul class="pkg-includes">
+          <li>Kompletní web + členská sekce (LMS, platební brána)</li>
+          <li>5 kompletních video lekcí A–Z (scénář + střih + PDF)</li>
+          <li>Landing page kurzu — prodejní stránka, copy, CTA</li>
+          <li>Brand vizuál kurzu — thumbnaily, cover, grafika</li>
+          <li>Email sekvence pro launch — 5 emailů, waitlist</li>
+          <li>Launch strategie 30 dní — obsahový plán</li>
+        </ul>
+        <div class="pkg-price">od 89 900 Kč</div>
+        <div class="pkg-price-note">jednorázově · bez DPH</div>
+        <a href="Constantina_Light_v2.html#scan" class="btn-primary" style="font-size:13px;padding:11px 22px;">Chci tento balíček →</a>
+        <div class="pkg-delivery">⏱ Dodání: 8–12 týdnů</div>
+      </div>
+
+      <!-- 4 Sprint -->
+      <div class="pkg-card">
+        <span class="pkg-badge">Expresní</span>
+        <span class="pkg-icon">⚡</span>
+        <div class="pkg-situation">Rychlý start · Sprint</div>
+        <div class="pkg-name">Potřebuji výsledky do 30 dní</div>
+        <div class="pkg-tagline">Mám deadline — kurz, launch nebo konferenci.</div>
+        <div class="pkg-pain">„Čas běží. Mám kurz za měsíc a potřebuji okamžitě vypadat profesionálně."</div>
+        <ul class="pkg-includes">
+          <li>Landing page do 7 dní — rezervace, platba, brand design</li>
+          <li>Logo + základní identita — do 5 pracovních dní</li>
+          <li>8 Instagram šablon — Canva, brand colors + fonts</li>
+          <li>Klíčové texty webu + bio — copywriting, SEO základ</li>
+          <li>Email notifikace + potvrzení — automatické emaily</li>
+        </ul>
+        <div class="pkg-price">od 24 900 Kč</div>
+        <div class="pkg-price-note">expresní · 30 dní · bez DPH</div>
+        <a href="Constantina_Light_v2.html#scan" class="btn-primary" style="font-size:13px;padding:11px 22px;">Chci tento balíček →</a>
+        <div class="pkg-delivery">⏱ Dodání: do 30 dní</div>
+      </div>
+
+      <!-- 5 Paušál -->
+      <div class="pkg-card dark full" style="border-bottom:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;align-items:start;">
+          <div>
+            <span class="pkg-icon">🌳</span>
+            <div class="pkg-situation">Zavedená značka · Dlouhodobá péče</div>
+            <div class="pkg-name">Chci se soustředit jen na učení</div>
+            <div class="pkg-tagline">Mám vše — chci outsourcovat marketing.</div>
+            <div class="pkg-pain">„Nestíhám obsah, správu sítí, aktualizace webu. Chci se věnovat výuce."</div>
+          </div>
+          <div>
+            <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--acid);margin-bottom:12px;">Co dostaneš (Growth)</div>
+            <ul class="pkg-includes">
+              <li>16 Instagram postů + stories + community</li>
+              <li>2 video reels / měsíc — střih + brand overlay</li>
+              <li>2 newslettery — design + text + A/B test</li>
+              <li>Webový servis 8 hod. + nové funkce</li>
+              <li>1 lekce do kurzu / měsíc — A–Z produkce</li>
+              <li>Správa členské sekce — upload, uživatelé</li>
+            </ul>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Special Elite',monospace;font-size:12px;color:#555;margin-bottom:4px;">Paušál Growth · min. 6 měsíců</div>
+            <div style="font-family:'Anton',sans-serif;font-size:clamp(32px,3.5vw,48px);color:var(--acid);line-height:1;margin-bottom:4px;">26 900 Kč</div>
+            <div style="font-family:'Special Elite',monospace;font-size:12px;color:#555;margin-bottom:20px;">/ měsíc · bez DPH</div>
+            <a href="Constantina_Light_v2.html#scan" class="btn-primary" style="font-size:13px;padding:11px 22px;display:inline-block;">Domluvit spolupráci →</a>
+            <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#444;margin-top:16px;">⏱ Start: do 2 týdnů</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== DETAILNÍ CENÍK ===== -->
+<section class="section" id="cenik">
+  <div class="container">
+    <span class="section-label">Kompletní ceník</span>
+    <h2 class="section-title">Všechny služby à la carte</h2>
+    <p class="section-sub">Vyber přesně to co potřebuješ — nebo si kombinaci spočítej v kalkulačce níže.</p>
+
+    <div class="cat-tabs">
+      <div class="cat-tab active" onclick="catSwitch(0)">Brand & strategie</div>
+      <div class="cat-tab" onclick="catSwitch(1)">Fotografie & video</div>
+      <div class="cat-tab" onclick="catSwitch(2)">Kurzy & lekce</div>
+      <div class="cat-tab" onclick="catSwitch(3)">Web & technologie</div>
+      <div class="cat-tab" onclick="catSwitch(4)">Správa obsahu</div>
+      <div class="cat-tab" onclick="catSwitch(5)">Paušály</div>
+    </div>
+
+    <!-- CAT 0: Brand -->
+    <div class="cat-content active">
+      <div class="cat-header"><span class="cat-header-icon">✦</span><div><div class="cat-header-title">Brand identity & strategie</div><div class="cat-header-desc">Strategická základna značky — od diagnostiky přes positioning až po kompletní brand book.</div></div></div>
+      <table class="price-table"><thead><tr><th style="width:35%">Služba</th><th>Co zahrnuje</th><th style="width:15%">Jednotka</th><th style="width:15%">Cena od</th></tr></thead><tbody>
+        <tr><td><span class="name">Brand diagnostika<small>Základ</small></span></td><td>Brand Scan analýza, positioning, archetyp, SWOT. Prezentace 15–20 stran, Brand Scan skóre, positioning statement.</td><td>jednorázově</td><td><span class="price">8 900 Kč</span></td></tr>
+        <tr><td><span class="name">Kompletní brand book<span class="badge">Populární</span></span></td><td>Vizuální identita, logo, paleta, typografie, grafické prvky, komunikační styl. PDF 30–50 stran, exporty do Canva/Figma.</td><td>jednorázově</td><td><span class="price">24 900 Kč</span></td></tr>
+        <tr><td><span class="name">Logo systém</span></td><td>Primární logo, varianty, monochromatická verze, favicon, použití. 5–7 variant, SVG + PNG výstupy.</td><td>jednorázově</td><td><span class="price">6 900 Kč</span></td></tr>
+        <tr><td><span class="name">Komunikační strategie</span></td><td>Messaging, tone of voice, obsahová strategie, customer journey. Strategický dokument, měsíční plán, šablony.</td><td>jednorázově</td><td><span class="price">12 900 Kč</span></td></tr>
+        <tr><td><span class="name">Texty pro web (copywriting)</span></td><td>Hero, O nás, Kurzy, CTA, meta texty — celý web. Kompletní textová mapa v brand voice, revize 2×.</td><td>jednorázově</td><td><span class="price">9 900 Kč</span></td></tr>
+        <tr><td><span class="name">Update / revize brand booku</span></td><td>Aktualizace existující identity, přidání prvků. Min. 2 hod. práce.</td><td>hodinová sazba</td><td><span class="price">1 200 Kč/h</span></td></tr>
+        <tr><td><span class="name">Canva šablony (Instagram)</span></td><td>Editovatelné šablony v brand stylu — post, story, reel cover. 10 šablon, brand colors + fonts.</td><td>/ balíček</td><td><span class="price">5 900 Kč</span></td></tr>
+      </tbody></table>
+    </div>
+
+    <!-- CAT 1: Foto/video -->
+    <div class="cat-content">
+      <div class="cat-header"><span class="cat-header-icon">📷</span><div><div class="cat-header-title">Fotografie & Video produkce</div><div class="cat-header-desc">Brand fotografie, portréty, zátiší, workshopy. Konzistentní teplá barevnost.</div></div></div>
+      <table class="price-table"><thead><tr><th style="width:35%">Služba</th><th>Co zahrnuje</th><th style="width:15%">Jednotka</th><th style="width:15%">Cena od</th></tr></thead><tbody>
+        <tr><td><span class="name">Brand fotosession — studio</span></td><td>Portréty, studio nebo ateliér. 3 hod. focení, 30+ retušovaných fotek, brand color grade.</td><td>/ session</td><td><span class="price">8 900 Kč</span></td></tr>
+        <tr><td><span class="name">Brand fotosession — exteriér<span class="badge">Populární</span></span></td><td>Přirozené portréty, zlatá hodinka. 4 hod. focení, 50+ retušovaných fotek, Portra 400 grade.</td><td>/ session</td><td><span class="price">11 900 Kč</span></td></tr>
+        <tr><td><span class="name">Workshop dokumentace</span></td><td>Focení živého workshopu. Celý den, 80+ fotek, výběr a retuš 30 ks, social ready.</td><td>/ den</td><td><span class="price">14 900 Kč</span></td></tr>
+        <tr><td><span class="name">Produktové zátiší</span></td><td>Flat lay, dramatické světlo. 2 hod. studio, 20+ fotek, 5 retušovaných hero shots.</td><td>/ session</td><td><span class="price">5 900 Kč</span></td></tr>
+        <tr><td><span class="name">Promo video (60–90 s)</span></td><td>Storytelling, estetika. Natočení + střih + color grade + hudba, MP4 + SRT.</td><td>/ video</td><td><span class="price">18 900 Kč</span></td></tr>
+        <tr><td><span class="name">Reel / Story série (5 videí)<span class="badge">Populární</span></span></td><td>5 krátkých videí pro IG. 15–30 s, brand templates, MP4 optimalizované pro IG.</td><td>/ série</td><td><span class="price">7 900 Kč</span></td></tr>
+        <tr><td><span class="name">AI-asistovaný kontaktní arch</span></td><td>9 nebo 16 variantních záběrů jedné scény. PNG výstupy, brand color grade.</td><td>/ arch</td><td><span class="price">3 900 Kč</span></td></tr>
+      </tbody></table>
+    </div>
+
+    <!-- CAT 2: Kurzy -->
+    <div class="cat-content">
+      <div class="cat-header"><span class="cat-header-icon">📖</span><div><div class="cat-header-title">Produkce vzdělávacích lekcí & kurzů</div><div class="cat-header-desc">Od scénáře přes natáčení až po editovaný modul připravený k nahrání na platformu.</div></div></div>
+      <table class="price-table"><thead><tr><th style="width:35%">Služba</th><th>Co zahrnuje</th><th style="width:15%">Jednotka</th><th style="width:15%">Cena od</th></tr></thead><tbody>
+        <tr><td><span class="name">Scénář lekce</span></td><td>Osnova + plný text, learning outcomes, kvízy. Word dokument, brand voice, cca 1 500–3 000 slov.</td><td>/ lekce</td><td><span class="price">2 900 Kč</span></td></tr>
+        <tr><td><span class="name">Natočení video lekce</span></td><td>Lektorka před kamerou, studio setup, teleprompter. Surový záznam 4K, botanické pozadí.</td><td>/ lekce</td><td><span class="price">3 900 Kč</span></td></tr>
+        <tr><td><span class="name">Střih & postprodukce lekce<span class="badge">Populární</span></span></td><td>Střih, titulky, lower thirds, intro/outro, color grade. MP4 1080p, SRT titulky CZ, brand overlay.</td><td>/ lekce</td><td><span class="price">2 900 Kč</span></td></tr>
+        <tr><td><span class="name">Kompletní lekce A–Z</span></td><td>Scénář + natočení + střih + thumbnail + PDF příloha. Finální MP4 + PDF workbook.</td><td>/ lekce</td><td><span class="price">8 900 Kč</span></td></tr>
+        <tr><td><span class="name">Kompletní modul (5 lekcí)</span></td><td>Pět navazujících lekcí jako ucelený blok. 5× finální lekce + module intro + PDF workbook.</td><td>/ modul</td><td><span class="price">36 900 Kč</span></td></tr>
+        <tr><td><span class="name">PDF workbook / studijní materiál</span></td><td>Designovaný PDF ke každé lekci. A4, brand design, editovatelné sekce, ilustrace.</td><td>/ PDF</td><td><span class="price">2 200 Kč</span></td></tr>
+        <tr><td><span class="name">Video thumbnail / cover lekce</span></td><td>Brand thumbnail, typografie + foto. PNG 1920×1080 + 1:1 varianta, brand system.</td><td>/ thumbnail</td><td><span class="price">890 Kč</span></td></tr>
+        <tr><td><span class="name">Roční škola — kompletní produkce<span class="badge">Nové</span></span></td><td>7 modulů × 5 lekcí = 35 lekcí A–Z + všechny materiály.</td><td>celý projekt</td><td><span class="price">Na dotaz</span></td></tr>
+      </tbody></table>
+    </div>
+
+    <!-- CAT 3: Web -->
+    <div class="cat-content">
+      <div class="cat-header"><span class="cat-header-icon">🌐</span><div><div class="cat-header-title">Webová platforma & technologie</div><div class="cat-header-desc">Stavba webu, členská sekce, e-shop, platební brány. Botanická estetika v kódu.</div></div></div>
+      <table class="price-table"><thead><tr><th style="width:35%">Služba</th><th>Co zahrnuje</th><th style="width:15%">Jednotka</th><th style="width:15%">Cena od</th></tr></thead><tbody>
+        <tr><td><span class="name">Landing page — kurz nebo akce</span></td><td>Jedna stránka, brand design, rezervační formulář, CTA. HTML/CSS nebo WordPress, mobilní verze, SEO základ.</td><td>jednorázově</td><td><span class="price">12 900 Kč</span></td></tr>
+        <tr><td><span class="name">Kompletní web<span class="badge">Populární</span></span></td><td>Homepage + kurzy + o nás + blog + kontakt. 6+ stránek, CMS, SEO základ.</td><td>jednorázově</td><td><span class="price">49 900 Kč</span></td></tr>
+        <tr><td><span class="name">Členská sekce / online akademie</span></td><td>Přihlášení, lekce za paywallem, progress tracking, certifikáty. LMS integrace, platební brána, dashboard.</td><td>jednorázově</td><td><span class="price">39 900 Kč</span></td></tr>
+        <tr><td><span class="name">E-shop rozšíření</span></td><td>Online prodej produktů — WooCommerce nebo Shoptet, platební brána, doprava.</td><td>jednorázově</td><td><span class="price">18 900 Kč</span></td></tr>
+        <tr><td><span class="name">Rezervační systém</span></td><td>Online rezervace workshopů, platba, potvrzení emailem. Integrace Calendly / vlastní systém.</td><td>jednorázově</td><td><span class="price">8 900 Kč</span></td></tr>
+        <tr><td><span class="name">Email marketing setup</span></td><td>Mailchimp / Brevo nastavení, welcome sekvence, newsletter šablona. 3× šablona, welcome flow 5 emailů.</td><td>jednorázově</td><td><span class="price">9 900 Kč</span></td></tr>
+        <tr><td><span class="name">SEO optimalizace</span></td><td>Technické SEO, meta texty, keywords, Google Search Console. Audit + implementace, 3 měsíce sledování.</td><td>jednorázově</td><td><span class="price">7 900 Kč</span></td></tr>
+      </tbody></table>
+    </div>
+
+    <!-- CAT 4: Správa -->
+    <div class="cat-content">
+      <div class="cat-header"><span class="cat-header-icon">📅</span><div><div class="cat-header-title">Správa obsahu & měsíční servis</div><div class="cat-header-desc">Průběžná tvorba obsahu, správa sítí, webový servis. Pracujete na škole, my se staráme o zbytek.</div></div></div>
+      <table class="price-table"><thead><tr><th style="width:35%">Služba</th><th>Co zahrnuje</th><th style="width:15%">Jednotka</th><th style="width:15%">Cena od</th></tr></thead><tbody>
+        <tr><td><span class="name">Instagram management — základní</span></td><td>8 postů / měsíc, copywriting, plánování, hashtagy. 8× designovaný post, plánování přes Buffer/Later.</td><td>/ měsíc</td><td><span class="price">7 900 Kč</span></td></tr>
+        <tr><td><span class="name">Instagram management — plný<span class="badge">Populární</span></span></td><td>12–16 postů + stories + reels, community management. Kompletní správa, měsíční report výkonu.</td><td>/ měsíc</td><td><span class="price">14 900 Kč</span></td></tr>
+        <tr><td><span class="name">Tvorba obsahu — měsíční balíček</span></td><td>Texty, grafiky, ilustrace, prompty — 20 kusů / měsíc. Brand styl, různé formáty, Canva export.</td><td>/ měsíc</td><td><span class="price">9 900 Kč</span></td></tr>
+        <tr><td><span class="name">Webový servis & aktualizace</span></td><td>Aktualizace termínů, nové kurzy, technické opravy. 4 hod. / měsíc, response do 48h.</td><td>/ měsíc</td><td><span class="price">3 900 Kč</span></td></tr>
+        <tr><td><span class="name">Newsletter — tvorba a rozesílka</span></td><td>2× měsíčně, brand design, copywriting, A/B testing. 2× email, správa seznamu, report otevíranosti.</td><td>/ měsíc</td><td><span class="price">4 900 Kč</span></td></tr>
+        <tr><td><span class="name">Podcast produkce</span></td><td>Střih, úvod/závěr, show notes, thumbnail, distribuce. MP3 mastered, Spotify / Apple Podcasts.</td><td>/ epizoda</td><td><span class="price">2 900 Kč</span></td></tr>
+        <tr><td><span class="name">Správa členské sekce</span></td><td>Upload lekcí, správa uživatelů, podpora, aktualizace. Neomezené hodiny v rozsahu smlouvy.</td><td>/ měsíc</td><td><span class="price">5 900 Kč</span></td></tr>
+      </tbody></table>
+    </div>
+
+    <!-- CAT 5: Paušály -->
+    <div class="cat-content">
+      <div class="cat-header"><span class="cat-header-icon">🌳</span><div><div class="cat-header-title">Paušální balíčky — měsíční retainer</div><div class="cat-header-desc">Dlouhodobá spolupráce za zvýhodněnou cenu. Garantujeme kapacitu a prioritní přístup.</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid #e8e5dc;">
+        <div style="padding:32px 28px;border-right:3px solid #000;">
+          <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:6px;">Paušál Starter · Semeno</div>
+          <div style="font-family:'Anton',sans-serif;font-size:clamp(24px,3vw,36px);color:#000;margin-bottom:4px;">14 900 Kč</div>
+          <div style="font-family:'Special Elite',monospace;font-size:12px;color:#888;margin-bottom:20px;">/ měsíc · min. 3 měsíce</div>
+          <ul style="list-style:none;font-family:'Special Elite',monospace;font-size:13px;color:#444;line-height:1.8;">
+            <li>✓ 8 Instagram postů / měsíc</li>
+            <li>✓ 4 hod. webový servis</li>
+            <li>✓ 1 newsletter</li>
+            <li>✓ 2 botanické ilustrace / měsíc</li>
+            <li>✓ Měsíční strategický report</li>
+          </ul>
+          <div style="font-family:'Special Elite',monospace;font-size:12px;color:var(--acid-2);background:#000;padding:8px 12px;margin-top:16px;">Uspořeno: ~4 000 Kč / měsíc</div>
+        </div>
+        <div style="padding:32px 28px;border-right:3px solid #000;background:var(--acid);">
+          <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#333;margin-bottom:6px;">⭐ Doporučeno · Paušál Growth · Kořen</div>
+          <div style="font-family:'Anton',sans-serif;font-size:clamp(24px,3vw,36px);color:#000;margin-bottom:4px;">26 900 Kč</div>
+          <div style="font-family:'Special Elite',monospace;font-size:12px;color:#333;margin-bottom:20px;">/ měsíc · min. 6 měsíců</div>
+          <ul style="list-style:none;font-family:'Special Elite',monospace;font-size:13px;color:#333;line-height:1.8;">
+            <li>✓ 16 Instagram postů + stories</li>
+            <li>✓ 8 hod. webový servis + vývoj</li>
+            <li>✓ 2 newslettery</li>
+            <li>✓ 2 video reels / měsíc</li>
+            <li>✓ 4 botanické ilustrace</li>
+            <li>✓ 1 lekce do kurzu / měsíc</li>
+            <li>✓ Správa členské sekce</li>
+          </ul>
+          <div style="font-family:'Special Elite',monospace;font-size:12px;color:var(--acid-2);background:#000;padding:8px 12px;margin-top:16px;">Uspořeno: ~9 000 Kč / měsíc</div>
+        </div>
+        <div style="padding:32px 28px;background:#000;color:#fff;">
+          <div style="font-family:'Anton',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#666;margin-bottom:6px;">Paušál Full · Strom</div>
+          <div style="font-family:'Anton',sans-serif;font-size:clamp(24px,3vw,36px);color:var(--acid);margin-bottom:4px;">44 900 Kč</div>
+          <div style="font-family:'Special Elite',monospace;font-size:12px;color:#555;margin-bottom:20px;">/ měsíc · min. 12 měsíců</div>
+          <ul style="list-style:none;font-family:'Special Elite',monospace;font-size:13px;color:#aaa;line-height:1.8;">
+            <li style="color:var(--acid);">✓ Vše z balíčku Growth</li>
+            <li>✓ 3 kompletní lekce / měsíc</li>
+            <li>✓ Neomezený webový servis</li>
+            <li>✓ 1 brand fotosession / kvartál</li>
+            <li>✓ Podcast produkce 2 epizody</li>
+            <li>✓ Prioritní response 24h</li>
+          </ul>
+          <div style="font-family:'Special Elite',monospace;font-size:12px;color:var(--acid-2);background:#111;padding:8px 12px;margin-top:16px;border:1px solid #222;">Uspořeno: ~18 000 Kč / měsíc</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== KALKULAČKA ===== -->
+<section class="section" id="kalkulator">
+  <div class="container">
+    <span class="section-label">Kalkulačka</span>
+    <h2 class="section-title">Spočítej si investici</h2>
+    <p class="section-sub">Vyber přesně co potřebuješ. Kombinace 3+ služeb = sleva 10 %.</p>
+
+    <div class="kalk-grid" id="kalk">
+      <div>
+        <div class="kalk-col-header">Brand, strategie & obsah</div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="8900" data-name="Brand diagnostika">
+          <div class="kalk-cb"></div><div class="kalk-name">Brand diagnostika<small>Positioning, archetyp, SWOT</small></div><div class="kalk-p">8 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="24900" data-name="Kompletní brand book">
+          <div class="kalk-cb"></div><div class="kalk-name">Kompletní brand book<small>Logo, paleta, typografie, 30–50 stran</small></div><div class="kalk-p">24 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="6900" data-name="Logo systém">
+          <div class="kalk-cb"></div><div class="kalk-name">Logo systém<small>5–7 variant, SVG + PNG</small></div><div class="kalk-p">6 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="9900" data-name="Copywriting webu">
+          <div class="kalk-cb"></div><div class="kalk-name">Copywriting webu<small>Celý web v brand voice, revize 2×</small></div><div class="kalk-p">9 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="5900" data-name="Canva šablony Instagram">
+          <div class="kalk-cb"></div><div class="kalk-name">Canva šablony Instagram<small>10 šablon — post, story, reel cover</small></div><div class="kalk-p">5 900 Kč</div>
+        </div>
+        <div class="kalk-col-header" style="border-top:3px solid #000;">Fotografie & video</div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="8900" data-name="Brand fotosession studio">
+          <div class="kalk-cb"></div><div class="kalk-name">Brand fotosession — studio<small>3 hod., 30+ fotek, color grade</small></div><div class="kalk-p">8 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="11900" data-name="Brand fotosession exteriér">
+          <div class="kalk-cb"></div><div class="kalk-name">Brand fotosession — exteriér<small>4 hod., 50+ fotek, Portra 400</small></div><div class="kalk-p">11 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="7900" data-name="Reel / Story série">
+          <div class="kalk-cb"></div><div class="kalk-name">Reel / Story série (5 videí)<small>15–30 s, brand overlay, MP4</small></div><div class="kalk-p">7 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="18900" data-name="Promo video 60–90 s">
+          <div class="kalk-cb"></div><div class="kalk-name">Promo video (60–90 s)<small>Natočení + střih + color grade + hudba</small></div><div class="kalk-p">18 900 Kč</div>
+        </div>
+      </div>
+      <div style="border-left:3px solid #000;">
+        <div class="kalk-col-header">Web & technologie</div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="12900" data-name="Landing page">
+          <div class="kalk-cb"></div><div class="kalk-name">Landing page<small>Brand design, rezervace, CTA</small></div><div class="kalk-p">12 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="49900" data-name="Kompletní web">
+          <div class="kalk-cb"></div><div class="kalk-name">Kompletní web<small>6+ stránek, CMS, SEO základ</small></div><div class="kalk-p">49 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="39900" data-name="Členská sekce / LMS">
+          <div class="kalk-cb"></div><div class="kalk-name">Členská sekce / LMS<small>Platební brána, dashboard, certifikáty</small></div><div class="kalk-p">39 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="9900" data-name="Email marketing setup">
+          <div class="kalk-cb"></div><div class="kalk-name">Email marketing setup<small>Welcome sekvence, 3× šablona</small></div><div class="kalk-p">9 900 Kč</div>
+        </div>
+        <div class="kalk-col-header" style="border-top:3px solid #000;">Kurzy & lekce</div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="8900" data-name="Kompletní lekce A–Z">
+          <div class="kalk-cb"></div><div class="kalk-name">Kompletní lekce A–Z<small>Scénář + natočení + střih + PDF</small></div><div class="kalk-p">8 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="36900" data-name="Kompletní modul (5 lekcí)">
+          <div class="kalk-cb"></div><div class="kalk-name">Kompletní modul (5 lekcí)<small>5× finální lekce + PDF workbook</small></div><div class="kalk-p">36 900 Kč</div>
+        </div>
+        <div class="kalk-col-header" style="border-top:3px solid #000;">Správa & paušál / měsíc</div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="7900" data-name="Instagram management základní">
+          <div class="kalk-cb"></div><div class="kalk-name">Instagram management základní<small>8 postů / měsíc</small></div><div class="kalk-p">7 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="14900" data-name="Instagram management plný">
+          <div class="kalk-cb"></div><div class="kalk-name">Instagram management plný<small>16 postů + stories + reels</small></div><div class="kalk-p">14 900 Kč</div>
+        </div>
+        <div class="kalk-item" onclick="kalkToggle(this)" data-price="3900" data-name="Webový servis">
+          <div class="kalk-cb"></div><div class="kalk-name">Webový servis<small>4 hod. / měsíc, response 48h</small></div><div class="kalk-p">3 900 Kč</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kalk-result-bar">
+      <div>
+        <div class="kalk-sel"><strong>Vybrané služby</strong><span id="kalk-list">—</span></div>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+          <button class="btn-primary" style="font-size:13px;padding:11px 22px;" onclick="kalkConsult()">Nezávazná konzultace →</button>
+          <button onclick="kalkReset()" style="background:transparent;color:#555;border:2px solid #333;padding:11px 18px;font-family:'Special Elite',monospace;font-size:13px;cursor:pointer;">Resetovat</button>
+        </div>
+      </div>
+      <div class="kalk-total">
+        <div class="kalk-total-lbl">Orientační investice</div>
+        <div class="kalk-total-num" id="kalk-total">0 Kč</div>
+        <div class="kalk-total-note" id="kalk-note">Vyber služby</div>
+      </div>
+    </div>
+    <div class="kalk-discount" id="kalk-discount">🎉 Sleva 10 % za kombinaci 3+ služeb zahrnuta v ceně.</div>
+  </div>
+</section>
+
+<!-- ===== PODMÍNKY ===== -->
+<section class="section" id="podminky" style="border-bottom:none;">
+  <div class="container">
+    <span class="section-label">Obchodní podmínky</span>
+    <h2 class="section-title">Jak spolupráce funguje</h2>
+    <div class="terms-grid">
+      <div class="term-card">
+        <span class="term-icon">💳</span>
+        <div class="term-title">Platební podmínky</div>
+        <p class="term-text"><strong>Záloha 50 %</strong> před zahájením práce. Doplatek po předání finálních výstupů. Paušální spolupráce: faktura vždy 1. v měsíci, splatnost 14 dní. Platba převodem nebo kartou.</p>
+      </div>
+      <div class="term-card">
+        <span class="term-icon">🔄</span>
+        <div class="term-title">Revize a úpravy</div>
+        <p class="term-text">Každá služba zahrnuje <strong>2 kola revizí v ceně</strong>. Třetí a další kolo: 900 Kč / hodina. Rozsáhlé změny konceptu po schválení se účtují jako nová zakázka.</p>
+      </div>
+      <div class="term-card">
+        <span class="term-icon">⏱</span>
+        <div class="term-title">Termíny dodání</div>
+        <p class="term-text">Standardní termín: <strong>7–14 pracovních dní</strong> od obdržení podkladů. Expresní dodání (do 72h): příplatek 30 %. Termíny se potvrzují písemně při objednávce.</p>
+      </div>
+      <div class="term-card">
+        <span class="term-icon">©️</span>
+        <div class="term-title">Autorská práva</div>
+        <p class="term-text">Po uhrazení celé částky přecházejí <strong>veškerá práva na klienta</strong>. Do té doby si Constantina vyhrazuje právo na použití výstupů v portfolio.</p>
+      </div>
+      <div class="term-card">
+        <span class="term-icon">🎁</span>
+        <div class="term-title">Slevy a kombinace</div>
+        <p class="term-text">Kombinace <strong>3+ služeb: sleva 10 %</strong>. Roční paušál (12 měsíců): sleva 15 % z měsíční ceny. Doporučení nového klienta: 1 měsíc paušálu zdarma.</p>
+      </div>
+      <div class="term-card">
+        <span class="term-icon">📋</span>
+        <div class="term-title">Výpovědní lhůta paušálu</div>
+        <p class="term-text">Paušální smlouvu lze ukončit s <strong>výpovědní lhůtou 30 dní</strong>. Minimální doba trvání dle zvoleného balíčku (3/6/12 měsíců).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Tvoje práce si zaslouží<em>být vidět správně.</em></h2>
+    <p>Začni Brand Scanem zdarma — do 90 sekund zjistíš kde tvá značka zbytečně ztrácí pozornost.</p>
+    <div class="final-cta-row">
+      <a href="Constantina_Light_v2.html#scan" class="btn-primary" style="font-size:17px;padding:18px 40px;">Spustit Brand Scan zdarma →</a>
+      <a href="Constantina_Light_v2.html" class="btn-dark" style="font-size:17px;padding:18px 40px;border-color:#fff;color:#fff;">Zpět na hlavní stránku</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo"><img src="Constant_logo_black.png" alt="Constantina"/></div>
+  <div class="f-links">
+    <a href="#">Instagram</a><a href="#">LinkedIn</a><a href="#">Kontakt</a>
+  </div>
+  <div class="f-copy">© 2026 Constantina. Všechna práva vyhrazena.</div>
+</footer>
+
+<script>
+// ===== QUIZ =====
+var qAnswers=[null,null,null,null];
+var PACKAGES={
+  0:{title:'Začínající značka',desc:'Nemáš nic — začneme od základů. Brand diagnostika, logo, landing page a šablony pro okamžitou tvorbu obsahu.',price:'od 38 900 Kč',delivery:'Dodání: 4–6 týdnů',includes:['Brand diagnostika + positioning','Logo systém — 3 varianty','Barevná paleta + brand book základ','Landing page (mobilní + SEO)','10 Canva šablon Instagram','Copywriting klíčových textů']},
+  1:{title:'Rebrand lektorky & odborníka',desc:'Máš zákazníky, kurzy jedou — ale brand nereprezentuje tvoji skutečnou hodnotu. Čas na změnu.',price:'od 54 900 Kč',delivery:'Dodání: 6–8 týdnů',includes:['Kompletní rebrand + brand book','Nový web (4–6 stránek)','Brand fotosession studio + exteriér','Copywriting celého webu','15 Canva šablon','Email welcome sekvence (5 emailů)']},
+  2:{title:'Vzdělávací platforma & akademie',desc:'Máš znalosti, chceš je prodat online. Postavíme platformu, natočíme lekce a spustíme launch.',price:'od 89 900 Kč',delivery:'Dodání: 8–12 týdnů',includes:['Kompletní web + členská sekce (LMS)','5 kompletních video lekcí A–Z','Landing page kurzu + copy + CTA','Brand vizuál — thumbnaily, grafika','Email sekvence pro launch','Launch strategie 30 dní']},
+  3:{title:'Sprint — rychlý start do 30 dní',desc:'Máš deadline. Potřebuješ okamžitě vypadat profesionálně a mít kde prodávat.',price:'od 24 900 Kč',delivery:'Dodání: do 30 dní',includes:['Landing page do 7 dní','Logo + základní identita do 5 dní','8 Instagram šablon (Canva)','Klíčové texty webu + bio','Email notifikace + potvrzení']},
+  4:{title:'Paušál Growth — dlouhodobá péče',desc:'Mám vše — chci outsourcovat marketing. Věnuji se výuce, Constantina se stará o zbytek.',price:'od 26 900 Kč / měsíc',delivery:'Start: do 2 týdnů',includes:['16 Instagram postů + stories + community','2 video reels / měsíc','2 newslettery / měsíc','Webový servis 8 hod. + vývoj','1 lekce do kurzu / měsíc','Správa členské sekce']},
+  5:{title:'Full Identity & Production',desc:'Stavíme impérium. Kompletní brand, web, fotky, kurzy, obsah. Žádné kompromisy.',price:'od 150 000 Kč',delivery:'Dodání: 12 týdnů',includes:['Kompletní Brand DNA + logo systém','Webová platforma na klíč + LMS','Produkce kurzů (scénář + střih)','Brand fotosession + promo video','Roční správa obsahu (Paušál Strom)','Prioritní přístup + dedikovaný PM']}
+};
+
+function qSelect(step,val,el){
+  document.querySelectorAll('#qs'+step+' .quiz-opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  qAnswers[step]=val;
+  document.getElementById('qnext'+step).disabled=false;
+}
+function qNext(step){
+  document.getElementById('qs'+step).classList.remove('active');
+  document.getElementById('qs'+(step+1)).classList.add('active');
+  document.getElementById('qp'+step).classList.remove('active');
+  document.getElementById('qp'+step).classList.add('done');
+  if(step+1<4)document.getElementById('qp'+(step+1)).classList.add('active');
+}
+function qPrev(step){
+  document.getElementById('qs'+step).classList.remove('active');
+  document.getElementById('qs'+(step-1)).classList.add('active');
+  document.getElementById('qp'+(step-1)).classList.remove('done');
+  document.getElementById('qp'+(step-1)).classList.add('active');
+  document.getElementById('qp'+step).classList.remove('active');
+}
+function qShowResult(){
+  var pkg=qAnswers[0];
+  if(qAnswers[3]===0&&pkg!==3)pkg=3;
+  if(qAnswers[3]===2&&pkg!==4)pkg=4;
+  if(qAnswers[2]===3&&pkg===0)pkg=5;
+  var p=PACKAGES[pkg];
+  document.getElementById('qr-title').textContent=p.title;
+  document.getElementById('qr-desc').textContent=p.desc;
+  document.getElementById('qr-price').textContent=p.price;
+  document.getElementById('qr-delivery').textContent='⏱ '+p.delivery;
+  var ul=document.getElementById('qr-includes');ul.innerHTML='';
+  p.includes.forEach(function(i){ul.innerHTML+='<li>'+i+'</li>';});
+  document.getElementById('qs3').classList.remove('active');
+  document.getElementById('qs-result').classList.add('active');
+}
+function qReset(){
+  qAnswers=[null,null,null,null];
+  for(var i=0;i<4;i++){
+    document.getElementById('qs'+i).classList.remove('active');
+    document.getElementById('qp'+i).classList.remove('active','done');
+    if(i<4)document.getElementById('qnext'+i).disabled=true;
+  }
+  document.getElementById('qs-result').classList.remove('active');
+  document.getElementById('qs0').classList.add('active');
+  document.getElementById('qp0').classList.add('active');
+  document.querySelectorAll('.quiz-opt').forEach(function(o){o.classList.remove('selected');});
+}
+
+// ===== CAT TABS =====
+function catSwitch(idx){
+  document.querySelectorAll('.cat-tab').forEach(function(t,i){t.classList.toggle('active',i===idx);});
+  document.querySelectorAll('.cat-content').forEach(function(c,i){c.classList.toggle('active',i===idx);});
+}
+
+// ===== KALKULAČKA =====
+var kalkItems=[];
+function kalkToggle(el){
+  el.classList.toggle('on');
+  var cb=el.querySelector('.kalk-cb');
+  cb.textContent=el.classList.contains('on')?'✓':'';
+  var name=el.dataset.name;
+  var price=parseInt(el.dataset.price)||0;
+  if(el.classList.contains('on')){kalkItems.push({name:name,price:price});}
+  else{kalkItems=kalkItems.filter(function(i){return i.name!==name;});}
+  kalkRecalc();
+}
+function kalkRecalc(){
+  var total=kalkItems.reduce(function(s,i){return s+i.price;},0);
+  var discount=kalkItems.length>=3;
+  if(discount)total=Math.round(total*0.9);
+  document.getElementById('kalk-total').textContent=kalkItems.length?'od '+total.toLocaleString('cs-CZ')+' Kč':'0 Kč';
+  document.getElementById('kalk-note').textContent=kalkItems.length?(discount?'Včetně slevy 10 % za kombinaci':'Orientační cena · upřesnění na konzultaci'):'Vyber služby';
+  document.getElementById('kalk-list').textContent=kalkItems.length?kalkItems.map(function(i){return i.name;}).join(', '):'—';
+  document.getElementById('kalk-discount').style.display=discount?'block':'none';
+}
+function kalkReset(){
+  kalkItems=[];
+  document.querySelectorAll('.kalk-item.on').forEach(function(el){
+    el.classList.remove('on');
+    el.querySelector('.kalk-cb').textContent='';
+  });
+  kalkRecalc();
+}
+function kalkConsult(){
+  var names=kalkItems.map(function(i){return i.name;}).join(', ');
+  window.location.href='Constantina_Light_v2.html#scan';
+}
+</script>
+</body>
+</html>
