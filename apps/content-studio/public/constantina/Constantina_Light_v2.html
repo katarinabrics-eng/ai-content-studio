@@ -716,9 +716,9 @@
 </section>
 
 
-<section style="background:#000;color:#fff;padding:100px 0;position:relative;overflow:hidden;" data-screen-label="02 Manifesto">
-  <!-- hvězda dekorace vpravo nahoře -->
-  <img src="mockup/ikonky bez pozadi/02hvezda.png" alt="" style="position:absolute;top:-60px;right:-100px;width:360px;opacity:0.9;pointer-events:none;z-index:1;"/>
+<section style="background:#000;color:#fff;padding:100px 0;position:relative;" data-screen-label="02 Manifesto">
+  <!-- hvězda — nad hranou zeleného boxu vpravo -->
+  <img src="mockup/ikonky bez pozadi/02hvezda.png" alt="" style="position:absolute;top:20px;right:0;width:300px;opacity:0.95;pointer-events:none;z-index:3;"/>
   <div class="container" style="position:relative;z-index:2;">
     <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(36px,5.5vw,88px);line-height:1.0;margin:0 0 0;color:#fff;">JDEME PROTI</h2>
     <div style="font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:clamp(28px,4vw,60px);color:var(--acid);margin:0 0 52px;">digitálnímu hluku.</div>
@@ -1465,37 +1465,34 @@ function bsShow(from,to){
     <!-- Nadpis -->
     <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(48px,7vw,96px);margin:0 0 0;text-align:center;line-height:1;">KDO STOJÍ ZA SLUŽBOU</h2>
 
-    <!-- Logo + bublina -->
-    <div style="display:flex;align-items:center;justify-content:center;gap:40px;margin:24px 0 60px;">
+    <!-- Logo + bublina — VĚTŠÍ -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:48px;margin:32px 0 70px;">
       <div style="text-align:center;">
-        <img src="Constant_logo_black.png" alt="Constantina" style="height:80px;width:auto;display:block;margin:0 auto;"/>
+        <img src="Constant_logo_black.png" alt="Constantina" style="height:130px;width:auto;display:block;margin:0 auto;"/>
       </div>
-      <!-- Bublina -->
-      <div style="position:relative;background:#fff;border:3px solid #000;border-radius:20px;padding:16px 24px;box-shadow:4px 4px 0 #000;">
-        <div style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;line-height:1.2;color:#000;">CHAOTICKÁ ZNAČKA<br/>TĚ STOJÍ DŮVĚRU.</div>
-        <div style="position:absolute;left:-18px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-right:18px solid #000;"></div>
-        <div style="position:absolute;left:-13px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:14px solid #fff;"></div>
+      <!-- Bublina větší -->
+      <div style="position:relative;background:#fff;border:4px solid #000;border-radius:24px;padding:22px 32px;box-shadow:5px 5px 0 #000;">
+        <div style="font-family:'Anton',sans-serif;font-size:24px;text-transform:uppercase;line-height:1.2;color:#000;">CHAOTICKÁ ZNAČKA<br/>TĚ STOJÍ DŮVĚRU.</div>
+        <div style="position:absolute;left:-22px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-right:22px solid #000;"></div>
+        <div style="position:absolute;left:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-right:18px solid #fff;"></div>
       </div>
     </div>
 
-    <!-- 3 karty -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:end;">
+    <!-- 3 karty — Luboš text POD kartami žen -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;">
 
-      <!-- LUBOŠ — bez rámečku, portrait na výšku -->
+      <!-- LUBOŠ — jen fotka + jméno, BEZ textu -->
       <div style="position:relative;">
         <img src="lubos.png" alt="Luboš" style="width:100%;height:auto;display:block;"/>
-        <div style="margin-top:16px;">
-          <div style="font-family:'Special Elite',monospace;font-size:26px;font-weight:bold;color:#000;margin-bottom:10px;">Luboš</div>
-          <p style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.7;color:#333;margin:0;">CEO a technologický mozek značky mění tvoji vizi ve vizuální důkaz autority skrze precizní foto, video i animace.,, Jeho úkolem je, aby tvůj brand přestal šumět a začal vysílat jeden jasný, nezaměnitelný signál.</p>
+        <div style="background:#fff;display:inline-block;padding:8px 20px;margin-top:-2px;">
+          <div style="font-family:'Special Elite',monospace;font-size:26px;font-weight:bold;color:#000;">Luboš</div>
         </div>
       </div>
 
       <!-- KRISTÍNA — karta se zaoblenými rohy -->
       <div style="background:#fff;border:2px solid #000;border-radius:16px;overflow:hidden;box-shadow:4px 4px 0 #000;position:relative;">
-        <!-- růže/rtěnka ikonka -->
-        <div style="position:absolute;top:12px;right:16px;z-index:2;">
-          <img src="mockup/ikonky bez pozadi/16ruz.png" alt="" style="width:50px;height:auto;"/>
-        </div>
+        <!-- rtěnka ikonka -->
+        <img src="mockup/ikonky bez pozadi/16ruz.png" alt="" style="position:absolute;top:12px;right:16px;z-index:2;width:54px;height:auto;"/>
         <img src="kristina.png" alt="Kristína" style="width:100%;height:auto;display:block;"/>
         <div style="padding:20px 24px 28px;">
           <div style="font-family:'Special Elite',monospace;font-size:24px;font-weight:bold;color:#000;margin-bottom:10px;">Kristína</div>
@@ -1511,12 +1508,18 @@ function bsShow(from,to){
           <p style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.7;color:#333;margin:0;">Katarína ladí tvoji vizuální stránku do živé řeči a jako AI kurátorka navrhuje systémy, které ti konečně uvolní ruce.,, Transformuje koncepty v reels a vizualizace, které zastaví scroll a přinutí svět vidět tvoji skutečnou hodnotu.,,,</p>
           <!-- fotoaparát ikonka -->
           <div style="margin-top:20px;text-align:right;">
-            <img src="mockup/ikonky bez pozadi/18fotak.png" alt="" style="width:70px;height:auto;"/>
+            <img src="mockup/ikonky bez pozadi/18fotak.png" alt="" style="width:80px;height:auto;"/>
           </div>
         </div>
       </div>
 
     </div>
+
+    <!-- LUBOŠ BIO — pod kartami žen -->
+    <div style="margin-top:32px;padding:0 0 0 0;max-width:42%;border-top:2px solid #000;padding-top:20px;">
+      <p style="font-family:'Special Elite',monospace;font-size:15px;line-height:1.7;color:#333;margin:0;">CEO a technologický mozek značky mění tvoji vizi ve vizuální důkaz autority skrze precizní foto, video i animace.,, Jeho úkolem je, aby tvůj brand přestal šumět a začal vysílat jeden jasný, nezaměnitelný signál.</p>
+    </div>
+
   </div>
 </section>
 
