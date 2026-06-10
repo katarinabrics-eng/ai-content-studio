@@ -749,96 +749,62 @@
 
 <!-- ===== COLLAGE / GALLERY ===== -->
 <style>
-.kolaz-item{position:absolute;transition:transform 0.3s ease, box-shadow 0.3s ease;}
-.kolaz-float{animation:float 4s ease-in-out infinite;}
-.kolaz-float-slow{animation:float 6s ease-in-out infinite;}
-.kolaz-float-med{animation:float 5s ease-in-out infinite 1s;}
-@keyframes float{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-12px) rotate(var(--rot,0deg))}}
-
+.kolaz-item{position:absolute;transition:transform 0.3s ease,box-shadow 0.3s ease;}
+.kolaz-float{animation:kfloat 4s ease-in-out infinite;}
+.kolaz-float-slow{animation:kfloat 6s ease-in-out infinite;}
+.kolaz-float-med{animation:kfloat 5s ease-in-out infinite 1s;}
+@keyframes kfloat{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-12px) rotate(var(--rot,0deg))}}
 .kolaz-item:hover{z-index:20!important;}
 .hover-scale:hover{transform:scale(1.08) rotate(var(--rot,0deg))!important;box-shadow:12px 12px 0 rgba(0,0,0,.25)!important;}
 .hover-tilt:hover{transform:rotate(calc(var(--rot,0deg) + 6deg)) scale(1.04)!important;box-shadow:10px 10px 0 rgba(0,0,0,.2)!important;}
-.hover-big:hover{transform:scale(1.12)!important;box-shadow:16px 16px 0 rgba(0,0,0,.3)!important;}
+.hover-big:hover{transform:scale(1.13)!important;box-shadow:16px 16px 0 rgba(0,0,0,.3)!important;}
 </style>
 
-<section style="background:#fff;padding:60px 0 100px;overflow:hidden;position:relative;">
-  <div style="text-align:center;margin-bottom:52px;">
-    <div style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;transform:rotate(-1.5deg);">
-      <div style="background:#fff;border:3px solid #000;padding:10px 36px;border-radius:10px;box-shadow:5px 5px 0 #000;font-family:'Italianno',cursive;font-size:40px;line-height:.9;color:#000;position:relative;">
-        Nebuď šedá myška
-        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
-        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
-      </div>
-      <div style="background:#c9f31d;border:3px solid #000;padding:12px 42px;border-radius:10px;box-shadow:5px 5px 0 #000;font-family:'Anton',sans-serif;font-size:32px;letter-spacing:.05em;color:#000;transform:rotate(-1deg);margin-left:24px;position:relative;">
-        STAŇ SE MAGNETICKÁ
-        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
-        <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#000;border-radius:50%;"></span>
-      </div>
-    </div>
-  </div>
-
+<section style="background:#fff;padding:80px 0 120px;overflow:hidden;position:relative;">
   <div style="position:relative;width:100%;max-width:1200px;margin:0 auto;height:1000px;">
 
-    <!-- MEGAFON — float + hover scale -->
-    <img src="mockup/megafon.png"
-      class="kolaz-item kolaz-float hover-big"
-      style="left:20px;top:0;width:150px;--rot:-15deg;z-index:5;pointer-events:all;"/>
+    <!-- BUBLINA za portrétem, výše -->
+    <img src="mockup/bublina.png" class="kolaz-item kolaz-float-slow" style="left:50%;top:-20px;transform:translateX(-5%);width:340px;z-index:5;pointer-events:none;"/>
 
-    <!-- SPEECH BUBBLE — float slow -->
-    <img src="mockup/bublina.png"
-      class="kolaz-item kolaz-float-slow hover-scale"
-      style="left:50%;top:0;transform:translateX(-10%) rotate(0deg);width:320px;z-index:8;pointer-events:all;"/>
+    <!-- MEGAFON vlevo nahoře -->
+    <img src="mockup/megafon.png" class="kolaz-item kolaz-float hover-big" style="left:10px;top:10px;width:160px;--rot:-15deg;z-index:7;"/>
 
-    <!-- SPARKLE SVG dekorace -->
-    <div class="kolaz-item kolaz-float" style="left:280px;top:55px;width:48px;height:48px;z-index:4;--rot:0deg;pointer-events:none;">
+    <!-- SPARKLE -->
+    <div class="kolaz-item kolaz-float" style="left:290px;top:60px;width:48px;height:48px;z-index:4;pointer-events:none;">
       <svg viewBox="0 0 50 50" style="width:100%;height:100%;"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
     </div>
-    <div class="kolaz-item kolaz-float-med" style="left:250px;top:100px;width:30px;height:30px;z-index:4;--rot:0deg;pointer-events:none;">
+    <div class="kolaz-item kolaz-float-med" style="left:258px;top:105px;width:30px;height:30px;z-index:4;pointer-events:none;">
       <svg viewBox="0 0 50 50" style="width:100%;height:100%;"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
     </div>
 
-    <!-- kompozice01 — vlevo nahoře, hover tilt -->
-    <img src="mockup/kompozice01.png"
-      class="kolaz-item kolaz-float-slow hover-tilt"
-      style="left:0;top:130px;width:240px;--rot:-3deg;z-index:3;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
+    <!-- kompozice01 Elara dark, vlevo nahoře -->
+    <img src="mockup/kompozice01.png" class="kolaz-item kolaz-float-slow hover-tilt" style="left:0;top:80px;width:220px;--rot:-3deg;z-index:3;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
 
-    <!-- kompozice002 — vlevo dole, hover scale -->
-    <img src="mockup/kompozice002.png"
-      class="kolaz-item kolaz-float-med hover-scale"
-      style="left:0;top:560px;width:300px;--rot:1.5deg;z-index:3;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
+    <!-- kompozice02 Aroma web, vlevo dole -->
+    <img src="mockup/kompozice02.png" class="kolaz-item kolaz-float-med hover-scale" style="left:0;top:560px;width:310px;--rot:1.5deg;z-index:3;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
 
-    <!-- kompozice03 — vlevo střed přes, hover tilt -->
-    <img src="mockup/kompozice03.png"
-      class="kolaz-item kolaz-float hover-tilt"
-      style="left:170px;top:510px;width:240px;--rot:-2deg;z-index:4;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
+    <!-- kompozice03 foto grid, vlevo střed -->
+    <img src="mockup/kompozice03.png" class="kolaz-item kolaz-float hover-tilt" style="left:180px;top:500px;width:260px;--rot:-2deg;z-index:4;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
 
-    <!-- CENTRÁLNÍ PORTRÉT — bez animace, dominantní -->
-    <img src="portrait_bezpozadi.png"
-      style="position:absolute;left:50%;top:-60px;transform:translateX(-50%);width:580px;z-index:6;pointer-events:none;display:block;"/>
+    <!-- CENTRÁLNÍ PORTRÉT -->
+    <img src="portrait_bezpozadi.png" style="position:absolute;left:50%;top:-80px;transform:translateX(-50%);width:600px;z-index:6;pointer-events:none;display:block;"/>
 
-    <!-- kompozice04 — POW burst, float + hover big -->
-    <img src="mockup/kompozice04.png"
-      class="kolaz-item kolaz-float hover-big"
-      style="left:50%;top:620px;transform:translateX(-65%);width:200px;--rot:0deg;z-index:7;pointer-events:all;"/>
+    <!-- kompozice04 POW + Růže & Kov, dole střed -->
+    <img src="mockup/kompozice04.png" class="kolaz-item kolaz-float hover-big" style="left:42%;top:640px;width:220px;--rot:-2deg;z-index:7;"/>
 
-    <!-- cloud burst — pomalu float, za zeleným panelem -->
-    <img src="mockup/kompozice06dopozadi.png"
-      class="kolaz-item kolaz-float-slow"
-      style="right:60px;bottom:70px;width:360px;--rot:0deg;z-index:4;pointer-events:none;"/>
+    <!-- kompozice06 cloud pozadí, vpravo dole -->
+    <img src="mockup/kompozice06dopozadi.png" class="kolaz-item kolaz-float-slow" style="right:50px;bottom:60px;width:380px;z-index:4;pointer-events:none;"/>
 
-    <!-- BRAND SCAN STRATEGIE -->
-    <div class="kolaz-item" style="right:260px;bottom:290px;z-index:9;text-align:left;pointer-events:none;">
-      <div style="font-family:'Anton',sans-serif;font-size:22px;letter-spacing:.05em;color:#000;line-height:1.3;">BRAND SCAN<br/>STRATEGIE</div>
+    <!-- BRAND SCAN STRATEGIE text -->
+    <div style="position:absolute;right:265px;bottom:270px;z-index:9;pointer-events:none;">
+      <div style="font-family:'Anton',sans-serif;font-size:20px;letter-spacing:.05em;color:#000;line-height:1.3;">BRAND SCAN<br/>STRATEGIE</div>
     </div>
 
-    <!-- kompozice05 — vpravo nahoře, hover scale -->
-    <img src="mockup/kompozice05.png"
-      class="kolaz-item kolaz-float-med hover-scale"
-      style="right:0;top:100px;width:300px;--rot:2deg;z-index:3;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
+    <!-- kompozice05 Lunéa + Synera, vpravo nahoře -->
+    <img src="mockup/kompozice05.png" class="kolaz-item kolaz-float-med hover-scale" style="right:0;top:80px;width:310px;--rot:2deg;z-index:3;box-shadow:8px 8px 0 rgba(0,0,0,.15);"/>
 
-    <!-- zelený panel + kompozice05 vpravo dole, hover tilt -->
-    <div class="kolaz-item kolaz-float-slow hover-tilt"
-      style="right:0;bottom:50px;width:280px;background:#c9f31d;padding:8px;border:3px solid #000;box-shadow:8px 8px 0 rgba(0,0,0,.2);z-index:5;--rot:1deg;cursor:pointer;">
+    <!-- zelený panel vpravo dole -->
+    <div class="kolaz-item kolaz-float-slow hover-tilt" style="right:0;bottom:40px;width:290px;background:#c9f31d;padding:8px;border:3px solid #000;box-shadow:8px 8px 0 rgba(0,0,0,.2);z-index:5;--rot:1deg;cursor:pointer;">
       <img src="mockup/kompozice05.png" style="width:100%;display:block;"/>
     </div>
 
