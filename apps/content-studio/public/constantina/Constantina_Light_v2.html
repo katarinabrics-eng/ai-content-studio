@@ -1386,33 +1386,64 @@ function bsShow(from,to){
 </section>
 
 <!-- ===== TEAM ===== -->
-<section class="team" id="team" data-screen-label="08 Tým">
+<section style="background:var(--paper-2);padding:80px 0 100px;" id="team" data-screen-label="08 Tým">
   <div class="container">
-    <h2>Kdo stojí za službou</h2>
-    <div class="logo"><img src="Constant_logo_black.png" alt="Constantina — Finally You." style="height:80px;width:auto;display:block;margin:0 auto;"></div>
-    <div class="team-grid">
-      <div class="tcard">
-        <div class="photo"><img src="lubos.png" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"/></div>
-        <div class="name">Luboš</div>
-        <div class="body">
-          <p>Stratég. Stará se o směr, pozici a o to, aby tvá značka říkala jen jednu jasnou věc. Konec mluvení ke všem.</p>
+
+    <!-- Nadpis -->
+    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(48px,7vw,96px);margin:0 0 0;text-align:center;line-height:1;">KDO STOJÍ ZA SLUŽBOU</h2>
+
+    <!-- Logo + bublina -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:40px;margin:24px 0 60px;position:relative;">
+      <div style="text-align:center;">
+        <div style="font-family:'Italianno',cursive;font-size:72px;line-height:.8;color:#000;">Constantina</div>
+        <div style="font-family:'Special Elite',monospace;font-size:12px;letter-spacing:.4em;margin-top:10px;color:#000;">FINALLY YOU.</div>
+      </div>
+      <!-- Bublina -->
+      <div style="position:relative;background:#fff;border:3px solid #000;border-radius:20px;padding:16px 24px;box-shadow:4px 4px 0 #000;">
+        <div style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;line-height:1.2;color:#000;">CHAOTICKÁ ZNAČKA<br/>TĚ STOJÍ DŮVĚRU.</div>
+        <div style="position:absolute;left:-18px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-right:18px solid #000;"></div>
+        <div style="position:absolute;left:-13px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:14px solid #fff;"></div>
+      </div>
+    </div>
+
+    <!-- 3 karty -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:end;">
+
+      <!-- LUBOŠ — bez rámečku, větší -->
+      <div style="position:relative;">
+        <img src="lubos.png" alt="Luboš" style="width:100%;height:auto;display:block;"/>
+        <div style="margin-top:16px;">
+          <div style="font-family:'Special Elite',monospace;font-size:26px;font-weight:bold;color:#000;margin-bottom:10px;">Luboš</div>
+          <p style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.7;color:#333;margin:0;">CEO a technologický mozek značky mění tvoji vizi ve vizuální důkaz autority skrze precizní foto, video i animace.,, Jeho úkolem je, aby tvůj brand přestal šumět a začal vysílat jeden jasný, nezaměnitelný signál.</p>
         </div>
       </div>
-      <div class="tcard">
-        <div class="photo"><img src="kristina.png" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"/></div>
-        <div class="name">Kristína</div>
-        <div class="body">
-          <h4>Head of Operations & Sales</h4>
-          <p>Designérka. Tvoří identitu, která nekopíruje. Kombinuje psychologii brandu s editorial citem pro detail.</p>
+
+      <!-- KRISTÍNA — karta se zaoblenými rohy -->
+      <div style="background:#fff;border:2px solid #000;border-radius:16px;overflow:hidden;box-shadow:4px 4px 0 #000;position:relative;">
+        <!-- rtěnka ikonka -->
+        <div style="position:absolute;top:12px;right:16px;z-index:2;">
+          <svg viewBox="0 0 100 200" width="36" height="72"><use href="#lipstick"/></svg>
+        </div>
+        <img src="kristina.png" alt="Kristína" style="width:100%;height:auto;display:block;"/>
+        <div style="padding:20px 24px 28px;">
+          <div style="font-family:'Special Elite',monospace;font-size:24px;font-weight:bold;color:#000;margin-bottom:10px;">Kristína</div>
+          <p style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.7;color:#333;margin:0;">Kristína je tvojí hlavní spojkou s projektem, která pečuje o tvoji Brand DNA a strategickou pozici na sociálních sítích.,, Dohlédne na to, aby tvá identita nekopírovala, ale stala se magnetem, který lidé rozpoznají dřív, než dočtou první větu.</p>
         </div>
       </div>
-      <div class="tcard">
-        <div class="photo"><img src="katarina.png" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"/></div>
-        <div class="name">Katarína</div>
-        <div class="body">
-          <p>Tvář a obsah. Ladí vizuální stránku do živé řeči — reels, posty, story. Tvůj brand v pohybu.</p>
+
+      <!-- KATARÍNA — karta se zaoblenými rohy -->
+      <div style="background:#fff;border:2px solid #000;border-radius:16px;overflow:hidden;box-shadow:4px 4px 0 #000;position:relative;">
+        <img src="katarina.png" alt="Katarína" style="width:100%;height:auto;display:block;"/>
+        <div style="padding:20px 24px 28px;">
+          <div style="font-family:'Special Elite',monospace;font-size:24px;font-weight:bold;color:#000;margin-bottom:10px;">Katarína</div>
+          <p style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.7;color:#333;margin:0;">Katarína ladí tvoji vizuální stránku do živé řeči a jako AI kurátorka navrhuje systémy, které ti konečně uvolní ruce.,, Transformuje koncepty v reels a vizualizace, které zastaví scroll a přinutí svět vidět tvoji skutečnou hodnotu.,,,</p>
+          <!-- fotoaparát ikonka -->
+          <div style="margin-top:20px;text-align:right;">
+            <svg viewBox="0 0 200 140" width="60" height="42"><use href="#camera"/></svg>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
