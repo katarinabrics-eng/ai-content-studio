@@ -749,70 +749,88 @@
 
 <!-- ===== COLLAGE / GALLERY ===== -->
 <style>
-.ki{position:absolute;}
-.kf1{animation:kfl 4s ease-in-out infinite;}
-.kf2{animation:kfl 6s ease-in-out infinite 0.7s;}
-.kf3{animation:kfl 5s ease-in-out infinite 1.4s;}
-@keyframes kfl{
-  0%,100%{transform:translateY(0) rotate(var(--r,0deg))}
-  50%{transform:translateY(-14px) rotate(var(--r,0deg))}
-}
+@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floatC{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.cfl-a{animation:floatA 3.5s ease-in-out infinite;}
+.cfl-b{animation:floatB 4.5s ease-in-out infinite 0.6s;}
+.cfl-c{animation:floatC 5.5s ease-in-out infinite 1.1s;}
+.cfl-d{animation:floatA 7s ease-in-out infinite 0.3s;}
+.cfl-e{animation:floatB 6s ease-in-out infinite 1.8s;}
+.cfl-f{animation:floatC 5s ease-in-out infinite 0.9s;}
+.cfl-slow{animation:floatB 6s ease-in-out infinite;}
 </style>
 
 <section style="background:#fff;padding:60px 0 120px;overflow:hidden;">
-  <div style="display:flex;justify-content:center;width:100%;">
-  <div style="position:relative;width:1200px;min-width:320px;height:980px;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;">
 
-    <!-- Z1: cloud burst pozadí — větší, centrovaný -->
-    <img src="mockup/kompozice06dopozadi.png"
-      style="position:absolute;left:50%;top:80px;transform:translateX(-45%);width:800px;z-index:1;pointer-events:none;"/>
+    <!-- GRID: levý / střední / pravý sloupec -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;align-items:start;min-height:700px;position:relative;">
 
-    <!-- Z4: PORTRÉT -->
-    <img src="portrait_bezpozadi.png"
-      style="position:absolute;left:50%;top:-80px;transform:translateX(-50%);width:680px;z-index:4;pointer-events:none;"/>
+      <!-- ===== LEVÝ SLOUPEC ===== -->
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:32px;padding-top:20px;position:relative;z-index:6;">
+        <!-- megafon -->
+        <img src="mockup/megafon.png" class="cfl-a"
+          style="width:160px;z-index:10;transform-origin:center bottom;"/>
+        <!-- kompozice01 -->
+        <img src="mockup/kompozice01.png" class="cfl-c"
+          style="width:280px;z-index:6;"/>
+        <!-- kompozice02 -->
+        <img src="mockup/kompozice02.png" class="cfl-e"
+          style="width:300px;z-index:6;"/>
+      </div>
 
-    <!-- Z6: kompozice01 Elara dark — vlevo nahoře -->
-    <img src="mockup/kompozice01.png" class="ki kf2"
-      style="left:0;top:100px;width:220px;z-index:6;--r:-4deg;"/>
+      <!-- ===== STŘEDNÍ SLOUPEC ===== -->
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;min-height:700px;">
 
-    <!-- Z6: kompozice02 Aroma — vlevo dole, větší -->
-    <img src="mockup/kompozice02.png" class="ki kf3"
-      style="left:60px;top:500px;width:310px;z-index:6;--r:2deg;"/>
+        <!-- kompozice06 cloud — absolutní pozadí -->
+        <img src="mockup/kompozice06dopozadi.png"
+          style="position:absolute;top:60px;left:50%;transform:translateX(-50%);width:420px;z-index:1;pointer-events:none;opacity:0.85;"/>
 
-    <!-- Z7: kompozice03 foto grid — dole střed, překrývá 04 -->
-    <img src="mockup/kompozice03.png" class="ki kf1"
-      style="left:280px;top:660px;width:340px;z-index:7;--r:-2deg;"/>
+        <!-- bublina — nad hlavou portrétu -->
+        <img src="mockup/bublina.png" class="cfl-d"
+          style="position:absolute;top:-20px;left:50%;transform:translateX(-10%);width:260px;z-index:9;pointer-events:none;"/>
 
-    <!-- Z6: kompozice05 Lunéa + Synera — vpravo nahoře -->
-    <img src="mockup/kompozice05.png" class="ki kf3"
-      style="right:0;top:60px;width:310px;z-index:6;--r:2.5deg;"/>
+        <!-- portrét — centrální -->
+        <img src="portrait_bezpozadi.png" class="cfl-slow"
+          style="position:relative;width:360px;z-index:4;margin-top:60px;"/>
 
-    <!-- Z7: kompozice04 POW + Růže & Kov — blíže ke 05 -->
-    <img src="mockup/kompozice04.png" class="ki kf2"
-      style="right:10px;top:300px;width:300px;z-index:7;--r:1.5deg;"/>
+        <!-- sparkle dekorace -->
+        <div class="cfl-a" style="position:absolute;left:20px;top:50px;width:44px;height:44px;z-index:8;pointer-events:none;">
+          <svg viewBox="0 0 50 50" style="width:100%;height:100%;"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
+        </div>
+        <div class="cfl-c" style="position:absolute;left:8px;top:92px;width:28px;height:28px;z-index:8;pointer-events:none;">
+          <svg viewBox="0 0 50 50" style="width:100%;height:100%;"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
+        </div>
+      </div>
 
-    <!-- Z8: BRAND SCAN STRATEGIE -->
-    <div style="position:absolute;right:320px;top:370px;z-index:8;pointer-events:none;">
-      <div style="font-family:'Anton',sans-serif;font-size:20px;letter-spacing:.05em;color:#000;line-height:1.3;">BRAND SCAN<br/>STRATEGIE</div>
+      <!-- ===== PRAVÝ SLOUPEC ===== -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:28px;padding-top:20px;position:relative;z-index:6;">
+
+        <!-- kompozice05 Lunéa + Synera — nahoře -->
+        <img src="mockup/kompozice05.png" class="cfl-b"
+          style="width:290px;z-index:6;"/>
+
+        <!-- BRAND SCAN STRATEGIE text -->
+        <div style="align-self:flex-end;margin-right:8px;z-index:8;">
+          <div style="display:inline-block;border:3px solid #000;padding:10px 18px;box-shadow:4px 4px 0 #000;background:#fff;position:relative;">
+            <div style="font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.06em;color:#000;line-height:1.3;text-transform:uppercase;">BRAND SCAN<br/>STRATEGIE</div>
+            <!-- komix hvězdičky v rozích -->
+            <svg style="position:absolute;top:-14px;left:-14px;width:28px;height:28px;" viewBox="0 0 50 50"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#c9f31d" stroke="#000" stroke-width="3"/></svg>
+            <svg style="position:absolute;top:-10px;right:-10px;width:20px;height:20px;" viewBox="0 0 50 50"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
+          </div>
+        </div>
+
+        <!-- kompozice04 POW — střed -->
+        <img src="mockup/kompozice04.png" class="cfl-f"
+          style="width:280px;z-index:7;"/>
+
+        <!-- kompozice03 foto grid — dole -->
+        <img src="mockup/kompozice03.png" class="cfl-c"
+          style="width:300px;z-index:8;"/>
+      </div>
+
     </div>
-
-    <!-- Z8: sparkle -->
-    <div class="ki kf1" style="left:265px;top:45px;width:48px;height:48px;z-index:8;pointer-events:none;">
-      <svg viewBox="0 0 50 50" style="width:100%;height:100%;"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
-    </div>
-    <div class="ki kf3" style="left:232px;top:88px;width:30px;height:30px;z-index:8;pointer-events:none;">
-      <svg viewBox="0 0 50 50" style="width:100%;height:100%;"><path d="M25 0L27 23L50 25L27 27L25 50L23 27L0 25L23 23Z" fill="#000"/></svg>
-    </div>
-
-    <!-- Z9: bublina — před portrétem, nad hlavou -->
-    <img src="mockup/bublina.png" class="ki kf2"
-      style="left:50%;top:-10px;transform:translateX(8%);width:320px;z-index:9;pointer-events:none;--r:0deg;"/>
-
-    <!-- Z10: megafon — vlevo nahoře -->
-    <img src="mockup/megafon.png" class="ki kf1"
-      style="left:0;top:0;width:155px;z-index:10;--r:-15deg;"/>
-
-  </div>
   </div>
 </section>
 
