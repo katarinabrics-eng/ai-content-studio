@@ -1321,50 +1321,74 @@ function bsShow(from,to){
 </section>
 
 <!-- ===== GALLERY ===== -->
-<section class="gallery" id="gallery" data-screen-label="07 Galerie">
+<section style="background:var(--paper);padding:100px 0 80px;" id="gallery" data-screen-label="07 Galerie">
   <div class="container">
-    <h2>TVŮJ OBSAH PŘIPRAVENÝ K POUŽITÍ</h2>
-    <div class="gallery-cards">
-      <div class="gcard">
-        <div class="img">
-          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
-            <source src="1778643154624_Reels_oba_lka.mp4" type="video/mp4"/>
-          </video>
-          <div class="play">▶ 15s · Reels</div>
-        </div>
-        <div class="body">
-          <span class="tag">VIDEO · REELS</span>
-          <h4>"Brand identity která prodává"</h4>
-          <h5>Autenticita a spontánnosť</h5>
-          <p>Vizuální strategie od základů.</p>
-          <div class="pills"><span class="pill">Varianta A</span><span class="pill">Instagram</span></div>
+    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(32px,5vw,72px);text-align:center;margin:0 0 70px;letter-spacing:.01em;">Tvůj obsah připravený k použití</h2>
+
+    <!-- HORNÍ ŘADA — 4 fotky -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:60px;">
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="font-family:'Caveat',cursive;font-size:22px;color:#000;text-align:center;margin-bottom:6px;line-height:1.2;">Brand vizual book</div>
+        <div style="font-size:22px;line-height:1;margin-bottom:8px;">↓</div>
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:4/3;">
+          <img src="mockup/obsah/do galerie/01brand dna.png" style="width:100%;height:100%;object-fit:cover;display:block;"/>
         </div>
       </div>
-      <div class="gcard">
-        <div class="img">
-          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
-            <source src="1778643154624_Reels_oba_lka_2.mp4" type="video/mp4"/>
-          </video>
-          <div class="play">▶ 12s · Reels</div>
-        </div>
-        <div class="body">
-          <span class="tag">VIDEO · REELS</span>
-          <h4>"Obsah připravený k okamžitému použití."</h4>
-          <h5>Profesionálnosť s dotykom umenia</h5>
-          <p>Obsah připravený k okamžitému použití.</p>
-          <div class="pills"><span class="pill">Varianta B</span><span class="pill">Instagram</span></div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="font-family:'Caveat',cursive;font-size:22px;color:#000;text-align:center;margin-bottom:6px;line-height:1.2;">Příspěvky, reels, carousel&nbsp;...</div>
+        <div style="font-size:22px;line-height:1;margin-bottom:8px;">↓</div>
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:4/3;">
+          <img src="mockup/obsah/do galerie/02reels.jpg" style="width:100%;height:100%;object-fit:cover;display:block;"/>
         </div>
       </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="font-family:'Caveat',cursive;font-size:19px;color:#000;text-align:center;margin-bottom:6px;line-height:1.2;">Foto náhledy a následná produkce s focením a videotvorbu</div>
+        <div style="font-size:22px;line-height:1;margin-bottom:8px;">↓</div>
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:4/3;">
+          <img src="mockup/obsah/do galerie/03ukazka.png" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="font-family:'Caveat',cursive;font-size:22px;color:#000;text-align:center;margin-bottom:6px;line-height:1.2;">&nbsp;</div>
+        <div style="font-size:22px;line-height:1;margin-bottom:8px;opacity:0;">↓</div>
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:4/3;">
+          <img src="mockup/obsah/do galerie/04kontakt.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+      </div>
+
     </div>
-    <div class="gallery-grid">
-      <div class="gthumb"><img src="gallery/slide-01.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-02.png" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-03.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-04.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-05.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-06.png" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-01.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
-      <div class="gthumb"><img src="gallery/slide-02.png" style="width:100%;height:100%;object-fit:cover;display:block;"/></div>
+
+    <!-- DOLNÍ ŘADA — 3 fotky na šířku -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:16/9;">
+          <img src="mockup/obsah/do galerie/05merch.png" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div style="font-size:22px;line-height:1;margin-top:8px;">↓</div>
+        <div style="font-family:'Caveat',cursive;font-size:22px;color:#000;text-align:center;margin-top:4px;">Návrhy Merch značky</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:16/9;">
+          <img src="mockup/obsah/do galerie/06web design.png" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div style="font-size:22px;line-height:1;margin-top:8px;">↓</div>
+        <div style="font-family:'Caveat',cursive;font-size:22px;color:#000;text-align:center;margin-top:4px;">Vizualizace a následná stavba webu</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+        <div style="border:2px solid #000;overflow:hidden;width:100%;aspect-ratio:16/9;">
+          <img src="mockup/obsah/do galerie/07kontakty.jpeg" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div style="font-size:22px;line-height:1;margin-top:8px;">↓</div>
+        <div style="font-family:'Caveat',cursive;font-size:22px;color:#000;text-align:center;margin-top:4px;">Náhledy fotek ještě před focením</div>
+      </div>
+
     </div>
   </div>
 </section>
