@@ -1289,13 +1289,17 @@ function bsShow(from,to){
 
 <!-- ===== CONTENT DAY ===== -->
 <style>
-#cd-carousel{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:12px;}
-#cd-carousel .cd-slide{position:absolute;inset:0;opacity:0;transition:opacity 0.8s ease;}
+#cd-carousel{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:12px;background:#f0ede4;}
+#cd-carousel .cd-slide{position:absolute;inset:0;opacity:0;transition:opacity 0.7s ease;}
 #cd-carousel .cd-slide.active{opacity:1;}
 #cd-carousel img{width:100%;height:100%;object-fit:cover;display:block;}
-.cd-dots{display:flex;justify-content:center;gap:8px;margin-top:12px;}
-.cd-dots span{width:8px;height:8px;border-radius:50%;background:#ccc;cursor:pointer;transition:background .3s;}
-.cd-dots span.active{background:#000;}
+.cd-list{list-style:none;padding:0;margin:0;}
+.cd-list li{display:flex;align-items:flex-start;gap:18px;padding:14px 0;border-bottom:1px solid #ddd;transition:all .4s;}
+.cd-list li:last-child{border-bottom:none;}
+.cd-list li .cd-num{font-family:'Anton',sans-serif;font-size:36px;line-height:1;color:#ccc;flex-shrink:0;transition:all .4s;}
+.cd-list li .cd-text{font-family:'Special Elite',monospace;font-size:14px;line-height:1.6;color:#aaa;transition:all .4s;}
+.cd-list li.cd-active .cd-num{font-size:52px;color:var(--acid-2);}
+.cd-list li.cd-active .cd-text{color:#000;font-size:16px;}
 </style>
 <section class="identity" data-screen-label="03 Content Day">
   <div class="container">
@@ -1303,45 +1307,43 @@ function bsShow(from,to){
     <div class="sub serif-i">Žádná improvizace.</div>
     <div class="identity-grid">
 
-      <!-- KARUSEL -->
+      <!-- KARUSEL — 2 fotky na každý bod -->
       <div>
         <div id="cd-carousel">
-          <div class="cd-slide active"><img src="mockup/content-day/01brand-dna01.png" alt="Brand DNA"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/01brand-dna02.png" alt="Brand DNA 2"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/02fotoprodukce.png" alt="Fotoprodukce"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/02kontakty.png" alt="Kontakty"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/03reels02.png" alt="Reels"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/03reels03.png" alt="Reels 2"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/04vizualnibanka01.png" alt="Vizuální banka"/></div>
-          <div class="cd-slide"><img src="mockup/content-day/04vizualnibanka02.png" alt="Vizuální banka 2"/></div>
+          <div class="cd-slide active" data-item="0"><img src="mockup/content-day/01brand-dna01.png" alt="Brand DNA"/></div>
+          <div class="cd-slide" data-item="0"><img src="mockup/content-day/01brand-dna02.png" alt="Brand DNA 2"/></div>
+          <div class="cd-slide" data-item="1"><img src="mockup/content-day/02fotoprodukce.png" alt="Fotoprodukce"/></div>
+          <div class="cd-slide" data-item="1"><img src="mockup/content-day/02kontakty.png" alt="Kontakty"/></div>
+          <div class="cd-slide" data-item="2"><img src="mockup/content-day/03reels02.png" alt="Reels"/></div>
+          <div class="cd-slide" data-item="2"><img src="mockup/content-day/03reels03.png" alt="Reels 2"/></div>
+          <div class="cd-slide" data-item="3"><img src="mockup/content-day/04vizualnibanka01.png" alt="Vizuální banka"/></div>
+          <div class="cd-slide" data-item="3"><img src="mockup/content-day/04vizualnibanka02.png" alt="Vizuální banka 2"/></div>
         </div>
-        <div class="cd-dots" id="cd-dots"></div>
       </div>
 
-      <!-- TEXT -->
+      <!-- TEXT — vertikální seznam s aktivním zvýrazněním -->
       <div>
         <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.8;color:#444;margin:0 0 16px;">Přijdeš jednou. Odejdeš jako značka.</p>
         <p style="font-family:'Special Elite',monospace;font-size:17px;line-height:1.8;color:#444;margin:0 0 28px;">Zastavíme tvůj nekonečný kolotoč vymýšlení „co tam dneska dát". Dostaneš systém, který pracuje za tebe — ne další seznam úkolů.</p>
 
-        <!-- Čísla 2 na řádek -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;">
-          <div style="display:flex;align-items:baseline;gap:14px;">
-            <span class="num" style="font-family:'Anton',sans-serif;color:var(--acid-2);font-size:32px;line-height:1;flex-shrink:0;">01</span>
-            <span style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.5;"><strong>Brand DNA</strong> — tvůj strategický kompas. Kdo jsi, jak mluvíš a proč ti mají věřit.</span>
-          </div>
-          <div style="display:flex;align-items:baseline;gap:14px;">
-            <span class="num" style="font-family:'Anton',sans-serif;color:var(--acid-2);font-size:32px;line-height:1;flex-shrink:0;">02</span>
-            <span style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.5;"><strong>150 fotek</strong> — tvoje zbraň. Žádné strojené pózy. Obraz, který odpovídá tvé skutečné hodnotě.</span>
-          </div>
-          <div style="display:flex;align-items:baseline;gap:14px;">
-            <span class="num" style="font-family:'Anton',sans-serif;color:var(--acid-2);font-size:32px;line-height:1;flex-shrink:0;">03</span>
-            <span style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.5;"><strong>Reels a video záběry</strong> — autenticita bez přehrávání. Signál, který zastaví scroll.</span>
-          </div>
-          <div style="display:flex;align-items:baseline;gap:14px;">
-            <span class="num" style="font-family:'Anton',sans-serif;color:var(--acid-2);font-size:32px;line-height:1;flex-shrink:0;">04</span>
-            <span style="font-family:'Special Elite',monospace;font-size:14px;line-height:1.5;"><strong>Vizuální banka</strong> — tvoje knihovna identity. Jednou vyřešíš, měsíce čerpáš.</span>
-          </div>
-        </div>
+        <ul class="cd-list" id="cd-list">
+          <li class="cd-active">
+            <span class="cd-num">01</span>
+            <span class="cd-text"><strong>Brand DNA</strong> — tvůj strategický kompas. Kdo jsi, jak mluvíš a proč ti mají věřit.</span>
+          </li>
+          <li>
+            <span class="cd-num">02</span>
+            <span class="cd-text"><strong>150 fotek</strong> — tvoje zbraň. Žádné strojené pózy. Obraz, který odpovídá tvé skutečné hodnotě.</span>
+          </li>
+          <li>
+            <span class="cd-num">03</span>
+            <span class="cd-text"><strong>Reels a video záběry</strong> — autenticita bez přehrávání. Signál, který zastaví scroll.</span>
+          </li>
+          <li>
+            <span class="cd-num">04</span>
+            <span class="cd-text"><strong>Vizuální banka</strong> — tvoje knihovna identity. Jednou vyřešíš, měsíce čerpáš.</span>
+          </li>
+        </ul>
 
         <p style="font-family:'Anton',sans-serif;font-size:clamp(20px,2.5vw,32px);letter-spacing:.02em;color:#000;margin:32px 0 0;text-transform:uppercase;line-height:1.1;">Neřešíš, co přidat.<br/>Jen vybíráš.</p>
       </div>
@@ -1351,22 +1353,23 @@ function bsShow(from,to){
 <script>
 (function(){
   var slides=document.querySelectorAll('#cd-carousel .cd-slide');
-  var dotsEl=document.getElementById('cd-dots');
-  var cur=0;
-  slides.forEach(function(_,i){
-    var d=document.createElement('span');
-    if(i===0)d.className='active';
-    d.addEventListener('click',function(){go(i);});
-    dotsEl.appendChild(d);
-  });
-  function go(n){
-    slides[cur].classList.remove('active');
-    dotsEl.children[cur].classList.remove('active');
-    cur=n;
-    slides[cur].classList.add('active');
-    dotsEl.children[cur].classList.add('active');
+  var items=document.querySelectorAll('#cd-list li');
+  // step: 0..7 (2 slides per item)
+  var step=0;
+  function go(s){
+    // deactivate all
+    slides.forEach(function(sl){sl.classList.remove('active');});
+    items.forEach(function(it){it.classList.remove('cd-active');});
+    // activate current slide
+    slides[s].classList.add('active');
+    // activate corresponding list item
+    var itemIdx=Math.floor(s/2);
+    items[itemIdx].classList.add('cd-active');
   }
-  setInterval(function(){go((cur+1)%slides.length);},3000);
+  setInterval(function(){
+    step=(step+1)%8;
+    go(step);
+  },2500);
 })();
 </script>
 
