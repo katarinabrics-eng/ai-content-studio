@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 
 export default function KioskPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -161,10 +162,7 @@ export default function KioskPage() {
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', paddingTop: 8 }}>
-          <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: '0.2em' }}>PICLIO</div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, letterSpacing: '0.05em' }}>
-            by Lucifera Studio
-          </div>
+          <Image src="/logo01.png" alt="Piclio" width={120} height={40} priority />
         </div>
 
         {/* Progress dots */}

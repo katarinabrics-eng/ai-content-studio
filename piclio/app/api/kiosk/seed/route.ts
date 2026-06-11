@@ -7,6 +7,10 @@ const supabase = createClient(
 )
 
 export async function GET() {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Disabled in production' }, { status: 403 })
+  }
+
   const { data, error } = await supabase
     .from('events')
     .upsert(

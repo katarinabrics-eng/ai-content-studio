@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       .upsert({
         project_id: result.projectId,
         raw_analysis: Object.keys(analysisResult).length > 0
-          ? { ...analysisResult, generatedPosts }
+          ? { ...((analysisResult.result as Record<string, unknown>) ?? analysisResult), generatedPosts }
           : null,
         updated_at: new Date().toISOString(),
       });

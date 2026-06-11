@@ -32,13 +32,8 @@ export async function POST(req: NextRequest, { params }: { params: { token: stri
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  // update photo_count only if insert was not a duplicate
-  if (!error) {
-    await supabaseAdmin
-      .from('guests')
-      .update({ photo_count: guest.photo_count + 1 })
-      .eq('id', guest.id)
-  }
+  // status='matched' nastavuje automaticky DB trigger
+  // photo_count se počítá živě z photo_guests — není třeba aktualizovat
 
   return NextResponse.json({ ok: true })
 }

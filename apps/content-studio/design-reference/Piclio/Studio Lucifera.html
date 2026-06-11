@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>Lucifera · Studio Redesign</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+
+<style>
+  .lib-tile:hover .lib-hover { opacity: 1; }
+  .lib-tile:hover img { transform: scale(1.03); }
+  .lib-tile img { transition: transform .35s ease; }
+  em { font-style: italic; }
+  .proto-stage {
+    min-height: 100vh;
+    display: flex;
+    background: var(--bg);
+  }
+  .proto-main { flex: 1; min-width: 0; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="data.js"></script>
+</head>
+<body data-theme="cream" data-density="airy">
+<div id="root"></div>
+
+<script type="text/babel" src="components-core.jsx"></script>
+<script type="text/babel" src="dashboard.jsx"></script>
+<script type="text/babel" src="screens.jsx"></script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "plan": "free",
+  "theme": "cream",
+  "density": "airy"
+}/*EDITMODE-END*/;
+
+const { useState, useEffect } = React;
+
+function App() {
+  // persistent tweak state
+  const [plan, setPlan] = useState(() =>
+    localStorage.getItem("luc_plan") || TWEAK_DEFAULTS.plan);
+  const [theme, setTheme] = useState(() =>
+    localStorage.getItem("luc_theme") || TWEAK_DEFAULTS.theme);
+  const [route, setRoute] = useState(() =>
+    localStorage.getItem("luc_route") || "landing");
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+
+  const P = window.LUCIFERA.PLANS[plan];
+  const [credits, setCredits] = useState(P.credits);
+  const [pendingCount, setPendingCount] = useState(4);
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme);
+    localStorage.setItem("luc_theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem("luc_plan", plan);
+    setCredits(window.LUCIFERA.PLANS[plan].credits);
+    setPendingCount(plan === "free" ? 0 : 4);
+  }, [plan]);
+
+  useEffect(() => { localStorage.setItem("luc_route", route); }, [route]);
+
+  // edit mode host integration
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.data || typeof e.data !== "object") return;
+      if (e.data.type === "__activate_edit_mode") setTweaksOpen(true);
+      if (e.data.type === "__deactivate_edit_mode") setTweaksOpen(false);
+    };
+    window.addEventListener("message", handler);
+    window.parent.postMessage({ type: "__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2400);
+  };
+
+  const persist = (edits) => {
+    try {
+      window.parent.postMessage({ type: "__edit_mode_set_keys", edits }, "*");
+    } catch {}
+  };
+
+  const handlePlanChange = (p) => {
+    setPlan(p);
+    persist({ plan: p });
+    showToast(`Plán přepnut: ${window.LUCIFERA.PLANS[p].name}`);
+  };
+  const handleThemeChange = (t) => {
+    setTheme(t);
+    persist({ theme: t });
+  };
+
+  const useCredits = (n) => {
+    setCredits(c => Math.max(0, c - n));
+  };
+
+  const approvePost = (id) => {
+    setPendingCount(c => Math.max(0, c - 1));
+    showToast("Schváleno — jde do Canvy");
+  };
+
+  const showSidebar = route !== "landing";
+
+  return (
+    <>
+      {!showSidebar && <Landing onStart={() => setRoute("dashboard")} />}
+      {showSidebar && (
+        <div className="proto-stage" data-screen-label="Studio">
+          <Sidebar plan={plan} route={route} onRoute={setRoute}
+            credits={credits} pendingCount={pendingCount} />
+          <div className="proto-main">
+            <TopBar plan={plan} credits={credits}
+              onNewScan={() => setRoute("landing")}
+              onPlans={() => setRoute("plans")} />
+            {route === "dashboard" && (
+              <div data-screen-label="01 Dashboard">
+                <Dashboard plan={plan} onRoute={setRoute}
+                  pendingCount={pendingCount} onApprove={approvePost} />
+              </div>
+            )}
+            {route === "library" && (
+              <div data-screen-label="02 Library">
+                <MediaLibrary plan={plan} credits={credits}
+                  onUseCredits={useCredits} showToast={showToast} />
+              </div>
+            )}
+            {route === "approval" && (
+              <div data-screen-label="03 Approval">
+                <Approval plan={plan} onApprove={approvePost}
+                  pending={pendingCount} />
+              </div>
+            )}
+            {route === "plans" && (
+              <div data-screen-label="04 Plans">
+                <Plans plan={plan} onSelectPlan={handlePlanChange} />
+              </div>
+            )}
+            {route === "branddna" && plan !== "free" && (
+              <div data-screen-label="05 Brand DNA">
+                <Dashboard plan={plan} onRoute={setRoute}
+                  pendingCount={pendingCount} onApprove={approvePost} />
+              </div>
+            )}
+            {route === "planner" && plan !== "free" && (
+              <div data-screen-label="06 Planner">
+                <Planner plan={plan} showToast={showToast} />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tweaks panel */}
+      <div className={`tweaks-panel ${tweaksOpen ? "open" : ""}`}>
+        <div style={{ display: "flex", justifyContent: "space-between",
+          alignItems: "center", marginBottom: 14 }}>
+          <div className="tweaks-title" style={{ margin: 0 }}>Tweaks</div>
+          <button onClick={() => setTweaksOpen(false)}
+            style={{ color: "var(--ink-3)", padding: 4 }}>
+            <Icon name="close" size={14}/>
+          </button>
+        </div>
+
+        <div className="tweaks-row">
+          <label className="tweaks-label">Plán klienta</label>
+          <div className="tweaks-options">
+            {[
+              ["free", "Free"],
+              ["start", "Start"],
+              ["plus", "Plus"],
+              ["pro", "Pro"],
+              ["pvi", "PVI"],
+            ].map(([id, l]) => (
+              <div key={id}
+                className={`tweaks-opt ${plan === id ? "active" : ""}`}
+                onClick={() => handlePlanChange(id)}>{l}</div>
+            ))}
+          </div>
+        </div>
+
+        <div className="tweaks-row">
+          <label className="tweaks-label">Vizuální směr</label>
+          <div className="tweaks-options">
+            {[
+              ["cream", "Studio Cream"],
+              ["editorial", "Editorial"],
+              ["midnight", "Midnight"],
+            ].map(([id, l]) => (
+              <div key={id}
+                className={`tweaks-opt ${theme === id ? "active" : ""}`}
+                onClick={() => handleThemeChange(id)}>{l}</div>
+            ))}
+          </div>
+        </div>
+
+        <div className="tweaks-row">
+          <label className="tweaks-label">Obrazovka</label>
+          <div className="tweaks-options">
+            {[
+              ["landing", "Landing"],
+              ["dashboard", "Dashboard"],
+              ["library", "Knihovna"],
+              ["approval", "Schvalování"],
+              ["plans", "Tarify"],
+            ].map(([id, l]) => (
+              <div key={id}
+                className={`tweaks-opt ${route === id ? "active" : ""}`}
+                onClick={() => setRoute(id)}>{l}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {toast && <div className="toast"><Icon name="check" size={13}/> {toast}</div>}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
