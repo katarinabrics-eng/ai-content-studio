@@ -908,6 +908,59 @@
   </div>
 </div>
 
+<section style="background:#fff;padding:80px 0;border-top:3px solid #000;border-bottom:3px solid #000;">
+  <div style="max-width:1280px;margin:0 auto;padding:0 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+
+    <!-- Levý sloupec — obrázky -->
+    <div style="position:relative;">
+      <img src="mockup/konec.png" alt="" style="width:100%;height:auto;display:block;"/>
+    </div>
+
+    <!-- Pravý sloupec — text + formulář -->
+    <div style="position:relative;">
+
+      <h2 style="font-family:'Playfair Display',serif;font-style:normal;font-weight:700;font-size:clamp(36px,4vw,64px);line-height:1.1;margin:0 0 12px;color:#000;">
+        Zadej svůj web.
+      </h2>
+      <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(20px,2.5vw,36px);color:#444;margin:0 0 32px;line-height:1.3;">
+        A dozvíš se jak obstál v našem hodnocení
+      </div>
+
+      <!-- Bublina "do 90 sec máš jasno" -->
+      <div style="position:relative;margin-bottom:12px;">
+        <div style="display:inline-block;background:#fff;border:2px solid #000;border-radius:999px;padding:6px 16px;font-family:'Special Elite',monospace;font-size:13px;color:#000;box-shadow:3px 3px 0 #000;margin-left:auto;display:block;width:fit-content;margin-bottom:8px;">
+          do 90 sec máš jasno
+        </div>
+      </div>
+
+      <!-- Formulář -->
+      <form style="display:flex;align-items:stretch;background:#fff;border:3px solid #000;border-radius:999px;box-shadow:5px 5px 0 #000;overflow:hidden;margin-bottom:24px;"
+        onsubmit="event.preventDefault();var url=document.getElementById('konec-url').value.trim();if(!url)return;if(!url.startsWith('http'))url='https://'+url;window.location.href='https://ai-content-studio-omega.vercel.app/analyzing?type=web&url='+encodeURIComponent(url)+'&returnTo=/start';">
+        <input id="konec-url" type="text" placeholder="https://tvujweb.cz" autocomplete="off" spellcheck="false"
+          style="flex:1;border:0;outline:0;background:transparent;padding:18px 28px;font-family:'Special Elite',monospace;font-size:17px;"/>
+        <button type="submit"
+          style="background:var(--acid);border:0;border-left:3px solid #000;padding:0 30px;font-family:'Special Elite',monospace;font-weight:bold;font-size:18px;cursor:pointer;white-space:nowrap;">
+          Skenovat →
+        </button>
+      </form>
+
+      <p style="font-family:'Special Elite',monospace;font-size:14px;color:#888;line-height:1.7;margin:0 0 40px;text-align:center;">
+        Zanechej nám svůj mail a mi ti zašleme do 48h PDF dokument s brand DNA analýzou a vizuál boardem na míru
+      </p>
+
+      <!-- Šipka + zjisti.png -->
+      <div style="display:flex;align-items:center;gap:20px;justify-content:flex-end;">
+        <svg width="80" height="60" viewBox="0 0 80 60" fill="none" style="flex-shrink:0;">
+          <path d="M70,10 C50,10 20,30 10,52" stroke="#000" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M6,44 L10,54 L20,50" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <img src="mockup/zjisti.png" alt="Zjisti kde to vrže a nastartuj svůj růst" style="width:240px;height:auto;display:block;"/>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ===== BRAND SCAN — MULTI-STEP FLOW ===== -->
 <section class="scan" id="scan" data-screen-label="04 Brand Scan">
   <div class="ht-corner ht-tl" style="opacity:.5;"></div>
