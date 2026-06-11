@@ -1453,41 +1453,77 @@ function bsShow(from,to){
 
 <!-- ===== GALLERY ===== -->
 <style>
-@keyframes gfloat1{0%,100%{transform:rotate(-2deg) translateY(0);}50%{transform:rotate(-2deg) translateY(-14px);}}
-@keyframes gfloat2{0%,100%{transform:rotate(1.5deg) translateY(0);}50%{transform:rotate(1.5deg) translateY(-10px);}}
-@keyframes gfloat3{0%,100%{transform:rotate(-1deg) translateY(0);}50%{transform:rotate(-1deg) translateY(-16px);}}
-@keyframes gfloat4{0%,100%{transform:rotate(2.5deg) translateY(0);}50%{transform:rotate(2.5deg) translateY(-12px);}}
-@keyframes gfloat5{0%,100%{transform:rotate(-1.5deg) translateY(0);}50%{transform:rotate(-1.5deg) translateY(-8px);}}
-@keyframes gfloat6{0%,100%{transform:rotate(1deg) translateY(0);}50%{transform:rotate(1deg) translateY(-14px);}}
-.gcard{position:relative;cursor:pointer;transition:filter .2s;}
-.gcard:hover{filter:brightness(1.04);}
-.gcard-img{border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.13);}
-.gcard-img img{width:100%;height:100%;object-fit:contain;display:block;}
+.gcard{
+  position:relative;
+  overflow:hidden;
+  border:3px solid #000;
+  box-shadow:6px 6px 0 #000;
+  cursor:pointer;
+  background:#000;
+}
+.gcard-img{
+  width:100%;
+  overflow:hidden;
+}
+.gcard-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .4s ease;
+}
+.gcard:hover .gcard-img img{
+  transform:scale(1.04);
+}
 .gcard-info-btn{
-  position:absolute;bottom:12px;right:12px;
-  width:36px;height:36px;border-radius:50%;
-  background:rgba(255,255,255,.92);border:2px solid #000;
+  position:absolute;
+  bottom:12px;
+  right:12px;
+  width:28px;height:28px;
+  background:#fff;
+  border:2px solid #000;
+  border-radius:50%;
+  font-family:'Special Elite',monospace;
+  font-size:13px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Anton',sans-serif;font-size:18px;font-weight:bold;color:#000;
-  box-shadow:2px 2px 0 #000;cursor:pointer;z-index:5;
-  transition:transform .15s,box-shadow .15s;
-  user-select:none;
+  cursor:pointer;
+  z-index:10;
+  transition:background .15s;
 }
-.gcard-info-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #000;}
+.gcard-info-btn:hover{background:var(--acid);}
 .gcard-tooltip{
-  position:absolute;bottom:56px;right:0;
-  background:#fff;border:2.5px solid #000;border-radius:14px;
-  padding:16px 18px;width:240px;
-  box-shadow:5px 5px 0 #000;
-  font-family:'Special Elite',monospace;font-size:13px;line-height:1.6;color:#222;
-  opacity:0;pointer-events:none;
-  transform:translateY(8px) scale(.96);
-  transform-origin:bottom right;
-  transition:opacity .22s,transform .22s;
+  position:absolute;
+  bottom:48px;right:12px;
+  background:#fff;
+  border:2px solid #000;
+  padding:14px 16px;
+  width:220px;
+  font-family:'Special Elite',monospace;
+  font-size:12px;
+  line-height:1.6;
+  color:#222;
+  box-shadow:4px 4px 0 #000;
   z-index:20;
+  display:none;
+  transform-origin:bottom right;
 }
-.gcard-tooltip.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1);}
-.gcard-tooltip strong{font-family:'Anton',sans-serif;font-size:16px;display:block;margin-bottom:6px;}
+.gcard-tooltip strong{
+  display:block;
+  font-family:'Anton',sans-serif;
+  font-size:14px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+  color:#000;
+}
+.gcard-tooltip.visible{display:block;}
+
+@keyframes gfloat1{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes gfloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes gfloat3{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes gfloat4{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes gfloat5{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes gfloat6{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
 </style>
 
 <section style="background:var(--paper);padding:100px 0 80px;" id="gallery" data-screen-label="07 Galerie">
@@ -1503,7 +1539,7 @@ function bsShow(from,to){
           <svg width="40" height="40" viewBox="0 0 40 40" style="display:inline-block;margin-top:4px;"><path d="M20 4 Q22 20 30 32 M30 32 L24 26 M30 32 L36 26" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
         <div class="gcard" style="animation:gfloat1 4.2s ease-in-out infinite;">
-          <div class="gcard-img" style="height:320px;">
+          <div class="gcard-img" style="height:380px;">
             <img src="mockup/obsah/do galerie/01brand dna.png"/>
           </div>
           <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
@@ -1520,7 +1556,7 @@ function bsShow(from,to){
           <svg width="40" height="40" viewBox="0 0 40 40" style="display:inline-block;margin-top:4px;"><path d="M20 4 Q18 20 10 32 M10 32 L4 26 M10 32 L16 26" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
         <div class="gcard" style="animation:gfloat2 5s ease-in-out infinite;animation-delay:.8s;">
-          <div class="gcard-img" style="height:320px;">
+          <div class="gcard-img" style="height:380px;">
             <img src="mockup/obsah/do galerie/02reels.jpg"/>
           </div>
           <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
@@ -1537,7 +1573,7 @@ function bsShow(from,to){
           <svg width="40" height="40" viewBox="0 0 40 40"><path d="M20 4 Q20 20 20 32" stroke="transparent" stroke-width="2" fill="none"/></svg>
         </div>
         <div class="gcard" style="animation:gfloat3 4.7s ease-in-out infinite;animation-delay:1.4s;">
-          <div class="gcard-img" style="height:320px;">
+          <div class="gcard-img" style="height:380px;">
             <img src="mockup/obsah/do galerie/04kontakt.jpeg"/>
           </div>
           <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
@@ -1555,7 +1591,7 @@ function bsShow(from,to){
 
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="gcard" style="animation:gfloat4 4.4s ease-in-out infinite;animation-delay:.3s;">
-          <div class="gcard-img" style="height:280px;">
+          <div class="gcard-img" style="height:320px;">
             <img src="mockup/obsah/do galerie/05merch.png"/>
           </div>
           <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
@@ -1572,7 +1608,7 @@ function bsShow(from,to){
 
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="gcard" style="animation:gfloat5 5.2s ease-in-out infinite;animation-delay:1s;">
-          <div class="gcard-img" style="height:280px;">
+          <div class="gcard-img" style="height:320px;">
             <img src="mockup/obsah/do galerie/06web design.png"/>
           </div>
           <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
@@ -1589,7 +1625,7 @@ function bsShow(from,to){
 
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="gcard" style="animation:gfloat6 4.9s ease-in-out infinite;animation-delay:.6s;">
-          <div class="gcard-img" style="height:280px;">
+          <div class="gcard-img" style="height:320px;">
             <img src="mockup/obsah/do galerie/07kontakty.jpeg"/>
           </div>
           <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
@@ -1608,19 +1644,6 @@ function bsShow(from,to){
   </div>
 </section>
 
-<script>
-function toggleTip(btn){
-  var tip=btn.nextElementSibling;
-  var isOpen=tip.classList.contains('open');
-  document.querySelectorAll('.gcard-tooltip.open').forEach(function(t){t.classList.remove('open');});
-  if(!isOpen) tip.classList.add('open');
-}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.gcard-info-btn')&&!e.target.closest('.gcard-tooltip')){
-    document.querySelectorAll('.gcard-tooltip.open').forEach(function(t){t.classList.remove('open');});
-  }
-});
-</script>
 
 <!-- ===== TEAM ===== -->
 <section style="background:var(--paper-2);padding:80px 0 100px;" id="team" data-screen-label="08 Tým">
@@ -1799,5 +1822,17 @@ document.addEventListener('click',function(e){
 </footer>
 
 <script src="image-slot.js"></script>
+<script>
+function toggleTip(btn){
+  var tip=btn.nextElementSibling;
+  tip.classList.toggle('visible');
+  document.addEventListener('click',function handler(e){
+    if(!btn.contains(e.target)&&!tip.contains(e.target)){
+      tip.classList.remove('visible');
+      document.removeEventListener('click',handler);
+    }
+  });
+}
+</script>
 </body>
 </html>
