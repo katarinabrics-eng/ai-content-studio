@@ -1385,11 +1385,49 @@ function bsShow(from,to){
 </section>
 
 <!-- ===== GALLERY ===== -->
+<style>
+@keyframes gfloat1{0%,100%{transform:rotate(-2deg) translateY(0);}50%{transform:rotate(-2deg) translateY(-14px);}}
+@keyframes gfloat2{0%,100%{transform:rotate(1.5deg) translateY(0);}50%{transform:rotate(1.5deg) translateY(-10px);}}
+@keyframes gfloat3{0%,100%{transform:rotate(-1deg) translateY(0);}50%{transform:rotate(-1deg) translateY(-16px);}}
+@keyframes gfloat4{0%,100%{transform:rotate(2.5deg) translateY(0);}50%{transform:rotate(2.5deg) translateY(-12px);}}
+@keyframes gfloat5{0%,100%{transform:rotate(-1.5deg) translateY(0);}50%{transform:rotate(-1.5deg) translateY(-8px);}}
+@keyframes gfloat6{0%,100%{transform:rotate(1deg) translateY(0);}50%{transform:rotate(1deg) translateY(-14px);}}
+.gcard{position:relative;cursor:pointer;transition:filter .2s;}
+.gcard:hover{filter:brightness(1.04);}
+.gcard-img{border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.13);}
+.gcard-img img{width:100%;height:100%;object-fit:contain;display:block;}
+.gcard-info-btn{
+  position:absolute;bottom:12px;right:12px;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.92);border:2px solid #000;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Anton',sans-serif;font-size:18px;font-weight:bold;color:#000;
+  box-shadow:2px 2px 0 #000;cursor:pointer;z-index:5;
+  transition:transform .15s,box-shadow .15s;
+  user-select:none;
+}
+.gcard-info-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #000;}
+.gcard-tooltip{
+  position:absolute;bottom:56px;right:0;
+  background:#fff;border:2.5px solid #000;border-radius:14px;
+  padding:16px 18px;width:240px;
+  box-shadow:5px 5px 0 #000;
+  font-family:'Special Elite',monospace;font-size:13px;line-height:1.6;color:#222;
+  opacity:0;pointer-events:none;
+  transform:translateY(8px) scale(.96);
+  transform-origin:bottom right;
+  transition:opacity .22s,transform .22s;
+  z-index:20;
+}
+.gcard-tooltip.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1);}
+.gcard-tooltip strong{font-family:'Anton',sans-serif;font-size:16px;display:block;margin-bottom:6px;}
+</style>
+
 <section style="background:var(--paper);padding:100px 0 80px;" id="gallery" data-screen-label="07 Galerie">
   <div class="container">
     <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(32px,5vw,72px);text-align:center;margin:0 0 80px;letter-spacing:.01em;">Tvůj obsah připravený k použití</h2>
 
-    <!-- HORNÍ ŘADA — 3 fotky s popisky nahoře (01+02 větší, 04 menší) -->
+    <!-- HORNÍ ŘADA -->
     <div style="display:grid;grid-template-columns:2fr 2fr 1fr;gap:24px;margin-bottom:70px;align-items:end;">
 
       <div style="display:flex;flex-direction:column;gap:12px;">
@@ -1397,8 +1435,15 @@ function bsShow(from,to){
           <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;line-height:1.3;">Brand vizual book</span><br/>
           <svg width="40" height="40" viewBox="0 0 40 40" style="display:inline-block;margin-top:4px;"><path d="M20 4 Q22 20 30 32 M30 32 L24 26 M30 32 L36 26" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
-        <div style="height:320px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <img src="mockup/obsah/do galerie/01brand dna.png" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:16px;"/>
+        <div class="gcard" style="animation:gfloat1 4.2s ease-in-out infinite;">
+          <div class="gcard-img" style="height:320px;">
+            <img src="mockup/obsah/do galerie/01brand dna.png"/>
+          </div>
+          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
+          <div class="gcard-tooltip">
+            <strong>Brand vizual book</strong>
+            Tvůj vizuální manuál — barvy, fonty, styl, hlas. Základ, ze kterého vychází každý příspěvek, web i merch.
+          </div>
         </div>
       </div>
 
@@ -1407,8 +1452,15 @@ function bsShow(from,to){
           <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;line-height:1.3;">Příspěvky, reels, carousel&nbsp;...</span><br/>
           <svg width="40" height="40" viewBox="0 0 40 40" style="display:inline-block;margin-top:4px;"><path d="M20 4 Q18 20 10 32 M10 32 L4 26 M10 32 L16 26" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         </div>
-        <div style="height:320px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <img src="mockup/obsah/do galerie/02reels.jpg" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:16px;"/>
+        <div class="gcard" style="animation:gfloat2 5s ease-in-out infinite;animation-delay:.8s;">
+          <div class="gcard-img" style="height:320px;">
+            <img src="mockup/obsah/do galerie/02reels.jpg"/>
+          </div>
+          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
+          <div class="gcard-tooltip">
+            <strong>Příspěvky, reels, carousel</strong>
+            Hotové šablony a záběry připravené k publikaci. Stačí vybrat — neřešíš kompozici ani styl.
+          </div>
         </div>
       </div>
 
@@ -1417,19 +1469,33 @@ function bsShow(from,to){
           <span style="font-family:'Caveat',cursive;font-size:24px;">–</span><br/>
           <svg width="40" height="40" viewBox="0 0 40 40"><path d="M20 4 Q20 20 20 32" stroke="transparent" stroke-width="2" fill="none"/></svg>
         </div>
-        <div style="height:320px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <img src="mockup/obsah/do galerie/04kontakt.jpeg" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:16px;"/>
+        <div class="gcard" style="animation:gfloat3 4.7s ease-in-out infinite;animation-delay:1.4s;">
+          <div class="gcard-img" style="height:320px;">
+            <img src="mockup/obsah/do galerie/04kontakt.jpeg"/>
+          </div>
+          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
+          <div class="gcard-tooltip" style="right:auto;left:0;transform-origin:bottom left;">
+            <strong>Fotografie</strong>
+            Profesionální portréty a detaily z Content Day. 150+ fotek připravených pro online i tisk.
+          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- DOLNÍ ŘADA — 3 fotky na šířku s popisky dole -->
+    <!-- DOLNÍ ŘADA -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
 
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="height:280px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <img src="mockup/obsah/do galerie/05merch.png" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:16px;"/>
+        <div class="gcard" style="animation:gfloat4 4.4s ease-in-out infinite;animation-delay:.3s;">
+          <div class="gcard-img" style="height:280px;">
+            <img src="mockup/obsah/do galerie/05merch.png"/>
+          </div>
+          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
+          <div class="gcard-tooltip" style="bottom:auto;top:56px;transform-origin:top right;">
+            <strong>Návrhy Merch značky</strong>
+            Trička, čepice, tašky, hrníčky — tvoje značka přenesená do fyzického světa. Návrhy připravené pro výrobu.
+          </div>
         </div>
         <div style="text-align:center;">
           <svg width="40" height="30" viewBox="0 0 40 30" style="display:inline-block;"><path d="M20 4 Q18 15 12 26 M12 26 L6 20 M12 26 L18 20" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg><br/>
@@ -1438,8 +1504,15 @@ function bsShow(from,to){
       </div>
 
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="height:280px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <img src="mockup/obsah/do galerie/06web design.png" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:16px;"/>
+        <div class="gcard" style="animation:gfloat5 5.2s ease-in-out infinite;animation-delay:1s;">
+          <div class="gcard-img" style="height:280px;">
+            <img src="mockup/obsah/do galerie/06web design.png"/>
+          </div>
+          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
+          <div class="gcard-tooltip" style="bottom:auto;top:56px;transform-origin:top right;">
+            <strong>Vizualizace a web</strong>
+            Wireframe i finální design webu odvozen přímo z tvé Brand DNA. Žádné generické šablony.
+          </div>
         </div>
         <div style="text-align:center;">
           <svg width="40" height="30" viewBox="0 0 40 30" style="display:inline-block;"><path d="M20 4 Q20 15 20 26 M20 26 L14 20 M20 26 L26 20" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg><br/>
@@ -1448,8 +1521,15 @@ function bsShow(from,to){
       </div>
 
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="height:280px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-          <img src="mockup/obsah/do galerie/07kontakty.jpeg" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:16px;"/>
+        <div class="gcard" style="animation:gfloat6 4.9s ease-in-out infinite;animation-delay:.6s;">
+          <div class="gcard-img" style="height:280px;">
+            <img src="mockup/obsah/do galerie/07kontakty.jpeg"/>
+          </div>
+          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
+          <div class="gcard-tooltip" style="bottom:auto;top:56px;transform-origin:top right;">
+            <strong>Náhledy před focením</strong>
+            Moodboard a kompozice připravené předem — přijdeš s jasnou vizí, odejdeš s obsahem na měsíce.
+          </div>
         </div>
         <div style="text-align:center;">
           <svg width="40" height="30" viewBox="0 0 40 30" style="display:inline-block;"><path d="M20 4 Q22 15 28 26 M28 26 L22 20 M28 26 L34 20" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg><br/>
@@ -1460,6 +1540,20 @@ function bsShow(from,to){
     </div>
   </div>
 </section>
+
+<script>
+function toggleTip(btn){
+  var tip=btn.nextElementSibling;
+  var isOpen=tip.classList.contains('open');
+  document.querySelectorAll('.gcard-tooltip.open').forEach(function(t){t.classList.remove('open');});
+  if(!isOpen) tip.classList.add('open');
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.gcard-info-btn')&&!e.target.closest('.gcard-tooltip')){
+    document.querySelectorAll('.gcard-tooltip.open').forEach(function(t){t.classList.remove('open');});
+  }
+});
+</script>
 
 <!-- ===== TEAM ===== -->
 <section style="background:var(--paper-2);padding:80px 0 100px;" id="team" data-screen-label="08 Tým">
