@@ -1526,121 +1526,134 @@ function bsShow(from,to){
 @keyframes gfloat6{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
 </style>
 
-<section style="background:var(--paper);padding:100px 0 80px;" id="gallery" data-screen-label="07 Galerie">
-  <div class="container">
-    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(32px,5vw,72px);text-align:center;margin:0 0 80px;letter-spacing:.01em;">Tvůj obsah připravený k použití</h2>
+<section style="background:#fafaf7;padding:80px 0;" id="gallery" data-screen-label="07 Galerie">
+  <div style="text-align:center;margin-bottom:48px;padding:0 48px;max-width:800px;margin-left:auto;margin-right:auto;">
+    <h2 style="font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(32px,5vw,72px);text-align:center;margin:0 0 16px;letter-spacing:.01em;">Tvůj obsah připravený k použití</h2>
+    <p style="font-family:'Special Elite',monospace;font-size:15px;color:#888;line-height:1.7;max-width:580px;margin:0 auto;">Vizuální identita · brand strategie · grafické šablony · obsah · fotoplán. Vše co potřebuješ pro silnou vizuální značku.</p>
+  </div>
 
-    <!-- HORNÍ ŘADA -->
-    <div style="display:grid;grid-template-columns:2fr 2fr 1fr;gap:24px;margin-bottom:70px;align-items:end;">
+  <style>
+    .cdg-item{border-radius:10px;overflow:hidden;position:relative;cursor:pointer;}
+    .cdg-item .ov-default{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;background:linear-gradient(to top,rgba(17,17,17,.55) 0%,transparent 50%);opacity:1;transition:opacity .35s ease;}
+    .cdg-item .ov-hover{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px;background:rgba(208,236,120,.93);opacity:0;transition:opacity .35s ease;}
+    .cdg-item:hover .ov-default{opacity:0;}
+    .cdg-item:hover .ov-hover{opacity:1;}
+    .cdg-pill-default{display:inline-block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:100px;background:rgba(250,250,247,.85);color:rgba(17,17,17,.55);margin-bottom:6px;width:fit-content;}
+    .cdg-title-default{font-family:'Playfair Display',serif;font-style:italic;font-size:17px;font-weight:500;color:#faf7f2;line-height:1.25;margin-bottom:3px;}
+    .cdg-sub-default{font-size:11px;color:rgba(250,247,242,.6);}
+    .cdg-pill-hover{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 14px;border-radius:100px;background:rgba(17,17,17,.15);color:rgba(17,17,17,.75);border:1px solid rgba(17,17,17,.18);margin-bottom:14px;}
+    .cdg-title-hover{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:#111;line-height:1.2;margin-bottom:10px;}
+    .cdg-divider{width:32px;height:1px;background:rgba(17,17,17,.25);margin:0 auto 12px;}
+    .cdg-desc-hover{font-size:13px;color:rgba(17,17,17,.65);line-height:1.6;font-weight:300;max-width:220px;}
+  </style>
 
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="text-align:center;">
-          <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;line-height:1.3;">Brand vizual book</span><br/>
-          <svg width="40" height="40" viewBox="0 0 40 40" style="display:inline-block;margin-top:4px;"><path d="M20 4 Q22 20 30 32 M30 32 L24 26 M30 32 L36 26" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-        </div>
-        <div class="gcard" style="animation:gfloat1 4.2s ease-in-out infinite;">
-          <div class="gcard-img" style="height:380px;">
-            <img src="mockup/obsah/do galerie/01brand dna.png"/>
-          </div>
-          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
-          <div class="gcard-tooltip">
-            <strong>Brand vizual book</strong>
-            Tvůj vizuální manuál — barvy, fonty, styl, hlas. Základ, ze kterého vychází každý příspěvek, web i merch.
-          </div>
-        </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 10px;">
+
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/01brand dna.png" alt="Brand vizual book" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Brand vizual book</span>
+        <div class="cdg-title-default">Brand vizual book</div>
+        <div class="cdg-sub-default">Barvy · fonty · styl · hlas</div>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="text-align:center;">
-          <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;line-height:1.3;">Příspěvky, reels, carousel&nbsp;...</span><br/>
-          <svg width="40" height="40" viewBox="0 0 40 40" style="display:inline-block;margin-top:4px;"><path d="M20 4 Q18 20 10 32 M10 32 L4 26 M10 32 L16 26" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-        </div>
-        <div class="gcard" style="animation:gfloat2 5s ease-in-out infinite;animation-delay:.8s;">
-          <div class="gcard-img" style="height:380px;">
-            <img src="mockup/obsah/do galerie/02reels.jpg"/>
-          </div>
-          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
-          <div class="gcard-tooltip">
-            <strong>Příspěvky, reels, carousel</strong>
-            Hotové šablony a záběry připravené k publikaci. Stačí vybrat — neřešíš kompozici ani styl.
-          </div>
-        </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Brand vizual book</span>
+        <div class="cdg-title-hover">Brand vizual book</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Tvůj vizuální manuál — barvy, fonty, styl, hlas. Základ, ze kterého vychází každý příspěvek, web i merch.</div>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="text-align:center;opacity:0;">
-          <span style="font-family:'Caveat',cursive;font-size:24px;">–</span><br/>
-          <svg width="40" height="40" viewBox="0 0 40 40"><path d="M20 4 Q20 20 20 32" stroke="transparent" stroke-width="2" fill="none"/></svg>
-        </div>
-        <div class="gcard" style="animation:gfloat3 4.7s ease-in-out infinite;animation-delay:1.4s;">
-          <div class="gcard-img" style="height:380px;">
-            <img src="mockup/obsah/do galerie/04kontakt.jpeg"/>
-          </div>
-          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
-          <div class="gcard-tooltip" style="right:auto;left:0;transform-origin:bottom left;">
-            <strong>Fotografie</strong>
-            Profesionální portréty a detaily z Content Day. 150+ fotek připravených pro online i tisk.
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- DOLNÍ ŘADA -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
-
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div class="gcard" style="animation:gfloat4 4.4s ease-in-out infinite;animation-delay:.3s;">
-          <div class="gcard-img" style="height:320px;">
-            <img src="mockup/obsah/do galerie/05merch.png"/>
-          </div>
-          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
-          <div class="gcard-tooltip" style="bottom:auto;top:56px;transform-origin:top right;">
-            <strong>Návrhy Merch značky</strong>
-            Trička, čepice, tašky, hrníčky — tvoje značka přenesená do fyzického světa. Návrhy připravené pro výrobu.
-          </div>
-        </div>
-        <div style="text-align:center;">
-          <svg width="40" height="30" viewBox="0 0 40 30" style="display:inline-block;"><path d="M20 4 Q18 15 12 26 M12 26 L6 20 M12 26 L18 20" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg><br/>
-          <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;">Návrhy Merch značky</span>
-        </div>
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/02reels.jpg" alt="Příspěvky, reels, carousel" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Reels · video</span>
+        <div class="cdg-title-default">Příspěvky, reels, carousel</div>
+        <div class="cdg-sub-default">Hotové šablony k publikaci</div>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div class="gcard" style="animation:gfloat5 5.2s ease-in-out infinite;animation-delay:1s;">
-          <div class="gcard-img" style="height:320px;">
-            <img src="mockup/obsah/do galerie/06web design.png"/>
-          </div>
-          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
-          <div class="gcard-tooltip" style="bottom:auto;top:56px;transform-origin:top right;">
-            <strong>Vizualizace a web</strong>
-            Wireframe i finální design webu odvozen přímo z tvé Brand DNA. Žádné generické šablony.
-          </div>
-        </div>
-        <div style="text-align:center;">
-          <svg width="40" height="30" viewBox="0 0 40 30" style="display:inline-block;"><path d="M20 4 Q20 15 20 26 M20 26 L14 20 M20 26 L26 20" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg><br/>
-          <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;">Vizualizace a následná stavba webu</span>
-        </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Reels · video</span>
+        <div class="cdg-title-hover">Příspěvky, reels, carousel</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Hotové šablony a záběry připravené k publikaci. Stačí vybrat — neřešíš kompozici ani styl.</div>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div class="gcard" style="animation:gfloat6 4.9s ease-in-out infinite;animation-delay:.6s;">
-          <div class="gcard-img" style="height:320px;">
-            <img src="mockup/obsah/do galerie/07kontakty.jpeg"/>
-          </div>
-          <div class="gcard-info-btn" onclick="toggleTip(this)">i</div>
-          <div class="gcard-tooltip" style="bottom:auto;top:56px;transform-origin:top right;">
-            <strong>Náhledy před focením</strong>
-            Moodboard a kompozice připravené předem — přijdeš s jasnou vizí, odejdeš s obsahem na měsíce.
-          </div>
-        </div>
-        <div style="text-align:center;">
-          <svg width="40" height="30" viewBox="0 0 40 30" style="display:inline-block;"><path d="M20 4 Q22 15 28 26 M28 26 L22 20 M28 26 L34 20" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/></svg><br/>
-          <span style="font-family:'Caveat',cursive;font-size:24px;color:#000;">Náhledy fotek ještě před focením</span>
-        </div>
-      </div>
-
     </div>
+
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/03ukazka.png" alt="Foto náhledy" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Vizuální board</span>
+        <div class="cdg-title-default">Contact sheet s tvou podobou</div>
+        <div class="cdg-sub-default">Outfit plán · nálada · prostředí</div>
+      </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Vizuální board</span>
+        <div class="cdg-title-hover">Contact sheet s tvou podobou</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Kontaktní sheet fotografií roztříděný dle scény, nálady a záběru. Vždy víš co máš k dispozici.</div>
+      </div>
+    </div>
+
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/04kontakt.jpeg" alt="Fotografie" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Fotografie</span>
+        <div class="cdg-title-default">Foto náhledy a produkce</div>
+        <div class="cdg-sub-default">S focením a videotvorbu</div>
+      </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Fotografie</span>
+        <div class="cdg-title-hover">Foto náhledy a produkce</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Profesionální portréty a detaily z Content Day. 150+ fotek připravených pro online i tisk.</div>
+      </div>
+    </div>
+
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/05merch.png" alt="Návrhy Merch značky" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Merch značky</span>
+        <div class="cdg-title-default">Návrhy Merch značky</div>
+        <div class="cdg-sub-default">Trička · čepice · tašky</div>
+      </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Merch značky</span>
+        <div class="cdg-title-hover">Návrhy Merch značky</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Trička, čepice, tašky, hrníčky — tvoje značka přenesená do fyzického světa. Návrhy připravené pro výrobu.</div>
+      </div>
+    </div>
+
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/06web design.png" alt="Vizualizace a web" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Web design</span>
+        <div class="cdg-title-default">Vizualizace a stavba webu</div>
+        <div class="cdg-sub-default">Žádné generické šablony</div>
+      </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Web design</span>
+        <div class="cdg-title-hover">Vizualizace a stavba webu</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Wireframe i finální design webu odvozen přímo z tvé brand DNA. Žádné generické šablony.</div>
+      </div>
+    </div>
+
+    <div class="cdg-item">
+      <img src="mockup/obsah/do galerie/07kontakty.jpeg" alt="Náhledy fotek" style="width:100%;display:block;aspect-ratio:4/3;object-fit:cover;"/>
+      <div class="ov-default">
+        <span class="cdg-pill-default">Vizuální banka</span>
+        <div class="cdg-title-default">Náhledy fotek před focením</div>
+        <div class="cdg-sub-default">Tříděno dle scény a nálady</div>
+      </div>
+      <div class="ov-hover">
+        <span class="cdg-pill-hover">Vizuální banka</span>
+        <div class="cdg-title-hover">Náhledy fotek před focením</div>
+        <div class="cdg-divider"></div>
+        <div class="cdg-desc-hover">Moodboard a kompozice připravené předem — přijdeš s jasnou vizí, odejdeš s obsahem na měsíce.</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
