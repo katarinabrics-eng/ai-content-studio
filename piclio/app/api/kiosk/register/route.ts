@@ -88,10 +88,15 @@ async function sendRegistrationEmail(
 }
 
 export async function POST(req: NextRequest) {
-  const { email, faceImageBase64, eventId, manualBadgeNumber } = await req.json()
+  const { email, faceImageBase64, eventId, badgeNumber: badgeNumberRaw } = await req.json()
 
   if (!email || !email.includes('@')) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
+  }
+
+  const assignedBadge = typeof badgeNumberRaw === 'number' ? badgeNumberRaw : parseInt(badgeNumberRaw)
+  if (!assignedBadge || isNaN(assignedBadge) || assignedBadge < 1 || assignedBadge > 999) {
+    return NextResponse.json({ error: 'badgeNumber is required (1–999)' }, { status: 400 })
   }
 
   // If eventId provided directly, use it; otherwise find active/draft event
@@ -107,7 +112,6 @@ export async function POST(req: NextRequest) {
   }
 
   if (!activeEvent) {
-    // Find active event (first by date), fallback to draft
     const { data: active } = await supabase
       .from('events')
       .select('id, max_guests')
@@ -149,17 +153,7 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  // Assign next badge number
-  const { data: lastGuest } = await supabase
-    .from('guests')
-    .select('badge_number')
-    .eq('event_id', activeEvent.id)
-    .not('badge_number', 'is', null)
-    .order('badge_number', { ascending: false })
-    .limit(1)
-    .single()
-
-  const nextBadgeNumber = manualBadgeNumber ?? (lastGuest?.badge_number ?? 0) + 1
+  const nextBadgeNumber = assignedBadge
 
   // Create guest
   const { data: newGuest, error } = await supabase
