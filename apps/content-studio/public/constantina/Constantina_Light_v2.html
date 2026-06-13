@@ -1852,18 +1852,18 @@ function bsShow(from,to){
       </p>
 
       <!-- Šipka + zjisti.png -->
-      <div style="display:flex;align-items:center;gap:20px;justify-content:flex-end;">
-        <style>
-          @keyframes arrowFloat{
-            0%,100%{transform:translateY(0) rotate(0deg);}
-            50%{transform:translateY(-8px) rotate(3deg);}
-          }
-        </style>
-        <!-- Šipka otočená doleva — ukazuje na obrázek vlevo -->
-        <svg width="100" height="80" viewBox="0 0 100 80" fill="none"
-          style="flex-shrink:0;animation:arrowFloat 2.5s ease-in-out infinite;transform-origin:center;">
-          <path d="M88,8 C68,8 28,35 15,68" stroke="#000" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <path d="M6,58 L15,70 L24,62" stroke="#000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <style>
+        @keyframes arrowFloat{
+          0%,100%{transform:translateY(0) rotate(0deg);}
+          50%{transform:translateY(-8px) rotate(3deg);}
+        }
+      </style>
+      <div style="position:relative;display:flex;justify-content:flex-end;align-items:flex-end;margin-top:24px;">
+        <!-- šipka absolutně vlevo od zjisti.png, ukazuje doprava na obrázek vlevo -->
+        <svg width="140" height="80" viewBox="0 0 140 80" fill="none"
+          style="position:absolute;right:230px;bottom:10px;animation:arrowFloat 2.5s ease-in-out infinite;pointer-events:none;">
+          <path d="M130,20 C90,10 40,40 15,65" stroke="#000" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M6,55 L14,68 L26,60" stroke="#000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
         <img src="mockup/zjisti.png" alt="Zjisti kde to vrže a nastartuj svůj růst" style="width:240px;height:auto;display:block;"/>
       </div>
