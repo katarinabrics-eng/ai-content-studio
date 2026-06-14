@@ -155,9 +155,8 @@ const FORMAT_IDS = ['instagram', 'reels', 'facebook', 'linkedin', 'newsletter', 
 
 function Logo() {
   return (
-    <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 56, display: "flex", alignItems: "center", padding: "0 32px", background: "rgba(245,243,238,0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #e8e4dc", zIndex: 10 }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/placeholders/LUCIFERA-Logo-Left.png" alt="Lucifera" style={{ height: 28, width: "auto" }} />
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 60, display: "flex", alignItems: "center", padding: "0 40px", background: "rgba(250,250,246,0.97)", backdropFilter: "blur(12px)", borderBottom: "3px solid #000", zIndex: 10 }}>
+      <img src="/constantina/Constant_logo_black.png" alt="Constantina" style={{ height: 44, width: "auto" }} />
     </div>
   );
 }
@@ -990,74 +989,60 @@ function AnalyzingInner() {
 
   // ── PROGRESS + QUIZ SCREEN ────────────────────────────────────
   return (
-    <main style={{ minHeight: "100vh", background: "#f5f3ee", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 40px 48px", fontFamily: "system-ui, sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: "#fafaf6", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 40px 48px", fontFamily: "'Special Elite', monospace" }}>
       <Logo />
 
       <div style={{ width: "100%", maxWidth: 960, paddingTop: 16 }}>
 
         {/* Badge */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", border: "1px solid #e8e4dc", borderRadius: 20, padding: "8px 18px", fontSize: 13, color: "#555" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", border: "3px solid #000", borderRadius: 999, padding: "8px 20px", fontSize: 13, color: "#000", boxShadow: "3px 3px 0 #000" }}>
             {type === "manual" ? "✨" : type === "instagram" ? "📱" : "🌐"}
-            <span style={{ fontWeight: 600, color: "#111", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayLabel}</span>
+            <span style={{ fontFamily: "'Special Elite', monospace", fontWeight: 600, color: "#000", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayLabel}</span>
           </div>
         </div>
 
         {/* Two-column layout */}
         <div className="analyzing-layout" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 24, alignItems: "start" }}>
 
-          {/* Left panel — orb + progress */}
+          {/* Left panel — progress */}
           <div className="left-panel">
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 24, position: "relative" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
               <div style={{ position: "relative", width: 120, height: 120 }}>
-                <div style={{
-                  position: "absolute", inset: -16, borderRadius: "50%",
-                  border: "1px solid rgba(183,233,76,0.25)",
-                  animation: "orbRing 3s ease-in-out infinite",
-                }} />
-                <div style={{
-                  position: "absolute", inset: -8, borderRadius: "50%",
-                  border: "1px solid rgba(183,233,76,0.4)",
-                  animation: "orbRing 3s ease-in-out infinite .4s",
-                }} />
-                <div style={{
-                  width: 120, height: 120, borderRadius: "50%",
-                  background: "radial-gradient(circle at 35% 30%, #d3ee7f, #b7e94c 45%, #8fd020)",
-                  boxShadow: "0 0 40px rgba(183,233,76,0.5), 0 0 80px rgba(183,233,76,0.25)",
-                  animation: "orbPulse 3s ease-in-out infinite",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }} />
+                <div style={{ position: "absolute", inset: -16, borderRadius: "50%", border: "1px solid rgba(201,243,29,0.25)", animation: "orbRing 3s ease-in-out infinite" }} />
+                <div style={{ position: "absolute", inset: -8, borderRadius: "50%", border: "1px solid rgba(201,243,29,0.4)", animation: "orbRing 3s ease-in-out infinite .4s" }} />
+                <div style={{ width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%, #e8ff5a, #c9f31d 45%, #a8cc00)", boxShadow: "0 0 40px rgba(201,243,29,0.5), 0 0 80px rgba(201,243,29,0.25)", animation: "orbPulse 3s ease-in-out infinite" }} />
               </div>
             </div>
 
-            <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e8e4dc", padding: "20px 22px", boxShadow: "0 4px 24px rgba(0,0,0,0.05)" }}>
-              <div style={{ fontSize: 13, color: "#555", fontWeight: 500, marginBottom: 12, minHeight: 36, lineHeight: 1.4 }}>
+            <div style={{ background: "#fff", border: "3px solid #000", padding: "20px 22px", boxShadow: "4px 4px 0 #000" }}>
+              <div style={{ fontFamily: "'Special Elite', monospace", fontSize: 13, color: "#000", marginBottom: 12, minHeight: 36, lineHeight: 1.4 }}>
                 {MESSAGES[msgIndex]}
               </div>
-              <div style={{ height: 6, background: "#f0efeb", borderRadius: 6, overflow: "hidden", marginBottom: 6 }}>
-                <div style={{ height: "100%", width: `${progress}%`, background: "linear-gradient(90deg, #b7e94c, #8fd020)", borderRadius: 6, transition: "width 0.6s ease" }} />
+              <div style={{ height: 8, background: "#f0efeb", border: "2px solid #000", overflow: "hidden", marginBottom: 6 }}>
+                <div style={{ height: "100%", width: `${progress}%`, background: "#c9f31d", transition: "width 0.6s ease" }} />
               </div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#111", textAlign: "right", marginBottom: 16 }}>
-                {progress}<span style={{ fontSize: 12, fontWeight: 400, color: "#aaa" }}>%</span>
+              <div style={{ fontFamily: "'Anton', sans-serif", fontSize: 24, color: "#000", textAlign: "right", marginBottom: 16 }}>
+                {progress}<span style={{ fontSize: 12, fontFamily: "'Special Elite', monospace", color: "#888" }}>%</span>
               </div>
 
-              <div style={{ borderTop: "1px solid #f0efeb", paddingTop: 14 }}>
+              <div style={{ borderTop: "2px solid #f0efeb", paddingTop: 14 }}>
                 {MESSAGES.map((msg, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "4px 0", opacity: i <= msgIndex ? 1 : 0.3, transition: "opacity .4s" }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: i < msgIndex ? "#b7e94c" : i === msgIndex ? "#111" : "#ddd", transition: "background .4s" }} />
-                    <span style={{ fontSize: 11, color: i < msgIndex ? "#5a7a00" : i === msgIndex ? "#111" : "#bbb", lineHeight: 1.4 }}>{msg}</span>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: i < msgIndex ? "#c9f31d" : i === msgIndex ? "#000" : "#ddd", transition: "background .4s" }} />
+                    <span style={{ fontFamily: "'Special Elite', monospace", fontSize: 11, color: i < msgIndex ? "#5a7a00" : i === msgIndex ? "#000" : "#bbb", lineHeight: 1.4 }}>{msg}</span>
                   </div>
                 ))}
               </div>
 
               {progress >= 99 && quizDone && !analysisResult && !analysisError && (
-                <div style={{ marginTop: 14, textAlign: "center", fontSize: 12, color: "#777", fontWeight: 500, background: "#f5f2ec", borderRadius: 8, padding: "8px 12px" }}>
+                <div style={{ marginTop: 14, textAlign: "center", fontFamily: "'Special Elite', monospace", fontSize: 12, color: "#555", background: "#f5f2ec", border: "2px solid #000", padding: "8px 12px" }}>
                   Dokončujeme analýzu… ještě chvíli
                 </div>
               )}
               {progress >= 100 && (analysisResult || analysisError) && (
-                <div style={{ marginTop: 14, textAlign: "center", fontSize: 12, color: "#5a7a00", fontWeight: 600, background: "#f0fce0", borderRadius: 8, padding: "8px 12px" }}>
-                  ✓ Dokončeno — připravuji doporučení…
+                <div style={{ marginTop: 14, textAlign: "center", fontFamily: "'Special Elite', monospace", fontSize: 12, color: "#000", fontWeight: 600, background: "#c9f31d", border: "2px solid #000", padding: "8px 12px" }}>
+                  ✓ Dokončeno
                 </div>
               )}
             </div>
@@ -1066,11 +1051,11 @@ function AnalyzingInner() {
           {/* Right panel — quiz */}
           <div>
             {!quizDone ? (
-              <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #e8e4dc", padding: "28px 32px", boxShadow: "0 4px 24px rgba(0,0,0,0.04)", animation: "fadeUp .4s ease" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#5a7a00", marginBottom: 10 }}>
+              <div style={{ background: "#fff", border: "3px solid #000", padding: "28px 32px", boxShadow: "6px 6px 0 #000", animation: "fadeUp .4s ease" }}>
+                <div style={{ fontFamily: "'Special Elite', monospace", fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#000", marginBottom: 10 }}>
                   Zatímco analyzujeme — {quizStep + 1} / {QUIZ_STEPS.length}
                 </div>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#111", lineHeight: 1.3, marginBottom: 20 }}>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#000", lineHeight: 1.3, marginBottom: 20 }}>
                   {currentQ.q}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1082,46 +1067,46 @@ function AnalyzingInner() {
                       style={{
                         textAlign: "left",
                         padding: "10px 14px",
-                        borderRadius: 10,
-                        border: `1.5px solid ${selectedOpt === opt.text ? "#b7e94c" : "#e8e4dc"}`,
-                        background: selectedOpt === opt.text ? "#f0fce0" : "#fafaf8",
+                        border: `3px solid ${selectedOpt === opt.text ? "#c9f31d" : "#000"}`,
+                        background: selectedOpt === opt.text ? "#c9f31d" : "#fafaf6",
                         cursor: transitioning ? "default" : "pointer",
-                        fontFamily: "inherit",
+                        fontFamily: "'Special Elite', monospace",
                         transition: "all .15s",
                         display: "flex",
                         alignItems: "center",
                         gap: 12,
+                        boxShadow: selectedOpt === opt.text ? "3px 3px 0 #000" : "none",
                       }}
                     >
                       {opt.img ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={opt.img} alt="" style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                        <img src={opt.img} alt="" style={{ width: 52, height: 52, objectFit: "cover", flexShrink: 0, border: "2px solid #000" }} />
                       ) : (
-                        <div style={{ width: 52, height: 52, borderRadius: 8, background: opt.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
+                        <div style={{ width: 52, height: 52, background: opt.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0, border: "2px solid #000" }}>
                           {opt.e}
                         </div>
                       )}
                       <div>
-                        <strong style={{ display: "block", fontSize: 14, color: "#111", fontWeight: 600, marginBottom: 2 }}>{opt.text}</strong>
-                        <span style={{ fontSize: 12, color: "#888" }}>{opt.desc}</span>
+                        <strong style={{ display: "block", fontFamily: "'Special Elite', monospace", fontSize: 14, color: "#000", fontWeight: 600, marginBottom: 2 }}>{opt.text}</strong>
+                        <span style={{ fontFamily: "'Special Elite', monospace", fontSize: 12, color: "#555" }}>{opt.desc}</span>
                       </div>
                     </button>
                   ))}
                 </div>
               </div>
             ) : (
-              <div style={{ background: "#f0fce0", border: "1px solid rgba(183,233,76,.35)", borderRadius: 20, padding: "28px 32px", textAlign: "center" }}>
-                <div style={{ fontSize: 28, marginBottom: 10 }}>🎯</div>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#111", marginBottom: 6 }}>
-                  Výborně! Zpracováváme výsledky.
+              <div style={{ background: "#c9f31d", border: "3px solid #000", padding: "28px 32px", textAlign: "center", boxShadow: "6px 6px 0 #000" }}>
+                <div style={{ fontFamily: "'Anton', sans-serif", fontSize: 32, textTransform: "uppercase", color: "#000", marginBottom: 10 }}>
+                  Výborně!
                 </div>
-                <div style={{ fontSize: 13, color: "#5a7a00" }}>Ještě moment — vybíráme tvého stratéga…</div>
+                <div style={{ fontFamily: "'Special Elite', monospace", fontSize: 14, color: "#000" }}>
+                  Zpracováváme výsledky — vybíráme tvého stratéga…
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        <p style={{ textAlign: "center", fontSize: 11, color: "#bbb", marginTop: 20 }}>
+        <p style={{ textAlign: "center", fontFamily: "'Special Elite', monospace", fontSize: 11, color: "#bbb", marginTop: 20 }}>
           Zdarma · Bez registrace · Data nejsou sdílena
         </p>
       </div>
@@ -1129,15 +1114,14 @@ function AnalyzingInner() {
       <style>{`
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes orbPulse {
-          0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(183,233,76,.5), 0 0 80px rgba(183,233,76,.25); }
-          50% { transform: scale(1.06); box-shadow: 0 0 60px rgba(183,233,76,.7), 0 0 110px rgba(183,233,76,.35); }
+          0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(201,243,29,.5), 0 0 80px rgba(201,243,29,.25); }
+          50% { transform: scale(1.06); box-shadow: 0 0 60px rgba(201,243,29,.7), 0 0 110px rgba(201,243,29,.35); }
         }
         @keyframes orbRing {
           0%, 100% { transform: scale(1); opacity: .3; }
           50% { transform: scale(1.18); opacity: .65; }
         }
         @media (max-width: 768px) {
-          .results-grid { grid-template-columns: 1fr !important; }
           .analyzing-layout { grid-template-columns: 1fr !important; }
           .left-panel { display: none !important; }
         }
