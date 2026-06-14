@@ -370,11 +370,7 @@ function AnalyzingInner() {
       setSelectedOpt(null);
       setTransitioning(false);
       if (next.length >= QUIZ_STEPS.length) {
-        // ZMENA 4 — rozvetvenie podľa type
         setQuizDone(true);
-        if (type !== 'manual') {
-          setPhase('formats');
-        }
       } else {
         setQuizStep(s => s + 1);
       }
