@@ -887,7 +887,7 @@ export default function HomePage() {
         <li><a href="#kontakt">Kontakt</a></li>
       </ul>
     </div>
-    <div class="copy">Piclio by Lucifera — člověk tvoří emoce, systém je doručuje. © 2026 Studio Lucifera · Kampa, Praha</div>
+    <div class="copy">Piclio by Lucifera — člověk tvoří emoce, systém je doručuje. © 2026 Studio Lucifera · Kampa, Praha · <a href="/obchodni-podminky" style="color:inherit;opacity:0.6;text-decoration:none;">Obchodní podmínky</a> · <a href="/gdpr" style="color:inherit;opacity:0.6;text-decoration:none;">Zásady ochrany osobních údajů</a></div>
   </div>
 </footer>
 

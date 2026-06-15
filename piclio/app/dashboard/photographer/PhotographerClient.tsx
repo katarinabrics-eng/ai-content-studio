@@ -26,6 +26,8 @@ export function PhotographerClient() {
   const [guests, setGuests] = useState<Guest[]>([])
   const [editingGuestId, setEditingGuestId] = useState<string | null>(null)
   const [editingEmail, setEditingEmail] = useState('')
+  const [resendingEmail, setResendingEmail] = useState<string | null>(null)
+  const [resendDone, setResendDone] = useState<Record<string, boolean>>({})
   const [unmatched, setUnmatched] = useState<UnmatchedPhoto[]>([])
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [tab, setTab] = useState<Tab>('events')
@@ -88,6 +90,8 @@ export function PhotographerClient() {
   const [projectSaving, setProjectSaving] = useState(false)
   const [projectSaveMsg, setProjectSaveMsg] = useState('')
   const [deletingEvent, setDeletingEvent] = useState<string | null>(null)
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState<string | null>(null)
+  const [changingStatus, setChangingStatus] = useState<string | null>(null)
 
   // Slideshow settings
   const [slideshowContent, setSlideshowContent] = useState<'photographer' | 'client' | 'random' | 'selected_guests'>('random')
@@ -120,6 +124,10 @@ export function PhotographerClient() {
   const [emailBody, setEmailBody] = useState('')
   const [savingEmailSettings, setSavingEmailSettings] = useState(false)
   const [emailSettingsMsg, setEmailSettingsMsg] = useState('')
+
+  // Kiosk settings
+  const [faceDetection, setFaceDetection] = useState(true)
+  const [manualBadgeEntry, setManualBadgeEntry] = useState(false)
 
   function updateProjectForm(key: string, value: string) {
     setProjectForm(prev => ({ ...prev, [key]: value }))
@@ -529,6 +537,13 @@ export function PhotographerClient() {
 
   // Keyboard navigation for unmatched lightbox
   useEffect(() => {
+    if (!statusDropdownOpen) return
+    function onClickOutside() { setStatusDropdownOpen(null) }
+    window.addEventListener('click', onClickOutside)
+    return () => window.removeEventListener('click', onClickOutside)
+  }, [statusDropdownOpen])
+
+  useEffect(() => {
     if (lightboxIndex === null) return
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') { setLightboxIndex(null); return }
@@ -583,6 +598,64 @@ export function PhotographerClient() {
     } catch {}
   }
 
+  async function resendGuestEmail(guestId: string) {
+    setResendingEmail(guestId)
+    try {
+      const res = await fetch('/api/photographer/guests/resend-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guestId }),
+      })
+      if (res.ok) {
+        setResendDone(prev => ({ ...prev, [guestId]: true }))
+        setGuests(prev => prev.map(g => g.id === guestId ? { ...g, email_sent_at: new Date().toISOString() } : g))
+        setTimeout(() => setResendDone(prev => { const n = { ...prev }; delete n[guestId]; return n }), 3000)
+      }
+    } finally {
+      setResendingEmail(null)
+    }
+  }
+
+  async function changeEventStatus(eventId: string, newStatus: 'draft' | 'active' | 'done') {
+    if (newStatus === 'active') {
+      const otherActive = events.filter(e => e.id !== eventId && (e as any).status === 'active')
+      if (otherActive.length > 0) {
+        const names = otherActive.map(e => e.name).join(', ')
+        const confirmed = confirm(
+          `Pozor — FTP fotky z kamery půjdou do tohoto eventu.\nOstatní active eventy budou přepnuty na draft automaticky.\n\nBudou přepnuty: ${names}\n\nPokračovat?`
+        )
+        if (!confirmed) { setStatusDropdownOpen(null); return }
+        // Přepni ostatní active eventy na draft
+        await Promise.all(otherActive.map(e =>
+          fetch('/api/photographer/events', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: e.id, status: 'draft' }),
+          })
+        ))
+        setEvents(prev => prev.map(e =>
+          otherActive.find(o => o.id === e.id) ? { ...e, status: 'draft' } : e
+        ))
+      }
+    }
+
+    setChangingStatus(eventId)
+    setStatusDropdownOpen(null)
+    try {
+      const res = await fetch('/api/photographer/events', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: eventId, status: newStatus }),
+      })
+      if (res.ok) {
+        setEvents(prev => prev.map(e => e.id === eventId ? ({ ...e, status: newStatus } as EventWithStats) : e))
+        if (selectedEvent?.id === eventId) setSelectedEvent(prev => prev ? ({ ...prev, status: newStatus } as EventWithStats) : prev)
+      }
+    } finally {
+      setChangingStatus(null)
+    }
+  }
+
   async function resendInvite(eventId: string) {
     setSendingInvite(eventId)
     try {
@@ -634,6 +707,8 @@ export function PhotographerClient() {
     setSlideshowAnimation((event as any).slideshow_animation ?? 'fade')
     setSlideshowLayout((event as any).slideshow_layout ?? 'single')
     setSlideshowMsg('')
+    setFaceDetection((event as any).face_detection !== false)
+    setManualBadgeEntry((event as any).manual_badge_entry === true)
     setSelectedUnmatched(new Set())
     const [gRes, uRes] = await Promise.all([
       fetch(`/api/photographer/events/${event.id}/guests`, { cache: 'no-store' }),
@@ -819,6 +894,59 @@ export function PhotographerClient() {
                         {event.client_name ? ` · ${event.client_name}` : ''}
                       </div>
                     </div>
+                    {/* Status badge + dropdown */}
+                    <div style={{ position: 'relative', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+                      <button
+                        onClick={() => setStatusDropdownOpen(prev => prev === event.id ? null : event.id)}
+                        disabled={changingStatus === event.id}
+                        style={{
+                          fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 100,
+                          border: 'none', cursor: changingStatus === event.id ? 'default' : 'pointer',
+                          letterSpacing: '0.05em', textTransform: 'uppercase',
+                          background: (event as any).status === 'active' ? '#dcfce7'
+                            : (event as any).status === 'done' ? '#dbeafe' : '#f3f4f6',
+                          color: (event as any).status === 'active' ? '#15803d'
+                            : (event as any).status === 'done' ? '#1d4ed8' : '#6b7280',
+                        }}
+                      >
+                        {changingStatus === event.id ? '...' : (event as any).status ?? 'draft'}
+                      </button>
+                      {statusDropdownOpen === event.id && (
+                        <div style={{
+                          position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                          background: '#fff', borderRadius: 10, boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                          border: '1px solid #e5e7eb', zIndex: 100, minWidth: 180, overflow: 'hidden',
+                        }}>
+                          {([
+                            { value: 'draft', label: 'Draft', color: '#6b7280', bg: '#f3f4f6' },
+                            { value: 'active', label: 'Active', color: '#15803d', bg: '#dcfce7' },
+                            { value: 'done', label: 'Done', color: '#1d4ed8', bg: '#dbeafe' },
+                          ] as const).map(opt => (
+                            <button
+                              key={opt.value}
+                              onClick={() => changeEventStatus(event.id, opt.value)}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 10,
+                                width: '100%', padding: '10px 14px', border: 'none',
+                                background: (event as any).status === opt.value ? '#f9fafb' : '#fff',
+                                cursor: 'pointer', textAlign: 'left', fontSize: 13,
+                                fontWeight: (event as any).status === opt.value ? 700 : 400,
+                                color: '#111827',
+                              }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#f3f4f6')}
+                              onMouseLeave={e => (e.currentTarget.style.background = (event as any).status === opt.value ? '#f9fafb' : '#fff')}
+                            >
+                              <span style={{
+                                display: 'inline-block', width: 10, height: 10, borderRadius: '50%',
+                                background: opt.color, flexShrink: 0,
+                              }} />
+                              {opt.label}
+                              {(event as any).status === opt.value && <span style={{ marginLeft: 'auto', color: '#9ca3af', fontSize: 11 }}>✓ aktuální</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <div style={{ display: 'flex', gap: 24 }}>
                       <Stat label="Hosté" value={event.guestCount} />
                       <Stat label="Fotky" value={event.photoCount} />
@@ -997,9 +1125,26 @@ export function PhotographerClient() {
                             : <span style={{ color: '#9ca3af', fontSize: 12 }}>—</span>}
                         </td>
                         <td style={{ padding: '10px 16px' }}>
-                          {g.gallery_token
-                            ? <a href={`/gallery/${g.gallery_token}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>Otevřít →</a>
-                            : <span style={{ color: '#9ca3af', fontSize: 13 }}>—</span>}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            {g.gallery_token
+                              ? <a href={`/gallery/${g.gallery_token}`} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>Otevřít →</a>
+                              : <span style={{ color: '#9ca3af', fontSize: 13 }}>—</span>}
+                            <button
+                              onClick={() => resendGuestEmail(g.id)}
+                              disabled={resendingEmail === g.id}
+                              title="Odeslat registrační email"
+                              style={{
+                                fontSize: 11, padding: '2px 8px', borderRadius: 5, border: '1px solid',
+                                cursor: resendingEmail === g.id ? 'default' : 'pointer',
+                                background: resendDone[g.id] ? '#dcfce7' : '#f9fafb',
+                                borderColor: resendDone[g.id] ? '#16a34a' : '#d1d5db',
+                                color: resendDone[g.id] ? '#16a34a' : '#374151',
+                                fontWeight: 500, whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {resendDone[g.id] ? 'Email odeslán ✓' : resendingEmail === g.id ? '...' : 'Odeslat email'}
+                            </button>
+                          </div>
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <button
@@ -1196,6 +1341,7 @@ export function PhotographerClient() {
       { key: 'grafika-fotky', title: 'Grafika pro fotky', icon: '🖼️' },
       { key: 'grafika-projekce', title: 'Grafika pro galerii / slideshow', icon: '📽️' },
       { key: 'poznamky', title: 'Poznámky od zadavatele a schválení', icon: '✅' },
+      { key: 'kiosk', title: 'Kiosk', icon: '🎛️' },
       { key: 'danger', title: 'Nebezpečná zóna', icon: '⚠️' },
     ].map(({ key, title, icon }) => (
       <div key={key} style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
@@ -1534,6 +1680,94 @@ export function PhotographerClient() {
             )}
 
             {/* NEBEZPEČNÁ ZÓNA */}
+            {key === 'kiosk' && (
+              <div style={{ paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 0 }}>
+                <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 20px' }}>
+                  Nastavení chování kiosku pro tento event. Změny se projeví okamžitě.
+                </p>
+
+                {/* Toggle: Detekce obličeje */}
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                  gap: 20, padding: '16px 0', borderBottom: '1px solid #f3f4f6',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 4 }}>
+                      Detekce obličeje
+                    </div>
+                    <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>
+                      Hosté nafotí selfie při registraci pro automatické párování fotek
+                    </div>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      if (!selectedEvent) return
+                      const next = !faceDetection
+                      setFaceDetection(next)
+                      await fetch('/api/photographer/events', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: selectedEvent.id, face_detection: next }),
+                      })
+                    }}
+                    style={{
+                      flexShrink: 0, width: 48, height: 26, borderRadius: 13,
+                      border: 'none', cursor: 'pointer', position: 'relative',
+                      background: faceDetection ? '#22c55e' : '#d1d5db',
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute', top: 3, left: faceDetection ? 25 : 3,
+                      width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      transition: 'left 0.2s',
+                    }} />
+                  </button>
+                </div>
+
+                {/* Toggle: Ruční zadání čísla odznaku */}
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                  gap: 20, padding: '16px 0',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 4 }}>
+                      Ruční zadání čísla odznaku hosteskou
+                    </div>
+                    <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>
+                      Hosteska zadá číslo odznaku místo automatického přiřazení
+                    </div>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      if (!selectedEvent) return
+                      const next = !manualBadgeEntry
+                      setManualBadgeEntry(next)
+                      await fetch('/api/photographer/events', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: selectedEvent.id, manual_badge_entry: next }),
+                      })
+                    }}
+                    style={{
+                      flexShrink: 0, width: 48, height: 26, borderRadius: 13,
+                      border: 'none', cursor: 'pointer', position: 'relative',
+                      background: manualBadgeEntry ? '#22c55e' : '#d1d5db',
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute', top: 3, left: manualBadgeEntry ? 25 : 3,
+                      width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      transition: 'left 0.2s',
+                    }} />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {key === 'danger' && (
               <div style={{ paddingTop: 16 }}>
                 <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 16px' }}>Smaže všechny fotky eventu včetně Storage. Hosté zůstanou zachováni.</p>
