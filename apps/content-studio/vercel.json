@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/constantina/Constantina_Light_v2.html"
-    }
-  ]
-}

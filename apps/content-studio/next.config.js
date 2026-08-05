@@ -17,12 +17,21 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [
-      {
-        source: '/studio',
-        destination: '/'
-      }
-    ]
+    return {
+      beforeFiles: [
+        {
+          source: '/',
+          destination: '/constantina/Constantina_Light_v2.html',
+        },
+      ],
+      afterFiles: [
+        {
+          source: '/studio',
+          destination: '/',
+        },
+      ],
+      fallback: [],
+    };
   },
 };
 
