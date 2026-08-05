@@ -16,6 +16,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/studio',
+        destination: '/'
+      }
+    ]
+  },
 };
 
 module.exports = nextConfig;
